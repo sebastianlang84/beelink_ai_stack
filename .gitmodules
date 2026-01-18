@@ -1,0 +1,3 @@
+[submodule "transcript-miner"]
+	path = transcript-miner
+	url = https://github.com/sebastianlang84/TranscriptMiner.git

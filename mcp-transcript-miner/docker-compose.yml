@@ -1,0 +1,52 @@
+name: mcp-transcript-miner
+services:
+  mcp-transcript-miner:
+    container_name: mcp-transcript-miner
+    image: ai_stack/mcp-transcript-miner:latest
+    build:
+      context: .
+    restart: unless-stopped
+    environment:
+      TRANSCRIPT_MINER_DEFAULT_LANGUAGES: ${TRANSCRIPT_MINER_DEFAULT_LANGUAGES:-de,en}
+      TRANSCRIPT_MINER_LOG_LEVEL: ${TRANSCRIPT_MINER_LOG_LEVEL:-info}
+      TRANSCRIPT_MINER_CONFIG_DIR: /transcript_miner_config
+      TRANSCRIPT_MINER_OUTPUT_DIR: /transcript_miner_output
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
+      YOUTUBE_COOKIES_FILE: ${YOUTUBE_COOKIES_FILE:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON: ${OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON:-}
+      OPEN_WEBUI_KNOWLEDGE_ID: ${OPEN_WEBUI_KNOWLEDGE_ID:-}
+      OPEN_WEBUI_BASE_URL: ${OPEN_WEBUI_BASE_URL:-http://open-webui:8080}
+      OPEN_WEBUI_API_KEY: ${OPEN_WEBUI_API_KEY:-}
+      OWUI_API_KEY: ${OWUI_API_KEY:-}
+      OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS: ${OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS:-3}
+      OPEN_WEBUI_PROCESS_TIMEOUT_SECONDS: ${OPEN_WEBUI_PROCESS_TIMEOUT_SECONDS:-900}
+      INDEXER_DB_PATH: /data/indexer.sqlite3
+      HTTP_PROXY: ${HTTP_PROXY:-}
+      HTTPS_PROXY: ${HTTPS_PROXY:-}
+      NO_PROXY: ${NO_PROXY:-}
+      PYTHONPATH: /transcript_miner_repo/src
+    volumes:
+      - ../transcript-miner/config:/transcript_miner_config
+      - ${TRANSCRIPTM_OUTPUT_ROOT_HOST:-/home/wasti/ai_stack_data/transcript-miner/output}:/transcript_miner_output
+      - ../transcript-miner:/transcript_miner_repo:ro
+      - /etc/ai_stack:/host_secrets:ro
+      - tool_transcript_miner_data:/data
+    networks:
+      - ai_stack
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz').read(); print('ok')\""]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  ai_stack:
+    external: true
+    name: ai_stack
+
+volumes:
+  tool_transcript_miner_data:
+    # Keep a stable volume name even if the folder/project name changes.
+    name: tool-transcript-miner_tool_transcript_miner_data

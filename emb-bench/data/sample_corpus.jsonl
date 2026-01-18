@@ -1,0 +1,5 @@
+{"doc_id":"d1","text":"Open WebUI is a self-hosted web interface for LLMs. It can connect to tools and run locally.","meta":{"lang":"en"}}
+{"doc_id":"d2","text":"Tailscale provides a VPN mesh network. Tailscale Serve can expose a localhost service via HTTPS inside the tailnet.","meta":{"lang":"en"}}
+{"doc_id":"d3","text":"Qdrant is a vector database for similarity search. It stores embeddings and supports filtering.","meta":{"lang":"en"}}
+{"doc_id":"d4","text":"Embeddings map text to vectors. Retrieval quality can be measured with Recall@K, MRR, and nDCG.","meta":{"lang":"en"}}
+{"doc_id":"d5","text":"MRL prefix slicing truncates the embedding vector to a target dimension by taking the first dimensions.","meta":{"lang":"en"}}

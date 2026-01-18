@@ -1,0 +1,17 @@
+[
+  {
+    "type": "mcp",
+    "url": "https://mcp.context7.com/mcp",
+    "spec_type": "url",
+    "spec": "",
+    "path": "openapi.json",
+    "auth_type": "none",
+    "key": "",
+    "config": {},
+    "info": {
+      "id": "context7",
+      "name": "Context7 (MCP)",
+      "description": "Context7 documentation lookup via MCP Streamable HTTP."
+    }
+  }
+]

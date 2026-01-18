@@ -1,0 +1,39 @@
+# Changelog
+
+## Unreleased
+- context6: `sources.create` robuster gemacht (GitHub akzeptiert jetzt auch `config.repo`/`config.url` und normalisiert auf `config.github.repo`)
+- context6: Open WebUI Knowledge UX verbessert: neue Tools `sync.prepare`, `owui.knowledge.list`, `owui.knowledge.create` + `sync.start` unterstützt `knowledge_name`/`create_knowledge_if_missing` und `sync.status` liefert `knowledge_files_count` (best-effort)
+- context6: Open WebUI Upload-Filenames sind jetzt sprechend (aus `canonical_path`) + Kurz-Hash statt nur `doc_id`
+- context6: Open WebUI Knowledge `list` Response-Shape `{items:[...]}` unterstützt (damit `sync.prepare` / `owui.knowledge.list` nicht leer bleibt)
+- Secrets: Redaction helper ergänzt (`scripts/redact_secrets_output.sh`) + Doku/Skill ergänzt „kein ungefiltertes `docker compose ... config` teilen“
+- context6: Qdrant/OpenRouter Embeddings entfernt; Indexing erfolgt via Upload in Open WebUI Knowledge (Open WebUI übernimmt Processing/Embeddings)
+- Projekt-Skills ergänzt: `skills/` (Codex Workflows für Compose-Validation, Secrets-Policy, Tool-Imports, Backup/Restore, etc.)
+- Open WebUI Stack ergänzt: Compose + Doku, Image-Tag gepinnt (0.7.2), localhost-only Port `127.0.0.1:3000`
+- Open WebUI External Tools: Import-JSON für Context7 MCP ergänzt (`open-webui/tool-imports/tool_import_context7.json`)
+- Open WebUI Indexer in **Transcript Miner** integriert (ein Tool in Open WebUI): `mcp-transcript-miner/` (`POST /index/transcript`, `POST /sync/topic/{topic}`)
+- TranscriptMiner Summaries vereinheitlicht: pro Video `*.summary.md` (kein `*.summary.json` mehr)
+- Cleanup: redundante Stacks entfernt (kein separates `tool-owui-sync/`, kein `n8n/` im Repo)
+- Workflow-Zielbild dokumentiert: Open WebUI Tool „hole die neuesten videos“ → TranscriptMiner → Knowledge (`docs/workflow_openwebui_hole_neueste_videos.md`)
+- PRD v0 ergänzt: TranscriptMiner Sync Tool für Open WebUI (`docs/prd-tool-owui-transcript-miner-sync.md`)
+- Doku-Netzwerk via `docs/README.md` eingeführt
+- VPN access: Empfehlung/Runbook für Tailscale Serve (Tailnet-HTTPS vor localhost-only Services)
+- Tool-Server ergänzt (FastAPI): `mcp-transcript-miner/` (YouTube Transcript HTTP Tool + Runs + Indexing)
+- PRD ergänzt: `mcp-transcript-miner/PRD.md`
+- Policy ergänzt (Docs): Secrets & Environment Variables (SSOT + Least Privilege)
+- Runbook ergänzt (Docs): Secrets/Env-Files unter `/etc/ai_stack/` (inkl. Rechte/Start-Kommandos)
+- Secrets-Hygiene: versehentliche Repo-`.env` entfernt; Compose nutzt nur noch explizite `--env-file` Secrets
+- Backup/Restore Runbook + Scripts ergänzt (`docs/runbook_backup_restore.md`, `scripts/backup_*`)
+- PRD ergänzt: Embedding Benchmark Suite (MRL Truncation + Local CPU vs OpenRouter Qwen3) (`docs/prd_embedding_benchmark_suite_mrl_local_vs_openrouter_qwen3.md`)
+- Tool ergänzt: Embedding Benchmark Suite (Docker-first) unter `emb-bench/`
+- PRD ergänzt: context6 (PoC/Prototype Working Draft) (`docs/prd_context6_poc_working_draft.md`)
+- PoC implementiert: context6 MCP Server unter `mcp-context6/` (MCP `/mcp`, sources + sync + search/get)
+- Transcript Miner Tool: MCP Streamable HTTP Endpoint (`POST /mcp`) + Import JSON (`open-webui/tool-imports/tool_import_transcript_miner_mcp.json`)
+- emb-bench: Terminal Runner Script (`scripts/run_emb_bench.sh`)
+- Qdrant Stack ergänzt: `qdrant/docker-compose.yml` (localhost-only `127.0.0.1:6333`)
+- Qdrant Policy: Indexing-Schema für Collections/IDs/Payload (`docs/policy_qdrant_indexing.md`)
+- Qdrant Compose: fehlerhaften Healthcheck entfernt (Image hat kein `python`/`curl`/`wget`; Host-Check via `curl /readyz`)
+- Agents: „recherchiere“ = Context7-first Regel ergänzt (`AGENTS.md`)
+- Indexing Notes: RooCode Scope-Steuerung via `.rooignore`/`.gitignore` dokumentiert + Template ergänzt (`docs/policy_qdrant_indexing.md`, `.rooignore.example`)
+- Naming: MCP Server Ordner auf `mcp-*` umgestellt (`mcp-transcript-miner/`, `mcp-context6/`) + Tool-Imports/Docs aktualisiert
+- Open WebUI: Tool-Imports zentralisiert (`open-webui/tool-imports/`) + Admin-API Script zum Setzen der Tool-Server ergänzt (`scripts/openwebui_apply_tool_imports.sh`)
+- Open WebUI Tool Imports: `config: {}` ergänzt, damit `/api/v1/configs/tool_servers` nicht mit Response-Validation `500` crasht (Open WebUI 0.7.x)

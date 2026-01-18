@@ -1,0 +1,17 @@
+[
+  {
+    "type": "mcp",
+    "url": "http://mcp-transcript-miner:8000/mcp",
+    "spec_type": "url",
+    "spec": "",
+    "path": "",
+    "auth_type": "none",
+    "key": "",
+    "config": {},
+    "info": {
+      "id": "transcript-miner-mcp",
+      "name": "Transcript Miner (MCP)",
+      "description": "Transcript Miner via MCP Streamable HTTP (configs, runs, sync-to-knowledge, transcript fetch)."
+    }
+  }
+]

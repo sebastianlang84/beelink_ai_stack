@@ -1,0 +1,63 @@
+phases: ["mrl"]
+
+openrouter:
+  base_url: "https://openrouter.ai/api/v1"
+  api_key_env: "OPENROUTER_API_KEY"
+  timeout_s: 30
+  max_retries: 5
+  rpm_limit: 120
+  batch_size: 16
+
+remote_model:
+  name: "qwen/qwen3-embedding-8b"
+  native_dim: 4096
+
+mrl_phase:
+  dims: [4096, 2048, 1024]
+  reducers: ["mrl_prefix", "pca", "random_projection"]
+  normalize: true
+  pca:
+    sample_size: 200
+    whiten: false
+
+local_phase:
+  local_embedders:
+    - id: "local_fast"
+      engine: "onnxruntime"
+      model: "BAAI/bge-small-en-v1.5"
+      batch_size: 64
+      threads: 4
+    - id: "local_quality"
+      engine: "sentence_transformers"
+      model: "sentence-transformers/all-MiniLM-L6-v2"
+      batch_size: 32
+      threads: 4
+  compare_against_remote: true
+  remote_dims: [4096, 1024]
+  remote_reducer: "mrl_prefix"
+  normalize: true
+
+dataset:
+  corpus_path: "data/sample_corpus.jsonl"
+  queries_path: "data/sample_queries.jsonl"
+  qrels_path: "data/sample_qrels.jsonl"
+
+backend:
+  type: "in_memory"
+  qdrant:
+    url: "http://qdrant:6333"
+    distance: "cosine"
+
+retrieval:
+  top_k: 20
+
+runtime:
+  seed: 42
+  subset_docs: null
+  subset_queries: null
+  warmup_calls: 0
+  concurrency: 2
+
+report:
+  output_dir: "runs"
+  make_plots: false

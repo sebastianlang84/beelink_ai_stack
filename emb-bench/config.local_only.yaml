@@ -1,0 +1,51 @@
+phases: ["local_vs_remote"]
+
+openrouter:
+  base_url: "https://openrouter.ai/api/v1"
+  api_key_env: "OPENROUTER_API_KEY"
+  timeout_s: 30
+  max_retries: 5
+  rpm_limit: 120
+  batch_size: 16
+
+remote_model:
+  name: "qwen/qwen3-embedding-8b"
+  native_dim: 4096
+
+local_phase:
+  local_embedders:
+    - id: "local_fast"
+      engine: "onnxruntime"
+      model: "BAAI/bge-small-en-v1.5"
+      batch_size: 64
+      threads: 4
+    - id: "local_quality"
+      engine: "sentence_transformers"
+      model: "sentence-transformers/all-MiniLM-L6-v2"
+      batch_size: 32
+      threads: 4
+  compare_against_remote: false
+  normalize: true
+
+dataset:
+  corpus_path: "data/sample_corpus.jsonl"
+  queries_path: "data/sample_queries.jsonl"
+  qrels_path: "data/sample_qrels.jsonl"
+
+backend:
+  type: "in_memory"
+
+retrieval:
+  top_k: 20
+
+runtime:
+  seed: 42
+  subset_docs: null
+  subset_queries: null
+  warmup_calls: 0
+  concurrency: 1
+  cache_dir: ".cache"
+
+report:
+  output_dir: "runs"
+  make_plots: false

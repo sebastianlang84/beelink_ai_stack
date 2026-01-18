@@ -1,0 +1,23 @@
+[Unit]
+Description=ai_stack backups (Open WebUI + Transcript Miner Tool + Output Root)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=wasti
+Group=wasti
+Environment=BACKUP_DIR=/srv/ai_stack/backups
+Environment=OUTPUT_ROOT=/home/wasti/ai_stack_data/transcript-miner/output
+Environment=RETENTION_DAYS=14
+ExecStart=/home/wasti/ai_stack/scripts/backup_all.sh
+
+# Hardening (best-effort; adjust if needed)
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/srv/ai_stack/backups /home/wasti/ai_stack_data
+
+[Install]
+WantedBy=multi-user.target

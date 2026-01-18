@@ -1,0 +1,26 @@
+# RooCode Codebase Indexing — Ignore Patterns (Template)
+#
+# Copy to `.rooignore` to exclude files from RooCode's codebase indexing.
+# Notes:
+# - RooCode respects `.gitignore` and additionally `.rooignore`.
+# - Keep this file conservative; excluding too much reduces search quality.
+#
+# Repo-specific "big/noisy" outputs
+emb-bench/runs/
+emb-bench/.cache/
+transcript-miner/output/
+transcript-miner/logs/
+
+# Common caches / environments
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/node_modules/
+**/dist/
+**/build/
+
+# Data/artifacts (adjust as needed)
+**/*.sqlite
+**/*.sqlite3
+**/*.db
+**/*.log

@@ -1,0 +1,17 @@
+[
+  {
+    "type": "mcp",
+    "url": "http://context6:8816/mcp",
+    "spec_type": "url",
+    "spec": "",
+    "path": "",
+    "auth_type": "none",
+    "key": "",
+    "config": {},
+    "info": {
+      "id": "context6",
+      "name": "context6 (MCP)",
+      "description": "Personal doc fetch/index/search via MCP Streamable HTTP (self-hosted)."
+    }
+  }
+]

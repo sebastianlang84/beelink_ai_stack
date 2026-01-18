@@ -1,0 +1,30 @@
+services:
+  emb-bench:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "no"
+    environment:
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      # Cache downloads under the bind-mounted workspace to avoid permission issues with named volumes.
+      HF_HOME: /work/.cache/hf
+    # Required: run container as your host user to avoid root-owned outputs.
+    user: "${DOCKER_UID:?Set DOCKER_UID (e.g. id -u)}:${DOCKER_GID:?Set DOCKER_GID (e.g. id -g)}"
+    volumes:
+      - ./:/work:rw
+      # Avoid permission issues if `runs/` or `.cache/` were created by root in the past.
+      # These mounts mask the bind-mounted paths with host-owned directories.
+      - ./runs_out:/work/runs:rw
+      - ./.cache_out:/work/.cache:rw
+      - emb_bench_cache:/cache:rw
+    working_dir: /work
+    networks:
+      - ai_stack
+
+networks:
+  ai_stack:
+    external: true
+    name: ai_stack
+
+volumes:
+  emb_bench_cache:
