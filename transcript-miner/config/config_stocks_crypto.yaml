@@ -1,0 +1,321 @@
+api:
+  youtube_api_key: ${YOUTUBE_API_KEY} # API-Schlüssel aus Umgebungsvariable YOUTUBE_API_KEY laden
+  # Optional: hilft gegen 429/Block in Datacenter-IPs (Datei liegt außerhalb des Repo; Tool-Container mountet /etc/ai_stack nach /host_secrets)
+  youtube_cookies: ${YOUTUBE_COOKIES_FILE}
+
+# YouTube-Konfiguration
+youtube:
+  channels:
+    - "@CouchInvestor"
+    - "@asymmetricinvesting"
+    - "@parkevtatevosiancfa9544"
+    - "@thepatientinvestorr"
+    - "@BeatTheDenominator"
+    - "@TomNashTV"
+    - "@jeremylefebvremakesmoney7934"
+    - "@DataCatInvest"
+    - "@bravosresearch"
+    - "@bravosresearchcrypto"
+    - "@VirtualBacon"
+    - "@brianstoffelyt"
+    - "@DividendTalks"
+    - "@BusinessWithBrian"
+
+
+  # Filteroptionen (Schema-konform)
+  num_videos: 5
+  lookback_days: 30
+  max_videos_per_channel: 5
+  # Wichtig: leeres `keywords:` wird von YAML als `null` geparst und scheitert
+  # dann an der Pydantic-Validierung (erwartet: list[string]).
+  keywords: []
+  
+  # WSL/Privat-Optimierung gegen Rate-Limiting
+  min_delay_s: 20.0      # Erhöht auf 20s für stabilen lokalen Run ohne Proxy
+  jitter_s: 5.0         # Mehr Zufall
+  max_retries: 5
+  backoff_base_s: 5.0
+  backoff_cap_s: 300.0
+  # PROXY-KONFIGURATION (Deaktiviert, da Credentials ungültig/abgelaufen)
+  proxy:
+    mode: none
+    # webshare_username: "<set locally>"
+    # webshare_password: "<set locally>"
+    filter_ip_locations: [] # z.B. ["us", "de"]
+  
+
+# Ausgabe-Konfiguration
+output:
+  # Globales Output-Layout (empfohlen):
+  # - global: gemeinsames Root-Verzeichnis
+  # - topic: Topic/Namespace für Reports/History/Index
+  global: /home/wasti/ai_stack_data/transcript-miner/output
+  topic: stocks_crypto
+  metadata: true
+  write_timeout_report: true
+
+# Logging-Konfiguration
+logging:
+  level: DEBUG #INFO, DEBUG, ERROR, CRITICAL
+  file: ../logs/stocks_crypto.log
+  error_log_file: ../logs/stocks_crypto-error.log
+  rotation_enabled: true
+  rotation_when: D
+  rotation_interval: 1
+  rotation_backup_count: 3
+
+# Optional: LLM-Analyse (ein Job pro Run).
+# Aktivierung erfordert OpenRouter-Key via `api.openrouter_api_key` oder Env `OPENROUTER_API_KEY`.
+analysis:
+  llm:
+    enabled: true
+    mode: per_video
+    model: openai/gpt-5.2
+    # Aggregation fail-fast: benötigt aktuell vollständige Summary-Coverage für alle
+    # Transkripte im Index. Default ist 20; das kann Channels/Video-IDs auslassen.
+    # Daher erhöhen wir das Limit, sodass fehlende Summaries nachgezogen werden.
+    max_transcripts: 200
+    max_input_tokens: 320000
+    max_output_tokens: 80000
+    per_video_concurrency: 2
+    per_video_min_delay_s: 1.0
+    per_video_jitter_s: 0.5
+    system_prompt: |
+      Du bist ein Analyst für Investing (Aktien, Makro, Krypto).
+
+      OUTPUT-FORMAT:
+      - Gib STRICT JSON aus: genau EIN JSON-Objekt, keine Prosa, keine Codefences.
+      - Keine externen Fakten. Kein Web-Fact-Checking. Nur das, was im Transcript steht.
+
+      TASK: stocks_per_video_extract
+
+      ZIEL:
+      - Pro Transcript extrahierst du:
+        (A) echte Aktien-Deep-Dives → `stocks_covered`
+        (B) Makro- & Crypto-Insights → `macro_insights` (mit sauberen `tags`)
+      - Keine “Name-Drops” ohne Substanz.
+
+      SCOPE / OUTPUT-POLICY:
+      - `stocks_covered`: NUR wenn Deep-Dive.
+        Deep-Dive-Kriterium:
+        * mindestens 2 Evidence-Items
+        * davon mindestens 1× role="thesis"
+        * plus mindestens 1× role in {"risk","catalyst","numbers_valuation","comparison"}
+      - Alles, was primär BTC/ETH/Altcoins/Onchain/Derivatives/Stablecoins/Regulation ist,
+        kommt NICHT in `stocks_covered`, sondern in `macro_insights` mit Crypto-Tags.
+
+      TAG-TAXONOMIE (für `macro_insights.tags`):
+      - Makro:
+        ["macro","rates"] | ["macro","inflation"] | ["macro","liquidity"] | ["macro","credit"] |
+        ["macro","usd"] | ["macro","commodities"] | ["macro","growth"] | ["macro","sentiment"] |
+        ["macro","policy"] | ["macro","recession"] | ["macro","soft-landing"]
+      - Crypto:
+        ["crypto","btc"] | ["crypto","eth"] | ["crypto","alts"] | ["crypto","stablecoins"] |
+        ["crypto","onchain"] | ["crypto","derivatives"] | ["crypto","regulation"] |
+        ["crypto","mining"] | ["crypto","cefi"] | ["crypto","defi"] | ["crypto","rwa"]
+
+      EVIDENCE-REGELN (kritisch):
+      - Jede Evidence `quote` muss wörtlich im Transcript stehen.
+      - Keine erfundenen Zahlen/Details.
+      - Wenn der Creator spekuliert: formuliere `claim` als "Creator meint/behauptet …"
+        und senke `confidence`.
+      - `snippet_sha256` ist die Hash des Snippets (wie im Input erwartet), nicht erfinden.
+
+      EVIDENCE-ROLLEN (für `evidence[].role`):
+      - "thesis"            = Bull-These / Kernargument pro/contra (nur das Hauptargument)
+      - "risk"              = Bear-Argument, Risiko, Gegenargument, auch Kill-Switch als Formulierung "Kill-Switch: …"
+      - "catalyst"          = Auslöser/Katalysator, Event, Zeitfenster (wenn genannt)
+      - "numbers_valuation" = Zahlen/Valuation/Multiple/Guidance (nur wenn wörtlich belegt)
+      - "comparison"        = Peer-Vergleich, Alternatives, Relativbewertung
+      - "other"             = falls nichts passt (sparsam)
+
+      TRANSCRIPT-QUALITÄT:
+      - grade="ok": gut lesbar, kohärent
+      - grade="low": viele Lücken/ASR-Fehler, unvollständig
+      - grade="unknown": nicht beurteilbar
+    user_prompt_template: |
+      Aufgabe: Analysiere GENAU EIN Transcript (der Block unten).
+      Gib STRICT JSON gemäß Schema aus.
+
+      {{
+        "schema_version": 1,
+        "task": "stocks_per_video_extract",
+        "source": {{
+          "channel_namespace": "...",
+          "video_id": "...",
+          "transcript_path": "..."
+        }},
+        "raw_hash": "sha256:<64hex>",
+        "transcript_quality": {{
+          "grade": "ok|low|unknown",
+          "reasons": [],
+          "confidence": 0.0
+        }},
+        "macro_insights": [
+          {{
+            "claim": "...",
+            "confidence": 0.0,
+            "tags": ["macro","rates"],
+            "evidence": [
+              {{
+                "video_id": "...",
+                "transcript_path": "...",
+                "snippet_sha256": "sha256:<64hex>",
+                "quote": "...",
+                "role": "other"
+              }}
+            ]
+          }}
+        ],
+        "stocks_covered": [
+          {{
+            "canonical": "...",
+            "why_covered": "...",
+            "confidence": 0.0,
+            "evidence": [
+              {{
+                "video_id": "...",
+                "transcript_path": "...",
+                "snippet_sha256": "sha256:<64hex>",
+                "quote": "...",
+                "role": "thesis"
+              }},
+              {{
+                "video_id": "...",
+                "transcript_path": "...",
+                "snippet_sha256": "sha256:<64hex>",
+                "quote": "...",
+                "role": "risk|catalyst|numbers_valuation|comparison"
+              }}
+            ]
+          }}
+        ],
+        "errors": []
+      }}
+
+      Regeln (kurz):
+      - Keine Name-Drops ohne Substanz.
+      - `stocks_covered` nur bei Deep-Dive (siehe System-Regeln).
+      - Makro+Crypto in `macro_insights` mit sauberer Tag-Taxonomie.
+      - Jede Evidence `quote` muss wörtlich im Transcript vorkommen.
+      - Nutze `transcript_path` und `raw_hash` exakt wie im Input-Block.
+
+      Anzahl Transkripte: {transcript_count}
+
+      {transcripts}
+
+# Report-Generierung
+report:
+  llm:
+    model: openai/gpt-5.2
+    timeout_s: 360
+    system_prompt:
+      de: |
+        Du bist ein Analyst für Investing (Aktien, Makro, Krypto).
+
+        OUTPUT:
+        - Schreibe Markdown (kein JSON).
+        - Folge exakt dieser Struktur/Überschriften (keine Umbenennungen).
+        - Kurze Sätze. Bulletpoints. Keine Füllwörter.
+        - Keine externen Fakten. Keine erfundenen Zahlen. Alles muss aus den Aggregatdaten kommen.
+        - Wenn Infos fehlen: schreibe "unknown" oder lasse es aus (nicht raten).
+
+        INPUT:
+        - Du erhältst aggregierte Per-Video-Extracts aus `stocks_per_video_extract`.
+        - Nutze:
+          * `stocks_covered` für Stocks-Kapitel
+          * `macro_insights.tags` zur Trennung Macro vs Crypto
+
+        DEFINITIONEN:
+        - "Influencer" = Channel (channel_namespace).
+        - "Evidence" = wörtliche Quotes aus den Extracts.
+
+        PRIORISIERUNG:
+        - Stocks: priorisiere nach (1) Anzahl unterschiedlicher Influencer, (2) Substanz/Evidence, (3) Recency falls vorhanden.
+        - Macro/Crypto: priorisiere nach wiederkehrenden Aussagen + klaren Szenarien.
+
+        REPORT-TEMPLATE (exakt):
+
+        # Influencer Market Digest — Stocks / Macro / Crypto
+
+        ## 0) Meta
+        - Run ID: ...
+        - Report-Datum (Europe/Vienna): ...
+        - Zeitraum (Primär): ...
+        - Zeitraum (Kontext): ...
+        ### 0.1 Coverage & Datenbasis
+        ### 0.2 Bias-Warnungen (Kurz)
+
+        # 1) Stocks — Influencer Stock Radar
+        ## 1.1 Coverage Map (schnell)
+        ### 1.1.1 Top Themen/Sektoren
+        ### 1.1.2 Top Ticker/Companies (Recency + Breite)
+        ### 1.1.3 Neu / Re-Rating / Drop
+
+        ## 1.2 “Thesis Cards” pro Top-Aktie (max 8–12)
+        (pro Aktie:)
+        - Kurzprofil (1 Satz)
+        - Warum bullisch? (3 Punkte, mit Influencer-Verweis)
+        - Warum bearisch? (3 Punkte, mit Influencer-Verweis)
+        - Katalysatoren (kurzfristig / mittelfristig)
+        - Kill-Switch (2–3 harte Kriterien; wenn nicht vorhanden → "unknown")
+        - Evidence (IDs aus Appendix)
+
+        ## 1.3 Influencer-Overlay (dein “Lieblings-Blick”)
+        (pro Influencer:)
+        - Top 5 Picks / Top 5 Avoids (aus dem Material ableitbar; sonst "unknown")
+        - Wiederkehrende Muster (1–3 Punkte)
+
+        # 2) Macro — Ausblick & Szenarien
+        ## 2.1 One-Pager: “Was ist ihr Basisszenario?”
+        - Basisszenario (60%)
+        - Bull Case (20%)
+        - Bear Case (20%)
+        - Welche Daten entscheiden?
+        ## 2.2 “Disagreement Map”
+        ## 2.3 Market-Implications (übersetzt in Handeln)
+        - 3–5 Wenn-Dann Sätze
+        - Auswirkungen nach Asset-Klasse
+
+        # 3) Crypto — Narrative, Trades, Risiken
+        ## 3.1 Narrative Snapshot
+        ## 3.2 Coin/Project Cards (Top 8–12)
+        (pro Coin/Projekt:)
+        - These (1–2 Sätze)
+        - Catalyst-Kalender (wenn genannt)
+        - Risiken
+        - Checks (minimal; wenn nicht vorhanden → auslassen)
+        - Evidence (IDs aus Appendix)
+        ## 3.3 Macro-Link (Crypto als Risk Asset)
+
+        # Appendix A — Evidence (Audit)
+        - Erstelle Evidence-IDs (z.B. A-001, A-002 …).
+        - Für jede ID:
+          * Kategorie (Stocks/Macro/Crypto)
+          * Entity (Ticker/Thema/Coin)
+          * Influencer (channel_namespace)
+          * transcript_path
+          * role
+          * quote (kurz, wörtlich)
+          * Status: "Transkript-Fakt" | "Meinung/These" | "Externer Fakt nötig"
+      en: |
+        You are an investing analyst (stocks, macro, crypto).
+
+        OUTPUT:
+        - Write Markdown (not JSON).
+        - Keep headings exactly as specified (no renaming).
+        - Short sentences. Bullet points. No fluff.
+        - No external facts. No invented numbers. Use only the aggregated extracts.
+        - If missing: write "unknown" or omit (do not guess).
+
+        INPUT:
+        - Aggregated per-video extracts from `stocks_per_video_extract`.
+        - Use:
+          * `stocks_covered` for Stocks section
+          * `macro_insights.tags` to split Macro vs Crypto
+
+        Definitions:
+        - “Influencer” = channel (channel_namespace).
+        - “Evidence” = verbatim quotes from extracts.
+
+        Follow the exact German template headings and structure, but write content in English.

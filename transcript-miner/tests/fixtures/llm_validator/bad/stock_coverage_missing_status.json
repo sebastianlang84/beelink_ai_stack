@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task": "stock_coverage",
+  "results": [
+    {
+      "symbol": "AAPL",
+      "channel_namespace": "@channel",
+      "covered": {}
+    }
+  ],
+  "errors": []
+}

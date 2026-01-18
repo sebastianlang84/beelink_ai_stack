@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "task": "stocks_per_video_extract",
+  "source": {
+    "channel_namespace": "@channel",
+    "video_id": "video123",
+    "transcript_path": "1_transcripts/sample.txt"
+  },
+  "raw_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "transcript_quality": {
+    "grade": "ok",
+    "reasons": []
+  },
+  "macro_insights": [],
+  "stocks_covered": [],
+  "errors": []
+}

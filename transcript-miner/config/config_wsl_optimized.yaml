@@ -1,0 +1,37 @@
+# Beispiel-Konfiguration: WSL-optimiert (konservatives Rate-Limiting)
+#
+# Zweck:
+# - Dient als Vorlage für Umgebungen, in denen YouTube Transcript Downloads
+#   häufiger blockiert werden (z.B. WSL/VPN/Datacenter-IPs).
+# - Enthält KEINE Secrets (API-Keys via Env/Substitution).
+#
+# Hinweis: Pfade sind relativ zur Config-Datei (siehe [`docs/config.md`](../docs/config.md:420)).
+
+api:
+  youtube_api_key: ${YOUTUBE_API_KEY}
+  openrouter_api_key: ${OPENROUTER_API_KEY}
+
+youtube:
+  # Beispiel-Channel (ersetzen)
+  channels: ["@CouchInvestor"]
+  # konservativ
+  num_videos: 5
+  preferred_languages: ["en", "de"]
+  keywords: []
+
+  # IP-Block Prevention
+  min_delay_s: 4.0
+  jitter_s: 2.0
+  max_retries: 5
+  backoff_base_s: 2.0
+  backoff_cap_s: 120.0
+  cooldown_on_block_s: 900
+
+output:
+  # global dedup
+  global: /home/wasti/ai_stack_data/transcript-miner/output
+  topic: wsl_optimized
+  metadata: true
+
+logging:
+  level: INFO

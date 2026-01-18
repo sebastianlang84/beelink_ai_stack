@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  quality-gate:
+    name: Quality Gate (black, ruff, pytest, project-scanner)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies (uv)
+        run: uv sync --frozen
+
+      - name: Run black (check only)
+        run: uv run black --check src/
+
+      - name: Run ruff
+        run: uv run ruff check src/
+
+      - name: Run pytest
+        run: uv run pytest -q
+
+      - name: CLI smoke (help + import)
+        run: |
+          uv run python -m transcript_miner --help
+          uv run python -m transcript_miner config/config_ai_knowledge.yaml --help
+          uv run python -c "import transcript_miner"

@@ -1,0 +1,108 @@
+# ==============================================================================
+# TRANSCRIPT MINER - CONFIGURATION TEMPLATE (GOLDEN SAMPLE)
+# Gemäß PRD und Best Practices (Stand: Dez 2025)
+# ==============================================================================
+
+# 1. API - Schnittstellenkonfiguration
+# ------------------------------------------------------------------------------
+api:
+  # YouTube Data API v3 Key. Bevorzugt via Umgebungsvariable.
+  youtube_api_key: ${YOUTUBE_API_KEY}
+  
+  # OpenRouter API Key für LLM-Analyse. Bevorzugt via Umgebungsvariable.
+  openrouter_api_key: ${OPENROUTER_API_KEY}
+
+# 2. YOUTUBE - Quellen & Download-Parameter
+# ------------------------------------------------------------------------------
+youtube:
+  # Liste der Kanäle (Handles mit @ oder URLs)
+  channels:
+    - "@ExampleChannel"
+    
+  # Anzahl der neuesten Videos, die pro Run betrachtet werden sollen
+  num_videos: 5
+  lookback_days: 30
+  max_videos_per_channel: 5
+  
+  # Suchbegriffe zur Filterung (leere Liste [] für alles)
+  keywords: []
+  
+  # Bevorzugte Sprachen für Transkripte
+  preferred_languages: ["en", "de"]
+
+  # IP-Block Prevention (Rate Limiting & Backoff)
+  # Standardwerte für stabile Runs ohne Residential Proxies
+  min_delay_s: 15.0
+  jitter_s: 5.0
+  max_retries: 5
+  backoff_base_s: 5.0
+  backoff_cap_s: 300.0
+
+  # Proxy-Konfiguration (Optional)
+  proxy:
+    mode: none # "none", "generic", oder "webshare"
+    # filter_ip_locations: ["us", "de"]
+
+# 3. OUTPUT - Dateimanagement & Retention
+# ------------------------------------------------------------------------------
+output:
+  # Globales Output-Root + Topic (empfohlen)
+  global: /home/wasti/ai_stack_data/transcript-miner/output
+  topic: template_profile
+  
+  # Schreibt detaillierte Metadaten (*_meta.json)
+  metadata: true
+  
+  # Aufbewahrungsdauer für Roh-Transkripte in Tagen (PRD: 30)
+  retention_days: 30
+  
+  # Tägliche Reports in YYYY-MM-DD Ordnern (legacy layout)
+  daily_report: false
+  
+  # Nur ausführen, wenn neue Daten vorhanden sind
+  skip_on_no_new_data: false
+
+# 4. LOGGING - System-Logs
+# ------------------------------------------------------------------------------
+logging:
+  level: INFO # DEBUG, INFO, WARNING, ERROR
+  file: ../logs/template.log
+  error_log_file: ../logs/template_error.log
+
+# 5. ANALYSIS (LLM) - Pro-Video Wissensextraktion (Summaries)
+# ------------------------------------------------------------------------------
+analysis:
+  llm:
+    enabled: true
+    mode: aggregate
+    model: openai/gpt-5.2
+    # Optionale harte Token-Limits (None deaktiviert)
+    max_input_tokens: null
+    max_output_tokens: null
+    
+    # Anleitung für das Modell zur Extraktion strukturierter Daten
+    system_prompt: |
+      Du bist ein Experte für Inhaltsanalyse.
+      Extrahiere Kernaussagen, Thesen und Fakten als STRICT JSON.
+      Keine Prosa, keine Markdown-Fences.
+      
+      Schema:
+      {
+        "schema_version": 1,
+        "task": "knowledge_extract",
+        "knowledge_items": [{"text": "...", "entities": []}]
+      }
+      
+    # Template für den Nutzer-Prompt (Platzhalter {transcripts} ist Pflicht)
+    user_prompt_template: |
+      Analysiere das Transkript und extrahiere Wissen:
+      {transcripts}
+
+# 6. REPORT - Finale Berichterstellung (Bilingual)
+# ------------------------------------------------------------------------------
+report:
+  llm:
+    model: openai/gpt-5.2
+    system_prompt:
+      de: "Du bist ein professioneller Analyst. Erstelle einen Bericht auf Deutsch."
+      en: "You are a professional analyst. Create a report in English."

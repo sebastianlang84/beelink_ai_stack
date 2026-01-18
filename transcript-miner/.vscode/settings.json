@@ -1,0 +1,10 @@
+{
+  "files.exclude": {
+    "**/.venv/**": true,
+    "**/.pytest_cache/**": true
+  },
+  "search.exclude": {
+    "**/.venv/**": true,
+    "**/.pytest_cache/**": true
+  }
+}

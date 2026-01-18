@@ -1,0 +1,44 @@
+[project]
+name = "youtubetranscriptminer-v2"
+version = "0.3.4"
+description = "Advanced tool for downloading and processing YouTube transcripts"
+authors = [
+    {name = "sebastianlang84",email = "sebastian.lang@gmx.at"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0.0",
+    "PyYAML>=6.0.0",
+    "google-api-python-client>=2.0.0",
+    "youtube-transcript-api>=0.6.0",
+    "python-dotenv>=1.0.0",
+    "rich>=13.0.0",
+    "opentelemetry-api>=1.20.0",
+    "opentelemetry-sdk>=1.20.0"
+]
+
+[dependency-groups]
+dev = [
+    "black",
+    "ruff",
+    "pytest",
+    "pytest-cov",
+    "openai>=2.14.0",
+]
+
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+norecursedirs = ["tools"]

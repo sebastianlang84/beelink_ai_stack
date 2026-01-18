@@ -1,0 +1,122 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Umgebungsvariablen und Secrets
+.env
+.env.*
+!.env.example
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+mkdocs.yml
+
+# PyInstaller executable build artifacts
+build/
+dist/
+*.spec
+
+# Complex build tools (removed for simplicity)
+Makefile
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# pytest
+.pytest_cache/
+
+# ruff
+.ruff_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VS Code (default: ignore, but keep repo settings)
+.vscode/*
+!.vscode/settings.json
+
+# Output directory
+output/
+
+# Local data inputs (user-only)
+data/
+user_data/
+
+# Local one-off markdown (keep out of git)
+OUTPUT_STRUCTURE_PROPOSAL.md
+RUN_REPORT__*.md
+docs/audit/run_*.md
+docs/audit/report_refresh_*.md
+docs/analysis/timeout_budget_*.md
+
+# Processed videos log
+
+# Log files (ignore runtime logs, but keep docs)
+logs/*
+!logs/README.md
+*.log
+
+# Runtime caches / generated artifacts
+# Legacy mapping cache (deprecated location)
+config/channel_mapping.json
+config/logs/
+
+# Audit outputs (local)
+docs/audit/*.json
+
+
+# Large data transcripts
+corrections_in/
+# corrections_out/
+
+# Agent outputs and intermediate files
+agent_outputs/
+error.log*
+
+# Project knowledge dumps
+agent_outputs/knowledge/*
+!agent_outputs/knowledge/project_knowledge.json
+
+# Backups folder
+backups/
+
+# Lokale Entwicklungs- und Debug-Dateien
+direct_*.py
+test_*.py
+
+# Tests gehören ins Repo (die globale Regel `test_*.py` ist nur für Root-/Scratch-Files)
+!tests/test_*.py
+!tests/conftest.py
+config/*_local*.yaml
+config/override.yaml
+
+# Backup-Dateien
+*.bak*
+config/additional_files/
+
+# Windsurf rules
+.windsurfrules
+.windsurf/
+
+# Temporary debug files
+debug_output.txt
+output.log
+temp_files_list.txt
+test_run.py
+
+# Virtual environments
+.venv/
+
+# Packaging artifacts
+*.egg-info/

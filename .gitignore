@@ -18,3 +18,9 @@ dist/
 build/
 .cache/
 .DS_Store
+
+# Repo-local outputs / caches (never commit)
+emb-bench/.cache_out/
+emb-bench/runs/
+emb-bench/runs_out/
+open-webui/tool-imports/backup_*.json

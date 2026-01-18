@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "task": "knowledge_extract",
+  "video_id": "video123",
+  "channel_id": "channel123",
+  "title": "Example Title",
+  "published_at": "2025-01-01T00:00:00Z",
+  "knowledge_items": [
+    {
+      "text": "An example insight.",
+      "entities": ["AI"]
+    }
+  ]
+}

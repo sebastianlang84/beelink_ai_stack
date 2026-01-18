@@ -1,0 +1,24 @@
+# Netscape HTTP Cookie File
+# http://curl.haxx.se/rfc/cookie_spec.html
+# This is a generated file!  Do not edit.
+
+.youtube.com	TRUE	/	TRUE	1735689600	VISITOR_INFO1_LIVE	dummy_value
+.youtube.com	TRUE	/	TRUE	1735689600	HSID	dummy_value
+.youtube.com	TRUE	/	TRUE	1735689600	SSID	dummy_value
+.youtube.com	TRUE	/	TRUE	1735689600	APISID	dummy_value
+.youtube.com	TRUE	/	TRUE	1735689600	SAPISID	dummy_value
+.youtube.com	TRUE	/	TRUE	1735689600	__Secure-1PAPISID	dummy_value
+.youtube.com	TRUE	/	TRUE	1735689600	__Secure-3PAPISID	dummy_value
+.youtube.com	TRUE	/	TRUE	1735689600	LOGIN_INFO	dummy_value
+.youtube.com	TRUE	/	TRUE	1735689600	__Secure-1PSID	dummy_value
+.youtube.com	TRUE	/	TRUE	1735689600	__Secure-3PSID	dummy_value
+
+# ANLEITUNG:
+# 1. Installiere eine Browser-Extension wie "Get cookies.txt LOCALLY" (Chrome/Firefox).
+# 2. Gehe auf youtube.com und logge dich ein.
+# 3. Exportiere die Cookies für youtube.com im Netscape-Format.
+# 4. Speichere den Inhalt in einer Datei (z.B. `cookies.txt`).
+# 5. Trage den Pfad zu dieser Datei in deiner `config.yaml` unter `api.youtube_cookies` ein.
+#    Beispiel:
+#    api:
+#      youtube_cookies: "${PROJECT_ROOT}/cookies.txt"

@@ -1,0 +1,112 @@
+# ==============================================================================
+# TRANSCRIPT MINER - CONFIGURATION: AI KNOWLEDGE
+# Migriert auf Golden Sample Template (Stand: Dez 2025)
+# ==============================================================================
+
+# 1. API - Schnittstellenkonfiguration
+# ------------------------------------------------------------------------------
+api:
+  youtube_api_key: ${YOUTUBE_API_KEY}
+  openrouter_api_key: ${OPENROUTER_API_KEY}
+
+# 2. YOUTUBE - Quellen & Download-Parameter
+# ------------------------------------------------------------------------------
+youtube:
+  channels:
+    - "@everlastai"
+    
+  num_videos: 5
+  lookback_days: 30
+  max_videos_per_channel: 5
+  keywords: []
+  preferred_languages: ["en", "de"]
+
+  # IP-Block Prevention (Standardwerte)
+  min_delay_s: 15.0
+  jitter_s: 5.0
+  max_retries: 5
+  backoff_base_s: 5.0
+  backoff_cap_s: 300.0
+  
+  proxy:
+    mode: none
+
+# 3. OUTPUT - Dateimanagement & Retention
+# ------------------------------------------------------------------------------
+output:
+  global: /home/wasti/ai_stack_data/transcript-miner/output
+  topic: ai_knowledge
+  metadata: true
+  retention_days: 30
+
+# 4. LOGGING - System-Logs
+# ------------------------------------------------------------------------------
+logging:
+  level: INFO
+  file: ../logs/ai_knowledge.log
+  error_log_file: ../logs/ai_knowledge_error.log
+  rotation_enabled: true
+  rotation_when: D
+  rotation_interval: 1
+  rotation_backup_count: 3
+
+# 5. ANALYSIS (LLM) - Pro-Video Wissensextraktion (Summaries)
+# ------------------------------------------------------------------------------
+analysis:
+  llm:
+    enabled: true
+    mode: per_video
+    model: "openai/gpt-5.2"
+    max_input_tokens: 320000
+    max_output_tokens: 80000
+    system_prompt: |
+      You are an expert analyst extracting structured knowledge from video transcripts.
+      Your goal is to extract key insights, arguments, facts, and claims.
+
+      Output Format:
+      You must output STRICT JSON. No markdown fences, no prose before/after.
+      Do NOT wrap the JSON in ```json ... ``` blocks.
+      
+      Schema:
+      {
+        "schema_version": 1,
+        "task": "knowledge_extract",
+        "source": {
+          "video_id": "<video_id from input>",
+          "channel_namespace": "<channel_namespace from input>",
+          "transcript_path": "<transcript_path from input>"
+        },
+        "raw_hash": "<raw_hash from input>",
+        "video_id": "<video_id from input>",
+        "channel_id": "<channel_id from input>",
+        "title": "<title from input>",
+        "published_at": "<published_at from input>",
+        "knowledge_items": [
+          {
+            "text": "The core insight or claim (concise, 1-2 sentences).",
+            "entities": ["Entity1", "Topic2"]
+          }
+        ]
+      }
+      
+      Rules:
+      1. Be conservative. Do not hallucinate. If unsure, omit.
+      2. Extract 5-10 most important items per video.
+      3. Entities should be specific (e.g. "Tesla", "Inflation", "AI").
+      4. Use the provided metadata in the transcript header (video_id, channel_id, video_title, published_at) to fill the corresponding JSON fields.
+    user_prompt_template: |
+      Analyze the following transcript and extract knowledge items.
+      
+      {transcripts}
+      
+      Extract the knowledge items now in strict JSON. Remember: NO markdown fences.
+      Ensure all top-level fields (video_id, channel_id, title, published_at) are filled using the metadata provided in the header above.
+
+# 6. REPORT - Finale Berichterstellung (Bilingual)
+# ------------------------------------------------------------------------------
+report:
+  llm:
+    model: "openai/gpt-5.2"
+    system_prompt:
+      de: "Du bist ein Experte für KI-Wissen und Technologie-Trends. Erstelle einen strukturierten Bericht über die neuesten Erkenntnisse aus den analysierten Videos."
+      en: "You are an expert in AI knowledge and technology trends. Create a structured report on the latest insights from the analyzed videos."

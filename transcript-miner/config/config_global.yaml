@@ -1,0 +1,22 @@
+# Global configuration shared across topics.
+# This file is optional and loaded before each topic config.
+
+api:
+  openrouter_app_title: "TranscriptMiner"
+  openrouter_http_referer: "https://github.com/sebastianlang84/TranscriptMiner"
+
+youtube:
+  api_timeout_s: 30
+  lookback_days: 30
+  max_videos_per_channel: 5
+
+analysis:
+  llm:
+    timeout_s: 600
+
+report:
+  llm:
+    timeout_s: 600
+
+output:
+  global: /home/wasti/ai_stack_data/transcript-miner/output

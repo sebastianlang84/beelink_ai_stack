@@ -1,0 +1,9 @@
+{
+  "text": "Intro... We like $AAPL. Also MSFT looks good. isin US0378331005 appears here. Repeated $AAPL.",
+  "expected_mentions": [
+    {"raw": "$AAPL", "kind": "ticker", "confidence": 1.0},
+    {"raw": "MSFT", "kind": "ticker", "confidence": 0.7},
+    {"raw": "US0378331005", "kind": "isin", "confidence": 1.0},
+    {"raw": "$AAPL", "kind": "ticker", "confidence": 1.0}
+  ]
+}
