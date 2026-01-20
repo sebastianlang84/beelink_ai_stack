@@ -783,6 +783,35 @@ SSOT (Projektzielbild): `docs/prd-tool-owui-transcript-miner-sync.md:1` und `doc
 ## P0 — Muss als Nächstes (VPN-only)
 - [x] Tailscale ist installiert + Service aktiv (`tailscaled` läuft)
 - [x] `sudo tailscale up` durchgeführt und geprüft: `tailscale status`, `tailscale ip -4`
+- [x] **SSOT Naming-Konvention (Repo + Docker + Host) + Migrationsplan (Zero-Confusion)**
+  - Ziel: **keine `_`-Namen** mehr für Docker-Objekte/Host-Pfade; Repo-Filenames bleiben **kebab-case** (keine neuen `_`), Python bleibt **snake_case** (PEP8).
+  - Repo (Dateien/Ordner):
+    - Ordner/Services: `kebab-case/` (z. B. `open-webui/`, `mcp-transcript-miner/`)
+    - Docs/Scripts: `kebab-case.md`, `kebab-case.sh` (keine neuen `_` in Filenames)
+    - Code: Python-Packages/Module weiterhin `snake_case` (kein Refactor/Import-Bruch)
+  - Docker Compose (Project/Stack):
+    - Pro Stack `name:` ist kurz & eindeutig: `owui`, `tm`, `context6`, `qdrant`, `emb-bench`
+    - Keine `container_name` (default), stattdessen eindeutige Service-Namen/Network-Aliases
+  - Docker Network (shared):
+    - Externes Netzwerk: `ai-stack` (bewusst als einziges “ai-stack” erlaubt)
+    - DNS-Kollisionen vermeiden (verbindlich):
+      - Option A (empfohlen): Service-Namen global eindeutig (z. B. `owui`, `tm`, `context6`, `qdrant`)
+      - Option B: `networks: aliases:` mit Stack-Prefix (z. B. `owui-svc`, `context6-svc`)
+  - Docker Volumes (state):
+    - Schema: `<service>-<purpose>` (z. B. `owui-data`, `tm-data`, `context6-cache`, `qdrant-data`, `emb-bench-cache`)
+    - Migration: old→new Copy, danach alte Volumes löschen; keine “Legacy-Namen” in Doku verewigen
+  - Docker Images (lokal gebaut):
+    - Schema: `<service>:<tag>` (z. B. `tm:latest`, `context6:latest`)
+  - Host-Pfade (Bind Mounts; keine Secrets):
+    - Root: `/srv/ai-stack/`
+    - Struktur: `/srv/ai-stack/<stack>/{data,cache,logs}` + `/srv/ai-stack/backups`
+    - Beispiele: `/srv/ai-stack/tm/data`, `/srv/ai-stack/owui/data`, `/srv/ai-stack/context6/cache`
+  - Secrets/Config (Host):
+    - Secrets SSOT: `/etc/ai-stack/secrets.env` (oder saubere Migration von `/etc/ai_stack` → `/etc/ai-stack`; optional Symlink-Übergang)
+  - DoD (Abnahme):
+    - Repo-Audit: `rg` findet keine verbotenen Namen mehr (z. B. `_` in Docker-Objekt-Namen, `*_default` Networks, doppelte Token)
+    - Host-Audit: `docker volume ls`/`docker network ls`/`docker images` zeigen nur noch Schema-konforme Namen
+    - Smoke-Test läuft grün: `./scripts/smoke_test_ai_stack.sh --env-file /etc/ai-stack/secrets.env --up --build`
 - [ ] Tailnet-HTTPS aktivieren + Open WebUI via Tailscale Serve bereitstellen:
   - [x] Tailnet hat Serve aktiviert (Admin-Konsole)
   - [x] `sudo tailscale serve --bg --https=443 http://127.0.0.1:3000`
@@ -799,28 +828,35 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] `POST /index/transcript` (Upload → Processing-Poll → Add-to-Knowledge, idempotent via SQLite)
   - [x] `POST /sync/topic/{topic}` (indexiert per-video Summaries eines Topics)
 - [x] Repo: Secrets/Env finalisieren (SSOT: `docs/policy_secrets_environment_variables_ai_stack.md:1`)
-  - [x] Compose lädt keine Repo-`.env` mehr; Start nur via `--env-file /etc/ai_stack/secrets.env`
+  - [x] Compose lädt keine Repo-`.env` mehr; Start nur via `--env-file /etc/ai-stack/secrets.env`
   - [x] Doku/Runbook + `.env.example` decken alle benötigten Keys ab
-  - [ ] Host: `/etc/ai_stack/secrets.env` mit echten Werten befüllen:
+  - [ ] Host: `/etc/ai-stack/secrets.env` mit echten Werten befüllen:
     - [ ] `YOUTUBE_API_KEY` + `OPENROUTER_API_KEY` (für Runs mit LLM-Analyse)
-    - [ ] `OWUI_API_KEY` (JWT Bearer) + `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON` (Topic→Knowledge Mapping)
-    - [ ] `OWUI_API_KEY` rotieren, falls er jemals im Repo/Logs/Chat sichtbar war
+    - [ ] `OPEN_WEBUI_API_KEY` (JWT Bearer; `OWUI_API_KEY` ist deprecated Alias) + `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON` (Topic→Knowledge Mapping)
+    - [ ] `OPEN_WEBUI_API_KEY` rotieren, falls er jemals im Repo/Logs/Chat sichtbar war
+  - [ ] DRINGEND: Secrets vs Config sauber trennen (nur Secrets in `secrets.env`)
+    - [ ] `secrets.env` darf nur enthalten: Tokens/Keys/Passwörter/private Keys (keine Pfade/Hosts/IDs/Mappings)
+    - [ ] Nicht-Secrets als committed Service-Config (YAML/JSON im Service-Ordner) oder hostseitig unter `/srv/ai-stack/<service>/…` ablegen (Entscheidung + Doku)
+    - [ ] `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`/`OPEN_WEBUI_KNOWLEDGE_ID` ersetzen durch Mapping nach Knowledge-Name (IDs sind fragil) + Laufzeit-Resolution per OWUI API
+    - [ ] Betriebs-Workflow: Mapping ändern ohne “Gefummel” (klarer Runbook-Schritt; ggf. Tool-Reload/Restart dokumentieren)
 - [ ] Smoke-Test Runbook:
+  - [x] Repo: Runbook + Script vorhanden (`docs/runbook_smoke_test.md:1`, `scripts/smoke_test_ai_stack.sh:1`)
   - [x] Services laufen (Compose `ps` zeigt `healthy`)
   - [x] Host: `curl http://127.0.0.1:3000/` → `200`
   - [x] Tool→OWUI API erreichbar (Auth OK; `/api/v1/files/` → `200`)
-  - [ ] 1 Topic (z. B. `stocks_crypto`), 2–3 Videos, Ergebnis: Summaries in Knowledge, Chat-Retrieval funktioniert
-  - [ ] Falls YouTube 429/Block: `cookies.txt` hinterlegen (`/etc/ai_stack/youtube_cookies.txt`) + `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt` setzen
+  - [x] 1 Topic (z. B. `stocks_crypto`), 2–3 Videos: Summaries in Knowledge indexed (verifiziert via `/api/v1/knowledge/<id>/files`)
+  - [ ] Chat-Retrieval in Open WebUI manuell prüfen (Collection aktivieren, Frage stellen, Sources prüfen)
+  - [ ] Falls YouTube 429/Block: `cookies.txt` hinterlegen (`/etc/ai-stack/youtube_cookies.txt`) + `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt` setzen
 
 ## P1 — Betrieb & Sicherheit
 - [x] Open WebUI localhost-only + Healthcheck/Log-Rotation in Compose
 - [ ] Backup-Ziel definieren (Volumes):
   - [x] Repo: Runbook + Scripts für Backup/Restore vorhanden (`docs/runbook_backup_restore.md:1`, `scripts/README.md:1`)
   - [x] Repo: systemd Timer Templates vorhanden (`scripts/systemd/ai_stack_backup.timer`, `scripts/systemd/ai_stack_backup.service`)
-  - [ ] Host: Backup-Verzeichnis festlegen (z. B. `/srv/ai_stack/backups`, chmod `700`) + systemd Timer installieren/aktivieren
-  - [ ] `open-webui_open_webui_data` sichern (Open WebUI Data)
-  - [ ] `tool-transcript-miner_tool_transcript_miner_data` sichern (Runs/State/SQLite/Backups)
-  - [ ] TranscriptMiner Output Root sichern (bind-mount; Zielpfad festlegen, z. B. `/srv/ai_stack/transcript-miner/output`)
+  - [ ] Host: Backup-Verzeichnis festlegen (z. B. `/srv/ai-stack/backups`, chmod `700`) + systemd Timer installieren/aktivieren
+  - [ ] `owui-data` sichern (Open WebUI Data)
+  - [ ] `tm-data` sichern (Runs/State/SQLite/Backups)
+  - [ ] TranscriptMiner Output Root sichern (bind-mount; Zielpfad festlegen, z. B. `/srv/ai-stack/transcript-miner/output`)
 - [ ] Offene Entscheidung: “Schöne URL” für Open WebUI im VPN-only Setup
   - [ ] Option A (einfach): Tailscale Serve URL so lassen (ts.net) + Bookmark-Titel/Shortcut am Client
   - [ ] Option B (Client-Alias): Hosts/DNS am Client setzen (Merknamen wie `openwebui` → zeigt auf Server/Tailscale), weiterhin Zugriff via Serve-URL (TLS Hostname bleibt ts.net)
@@ -831,6 +867,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
 ## P2 — Observability / Wartung
 - [ ] Ressourcen-/Disk-Checks: freier Speicher, Docker-Volume-Wachstum, Backup-Größe
 - [ ] Docker Housekeeping Policy: `docker system prune` (vorsichtig) / Image-Retention
+- [ ] Repo-Hygiene (lokal): unversionierte Artefakte aufräumen (z. B. `transcript-miner/.venv`, `emb-bench/.cache_out`, `emb-bench/runs*`, alte `open-webui/tool-imports/backup_*.json`)
 - [ ] (Optional) automatische Security Updates fürs OS (Unattended-Upgrades)
 
 ## P3 — Phase 2 / Erweiterungen (später)

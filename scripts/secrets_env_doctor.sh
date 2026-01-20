@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SECRETS_FILE="${1:-/etc/ai_stack/secrets.env}"
+default_secrets_file="/etc/ai-stack/secrets.env"
+if [[ ! -e "$default_secrets_file" && -e "/etc/ai_stack/secrets.env" ]]; then
+  default_secrets_file="/etc/ai_stack/secrets.env"
+fi
+SECRETS_FILE="${1:-$default_secrets_file}"
 
 required_keys=(
   WEBUI_SECRET_KEY
@@ -35,7 +39,7 @@ echo "Secrets doctor: ${SECRETS_FILE}"
 
 if [[ ! -e "$SECRETS_FILE" ]]; then
   echo "ERROR: secrets file not found: ${SECRETS_FILE}"
-  echo "Create it via: sudo mkdir -p /etc/ai_stack && sudo touch ${SECRETS_FILE} && sudo chmod 600 ${SECRETS_FILE}"
+  echo "Create it via: sudo mkdir -p /etc/ai-stack && sudo touch ${SECRETS_FILE} && sudo chmod 600 ${SECRETS_FILE}"
   exit 1
 fi
 

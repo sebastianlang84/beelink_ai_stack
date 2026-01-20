@@ -10,16 +10,16 @@ Creates a gzipped tar archive of a Docker volume (contents only).
 Does NOT print secret values; archive contains the raw data.
 
 Defaults:
-  backup_dir: /srv/ai_stack/backups
+  backup_dir: /srv/ai-stack/backups
 
 Examples:
-  ./scripts/backup_docker_volume.sh open-webui_open_webui_data
-  ./scripts/backup_docker_volume.sh tool-transcript-miner_tool_transcript_miner_data /srv/ai_stack/backups
+  ./scripts/backup_docker_volume.sh owui-data
+  ./scripts/backup_docker_volume.sh tm-data /srv/ai-stack/backups
 EOF
 }
 
 volume="${1:-}"
-backup_dir="${2:-/srv/ai_stack/backups}"
+backup_dir="${2:-/srv/ai-stack/backups}"
 
 if [[ -z "$volume" || "$volume" == "-h" || "$volume" == "--help" ]]; then
   usage

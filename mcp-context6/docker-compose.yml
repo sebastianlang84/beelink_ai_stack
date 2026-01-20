@@ -1,8 +1,8 @@
-name: mcp-context6
+name: context6
 services:
   context6:
-    container_name: mcp-context6
-    image: ai_stack/mcp-context6:latest
+    container_name: context6
+    image: context6:latest
     build:
       context: .
     restart: unless-stopped
@@ -10,19 +10,19 @@ services:
       CONTEXT6_DATA_DIR: /data
       CONTEXT6_CACHE_DIR: /cache
       CONTEXT6_BASE_URL: ${CONTEXT6_BASE_URL:-}
-      OPEN_WEBUI_BASE_URL: ${OPEN_WEBUI_BASE_URL:-http://open-webui:8080}
+      OPEN_WEBUI_BASE_URL: ${OPEN_WEBUI_BASE_URL:-http://owui:8080}
       OPEN_WEBUI_API_KEY: ${OPEN_WEBUI_API_KEY:-}
       OWUI_API_KEY: ${OWUI_API_KEY:-}
       OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS: ${OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS:-3}
       OPEN_WEBUI_PROCESS_TIMEOUT_SECONDS: ${OPEN_WEBUI_PROCESS_TIMEOUT_SECONDS:-900}
       CONTEXT6_LOG_LEVEL: ${CONTEXT6_LOG_LEVEL:-info}
     volumes:
-      - context6_data:/data
-      - context6_cache:/cache
+      - context6-data:/data
+      - context6-cache:/cache
     ports:
       - "${CONTEXT6_BIND_ADDRESS:-127.0.0.1}:${CONTEXT6_HOST_PORT:-8816}:8816"
     networks:
-      - ai_stack
+      - ai-stack
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8816/healthz').read(); print('ok')\""]
       interval: 30s
@@ -31,13 +31,14 @@ services:
       start_period: 10s
 
 networks:
-  ai_stack:
+  ai-stack:
     external: true
-    name: ai_stack
+    name: ai-stack
 
 volumes:
-  context6_data:
-    # Keep stable names for existing installs/backups.
-    name: mcp_context6_context6_data
-  context6_cache:
-    name: mcp_context6_context6_cache
+  context6-data:
+    external: true
+    name: context6-data
+  context6-cache:
+    external: true
+    name: context6-cache

@@ -1,7 +1,12 @@
 # Changelog
 
 ## Unreleased
+- ai_stack: Smoke-Test Runbook + Script ergänzt (`docs/runbook_smoke_test.md`, `scripts/smoke_test_ai_stack.sh`)
+- Naming/Compose: SSOT Naming v2 umgesetzt (Network bleibt `ai-stack`; Stacks `owui|tm|context6|qdrant`, Volumes `owui-data|tm-data|context6-{data,cache}|qdrant-data|emb-bench-cache`, Images `tm:latest`, `context6:latest`)
+- mcp-transcript-miner: `.env.example` bereinigt (doppeltes `OPEN_WEBUI_API_KEY` entfernt; JSON-Mapping nicht mehr unquoted inline; Host-Path-Overrides ergänzt)
 - context6: `sources.create` robuster gemacht (GitHub akzeptiert jetzt auch `config.repo`/`config.url` und normalisiert auf `config.github.repo`)
+- context6: `sources.create` aktualisiert bestehende Sources in-place (idempotent) und liefert zusätzlich `updated` zurück
+- context6: Open WebUI Knowledge Create sendet immer `description` (fix für HTTP 422 bei Open WebUI 0.7.2)
 - context6: Open WebUI Knowledge UX verbessert: neue Tools `sync.prepare`, `owui.knowledge.list`, `owui.knowledge.create` + `sync.start` unterstützt `knowledge_name`/`create_knowledge_if_missing` und `sync.status` liefert `knowledge_files_count` (best-effort)
 - context6: Open WebUI Upload-Filenames sind jetzt sprechend (aus `canonical_path`) + Kurz-Hash statt nur `doc_id`
 - context6: Open WebUI Knowledge `list` Response-Shape `{items:[...]}` unterstützt (damit `sync.prepare` / `owui.knowledge.list` nicht leer bleibt)

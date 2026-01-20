@@ -6,7 +6,7 @@ Ziel: Open WebUI läuft persistent, upgradesicher und ohne Secrets im Repo. Imag
 1. In `open-webui/` wechseln: `cd open-webui`
 2. Secrets außerhalb des Repo setzen (siehe `open-webui/SECRETS.md:1`):
    - mindestens `WEBUI_SECRET_KEY` (z. B. `openssl rand -hex 32`)
-3. Start: `docker compose --env-file /etc/ai_stack/secrets.env up -d`
+3. Start: `docker compose --env-file /etc/ai-stack/secrets.env up -d`
 4. Zugriff lokal am Server: `http://127.0.0.1:3000`
 
 ## Zugriff (VPN-only empfohlen)
@@ -23,8 +23,8 @@ Option B (später): Reverse Proxy (Traefik/Caddy) im Docker-Netz.
 Runbook: `docs/runbook_backup_restore.md:1`
 
 ## Integration (RAG / Knowledge Auto-Indexing)
-- Für Cross-Stack Kommunikation (z. B. `tool-owui-indexer` ↔ `open-webui`) wird ein externes Docker-Netz `ai_stack` verwendet:
-  - `./scripts/create_ai_stack_network.sh`
+- Für Cross-Stack Kommunikation (z. B. Tool ↔ `owui`) wird ein externes Docker-Netz `ai-stack` verwendet:
+  - `./scripts/provision_ai_stack_docker_objects.sh`
 - Indexer-Service: `mcp-transcript-miner/README.md:1`
 
 ## External Tools (Import JSON)

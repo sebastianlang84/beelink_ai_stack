@@ -71,7 +71,7 @@ Wenn `TRANSCRIPT_MINER_OUTPUT_DIR` gemountet ist:
 - `POST /sync/topic/{topic}` — indexiert per-video Summaries für ein Topic (benötigt `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)
 
 ## Betrieb
-- Standalone: `cd mcp-transcript-miner && docker compose --env-file /etc/ai_stack/secrets.env up -d --build` (Compose-Service: `mcp-transcript-miner`)
+- Standalone: `cd mcp-transcript-miner && docker compose --env-file /etc/ai-stack/secrets.env up -d --build` (Compose-Service: `tm`)
 
 Persistenz/Backup: `docs/runbook_backup_restore.md:1`
 
@@ -80,7 +80,7 @@ Persistenz/Backup: `docs/runbook_backup_restore.md:1`
 ### YouTube 429 / Block (Too Many Requests)
 Wenn `POST /transcript` oder ein Run häufig mit `429`/`Too Many Requests` fehlschlägt, hilft oft ein `cookies.txt`.
 
-- Lege die Datei auf dem Host ab: `/etc/ai_stack/youtube_cookies.txt` (nicht ins Repo committen)
-- Setze in `/etc/ai_stack/secrets.env`:
+- Lege die Datei auf dem Host ab: `/etc/ai-stack/youtube_cookies.txt` (nicht ins Repo committen)
+- Setze in `/etc/ai-stack/secrets.env`:
   - `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt`
 - Stelle sicher, dass deine Config `api.youtube_cookies: ${YOUTUBE_COOKIES_FILE}` enthält (z. B. `transcript-miner/config/config_stocks_crypto.yaml`)

@@ -10,7 +10,7 @@ Restores a Docker volume from a tar.gz archive created by backup_docker_volume.s
 WARNING: This deletes all existing data in the volume.
 
 Examples:
-  ./scripts/restore_docker_volume.sh open-webui_open_webui_data /srv/ai_stack/backups/open-webui_open_webui_data__20260118T120000Z.tar.gz --force
+  ./scripts/restore_docker_volume.sh owui-data /srv/ai-stack/backups/owui-data__20260118T120000Z.tar.gz --force
 EOF
 }
 

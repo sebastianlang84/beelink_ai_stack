@@ -5,20 +5,22 @@ services:
     image: qdrant/qdrant:v1.11.5
     restart: unless-stopped
     environment:
-      # Optional: set QDRANT_API_KEY via `/etc/ai_stack/secrets.env` if you ever expose Qdrant beyond localhost.
+      # Optional: set QDRANT_API_KEY via `/etc/ai-stack/secrets.env` if you ever expose Qdrant beyond localhost.
       QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY:-}
     volumes:
-      - qdrant_data:/qdrant/storage
+      - qdrant-data:/qdrant/storage
     # Host access (localhost-only)
     ports:
       - "${QDRANT_BIND_ADDRESS:-127.0.0.1}:${QDRANT_HTTP_PORT:-6333}:6333"
     networks:
-      - ai_stack
+      - ai-stack
 
 networks:
-  ai_stack:
+  ai-stack:
     external: true
-    name: ai_stack
+    name: ai-stack
 
 volumes:
-  qdrant_data:
+  qdrant-data:
+    external: true
+    name: qdrant-data

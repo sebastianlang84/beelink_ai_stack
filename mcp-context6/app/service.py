@@ -170,25 +170,41 @@ class Context6Service:
 
         sid = make_source_id(type=req.type, canonical_uri=canonical_uri)
         created_at = now_utc_iso()
+        name = (req.name or "").strip() or sid
+        config_json = json.dumps(config, sort_keys=True)
+        limits_json = req.limits.model_dump_json()
 
         conn = self._db.connect()
         try:
-            cur = conn.execute("SELECT 1 FROM sources WHERE source_id = ?", (sid,))
-            exists = cur.fetchone() is not None
+            row = conn.execute(
+                "SELECT name, config_json, limits_json FROM sources WHERE source_id = ?",
+                (sid,),
+            ).fetchone()
+            exists = row is not None
+            updated = False
             if not exists:
                 conn.execute(
                     "INSERT INTO sources(source_id, type, name, config_json, limits_json, created_at_utc) VALUES (?,?,?,?,?,?)",
                     (
                         sid,
                         req.type,
-                        req.name,
-                        json.dumps(config, sort_keys=True),
-                        req.limits.model_dump_json(),
+                        name,
+                        config_json,
+                        limits_json,
                         created_at,
                     ),
                 )
-                conn.commit()
-            return {"source_id": sid, "created": not exists}
+                updated = True
+            else:
+                # "create" is idempotent by source_id; update stored fields in-place.
+                if str(row["name"]) != name or str(row["config_json"]) != config_json or str(row["limits_json"]) != limits_json:
+                    conn.execute(
+                        "UPDATE sources SET name = ?, config_json = ?, limits_json = ? WHERE source_id = ?",
+                        (name, config_json, limits_json, sid),
+                    )
+                    updated = True
+            conn.commit()
+            return {"source_id": sid, "created": not exists, "updated": updated}
         finally:
             conn.close()
 

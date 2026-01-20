@@ -71,8 +71,8 @@ Das Tool liefert eine kompakte Zusammenfassung zurück:
 
 ## Nicht-Ziele / Guardrails
 
-- Kein direktes Exposing neuer Host-Ports: Tool-Service bleibt im Docker-Netz (`ai_stack`).
-- Keine Secrets im Repo: API Keys ausschließlich via `/etc/ai_stack/*.env` (Policy: `docs/policy_secrets_environment_variables_ai_stack.md:1`).
+- Kein direktes Exposing neuer Host-Ports: Tool-Service bleibt im Docker-Netz (`ai-stack`).
+- Keine Secrets im Repo: API Keys ausschließlich via `/etc/ai-stack/*.env` (Policy: `docs/policy_secrets_environment_variables_ai_stack.md:1`).
 - Fail-fast bei fehlenden Mappings (`topic` ohne Knowledge-ID) oder fehlendem Output-Root.
 
 ## Implementierungs-Hinweise (Folgearbeit)

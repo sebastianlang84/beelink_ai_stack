@@ -1,6 +1,6 @@
 api:
   youtube_api_key: ${YOUTUBE_API_KEY} # API-Schlüssel aus Umgebungsvariable YOUTUBE_API_KEY laden
-  # Optional: hilft gegen 429/Block in Datacenter-IPs (Datei liegt außerhalb des Repo; Tool-Container mountet /etc/ai_stack nach /host_secrets)
+  # Optional: hilft gegen 429/Block in Datacenter-IPs (Datei liegt außerhalb des Repo; Tool-Container mountet /etc/ai-stack nach /host_secrets)
   youtube_cookies: ${YOUTUBE_COOKIES_FILE}
 
 # YouTube-Konfiguration

@@ -16,7 +16,7 @@ class OpenWebUIConfig:
 
 
 def load_openwebui_cfg_from_env() -> OpenWebUIConfig | None:
-    base_url = os.getenv("OPEN_WEBUI_BASE_URL", "http://open-webui:8080").strip().rstrip("/")
+    base_url = os.getenv("OPEN_WEBUI_BASE_URL", "http://owui:8080").strip().rstrip("/")
     api_key = (os.getenv("OPEN_WEBUI_API_KEY", "") or os.getenv("OWUI_API_KEY", "")).strip()
     if not api_key:
         return None
@@ -149,9 +149,9 @@ def create_knowledge(*, cfg: OpenWebUIConfig, name: str, description: str | None
 
     url = f"{cfg.base_url}/api/v1/knowledge/create"
     headers = _auth_headers(cfg) | {"Content-Type": "application/json"}
-    payload: dict[str, Any] = {"name": name}
-    if description is not None:
-        payload["description"] = description
+    # Open WebUI currently validates `description` as required (HTTP 422 if missing),
+    # so always send it (empty string is acceptable).
+    payload: dict[str, Any] = {"name": name, "description": (description or "")}
     resp = requests.post(url, headers=headers, json=payload, timeout=60)
     if resp.status_code >= 400:
         raise RuntimeError(f"openwebui knowledge create failed: {resp.status_code} {resp.text}")

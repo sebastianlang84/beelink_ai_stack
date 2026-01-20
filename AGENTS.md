@@ -30,6 +30,12 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 ### Sicherheit & Betrieb
 - **Keine Secrets committen** (Tokens, Passwörter, Private Keys).
 - Secrets-Handling: siehe `docs/policy_secrets_environment_variables_ai_stack.md` (SSOT + Least Privilege; bevorzugt `docker compose --env-file /etc/ai_stack/<stack>.secrets.env ...` statt `.env` im Repo-Verzeichnis).
+- **Glasklar (Wasti-Policy): In `secrets.env` stehen NUR Secrets.**
+  - `secrets.env` enthält ausschließlich: API Keys, Tokens, Passwörter, private Schlüssel.
+  - Nicht-Secrets (Pfade/Hosts/IDs/Mappings) gehören **nicht** in `secrets.env`, sondern in ein separates Config-Env-File (z. B. `/etc/ai-stack/config.env` oder `/etc/ai-stack/<stack>.config.env`).
+  - Beispiele **kein Secret**: `YOUTUBE_COOKIES_FILE`, `OPEN_WEBUI_KNOWLEDGE_ID`, `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`, `OPEN_WEBUI_BASE_URL`, `ROOT_HOST`, `*_DIR_HOST`.
+  - Compose-Start dann mit beiden Files (Docker Compose unterstützt mehrere `--env-file`):
+    - `docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env up -d`
 - **Keine neuen Host-Ports** ohne Begründung + Doku (was, warum, Risiko).
 - Bevorzugt **Reverse Proxy** statt direktes Exposing; intern auf Docker-Netzwerk halten, wo möglich.
 - Persistenz/Backups mitdenken: Volumes/Bind-Mounts klar benennen; Hinweis, was gesichert werden muss.

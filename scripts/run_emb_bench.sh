@@ -4,11 +4,11 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  ./scripts/run_emb_bench.sh [--env-file /etc/ai_stack/secrets.env] -- <emb_bench args...>
+  ./scripts/run_emb_bench.sh [--env-file /etc/ai-stack/secrets.env] -- <emb_bench args...>
 
 Examples:
   ./scripts/run_emb_bench.sh -- python -m emb_bench run --config config.local_only.yaml --phase local_vs_remote
-  ./scripts/run_emb_bench.sh --env-file /etc/ai_stack/secrets.env -- python -m emb_bench run --config config.example.yaml --phase mrl --subset-docs 200 --subset-queries 50
+  ./scripts/run_emb_bench.sh --env-file /etc/ai-stack/secrets.env -- python -m emb_bench run --config config.example.yaml --phase mrl --subset-docs 200 --subset-queries 50
 
 Notes:
   - Runs via Docker Compose in `emb-bench/`.

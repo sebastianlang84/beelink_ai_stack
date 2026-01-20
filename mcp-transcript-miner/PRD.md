@@ -2,7 +2,7 @@
 
 ## Kontext
 - Zweck: interner HTTP-Service, der für eine YouTube-Video-ID das beste verfügbare Transcript liefert (inkl. Language-Fallbacks) und es als Text zurückgibt.
-- Ziel-Stack: Home-Server (`ai_stack`), Docker Compose, VPN-only Nutzung (keine öffentlichen Host-Ports).
+- Ziel-Stack: Home-Server (`ai-stack`), Docker Compose, VPN-only Nutzung (keine öffentlichen Host-Ports).
 - Primäre Konsumenten:
   - spätere Open-WebUI Tool-/Orchestrator-Komponenten (z. B. „hole die neuesten videos“)
   - interne Producer/Automationen (z. B. Scripts), die ein Transcript pro `video_id` benötigen
@@ -64,11 +64,11 @@
 
 ### Security
 - Keine Secrets im Container zwingend notwendig.
-- Default-Deployment ohne Host-Ports (nur internal, z. B. über `ai_stack` Netz).
+- Default-Deployment ohne Host-Ports (nur internal, z. B. über `ai-stack` Netz).
 - Keine PII speichern; kein Persistenz-Write in Phase 1.
 
-## Integration (ai_stack)
-- Empfohlen: als interner Service im `ai_stack` Netzwerk betreiben.
+## Integration (ai-stack)
+- Empfohlen: als interner Service im `ai-stack` Netzwerk betreiben.
 - Typischer Flow:
   1) Producer ruft `mcp-transcript-miner` → erhält Transcript-Text.
   2) Producer sendet Text an **Transcript Miner** (`POST /index/transcript`) oder verarbeitet ihn weiter (Summaries via TranscriptMiner).

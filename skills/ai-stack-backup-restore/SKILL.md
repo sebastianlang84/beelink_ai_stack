@@ -13,10 +13,10 @@ description: Perform and document backup/restore for ai_stack (docker volumes an
 ## Common backups (examples)
 
 Docker volumes:
-- Open WebUI data: `open-webui_open_webui_data`
-- Transcript Miner tool state: `tool-transcript-miner_tool_transcript_miner_data`
-- context6 data/cache: `mcp_context6_context6_data`, `mcp_context6_context6_cache`
-- standalone qdrant: `qdrant_qdrant_data`
+- Open WebUI data: `owui-data`
+- Transcript Miner tool state: `tm-data`
+- context6 data/cache: `context6-data`, `context6-cache`
+- standalone qdrant: `qdrant-data`
 
 Commands:
 - Backup a volume: `./scripts/backup_docker_volume.sh <volume>`

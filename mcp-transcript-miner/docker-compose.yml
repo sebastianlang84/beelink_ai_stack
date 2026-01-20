@@ -1,8 +1,8 @@
-name: mcp-transcript-miner
+name: tm
 services:
-  mcp-transcript-miner:
-    container_name: mcp-transcript-miner
-    image: ai_stack/mcp-transcript-miner:latest
+  tm:
+    container_name: tm
+    image: tm:latest
     build:
       context: .
     restart: unless-stopped
@@ -16,7 +16,7 @@ services:
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON: ${OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON:-}
       OPEN_WEBUI_KNOWLEDGE_ID: ${OPEN_WEBUI_KNOWLEDGE_ID:-}
-      OPEN_WEBUI_BASE_URL: ${OPEN_WEBUI_BASE_URL:-http://open-webui:8080}
+      OPEN_WEBUI_BASE_URL: ${OPEN_WEBUI_BASE_URL:-http://owui:8080}
       OPEN_WEBUI_API_KEY: ${OPEN_WEBUI_API_KEY:-}
       OWUI_API_KEY: ${OWUI_API_KEY:-}
       OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS: ${OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS:-3}
@@ -28,12 +28,15 @@ services:
       PYTHONPATH: /transcript_miner_repo/src
     volumes:
       - ../transcript-miner/config:/transcript_miner_config
-      - ${TRANSCRIPTM_OUTPUT_ROOT_HOST:-/home/wasti/ai_stack_data/transcript-miner/output}:/transcript_miner_output
+      # Host output root (bind-mount). Recommended: /srv/ai-stack/transcript-miner/output
+      # Legacy default: /home/wasti/ai_stack_data/transcript-miner/output
+      - ${TRANSCRIPT_MINER_OUTPUT_ROOT_HOST:-/home/wasti/ai_stack_data/transcript-miner/output}:/transcript_miner_output
       - ../transcript-miner:/transcript_miner_repo:ro
-      - /etc/ai_stack:/host_secrets:ro
-      - tool_transcript_miner_data:/data
+      # Host secrets dir. Recommended: /etc/ai-stack (kebab). Legacy: /etc/ai_stack.
+      - ${AI_STACK_SECRETS_DIR_HOST:-/etc/ai_stack}:/host_secrets:ro
+      - tm-data:/data
     networks:
-      - ai_stack
+      - ai-stack
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz').read(); print('ok')\""]
       interval: 30s
@@ -42,11 +45,11 @@ services:
       start_period: 10s
 
 networks:
-  ai_stack:
+  ai-stack:
     external: true
-    name: ai_stack
+    name: ai-stack
 
 volumes:
-  tool_transcript_miner_data:
-    # Keep a stable volume name even if the folder/project name changes.
-    name: tool-transcript-miner_tool_transcript_miner_data
+  tm-data:
+    external: true
+    name: tm-data

@@ -38,7 +38,7 @@ CONFIG_BACKUP_DIR = os.getenv(
 )
 RUNS_DIR = os.getenv("TRANSCRIPT_MINER_RUNS_DIR", "/data/runs")
 KNOWLEDGE_MAP_JSON = os.getenv("OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON", "").strip()
-OPEN_WEBUI_BASE_URL = os.getenv("OPEN_WEBUI_BASE_URL", "http://open-webui:8080").rstrip("/")
+OPEN_WEBUI_BASE_URL = os.getenv("OPEN_WEBUI_BASE_URL", "http://owui:8080").rstrip("/")
 OPEN_WEBUI_API_KEY = (os.getenv("OPEN_WEBUI_API_KEY", "") or os.getenv("OWUI_API_KEY", "")).strip()
 DEFAULT_KNOWLEDGE_ID = os.getenv("OPEN_WEBUI_KNOWLEDGE_ID", "").strip()
 POLL_INTERVAL = int(os.getenv("OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS", "3"))

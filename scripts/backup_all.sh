@@ -4,12 +4,12 @@ set -euo pipefail
 # Backup all persistent ai_stack data to a target directory.
 # Does not print secret values, but backups contain raw data -> treat as secrets.
 
-BACKUP_DIR="${BACKUP_DIR:-/srv/ai_stack/backups}"
-OUTPUT_ROOT="${OUTPUT_ROOT:-/home/wasti/ai_stack_data/transcript-miner/output}"
+BACKUP_DIR="${BACKUP_DIR:-/srv/ai-stack/backups}"
+OUTPUT_ROOT="${OUTPUT_ROOT:-/srv/ai-stack/transcript-miner/output}"
 RETENTION_DAYS="${RETENTION_DAYS:-14}"
 
-OPEN_WEBUI_VOLUME="${OPEN_WEBUI_VOLUME:-open-webui_open_webui_data}"
-TOOL_TM_VOLUME="${TOOL_TM_VOLUME:-tool-transcript-miner_tool_transcript_miner_data}"
+OPEN_WEBUI_VOLUME="${OPEN_WEBUI_VOLUME:-owui-data}"
+TOOL_TM_VOLUME="${TOOL_TM_VOLUME:-tm-data}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

@@ -1,7 +1,7 @@
 [
   {
     "type": "mcp",
-    "url": "http://mcp-transcript-miner:8000/mcp",
+    "url": "http://tm:8000/mcp",
     "spec_type": "url",
     "spec": "",
     "path": "",

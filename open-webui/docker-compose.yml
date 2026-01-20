@@ -1,7 +1,7 @@
-name: open-webui
+name: owui
 services:
-  open-webui:
-    container_name: open-webui
+  owui:
+    container_name: owui
     image: ghcr.io/open-webui/open-webui:${OPEN_WEBUI_IMAGE_TAG:-0.7.2}
     restart: unless-stopped
     environment:
@@ -23,18 +23,20 @@ services:
       retries: 5
       start_period: 30s
     volumes:
-      - open_webui_data:/app/backend/data
+      - owui-data:/app/backend/data
     # Host-Port (localhost-only): sicherer Default für VPN-only via Tailscale Serve.
     # Für LAN/Internet-Expose explizit Reverse Proxy nutzen (nicht 0.0.0.0 setzen).
     ports:
       - "${OPEN_WEBUI_BIND_ADDRESS:-127.0.0.1}:${OPEN_WEBUI_HOST_PORT:-3000}:8080"
     networks:
-      - ai_stack
+      - ai-stack
 
 volumes:
-  open_webui_data:
+  owui-data:
+    external: true
+    name: owui-data
 
 networks:
-  ai_stack:
+  ai-stack:
     external: true
-    name: ai_stack
+    name: ai-stack

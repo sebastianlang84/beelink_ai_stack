@@ -19,19 +19,23 @@ Dokunetz: Einstieg über `docs/README.md:1`.
 - Status: Zugriff im Tailnet via Tailscale Serve (HTTPS) ist eingerichtet (siehe `TODO.md#ai_stack_todo`)
 - LAN-IP (wlan0): `192.168.0.188` (für SSH im LAN; kann sich bei DHCP ändern)
 
-## Quickstart (open-webui)
+## Quickstart (owui)
 1. In `open-webui/` wechseln: `cd open-webui`
 2. Secrets außerhalb des Repo setzen (mindestens `WEBUI_SECRET_KEY`): `open-webui/SECRETS.md:1`
-3. Start: `docker compose --env-file /etc/ai_stack/secrets.env up -d`
+3. Start: `docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env up -d`
 4. Zugriff lokal am Server: `http://127.0.0.1:3000` (VPN-only empfohlen via Tailscale Serve)
 
 Betrieb/Access: `open-webui/README.md:1` (default localhost-only; empfohlen via Tailscale Serve im Tailnet).
 
 ## Quickstart (Transcript Miner Tool)
 Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen, Runs starten, Summaries indexieren).
-1. Shared Docker-Netz (einmalig): `./scripts/create_ai_stack_network.sh`
-2. Secrets setzen (OWUI JWT + Knowledge-Mapping etc.): `mcp-transcript-miner/.env.example:1` und `docs/policy_secrets_environment_variables_ai_stack.md:1`
-3. Start: `cd mcp-transcript-miner && docker compose --env-file /etc/ai_stack/secrets.env up -d --build` (Compose-Service: `mcp-transcript-miner`)
+1. Shared Docker-Objekte provisionieren (Network + Volumes, einmalig): `./scripts/provision_ai_stack_docker_objects.sh`
+2. Secrets setzen (`OPEN_WEBUI_API_KEY` + Knowledge-Mapping etc.): `mcp-transcript-miner/.env.example:1` und `docs/policy_secrets_environment_variables_ai_stack.md:1`
+3. Start: `cd mcp-transcript-miner && docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env up -d --build` (Compose-Service: `tm`)
+
+## Smoke Test (P0)
+- Runbook: `docs/runbook_smoke_test.md:1`
+- Script: `./scripts/smoke_test_ai_stack.sh --config-env-file /etc/ai-stack/config.env --secrets-env-file /etc/ai-stack/secrets.env --up --build`
 
 ## Open WebUI External Tools (Import JSON)
 - Context7 (MCP Streamable HTTP): `open-webui/tool-imports/tool_import_context7.json`
@@ -60,7 +64,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `qdrant/` — Qdrant (optional)
 
 ## Security (Kurz)
-- Secrets liegen außerhalb des Repo (z. B. `/etc/ai_stack/*.secrets.env`), siehe `docs/policy_secrets_environment_variables_ai_stack.md:1`.
+- Secrets liegen außerhalb des Repo (z. B. `/etc/ai-stack/*.secrets.env`), siehe `docs/policy_secrets_environment_variables_ai_stack.md:1`.
 
 ## Nicht-Ziele (Phase 1)
 - Kein Reverse Proxy / kein öffentliches TLS-Setup / keine öffentliche Exponierung ins Internet

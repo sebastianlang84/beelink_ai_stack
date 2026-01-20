@@ -9,16 +9,16 @@ Usage:
 Creates a gzipped tar archive of a host path.
 
 Defaults:
-  backup_dir: /srv/ai_stack/backups
+  backup_dir: /srv/ai-stack/backups
 
 Examples:
-  ./scripts/backup_path.sh /home/wasti/ai_stack_data/transcript-miner/output
-  ./scripts/backup_path.sh /srv/ai_stack/transcript-miner/output /srv/ai_stack/backups
+  ./scripts/backup_path.sh /srv/ai-stack/transcript-miner/output
+  ./scripts/backup_path.sh /srv/ai-stack/transcript-miner/output /srv/ai-stack/backups
 EOF
 }
 
 src="${1:-}"
-backup_dir="${2:-/srv/ai_stack/backups}"
+backup_dir="${2:-/srv/ai-stack/backups}"
 
 if [[ -z "$src" || "$src" == "-h" || "$src" == "--help" ]]; then
   usage

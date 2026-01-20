@@ -42,12 +42,52 @@ sudo tailscale serve status
   - alternativ per ID: `{ "source_id": "...", "knowledge_id": "<open-webui-knowledge-id>" }`
 - `sources.create` GitHub Config (empfohlen): `{"config":{"github":{"repo":"open-webui/docs","ref":"main"}}}` (Compat: auch `{"config":{"repo":"open-webui/docs"}}` oder `{"config":{"url":"https://github.com/open-webui/docs"}}`)
 
+Wichtig zu `sources.create`:
+- `created: false` ist **kein Fehler**: die Source existierte bereits (gleiche `source_id` = gleicher `canonical_uri`).
+- `updated: true|false` zeigt, ob Name/Config/Limits tatsächlich gespeichert/aktualisiert wurden.
+
+Hinweis: Open WebUI 0.7.x erwartet bei `knowledge.create` aktuell ein `description` Feld; context6 sendet automatisch `description: ""` wenn nichts angegeben ist.
+
 Empfohlener Flow (LLM + User-Entscheidung):
 1) `sync.prepare` → LLM zeigt `suggested_knowledge_name` + `existing`
 2) User wählt: bestehend / Vorschlag / neuer Name
 3) `sync.start` mit `knowledge_name` (+ optional `create_knowledge_if_missing`)
 
 Hinweis: Upload-Filenames in Open WebUI sind jetzt sprechend (aus `canonical_path`) + stabiler Kurz-Hash, z. B. `context6__getting-started__abc123...md`.
+
+## Beispiel: OpenRouter Doku (Crawl → Open WebUI Knowledge)
+
+Source anlegen (Crawl ab Quickstart, begrenzt auf `/docs`):
+```bash
+curl -sS http://127.0.0.1:8816/mcp \
+  -H 'content-type: application/json' \
+  -d '{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"tools/call",
+    "params":{
+      "name":"sources.create",
+      "arguments":{
+        "type":"crawl",
+        "name":"openrouter-docs",
+        "config":{
+          "crawl":{
+            "start_urls":["https://openrouter.ai/docs/quickstart"],
+            "allow_domains":["openrouter.ai"],
+            "allow_path_prefixes":["/docs"],
+            "render_js":false,
+            "fetch_assets":false
+          }
+        },
+        "limits":{"max_pages_per_run":100,"max_depth":3,"delay_seconds":1.0}
+      }
+    }
+  }'
+```
+
+Danach in Open WebUI Knowledge hochladen (Open WebUI übernimmt Processing/Embeddings):
+1) `sync.prepare` (Knowledge-Auswahl/Name): `tools/call` → `sync.prepare`
+2) `sync.start` z. B. mit `{ "knowledge_name":"openrouter-docs", "create_knowledge_if_missing": true }`
 
 ## Storage / Backup
 - `mcp_context6_context6_data` (SQLite + Artefakte)

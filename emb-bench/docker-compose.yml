@@ -16,15 +16,17 @@ services:
       # These mounts mask the bind-mounted paths with host-owned directories.
       - ./runs_out:/work/runs:rw
       - ./.cache_out:/work/.cache:rw
-      - emb_bench_cache:/cache:rw
+      - emb-bench-cache:/cache:rw
     working_dir: /work
     networks:
-      - ai_stack
+      - ai-stack
 
 networks:
-  ai_stack:
+  ai-stack:
     external: true
-    name: ai_stack
+    name: ai-stack
 
 volumes:
-  emb_bench_cache:
+  emb-bench-cache:
+    external: true
+    name: emb-bench-cache

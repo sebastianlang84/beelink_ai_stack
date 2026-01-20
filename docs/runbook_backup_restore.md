@@ -8,37 +8,37 @@ Hinweis: Backups enthalten die Rohdaten (inkl. Tokens/DBs/Uploads). Behandle Bac
 
 ### 1) Open WebUI Daten
 
-- Docker Volume: `open-webui_open_webui_data`
+- Docker Volume: `owui-data`
 - Enthält u. a. App-Daten unter `/app/backend/data`
 
 ### 2) Transcript Miner Tool State
 
-- Docker Volume: `tool-transcript-miner_tool_transcript_miner_data`
+- Docker Volume: `tm-data`
 - Enthält u. a. SQLite für Indexing/Idempotenz + Config-Backups (`/data/...`)
 
 ### 3) TranscriptMiner Output Root (Host-Pfad, Bind-Mount)
 
-- Host-Pfad (Default): `/home/wasti/ai_stack_data/transcript-miner/output`
+- Host-Pfad (Default): `/srv/ai-stack/transcript-miner/output`
 - Alternative Zielpfade möglich (siehe `mcp-transcript-miner/docker-compose.yml`)
 
 ### 4) context6 (MCP) Daten (PoC)
 
-- Docker Volume: `mcp_context6_context6_data` (SQLite + Artefakte)
-- context6 Cache: `mcp_context6_context6_cache`
+- Docker Volume: `context6-data` (SQLite + Artefakte)
+- context6 Cache: `context6-cache`
 
 ### 5) Qdrant Vector DB (Standalone)
 
-- Docker Volume: `qdrant_qdrant_data`
+- Docker Volume: `qdrant-data`
 
 ## Backup-Verzeichnis (Host)
 
-Empfehlung: `/srv/ai_stack/backups/` (owner: `root` oder `wasti`, aber nicht world-readable).
+Empfehlung: `/srv/ai-stack/backups/` (owner: `root` oder `wasti`, aber nicht world-readable).
 
 Beispiel:
 ```bash
-sudo mkdir -p /srv/ai_stack/backups
-sudo chown wasti:wasti /srv/ai_stack/backups
-sudo chmod 700 /srv/ai_stack/backups
+sudo mkdir -p /srv/ai-stack/backups
+sudo chown wasti:wasti /srv/ai-stack/backups
+sudo chmod 700 /srv/ai-stack/backups
 ```
 
 ## Backup erstellen
@@ -46,14 +46,14 @@ sudo chmod 700 /srv/ai_stack/backups
 ### Docker Volume Backups
 
 ```bash
-./scripts/backup_docker_volume.sh open-webui_open_webui_data /srv/ai_stack/backups
-./scripts/backup_docker_volume.sh tool-transcript-miner_tool_transcript_miner_data /srv/ai_stack/backups
+./scripts/backup_docker_volume.sh owui-data /srv/ai-stack/backups
+./scripts/backup_docker_volume.sh tm-data /srv/ai-stack/backups
 ```
 
 ### Output Root (Bind-Mount) Backup
 
 ```bash
-./scripts/backup_path.sh /home/wasti/ai_stack_data/transcript-miner/output /srv/ai_stack/backups
+./scripts/backup_path.sh /srv/ai-stack/transcript-miner/output /srv/ai-stack/backups
 ```
 
 ## Regelmäßige Backups (systemd Timer)
@@ -77,8 +77,8 @@ sudo systemctl start ai_stack_backup.service
 ```
 
 Konfiguration (Defaults im Service-File):
-- `BACKUP_DIR=/srv/ai_stack/backups`
-- `OUTPUT_ROOT=/home/wasti/ai_stack_data/transcript-miner/output`
+- `BACKUP_DIR=/srv/ai-stack/backups`
+- `OUTPUT_ROOT=/srv/ai-stack/transcript-miner/output`
 - `RETENTION_DAYS=14`
 
 ## Restore (Achtung: destruktiv)
@@ -90,23 +90,23 @@ Empfohlenes Vorgehen:
 
 Stop:
 ```bash
-cd /home/wasti/ai_stack/open-webui && docker compose --env-file /etc/ai_stack/secrets.env down
-cd /home/wasti/ai_stack/mcp-transcript-miner && docker compose --env-file /etc/ai_stack/secrets.env down
+cd /home/wasti/ai_stack/open-webui && docker compose --env-file /etc/ai-stack/secrets.env down
+cd /home/wasti/ai_stack/mcp-transcript-miner && docker compose --env-file /etc/ai-stack/secrets.env down
 ```
 
 Restore Volume (Beispiel):
 ```bash
-./scripts/restore_docker_volume.sh open-webui_open_webui_data /srv/ai_stack/backups/open-webui_open_webui_data__<timestamp>.tar.gz --force
-./scripts/restore_docker_volume.sh tool-transcript-miner_tool_transcript_miner_data /srv/ai_stack/backups/tool-transcript-miner_tool_transcript_miner_data__<timestamp>.tar.gz --force
+./scripts/restore_docker_volume.sh owui-data /srv/ai-stack/backups/owui-data__<timestamp>.tar.gz --force
+./scripts/restore_docker_volume.sh tm-data /srv/ai-stack/backups/tm-data__<timestamp>.tar.gz --force
 ```
 
 Start:
 ```bash
-cd /home/wasti/ai_stack/open-webui && docker compose --env-file /etc/ai_stack/secrets.env up -d
-cd /home/wasti/ai_stack/mcp-transcript-miner && docker compose --env-file /etc/ai_stack/secrets.env up -d --build
+cd /home/wasti/ai_stack/open-webui && docker compose --env-file /etc/ai-stack/secrets.env up -d
+cd /home/wasti/ai_stack/mcp-transcript-miner && docker compose --env-file /etc/ai-stack/secrets.env up -d --build
 ```
 
 ## Rotation / Sicherheit
 
-- Wenn ein `OPEN_WEBUI_API_KEY` jemals im Klartext im Repo/Chat/Logs war: in Open WebUI rotieren und `/etc/ai_stack/secrets.env` aktualisieren.
+- Wenn ein `OPEN_WEBUI_API_KEY` jemals im Klartext im Repo/Chat/Logs war: in Open WebUI rotieren und `/etc/ai-stack/secrets.env` aktualisieren.
 - Backups nicht unverschlüsselt extern speichern; mindestens Zugriff stark einschränken.
