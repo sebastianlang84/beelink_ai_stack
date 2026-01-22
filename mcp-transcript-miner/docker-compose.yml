@@ -15,6 +15,7 @@ services:
       YOUTUBE_COOKIES_FILE: ${YOUTUBE_COOKIES_FILE:-}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON: ${OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON:-}
+      OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH: ${OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH:-}
       OPEN_WEBUI_KNOWLEDGE_ID: ${OPEN_WEBUI_KNOWLEDGE_ID:-}
       OPEN_WEBUI_BASE_URL: ${OPEN_WEBUI_BASE_URL:-http://owui:8080}
       OPEN_WEBUI_API_KEY: ${OPEN_WEBUI_API_KEY:-}
@@ -28,12 +29,13 @@ services:
       PYTHONPATH: /transcript_miner_repo/src
     volumes:
       - ../transcript-miner/config:/transcript_miner_config
+      - ../config:/config:ro
       # Host output root (bind-mount). Recommended: /srv/ai-stack/transcript-miner/output
       # Legacy default: /home/wasti/ai_stack_data/transcript-miner/output
       - ${TRANSCRIPT_MINER_OUTPUT_ROOT_HOST:-/home/wasti/ai_stack_data/transcript-miner/output}:/transcript_miner_output
       - ../transcript-miner:/transcript_miner_repo:ro
-      # Host secrets dir. Recommended: /etc/ai-stack (kebab). Legacy: /etc/ai_stack.
-      - ${AI_STACK_SECRETS_DIR_HOST:-/etc/ai_stack}:/host_secrets:ro
+      # Host secrets artefacts dir (e.g. youtube_cookies.txt). Default mounts repo root.
+      - ${AI_STACK_SECRETS_DIR_HOST:-..}:/host_secrets:ro
       - tm-data:/data
     networks:
       - ai-stack

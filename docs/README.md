@@ -12,7 +12,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 ## Policies
 - `docs/policy_secrets_environment_variables_ai_stack.md` — SSOT/Least-Privilege Policy für Secrets & Env Vars (Compose/systemd)
 - `docs/policy_qdrant_indexing.md` — Was in Qdrant indexiert wird (Collections/IDs/Payload)
-- `docs/runbook_secrets_env_files.md` — Schritt-für-Schritt: Env-Files unter `/etc/ai-stack/` anlegen und Stacks starten
+- `docs/runbook_secrets_env_files.md` — Schritt-für-Schritt: `.env` (secrets) + `.config.env`/`<service>/.config.env` (config) anlegen und Stacks starten
 - `docs/runbook_backup_restore.md` — Backups/Restore für Volumes + Output Root
 - `docs/runbook_smoke_test.md` — Smoke Test (P0): Open WebUI + Transcript Miner Tool + Tool→OWUI Auth
 

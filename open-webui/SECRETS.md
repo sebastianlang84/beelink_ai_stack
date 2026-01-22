@@ -1,12 +1,24 @@
-# SECRETS — open-webui
+# open-webui — Env Layout (ohne Werte)
 
-Policy: `docs/policy_secrets_environment_variables_ai_stack.md:1` (keine Werte im Repo).
+Start-Pattern (vom Repo-Root):
+`docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml up -d`
 
-Start empfohlen:
-- `docker compose --env-file /etc/ai-stack/secrets.env up -d`
+## Shared Secrets (`/home/wasti/ai_stack/.env`)
 
-## Benötigt (empfohlen)
-- `WEBUI_SECRET_KEY` — Secret/Signing-Key (stabil halten; Sessions/Auth)
+Required:
+- `WEBUI_SECRET_KEY`
 
-## Optional (je nach Provider)
-- `OPENAI_API_KEY` — falls OpenAI-kompatible Provider über Env genutzt werden
+Optional (nur wenn Open WebUI selbst Provider nutzt):
+- `OPENAI_API_KEY`
+
+## Service Config (`/home/wasti/ai_stack/open-webui/.config.env`)
+
+Typische Non-Secrets:
+- `TZ`
+- `OPEN_WEBUI_IMAGE_TAG`
+- `OPEN_WEBUI_BIND_ADDRESS`
+- `OPEN_WEBUI_HOST_PORT`
+- `OLLAMA_BASE_URL`
+
+## Hinweise
+- `WEBUI_SECRET_KEY` stabil halten (nicht bei jedem Deploy ändern). Generieren z. B. mit `openssl rand -hex 32`.

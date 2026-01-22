@@ -21,14 +21,14 @@
   - `./scripts/compose_validate_all.sh`
 
 ## Secrets / Env (Host)
-- Check `/etc/ai-stack/secrets.env` for required keys + safe validations (does not print secret values):
-  - `./scripts/secrets_env_doctor.sh`
+- Check repo-local env layout (`.env` + `.config.env` + `<service>/.config.env`) for required keys + guardrails (does not print secret values):
+  - `./scripts/env_doctor.sh`
 - Redact secrets from command output (safe sharing):
   - `./scripts/redact_secrets_output.sh`
 
 ## Smoke Test (P0)
 - Run an end-to-end-ish health/auth smoke test for Open WebUI + Transcript Miner tool:
-  - `./scripts/smoke_test_ai_stack.sh --env-file /etc/ai-stack/secrets.env --up --build`
+  - `./scripts/smoke_test_ai_stack.sh --up --build`
   - Runbook: `docs/runbook_smoke_test.md:1`
 
 ## Provision / Migration (Naming SSOT)
@@ -54,4 +54,4 @@
 ## emb-bench (Terminal)
 - Run `emb-bench/` via Docker (sets UID/GID to avoid root-owned outputs):
   - `./scripts/run_emb_bench.sh -- python -m emb_bench run --config config.local_only.yaml --phase local_vs_remote`
-  - Remote (needs `OPENROUTER_API_KEY`): `./scripts/run_emb_bench.sh --env-file /etc/ai-stack/secrets.env -- python -m emb_bench run --config config.example.yaml --phase mrl`
+  - Remote (needs `OPENROUTER_API_KEY`): `./scripts/run_emb_bench.sh --env-file .env -- python -m emb_bench run --config config.example.yaml --phase mrl`

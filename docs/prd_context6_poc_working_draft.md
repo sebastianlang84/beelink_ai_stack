@@ -260,7 +260,7 @@ Response:
 ---
 
 ## 8) Security & Compliance (PoC)
-- Keine Secrets im Repo; Env-Files außerhalb (z. B. `/etc/ai-stack/context6.secrets.env`).
+- Secrets repo-lokal (gitignored): `.env` (secrets-only); Non-Secrets: `.config.env` + `mcp-context6/.config.env`.
 - Robots/Rate limit: **robots.txt strict**, UA + delay + max pages per run.
 - Auth: PoC ohne Auth möglich (nur Tailnet/LAN). Upgrade-Pfad: Bearer Token / Reverse Proxy / mTLS.
 

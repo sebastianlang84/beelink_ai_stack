@@ -15,7 +15,7 @@ PRD: `docs/prd_embedding_benchmark_suite_mrl_local_vs_openrouter_qwen3.md:1`
 2) Run (empfohlen via Wrapper, setzt `DOCKER_UID/DOCKER_GID` korrekt):
 ```bash
 cd /home/wasti/ai_stack
-./scripts/run_emb_bench.sh --env-file /etc/ai_stack/secrets.env -- \
+./scripts/run_emb_bench.sh --env-file .env -- \
   python -m emb_bench run --config config.example.yaml --phase mrl --subset-docs 50 --subset-queries 10
 ```
 
@@ -31,5 +31,5 @@ cd /home/wasti/ai_stack
 - `emb-bench/runs_out/<ts>/results.csv`
 
 ## Hinweise
-- Remote benötigt `OPENROUTER_API_KEY` in `/etc/ai_stack/secrets.env`.
+- Remote benötigt `OPENROUTER_API_KEY` in `.env`.
 - Local Modelle laden ggf. Model-Files aus dem Netz (HF/fastembed).

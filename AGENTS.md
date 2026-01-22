@@ -29,13 +29,13 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 
 ### Sicherheit & Betrieb
 - **Keine Secrets committen** (Tokens, Passwörter, Private Keys).
-- Secrets-Handling: siehe `docs/policy_secrets_environment_variables_ai_stack.md` (SSOT + Least Privilege; bevorzugt `docker compose --env-file /etc/ai_stack/<stack>.secrets.env ...` statt `.env` im Repo-Verzeichnis).
-- **Glasklar (Wasti-Policy): In `secrets.env` stehen NUR Secrets.**
-  - `secrets.env` enthält ausschließlich: API Keys, Tokens, Passwörter, private Schlüssel.
-  - Nicht-Secrets (Pfade/Hosts/IDs/Mappings) gehören **nicht** in `secrets.env`, sondern in ein separates Config-Env-File (z. B. `/etc/ai-stack/config.env` oder `/etc/ai-stack/<stack>.config.env`).
-  - Beispiele **kein Secret**: `YOUTUBE_COOKIES_FILE`, `OPEN_WEBUI_KNOWLEDGE_ID`, `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`, `OPEN_WEBUI_BASE_URL`, `ROOT_HOST`, `*_DIR_HOST`.
-  - Compose-Start dann mit beiden Files (Docker Compose unterstützt mehrere `--env-file`):
-    - `docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env up -d`
+- Secrets-Handling: siehe `docs/policy_secrets_environment_variables_ai_stack.md` (Repo-Layout: `.env` = secrets-only; `.config.env` + `<service>/.config.env` = non-secrets; alles gitignored; Start immer via `--env-file`).
+- **Glasklar (Wasti-Policy): In `.env` stehen NUR Secrets.**
+  - `.env` enthält ausschließlich: API Keys, Tokens, Passwörter, private Schlüssel.
+  - Nicht-Secrets (Pfade/Hosts/Ports/IDs/Mappings) gehören **nicht** in `.env`, sondern in `.config.env` oder `<service>/.config.env`.
+  - Beispiele **kein Secret**: `YOUTUBE_COOKIES_FILE`, `OPEN_WEBUI_KNOWLEDGE_ID`, `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`, `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH`, `OPEN_WEBUI_BASE_URL`, `*_DIR_HOST`, `*_HOST_PORT`, `*_BIND_ADDRESS`.
+- Compose-Start (Docker Compose unterstützt mehrere `--env-file`):
+  - `docker compose --env-file .env --env-file .config.env --env-file <service>/.config.env -f <service>/docker-compose.yml up -d`
 - **Keine neuen Host-Ports** ohne Begründung + Doku (was, warum, Risiko).
 - Bevorzugt **Reverse Proxy** statt direktes Exposing; intern auf Docker-Netzwerk halten, wo möglich.
 - Persistenz/Backups mitdenken: Volumes/Bind-Mounts klar benennen; Hinweis, was gesichert werden muss.
@@ -44,7 +44,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - Ordnernamen sind **kebab-case** (z. B. `open-webui/`, `mcp-transcript-miner/`, `mcp-context6/`, `emb-bench/`).
 - Pro Service ein Ordner (z. B. `open-webui/`, `mcp-transcript-miner/`, `qdrant/`) mit:
   - `docker-compose.yml`
-  - `.env.example` (committen); Secrets bevorzugt außerhalb des Repo (z. B. `/etc/ai_stack/<stack>.secrets.env`)
+  - `.config.env.example` (committen); echte Werte in `.config.env`/`<service>/.config.env` (gitignored)
   - optional `README.md`/`OPERATIONS.md` für Bedienung & Recovery
 - Nach Compose-Änderungen: `docker compose config` (oder äquivalent) ausführen, soweit möglich.
 - Healthchecks verwenden, wenn Services es unterstützen.
@@ -62,7 +62,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - Ziel: Open WebUI läuft persistent, upgradesicher, mit sauberer Secrets-Handhabung.
 - Erwartete Dateien:
   - `open-webui/docker-compose.yml`
-  - `open-webui/.env.example` (im Repo); Secrets via `--env-file` außerhalb des Repo (siehe Policy)
+  - `open-webui/.config.env.example` (im Repo); echte Werte in `open-webui/.config.env` + shared `.env`/`.config.env` (gitignored)
 - Muss-Parameter (typisch, empfohlen):
   - `WEBUI_SECRET_KEY` (stabil halten)
 - Zugriff:
@@ -83,7 +83,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - Ziel: Vektor-DB für spätere RAG/Automationen.
 - Erwartete Dateien:
   - `qdrant/docker-compose.yml`
-  - `qdrant/.env.example`
+  - `qdrant/.config.env.example`
 - Security: API-Key aktivieren, falls über geteilte Netze erreichbar.
 
 ## 4) Doku-Standard

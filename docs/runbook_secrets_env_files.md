@@ -1,64 +1,62 @@
 # Runbook — Secrets als Env-Files (ai_stack)
 
-Stand: 2026-01-14
+Stand: 2026-01-21
 
-Ziel: Keine Secrets im Repo (`/home/wasti/ai_stack/...`), sondern zentrale Ablage am Server und Start der Stacks via `docker compose --env-file ...`.
+Ziel: Secrets in `/home/wasti/ai_stack/.env` (secrets-only) und Non-Secrets in `/home/wasti/ai_stack/.config.env` + `/home/wasti/ai_stack/<service>/.config.env` (alles **gitignored**) und Start der Stacks via `docker compose --env-file ...`.
 
 Hinweis: Dieses Runbook enthält **keine** Secret-Werte.
 
 ---
 
-## 1) Zielpfade (Server)
+## 1) Zielpfade (Repo)
 
-Wir verwenden (privater Home-Server, User `wasti` darf Owner sein):
+Wir verwenden:
+- Shared Secrets: `/home/wasti/ai_stack/.env` (**nur Secrets**)
+- Shared Config (non-secret): `/home/wasti/ai_stack/.config.env`
+- Pro Service Config (non-secret): `/home/wasti/ai_stack/<service>/.config.env`
 
-- Verzeichnis: `/etc/ai-stack/`
-- SSOT (Secrets): `/etc/ai-stack/secrets.env` (nur Secrets, zentral)
-- Config (non-secret): `/etc/ai-stack/config.env` (nur Nicht-Secrets: Pfade/Hosts/IDs/Mappings)
-
-Least-Privilege erreichst du trotzdem, weil nur Variablen, die in einem `docker-compose.yml` unter `environment:` referenziert werden, im jeweiligen Container landen.
+Beides ist gitignored (niemals committen).
 
 ---
 
-## 2) Verzeichnis anlegen + Rechte
+## 2) Rechte (empfohlen)
 
 ```bash
-sudo mkdir -p /etc/ai-stack
-sudo chown wasti:wasti /etc/ai-stack
-sudo chmod 700 /etc/ai-stack
+chmod 600 /home/wasti/ai_stack/.env
+chmod 600 /home/wasti/ai_stack/.config.env
+chmod 600 /home/wasti/ai_stack/open-webui/.config.env
+chmod 600 /home/wasti/ai_stack/mcp-transcript-miner/.config.env
 ```
 
 ---
 
-## 3) SSOT-Datei anlegen (Standard)
+## 3) Env-Files anlegen (secrets + config)
 
-```bash
-touch /etc/ai-stack/secrets.env
-chmod 600 /etc/ai-stack/secrets.env
-```
+1) Shared Secrets (Template → `.env`):
+- `/home/wasti/ai_stack/.env.example`
+- `/home/wasti/ai_stack/.env`
 
-Dann mit Editor befüllen (Beispiel-Keys, ohne Werte; **nur Secrets**):
-- `WEBUI_SECRET_KEY=...` (Open WebUI; stabil halten)
-- `YOUTUBE_API_KEY=...` (TranscriptMiner Runs / YouTube API)
-- `OPENROUTER_API_KEY=...` (TranscriptMiner Runs / LLM)
-- `OPEN_WEBUI_API_KEY=...` (Open WebUI JWT Bearer; für Knowledge Indexing)
-  - Hinweis: `OWUI_API_KEY` ist ein deprecated Alias (falls noch vorhanden: migrieren).
+2) Shared Config (Template → `.config.env`):
+- `/home/wasti/ai_stack/.config.env.example` → `/home/wasti/ai_stack/.config.env`
+
+3) Service-Config (Template → `.config.env`):
+- `/home/wasti/ai_stack/open-webui/.config.env.example` → `/home/wasti/ai_stack/open-webui/.config.env`
+- `/home/wasti/ai_stack/mcp-transcript-miner/.config.env.example` → `/home/wasti/ai_stack/mcp-transcript-miner/.config.env`
+
+Shared `.env` (**nur Secrets**, ohne Werte hier):
+- `WEBUI_SECRET_KEY=...`
+- `YOUTUBE_API_KEY=...`
+- `OPENROUTER_API_KEY=...`
+- `OPEN_WEBUI_API_KEY=...` (preferred) **oder** `OWUI_API_KEY=...` (deprecated Alias)
+
+Config `.config.env` (Beispiele, **non-secret**):
+- `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON='{"ai_knowledge":"<knowledge_id_here>"}'` (oder fallback `OPEN_WEBUI_KNOWLEDGE_ID=...`)
+- alternativ: `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH=/config/knowledge_ids.json`
+- optional: `OPEN_WEBUI_BASE_URL=http://owui:8080`
+- optional: `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt`
+- optional: `TRANSCRIPT_MINER_OUTPUT_ROOT_HOST=/srv/ai-stack/transcript-miner/output`
 
 Hinweis: JSON-Werte am besten in **einfachen Anführungszeichen** notieren, damit Shell/Compose das nicht “zerlegt”.
-
-## 3.1 Config-Datei anlegen (Standard, non-secret)
-
-```bash
-touch /etc/ai-stack/config.env
-chmod 600 /etc/ai-stack/config.env
-```
-
-Dann mit Editor befüllen (**nur Nicht-Secrets**):
-- `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON='{"ai_knowledge":"<knowledge_id_here>"}'` (Topic → Knowledge Collection)
-  - optional auch für `context6` (Embeddings via OpenRouter)
-- `OPEN_WEBUI_KNOWLEDGE_ID=...` (Fallback: Default Knowledge Collection, falls Topic-Mapping fehlt)
-- `OPEN_WEBUI_BASE_URL=http://owui:8080` (optional; Default ist im Container gesetzt)
-- `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt` (optional; falls 429/Block)
 
 ---
 
@@ -73,27 +71,27 @@ Diese Dateien sollen **keine echten Secrets** enthalten:
 
 Beispiele:
 
-Open WebUI:
+Open WebUI (vom Repo-Root):
 ```bash
-cd /home/wasti/ai_stack/open-webui
-docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env up -d
+cd /home/wasti/ai_stack
+docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml up -d
 ```
 
 Transcript Miner Tool (inkl. Knowledge Indexing):
 ```bash
-cd /home/wasti/ai_stack/mcp-transcript-miner
-docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env up -d --build
+cd /home/wasti/ai_stack
+docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build
 ```
 
 Validierung:
 ```bash
-docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env config >/dev/null
-docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env ps
+docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml config >/dev/null
+docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml config >/dev/null
 ```
 
 Wenn du Output teilen musst (Debug/Chat), immer redacted:
 ```bash
-docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env config | ./scripts/redact_secrets_output.sh
+docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml config | ./scripts/redact_secrets_output.sh
 ```
 
 ---
@@ -103,9 +101,7 @@ docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secr
 API Keys gehören nur dann in Container-Env, wenn der jeweilige Service sie zur Laufzeit benötigt.
 
 Keys für **Clients** (z. B. eigene Scripts), die nicht in Containern laufen, gehören **nicht** in Container-Env.
-Empfehlung:
-- in Passwortmanager, oder
-- separates Client-File, z. B. `/etc/ai-stack/clients.env` (chmod 600), das nur von Scripts genutzt wird.
+Empfehlung: Passwortmanager oder separates, gitignored File außerhalb von Docker/Compose.
 
 ---
 

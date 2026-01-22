@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# DEPRECATED (2026-01-21):
+# This script assumes the old `/etc/ai-stack/*.env` layout.
+# Use the current repo-local `.env` (secrets) + `.config.env` / `<service>/.config.env` (config) layout and migrate Docker objects manually if needed.
+echo "ERROR: scripts/migrate_ai_stack_naming_v1.sh is deprecated; it assumes the old /etc/ai-stack env layout." >&2
+exit 2
+
 usage() {
   cat <<'EOF'
 Migrate ai_stack naming (v1) to the new SSOT scheme:

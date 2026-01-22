@@ -1,6 +1,6 @@
 ---
 name: ai-stack-secrets-env-hygiene
-description: Enforce ai_stack secrets/env policy (no secrets in repo, use /etc/ai_stack/*.env via --env-file, validate required keys, avoid host .env files). Use when adding env vars to services, debugging auth/indexing failures, or preparing a new host install.
+description: Enforce ai_stack env policy (repo-local `.env` = secrets-only; `.config.env`/`<service>/.config.env` = non-secrets; all gitignored; validate required keys; avoid leaking config output). Use when adding env vars to services, debugging auth/indexing failures, or preparing a new install.
 ---
 
 # Secrets & env hygiene
@@ -8,11 +8,11 @@ description: Enforce ai_stack secrets/env policy (no secrets in repo, use /etc/a
 ## Golden rule
 
 - Never commit secrets (tokens/passwords/keys).
-- Prefer `docker compose --env-file /etc/ai_stack/secrets.env ...` over repo-local `.env`.
+- Use the repo-local layout: `.env` (secrets-only) + `.config.env`/`<service>/.config.env` (non-secrets), all gitignored.
 
-## Validate the host secrets file
+## Validate the env files
 
-- Run: `./scripts/secrets_env_doctor.sh /etc/ai_stack/secrets.env`
+- Run: `./scripts/env_doctor.sh`
 
 If it fails:
 - Fix permissions (should be `600`) and required keys.
@@ -20,13 +20,13 @@ If it fails:
 
 ## Safe debugging (avoid leaks)
 
-- Prefer: `docker compose --env-file /etc/ai_stack/secrets.env config >/dev/null`
-- If output must be shared: `docker compose --env-file /etc/ai_stack/secrets.env config | ./scripts/redact_secrets_output.sh`
+- Prefer: `docker compose --env-file .env --env-file .config.env --env-file <service>/.config.env -f <service>/docker-compose.yml config >/dev/null`
+- If output must be shared: `docker compose --env-file .env --env-file .config.env --env-file <service>/.config.env -f <service>/docker-compose.yml config | ./scripts/redact_secrets_output.sh`
 
 ## When adding a new env var
 
 1) Add it to the service’s `.env.example` with a safe placeholder/default.
 2) Document whether it is:
-- Secret (must live only in `/etc/ai_stack/secrets.env`)
-- Non-secret config (can live in `.env.example`)
+- Secret (shared: `.env`)
+- Non-secret config (`.config.env` / `<service>/.config.env`)
 3) If the var affects network exposure, update service docs and `README.md`.

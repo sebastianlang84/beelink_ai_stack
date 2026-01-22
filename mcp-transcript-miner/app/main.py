@@ -37,7 +37,16 @@ CONFIG_BACKUP_DIR = os.getenv(
     "/data/config_backups",
 )
 RUNS_DIR = os.getenv("TRANSCRIPT_MINER_RUNS_DIR", "/data/runs")
+KNOWLEDGE_MAP_JSON_PATH = os.getenv("OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH", "").strip()
 KNOWLEDGE_MAP_JSON = os.getenv("OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON", "").strip()
+if not KNOWLEDGE_MAP_JSON and KNOWLEDGE_MAP_JSON_PATH:
+    try:
+        candidate = Path(KNOWLEDGE_MAP_JSON_PATH).read_text(encoding="utf-8").strip()
+        if candidate:
+            json.loads(candidate)
+            KNOWLEDGE_MAP_JSON = candidate
+    except (OSError, json.JSONDecodeError):
+        KNOWLEDGE_MAP_JSON = ""
 OPEN_WEBUI_BASE_URL = os.getenv("OPEN_WEBUI_BASE_URL", "http://owui:8080").rstrip("/")
 OPEN_WEBUI_API_KEY = (os.getenv("OPEN_WEBUI_API_KEY", "") or os.getenv("OWUI_API_KEY", "")).strip()
 DEFAULT_KNOWLEDGE_ID = os.getenv("OPEN_WEBUI_KNOWLEDGE_ID", "").strip()

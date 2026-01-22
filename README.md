@@ -20,22 +20,25 @@ Dokunetz: Einstieg über `docs/README.md:1`.
 - LAN-IP (wlan0): `192.168.0.188` (für SSH im LAN; kann sich bei DHCP ändern)
 
 ## Quickstart (owui)
-1. In `open-webui/` wechseln: `cd open-webui`
-2. Secrets außerhalb des Repo setzen (mindestens `WEBUI_SECRET_KEY`): `open-webui/SECRETS.md:1`
-3. Start: `docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env up -d`
-4. Zugriff lokal am Server: `http://127.0.0.1:3000` (VPN-only empfohlen via Tailscale Serve)
+1. Shared Secrets setzen: `.env.example` → `.env` (nicht committen).
+2. Shared Config setzen (non-secret): `.config.env.example` → `.config.env` (nicht committen).
+3. Service-Config setzen (non-secret): `open-webui/.config.env.example` → `open-webui/.config.env` (nicht committen, optional).
+4. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml up -d`
+5. Zugriff lokal am Server: `http://127.0.0.1:3000` (VPN-only empfohlen via Tailscale Serve)
 
 Betrieb/Access: `open-webui/README.md:1` (default localhost-only; empfohlen via Tailscale Serve im Tailnet).
 
 ## Quickstart (Transcript Miner Tool)
 Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen, Runs starten, Summaries indexieren).
 1. Shared Docker-Objekte provisionieren (Network + Volumes, einmalig): `./scripts/provision_ai_stack_docker_objects.sh`
-2. Secrets setzen (`OPEN_WEBUI_API_KEY` + Knowledge-Mapping etc.): `mcp-transcript-miner/.env.example:1` und `docs/policy_secrets_environment_variables_ai_stack.md:1`
-3. Start: `cd mcp-transcript-miner && docker compose --env-file /etc/ai-stack/config.env --env-file /etc/ai-stack/secrets.env up -d --build` (Compose-Service: `tm`)
+2. Shared Secrets setzen: `.env.example` → `.env` (nicht committen).
+3. Shared Config setzen (non-secret): `.config.env.example` → `.config.env` (nicht committen).
+4. Service-Config setzen (non-secret): `mcp-transcript-miner/.config.env.example` → `mcp-transcript-miner/.config.env` (nicht committen).
+5. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)
 
 ## Smoke Test (P0)
 - Runbook: `docs/runbook_smoke_test.md:1`
-- Script: `./scripts/smoke_test_ai_stack.sh --config-env-file /etc/ai-stack/config.env --secrets-env-file /etc/ai-stack/secrets.env --up --build`
+- Script: `./scripts/smoke_test_ai_stack.sh --up --build`
 
 ## Open WebUI External Tools (Import JSON)
 - Context7 (MCP Streamable HTTP): `open-webui/tool-imports/tool_import_context7.json`
@@ -64,7 +67,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `qdrant/` — Qdrant (optional)
 
 ## Security (Kurz)
-- Secrets liegen außerhalb des Repo (z. B. `/etc/ai-stack/*.secrets.env`), siehe `docs/policy_secrets_environment_variables_ai_stack.md:1`.
+- Secrets liegen in `.env` (gitignored, secrets-only). Non-Secrets liegen in `.config.env` + `<service>/.config.env` (gitignored). Policy: `docs/policy_secrets_environment_variables_ai_stack.md:1`.
 
 ## Nicht-Ziele (Phase 1)
 - Kein Reverse Proxy / kein öffentliches TLS-Setup / keine öffentliche Exponierung ins Internet

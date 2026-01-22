@@ -90,8 +90,8 @@ Empfohlenes Vorgehen:
 
 Stop:
 ```bash
-cd /home/wasti/ai_stack/open-webui && docker compose --env-file /etc/ai-stack/secrets.env down
-cd /home/wasti/ai_stack/mcp-transcript-miner && docker compose --env-file /etc/ai-stack/secrets.env down
+cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml down
+cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml down
 ```
 
 Restore Volume (Beispiel):
@@ -102,11 +102,11 @@ Restore Volume (Beispiel):
 
 Start:
 ```bash
-cd /home/wasti/ai_stack/open-webui && docker compose --env-file /etc/ai-stack/secrets.env up -d
-cd /home/wasti/ai_stack/mcp-transcript-miner && docker compose --env-file /etc/ai-stack/secrets.env up -d --build
+cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml up -d
+cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build
 ```
 
 ## Rotation / Sicherheit
 
-- Wenn ein `OPEN_WEBUI_API_KEY` jemals im Klartext im Repo/Chat/Logs war: in Open WebUI rotieren und `/etc/ai-stack/secrets.env` aktualisieren.
+- Wenn ein `OPEN_WEBUI_API_KEY` jemals im Klartext im Repo/Chat/Logs war: in Open WebUI rotieren und `.env` aktualisieren.
 - Backups nicht unverschlüsselt extern speichern; mindestens Zugriff stark einschränken.

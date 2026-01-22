@@ -12,12 +12,13 @@ PRD: `docs/prd_context6_poc_working_draft.md:1`
 ```
 
 2) Secrets (außerhalb Repo) sicherstellen:
-- `OPEN_WEBUI_API_KEY` (Admin Token) in `/etc/ai_stack/secrets.env` (für Knowledge Indexing)
+- `OPEN_WEBUI_API_KEY` (Admin Token) in `/home/wasti/ai_stack/.env` (für Knowledge Indexing)
 
 3) Start:
 ```bash
 cd /home/wasti/ai_stack/mcp-context6
-docker compose --env-file /etc/ai_stack/secrets.env up -d --build
+cd /home/wasti/ai_stack
+docker compose --env-file .env --env-file .config.env --env-file mcp-context6/.config.env -f mcp-context6/docker-compose.yml up -d --build
 ```
 
 4) MCP Endpoint (für Open WebUI / RooCode):
@@ -90,7 +91,7 @@ Danach in Open WebUI Knowledge hochladen (Open WebUI übernimmt Processing/Embed
 2) `sync.start` z. B. mit `{ "knowledge_name":"openrouter-docs", "create_knowledge_if_missing": true }`
 
 ## Storage / Backup
-- `mcp_context6_context6_data` (SQLite + Artefakte)
-- `mcp_context6_context6_cache` (Cache)
+- `context6-data` (SQLite + Artefakte)
+- `context6-cache` (Cache)
 
 Runbook: `docs/runbook_backup_restore.md:1` (Volume-Backup via `scripts/backup_docker_volume.sh`)

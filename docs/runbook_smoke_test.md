@@ -8,17 +8,21 @@ Hinweis: Dieser Smoke-Test prüft **nicht** die inhaltliche Qualität der Summar
 
 - Docker + Compose Plugin installiert
 - Tailscale optional (für VPN-only Zugriff über HTTPS)
-- Secrets-SSOT vorhanden: `/etc/ai-stack/secrets.env` (keine Werte im Repo)
+- Env-Files vorhanden (gitignored; keine Werte im Git):
+  - `/home/wasti/ai_stack/.env`
+  - `/home/wasti/ai_stack/.config.env` (optional)
+  - `/home/wasti/ai_stack/open-webui/.config.env` (optional)
+  - `/home/wasti/ai_stack/mcp-transcript-miner/.config.env` (optional)
 
 ## 1) Secrets validieren (ohne Leaks)
 
 ```bash
-./scripts/secrets_env_doctor.sh /etc/ai-stack/secrets.env
+./scripts/env_doctor.sh
 ```
 
 Wenn du Output teilen musst:
 ```bash
-docker compose --env-file /etc/ai-stack/secrets.env config | ./scripts/redact_secrets_output.sh
+docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml config | ./scripts/redact_secrets_output.sh
 ```
 
 ## 2) Compose-Stacks starten
@@ -30,20 +34,20 @@ Shared Docker-Netz (einmalig):
 
 Open WebUI:
 ```bash
-cd /home/wasti/ai_stack/open-webui
-docker compose --env-file /etc/ai-stack/secrets.env up -d
+cd /home/wasti/ai_stack
+docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml up -d
 ```
 
 Transcript Miner Tool:
 ```bash
-cd /home/wasti/ai_stack/mcp-transcript-miner
-docker compose --env-file /etc/ai-stack/secrets.env up -d --build
+cd /home/wasti/ai_stack
+docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build
 ```
 
 ## 3) Smoke-Test Script (empfohlen)
 
 ```bash
-./scripts/smoke_test_ai_stack.sh --env-file /etc/ai-stack/secrets.env --up --build
+./scripts/smoke_test_ai_stack.sh --up --build
 ```
 
 Erwartung:
@@ -66,7 +70,7 @@ Erwartung: Zugriff im VPN über `https://<node>.<tailnet>.ts.net/` lädt Open We
 Ziel: Ein echter Indexing-Durchlauf in eine Knowledge Collection.
 
 1. In Open WebUI eine Knowledge Collection anlegen und deren ID notieren.
-2. In `/etc/ai-stack/secrets.env` setzen (Beispiel ohne Werte):
+2. In `mcp-transcript-miner/.config.env` setzen (Beispiel ohne Werte):
    - `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON='{"stocks_crypto":"<knowledge_id>"}'`
 3. Mit dem Tool einen Topic-Sync triggern:
    - In Open WebUI als External Tool „Transcript Miner“ verwenden: `sync.topic` mit `topic=stocks_crypto`

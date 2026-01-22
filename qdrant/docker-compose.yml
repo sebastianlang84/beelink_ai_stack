@@ -5,7 +5,7 @@ services:
     image: qdrant/qdrant:v1.11.5
     restart: unless-stopped
     environment:
-      # Optional: set QDRANT_API_KEY via `/etc/ai-stack/secrets.env` if you ever expose Qdrant beyond localhost.
+      # Optional: set QDRANT_API_KEY via `.env` if you ever expose Qdrant beyond localhost.
       QDRANT__SERVICE__API_KEY: ${QDRANT_API_KEY:-}
     volumes:
       - qdrant-data:/qdrant/storage

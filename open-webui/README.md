@@ -3,11 +3,11 @@
 Ziel: Open WebUI läuft persistent, upgradesicher und ohne Secrets im Repo. Image ist auf **0.7.2** gepinnt.
 
 ## Quickstart
-1. In `open-webui/` wechseln: `cd open-webui`
-2. Secrets außerhalb des Repo setzen (siehe `open-webui/SECRETS.md:1`):
-   - mindestens `WEBUI_SECRET_KEY` (z. B. `openssl rand -hex 32`)
-3. Start: `docker compose --env-file /etc/ai-stack/secrets.env up -d`
-4. Zugriff lokal am Server: `http://127.0.0.1:3000`
+1. Shared Secrets setzen: `/home/wasti/ai_stack/.env.example` → `/home/wasti/ai_stack/.env` (nicht committen).
+2. Shared Config setzen (non-secret): `.config.env.example` → `.config.env` (nicht committen).
+3. Service-Config setzen (non-secret): `open-webui/.config.env.example` → `open-webui/.config.env` (nicht committen, optional).
+4. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml up -d`
+5. Zugriff lokal am Server: `http://127.0.0.1:3000`
 
 ## Zugriff (VPN-only empfohlen)
 Default ist **localhost-only** gemappt: `127.0.0.1:3000 -> 8080` (kein LAN-Port).
@@ -18,7 +18,7 @@ Option A (einfach, VPN-only): im Tailnet bereitstellen:
 Option B (später): Reverse Proxy (Traefik/Caddy) im Docker-Netz.
 
 ## Persistenz / Backup
-- Volume: `open_webui_data` (Pfad im Container: `/app/backend/data`)
+- Volume: `owui-data` (Pfad im Container: `/app/backend/data`)
 
 Runbook: `docs/runbook_backup_restore.md:1`
 

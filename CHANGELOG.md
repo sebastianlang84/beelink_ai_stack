@@ -1,9 +1,10 @@
 # Changelog
 
 ## Unreleased
+- Secrets/Env: repo-local `.env` (secrets-only) + `.config.env`/`<service>/.config.env` (non-secrets), alles gitignored (keine Werte in Git)
 - ai_stack: Smoke-Test Runbook + Script ergänzt (`docs/runbook_smoke_test.md`, `scripts/smoke_test_ai_stack.sh`)
 - Naming/Compose: SSOT Naming v2 umgesetzt (Network bleibt `ai-stack`; Stacks `owui|tm|context6|qdrant`, Volumes `owui-data|tm-data|context6-{data,cache}|qdrant-data|emb-bench-cache`, Images `tm:latest`, `context6:latest`)
-- mcp-transcript-miner: `.env.example` bereinigt (doppeltes `OPEN_WEBUI_API_KEY` entfernt; JSON-Mapping nicht mehr unquoted inline; Host-Path-Overrides ergänzt)
+- mcp-transcript-miner: `.config.env.example` bereinigt (Knowledge-Mapping optional via `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH`; Host-Path-Overrides ergänzt)
 - context6: `sources.create` robuster gemacht (GitHub akzeptiert jetzt auch `config.repo`/`config.url` und normalisiert auf `config.github.repo`)
 - context6: `sources.create` aktualisiert bestehende Sources in-place (idempotent) und liefert zusätzlich `updated` zurück
 - context6: Open WebUI Knowledge Create sendet immer `description` (fix für HTTP 422 bei Open WebUI 0.7.2)
@@ -25,7 +26,7 @@
 - Tool-Server ergänzt (FastAPI): `mcp-transcript-miner/` (YouTube Transcript HTTP Tool + Runs + Indexing)
 - PRD ergänzt: `mcp-transcript-miner/PRD.md`
 - Policy ergänzt (Docs): Secrets & Environment Variables (SSOT + Least Privilege)
-- Runbook ergänzt (Docs): Secrets/Env-Files unter `/etc/ai_stack/` (inkl. Rechte/Start-Kommandos)
+- Runbook ergänzt (Docs): `.env` (secrets) + `.config.env`/`<service>/.config.env` (config) (inkl. Rechte/Start-Kommandos)
 - Secrets-Hygiene: versehentliche Repo-`.env` entfernt; Compose nutzt nur noch explizite `--env-file` Secrets
 - Backup/Restore Runbook + Scripts ergänzt (`docs/runbook_backup_restore.md`, `scripts/backup_*`)
 - PRD ergänzt: Embedding Benchmark Suite (MRL Truncation + Local CPU vs OpenRouter Qwen3) (`docs/prd_embedding_benchmark_suite_mrl_local_vs_openrouter_qwen3.md`)

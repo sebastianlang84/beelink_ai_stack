@@ -25,6 +25,5 @@ If you intentionally need a non-localhost bind:
 
 ## Troubleshooting
 
-- Missing env values: confirm `--env-file /etc/ai_stack/secrets.env` is used when starting the stack.
+- Missing env values: confirm the stack is started with all files: `--env-file .env --env-file .config.env --env-file <service>/.config.env`.
 - Network errors: ensure the shared network exists once: `./scripts/create_ai_stack_network.sh`.
-

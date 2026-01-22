@@ -807,11 +807,11 @@ SSOT (Projektzielbild): `docs/prd-tool-owui-transcript-miner-sync.md:1` und `doc
     - Struktur: `/srv/ai-stack/<stack>/{data,cache,logs}` + `/srv/ai-stack/backups`
     - Beispiele: `/srv/ai-stack/tm/data`, `/srv/ai-stack/owui/data`, `/srv/ai-stack/context6/cache`
   - Secrets/Config (Host):
-    - Secrets SSOT: `/etc/ai-stack/secrets.env` (oder saubere Migration von `/etc/ai_stack` → `/etc/ai-stack`; optional Symlink-Übergang)
+    - Repo: `.env` (secrets-only) + `.config.env`/`<service>/.config.env` (non-secrets) (alles gitignored; niemals committen)
   - DoD (Abnahme):
     - Repo-Audit: `rg` findet keine verbotenen Namen mehr (z. B. `_` in Docker-Objekt-Namen, `*_default` Networks, doppelte Token)
     - Host-Audit: `docker volume ls`/`docker network ls`/`docker images` zeigen nur noch Schema-konforme Namen
-    - Smoke-Test läuft grün: `./scripts/smoke_test_ai_stack.sh --env-file /etc/ai-stack/secrets.env --up --build`
+    - Smoke-Test läuft grün: `./scripts/smoke_test_ai_stack.sh --up --build`
 - [ ] Tailnet-HTTPS aktivieren + Open WebUI via Tailscale Serve bereitstellen:
   - [x] Tailnet hat Serve aktiviert (Admin-Konsole)
   - [x] `sudo tailscale serve --bg --https=443 http://127.0.0.1:3000`
@@ -827,15 +827,15 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] `GET /configs` / `GET|POST /configs/{config_id}` (Configs discover + edit)
   - [x] `POST /index/transcript` (Upload → Processing-Poll → Add-to-Knowledge, idempotent via SQLite)
   - [x] `POST /sync/topic/{topic}` (indexiert per-video Summaries eines Topics)
-- [x] Repo: Secrets/Env finalisieren (SSOT: `docs/policy_secrets_environment_variables_ai_stack.md:1`)
-  - [x] Compose lädt keine Repo-`.env` mehr; Start nur via `--env-file /etc/ai-stack/secrets.env`
+  - [x] Repo: Secrets/Env finalisieren (SSOT: `docs/policy_secrets_environment_variables_ai_stack.md:1`)
+  - [x] Compose lädt keine Repo-`.env` mehr; Start nur via expliziten `--env-file` (pro Stack config+secrets)
   - [x] Doku/Runbook + `.env.example` decken alle benötigten Keys ab
-  - [ ] Host: `/etc/ai-stack/secrets.env` mit echten Werten befüllen:
+  - [ ] Repo: `.env` mit echten Werten befüllen (und niemals committen):
     - [ ] `YOUTUBE_API_KEY` + `OPENROUTER_API_KEY` (für Runs mit LLM-Analyse)
     - [ ] `OPEN_WEBUI_API_KEY` (JWT Bearer; `OWUI_API_KEY` ist deprecated Alias) + `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON` (Topic→Knowledge Mapping)
     - [ ] `OPEN_WEBUI_API_KEY` rotieren, falls er jemals im Repo/Logs/Chat sichtbar war
-  - [ ] DRINGEND: Secrets vs Config sauber trennen (nur Secrets in `secrets.env`)
-    - [ ] `secrets.env` darf nur enthalten: Tokens/Keys/Passwörter/private Keys (keine Pfade/Hosts/IDs/Mappings)
+  - [ ] DRINGEND: Secrets vs Config sauber trennen (nur Secrets in `*.secrets.env`)
+    - [ ] `*.secrets.env` darf nur enthalten: Tokens/Keys/Passwörter/private Keys (keine Pfade/Hosts/IDs/Mappings)
     - [ ] Nicht-Secrets als committed Service-Config (YAML/JSON im Service-Ordner) oder hostseitig unter `/srv/ai-stack/<service>/…` ablegen (Entscheidung + Doku)
     - [ ] `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`/`OPEN_WEBUI_KNOWLEDGE_ID` ersetzen durch Mapping nach Knowledge-Name (IDs sind fragil) + Laufzeit-Resolution per OWUI API
     - [ ] Betriebs-Workflow: Mapping ändern ohne “Gefummel” (klarer Runbook-Schritt; ggf. Tool-Reload/Restart dokumentieren)
@@ -846,7 +846,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] Tool→OWUI API erreichbar (Auth OK; `/api/v1/files/` → `200`)
   - [x] 1 Topic (z. B. `stocks_crypto`), 2–3 Videos: Summaries in Knowledge indexed (verifiziert via `/api/v1/knowledge/<id>/files`)
   - [ ] Chat-Retrieval in Open WebUI manuell prüfen (Collection aktivieren, Frage stellen, Sources prüfen)
-  - [ ] Falls YouTube 429/Block: `cookies.txt` hinterlegen (`/etc/ai-stack/youtube_cookies.txt`) + `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt` setzen
+  - [ ] Falls YouTube 429/Block: `youtube_cookies.txt` unter Repo-Root hinterlegen (gitignored) + `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt` in `mcp-transcript-miner/.config.env` setzen
 
 ## P1 — Betrieb & Sicherheit
 - [x] Open WebUI localhost-only + Healthcheck/Log-Rotation in Compose

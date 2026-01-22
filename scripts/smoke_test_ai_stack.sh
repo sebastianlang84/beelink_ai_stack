@@ -7,7 +7,7 @@ Smoke-test for ai_stack P0 (Open WebUI + Transcript Miner tool).
 
 Checks (offline / localhost-only):
   - ai-stack docker network exists (creates it if missing)
-  - secrets file passes ./scripts/secrets_env_doctor.sh (unless --skip-secrets-doctor)
+  - env files pass ./scripts/env_doctor.sh (unless --skip-secrets-doctor)
   - docker compose config succeeds for required stacks
   - containers are running + healthy (if --up)
   - Open WebUI responds on http://127.0.0.1:3000
@@ -15,10 +15,13 @@ Checks (offline / localhost-only):
   - Tool can reach Open WebUI API /api/v1/files/ (auth required)
 
 Usage:
-  ./scripts/smoke_test_ai_stack.sh [--env-file /etc/ai-stack/secrets.env] [--up] [--build]
+  ./scripts/smoke_test_ai_stack.sh [--up] [--build]
 
 Options:
-  --env-file PATH          Secrets env file path (default: /etc/ai-stack/secrets.env)
+  --secrets-env-file PATH        Shared secrets env file (default: .env)
+  --config-env-file PATH         Shared config env file (default: .config.env; optional)
+  --owui-config-env-file PATH    Open WebUI service config env (default: open-webui/.config.env; optional)
+  --tm-config-env-file PATH      Transcript Miner tool config env (default: mcp-transcript-miner/.config.env; optional)
   --up                     Bring stacks up (recommended for first run)
   --build                  Build mcp-transcript-miner image when starting
   --skip-secrets-doctor    Skip secrets validation (useful for Open WebUI-only checks)
@@ -26,19 +29,30 @@ Options:
 EOF
 }
 
-if [[ -e "/etc/ai-stack/secrets.env" ]]; then
-  env_file="/etc/ai-stack/secrets.env"
-else
-  env_file="/etc/ai_stack/secrets.env"
-fi
+secrets_env_file=".env"
+config_env_file=".config.env"
+owui_config_env_file="open-webui/.config.env"
+tm_config_env_file="mcp-transcript-miner/.config.env"
 do_up="false"
 do_build="false"
 skip_secrets_doctor="false"
 
 while [[ "${1:-}" == --* || "${1:-}" == "-h" || "${1:-}" == "--help" ]]; do
   case "${1:-}" in
-    --env-file)
-      env_file="${2:-}"
+    --secrets-env-file)
+      secrets_env_file="${2:-}"
+      shift 2
+      ;;
+    --config-env-file)
+      config_env_file="${2:-}"
+      shift 2
+      ;;
+    --owui-config-env-file)
+      owui_config_env_file="${2:-}"
+      shift 2
+      ;;
+    --tm-config-env-file)
+      tm_config_env_file="${2:-}"
       shift 2
       ;;
     --up)
@@ -79,33 +93,66 @@ require_cmd() {
 require_cmd docker
 require_cmd curl
 
+require_file() {
+  local label="$1"
+  local path="$2"
+  if [[ -z "$path" ]]; then
+    return 0
+  fi
+  if [[ ! -e "$path" ]]; then
+    echo "ERROR: missing ${label}: $path" >&2
+    exit 1
+  fi
+}
+
+require_file "secrets env file" "$secrets_env_file"
+[[ -e "$config_env_file" ]] || config_env_file=""
+[[ -e "$owui_config_env_file" ]] || owui_config_env_file=""
+[[ -e "$tm_config_env_file" ]] || tm_config_env_file=""
+
+owui_compose=(docker compose)
+owui_compose+=(--env-file "$secrets_env_file")
+[[ -n "$config_env_file" ]] && owui_compose+=(--env-file "$config_env_file")
+[[ -n "$owui_config_env_file" ]] && owui_compose+=(--env-file "$owui_config_env_file")
+owui_compose+=(-f open-webui/docker-compose.yml)
+
+tm_compose=(docker compose)
+tm_compose+=(--env-file "$secrets_env_file")
+[[ -n "$config_env_file" ]] && tm_compose+=(--env-file "$config_env_file")
+[[ -n "$tm_config_env_file" ]] && tm_compose+=(--env-file "$tm_config_env_file")
+tm_compose+=(-f mcp-transcript-miner/docker-compose.yml)
+
 echo "==> Ensuring docker network: ai-stack"
 if ! docker network inspect ai-stack >/dev/null 2>&1; then
   ./scripts/create_ai_stack_network.sh
 fi
 
 if [[ "$skip_secrets_doctor" != "true" ]]; then
-  echo "==> Validating secrets file: $env_file"
-  ./scripts/secrets_env_doctor.sh "$env_file" >/dev/null
-  echo "OK: secrets validation"
+  echo "==> Validating env files"
+  args=(--secrets "$secrets_env_file")
+  [[ -n "$config_env_file" ]] && args+=(--config "$config_env_file")
+  [[ -n "$owui_config_env_file" ]] && args+=(--service-config "$owui_config_env_file")
+  [[ -n "$tm_config_env_file" ]] && args+=(--service-config "$tm_config_env_file")
+  ./scripts/env_doctor.sh "${args[@]}" >/dev/null
+  echo "OK: env validation"
 else
   echo "==> Skipping secrets validation (--skip-secrets-doctor)"
 fi
 
 echo "==> Compose config validation (with --env-file)"
-docker compose --env-file "$env_file" -f open-webui/docker-compose.yml config >/dev/null
-docker compose --env-file "$env_file" -f mcp-transcript-miner/docker-compose.yml config >/dev/null
+"${owui_compose[@]}" config >/dev/null
+"${tm_compose[@]}" config >/dev/null
 echo "OK: compose config"
 
 if [[ "$do_up" == "true" ]]; then
   echo "==> Starting Open WebUI"
-  docker compose --env-file "$env_file" -f open-webui/docker-compose.yml up -d
+  "${owui_compose[@]}" up -d
 
   echo "==> Starting Transcript Miner tool"
   if [[ "$do_build" == "true" ]]; then
-    docker compose --env-file "$env_file" -f mcp-transcript-miner/docker-compose.yml up -d --build
+    "${tm_compose[@]}" up -d --build
   else
-    docker compose --env-file "$env_file" -f mcp-transcript-miner/docker-compose.yml up -d
+    "${tm_compose[@]}" up -d
   fi
 fi
 
@@ -118,7 +165,11 @@ wait_healthy() {
 
   while true; do
     local cid
-    cid="$(docker compose --env-file "$env_file" -f "$compose_file" ps -q "$service" 2>/dev/null || true)"
+    if [[ "$compose_file" == "open-webui/docker-compose.yml" ]]; then
+      cid="$("${owui_compose[@]}" ps -q "$service" 2>/dev/null || true)"
+    else
+      cid="$("${tm_compose[@]}" ps -q "$service" 2>/dev/null || true)"
+    fi
     if [[ -z "$cid" ]]; then
       echo "WAIT: container not created yet ($compose_file:$service)"
       sleep 2
@@ -142,8 +193,13 @@ wait_healthy() {
     now="$(date +%s)"
     if (( now - start > timeout_seconds )); then
       echo "ERROR: timeout waiting for healthy service: $compose_file:$service" >&2
-      docker compose --env-file "$env_file" -f "$compose_file" ps || true
-      docker compose --env-file "$env_file" -f "$compose_file" logs --tail 200 "$service" || true
+      if [[ "$compose_file" == "open-webui/docker-compose.yml" ]]; then
+        "${owui_compose[@]}" ps || true
+        "${owui_compose[@]}" logs --tail 200 "$service" || true
+      else
+        "${tm_compose[@]}" ps || true
+        "${tm_compose[@]}" logs --tail 200 "$service" || true
+      fi
       return 1
     fi
     sleep 2
@@ -163,7 +219,7 @@ fi
 echo "OK: Open WebUI http://127.0.0.1:3000/ -> $code"
 
 echo "==> Tool service checks (inside container)"
-docker compose --env-file "$env_file" -f mcp-transcript-miner/docker-compose.yml exec -T tm python - <<'PY'
+"${tm_compose[@]}" exec -T tm python - <<'PY'
 import os
 import sys
 import urllib.request

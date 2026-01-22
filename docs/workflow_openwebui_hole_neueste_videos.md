@@ -29,7 +29,7 @@ PRD v0 (Zusammenfassung/Nächste Schritte): `docs/prd-tool-owui-transcript-miner
   - `youtube.max_videos_per_channel` Default: `null` (Fallback: `num_videos`) (`transcript-miner/src/common/config_models.py:52`)
 - Hinweis: TranscriptMiner verarbeitet `num_videos` **pro Channel** (`transcript-miner/src/transcript_miner/main.py:250`).
 - Open WebUI Knowledge Target (Topic → Knowledge Collection):
-  - `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON` (siehe `mcp-transcript-miner/.env.example:1`)
+  - `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON` (siehe `mcp-transcript-miner/.config.env.example:1`)
 
 ## Tool-Verhalten (LLM-Interaction Contract)
 
@@ -72,7 +72,7 @@ Das Tool liefert eine kompakte Zusammenfassung zurück:
 ## Nicht-Ziele / Guardrails
 
 - Kein direktes Exposing neuer Host-Ports: Tool-Service bleibt im Docker-Netz (`ai-stack`).
-- Keine Secrets im Repo: API Keys ausschließlich via `/etc/ai-stack/*.env` (Policy: `docs/policy_secrets_environment_variables_ai_stack.md:1`).
+- Secrets sind repo-lokal (gitignored): `.env` (secrets-only); Non-Secrets: `.config.env` + `<service>/.config.env` (Policy: `docs/policy_secrets_environment_variables_ai_stack.md:1`).
 - Fail-fast bei fehlenden Mappings (`topic` ohne Knowledge-ID) oder fehlendem Output-Root.
 
 ## Implementierungs-Hinweise (Folgearbeit)
