@@ -285,6 +285,12 @@ class OutputConfig(BaseModel):
         """Gibt den Pfad für den Timeout-Report zurück."""
         return self.get_reports_path() / "timeout_budget.md"
 
+    def get_error_history_path(self) -> Path:
+        """Gibt den Pfad für die Fehler-History zurück."""
+        if self.is_global_layout():
+            return self.get_data_root() / "diagnostics" / "errors.jsonl"
+        return self.get_path() / "diagnostics" / "errors.jsonl"
+
     def get_run_reports_path(
         self,
         timestamp: str,

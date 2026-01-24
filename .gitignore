@@ -29,6 +29,7 @@ dist/
 build/
 .cache/
 .DS_Store
+youtube_cookies.txt
 
 # Repo-local outputs / caches (never commit)
 emb-bench/.cache_out/

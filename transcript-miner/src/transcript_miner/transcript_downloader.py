@@ -18,11 +18,19 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import (
     CouldNotRetrieveTranscript,
     NoTranscriptFound,
-    TooManyRequests,
     TranscriptsDisabled,
     VideoUnavailable,
     YouTubeRequestFailed,
 )
+
+# youtube-transcript-api 1.x removed `TooManyRequests` in favor of `RequestBlocked`.
+try:  # pragma: no cover
+    from youtube_transcript_api._errors import TooManyRequests
+except ImportError:  # pragma: no cover
+    try:
+        from youtube_transcript_api._errors import RequestBlocked as TooManyRequests
+    except ImportError:
+        TooManyRequests = YouTubeRequestFailed  # type: ignore[misc,assignment]
 from .transcript_models import TranscriptDownloadResult, TranscriptStatus
 
 DEFAULT_LANGUAGES = [

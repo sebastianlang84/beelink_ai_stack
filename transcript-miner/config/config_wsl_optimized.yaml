@@ -1,4 +1,4 @@
-# Beispiel-Konfiguration: WSL-optimiert (konservatives Rate-Limiting)
+# Beispiel-Konfiguration: WSL-optimiert (cookie-free, konservatives Rate-Limiting)
 #
 # Zweck:
 # - Dient als Vorlage für Umgebungen, in denen YouTube Transcript Downloads
@@ -10,6 +10,8 @@
 api:
   youtube_api_key: ${YOUTUBE_API_KEY}
   openrouter_api_key: ${OPENROUTER_API_KEY}
+  # Cookies absichtlich deaktiviert (privacy-safe); Rate-Limit-Strategie nutzen.
+  youtube_cookies: null
 
 youtube:
   # Beispiel-Channel (ersetzen)
@@ -19,12 +21,12 @@ youtube:
   preferred_languages: ["en", "de"]
   keywords: []
 
-  # IP-Block Prevention
-  min_delay_s: 4.0
-  jitter_s: 2.0
-  max_retries: 5
+  # IP-Block Prevention (konservativ, WSL/VPN-freundlich)
+  min_delay_s: 6.0
+  jitter_s: 3.0
+  max_retries: 3
   backoff_base_s: 2.0
-  backoff_cap_s: 120.0
+  backoff_cap_s: 180.0
   cooldown_on_block_s: 900
 
 output:

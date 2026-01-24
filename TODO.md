@@ -4,7 +4,7 @@
 
 - [x] **User-Data Konzepte vollständig auswerten:** `user_data/` (Kritik, Config-Vorschläge, Report-Templates) → konkrete P0/P1 Tasks + Akzeptanzkriterien.
 
-- [ ] **P0: Prompt-Härtung & Taxonomie (Stocks/Macro/Crypto)**
+- [x] **P0: Prompt-Härtung & Taxonomie (Stocks/Macro/Crypto)**
   - Ziel: Striktere Extraktion gemäß `user_data/config_vorschlag.md`.
   - Umsetzung:
     - `stocks_covered` nur bei Deep-Dive (min. 2 Evidence items, thesis + risk/catalyst/etc).
@@ -789,9 +789,10 @@ SSOT (Projektzielbild): `docs/prd-tool-owui-transcript-miner-sync.md:1` und `doc
     - Ordner/Services: `kebab-case/` (z. B. `open-webui/`, `mcp-transcript-miner/`)
     - Docs/Scripts: `kebab-case.md`, `kebab-case.sh` (keine neuen `_` in Filenames)
     - Code: Python-Packages/Module weiterhin `snake_case` (kein Refactor/Import-Bruch)
-  - Docker Compose (Project/Stack):
-    - Pro Stack `name:` ist kurz & eindeutig: `owui`, `tm`, `context6`, `qdrant`, `emb-bench`
-    - Keine `container_name` (default), stattdessen eindeutige Service-Namen/Network-Aliases
+- Docker Compose (Project/Stack):
+  - Pro Stack `name:` ist kurz & eindeutig: `owui`, `tm`, `context6`, `qdrant`, `emb-bench`
+  - Keine `container_name` (default), stattdessen eindeutige Service-Namen/Network-Aliases
+    - Ausnahme: `watchdog` setzt `container_name: watchdog` (explizit gewuenscht)
   - Docker Network (shared):
     - Externes Netzwerk: `ai-stack` (bewusst als einziges “ai-stack” erlaubt)
     - DNS-Kollisionen vermeiden (verbindlich):
@@ -830,15 +831,16 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] Repo: Secrets/Env finalisieren (SSOT: `docs/policy_secrets_environment_variables_ai_stack.md:1`)
   - [x] Compose lädt keine Repo-`.env` mehr; Start nur via expliziten `--env-file` (pro Stack config+secrets)
   - [x] Doku/Runbook + `.env.example` decken alle benötigten Keys ab
-  - [ ] Repo: `.env` mit echten Werten befüllen (und niemals committen):
-    - [ ] `YOUTUBE_API_KEY` + `OPENROUTER_API_KEY` (für Runs mit LLM-Analyse)
-    - [ ] `OPEN_WEBUI_API_KEY` (JWT Bearer; `OWUI_API_KEY` ist deprecated Alias) + `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON` (Topic→Knowledge Mapping)
+  - [x] Repo: `.env` mit echten Werten befüllt (und niemals committen):
+    - [x] `YOUTUBE_API_KEY` + `OPENROUTER_API_KEY` (für Runs mit LLM-Analyse)
+    - [x] `OPEN_WEBUI_API_KEY` (JWT Bearer; `OWUI_API_KEY` ist deprecated Alias)
     - [ ] `OPEN_WEBUI_API_KEY` rotieren, falls er jemals im Repo/Logs/Chat sichtbar war
   - [ ] DRINGEND: Secrets vs Config sauber trennen (nur Secrets in `*.secrets.env`)
     - [ ] `*.secrets.env` darf nur enthalten: Tokens/Keys/Passwörter/private Keys (keine Pfade/Hosts/IDs/Mappings)
     - [ ] Nicht-Secrets als committed Service-Config (YAML/JSON im Service-Ordner) oder hostseitig unter `/srv/ai-stack/<service>/…` ablegen (Entscheidung + Doku)
-    - [ ] `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`/`OPEN_WEBUI_KNOWLEDGE_ID` ersetzen durch Mapping nach Knowledge-Name (IDs sind fragil) + Laufzeit-Resolution per OWUI API
-    - [ ] Betriebs-Workflow: Mapping ändern ohne “Gefummel” (klarer Runbook-Schritt; ggf. Tool-Reload/Restart dokumentieren)
+  - [ ] `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`/`OPEN_WEBUI_KNOWLEDGE_ID` ersetzen durch Mapping nach Knowledge-Name (IDs sind fragil) + Laufzeit-Resolution per OWUI API
+  - [ ] Betriebs-Workflow: Mapping ändern ohne “Gefummel” (klarer Runbook-Schritt; ggf. Tool-Reload/Restart dokumentieren)
+- [ ] YouTube Transcript Block (HTTP 429) entschärfen: stabile Fetch-Strategie (IP/Proxy/Cookies), Runbook + Tests
 - [ ] Smoke-Test Runbook:
   - [x] Repo: Runbook + Script vorhanden (`docs/runbook_smoke_test.md:1`, `scripts/smoke_test_ai_stack.sh:1`)
   - [x] Services laufen (Compose `ps` zeigt `healthy`)
@@ -866,6 +868,8 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
 
 ## P2 — Observability / Wartung
 - [ ] Ressourcen-/Disk-Checks: freier Speicher, Docker-Volume-Wachstum, Backup-Größe
+- [x] Watchdog-Plan dokumentiert (CPU/Temperatur/Disk): `docs/plan_watchdog_monitoring.md`
+- [x] Watchdog-Container implementiert (CPU/Temperatur/Disk + Docker-Hygiene)
 - [ ] Docker Housekeeping Policy: `docker system prune` (vorsichtig) / Image-Retention
 - [ ] Repo-Hygiene (lokal): unversionierte Artefakte aufräumen (z. B. `transcript-miner/.venv`, `emb-bench/.cache_out`, `emb-bench/runs*`, alte `open-webui/tool-imports/backup_*.json`)
 - [ ] (Optional) automatische Security Updates fürs OS (Unattended-Upgrades)

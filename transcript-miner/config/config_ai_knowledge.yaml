@@ -8,6 +8,8 @@
 api:
   youtube_api_key: ${YOUTUBE_API_KEY}
   openrouter_api_key: ${OPENROUTER_API_KEY}
+  # Cookies absichtlich deaktiviert (privacy-safe); Rate-Limit-Strategie nutzen.
+  youtube_cookies: null
 
 # 2. YOUTUBE - Quellen & Download-Parameter
 # ------------------------------------------------------------------------------
@@ -21,12 +23,12 @@ youtube:
   keywords: []
   preferred_languages: ["en", "de"]
 
-  # IP-Block Prevention (Standardwerte)
-  min_delay_s: 15.0
-  jitter_s: 5.0
-  max_retries: 5
-  backoff_base_s: 5.0
-  backoff_cap_s: 300.0
+  # Rate-Limit-Strategie (ohne Cookies)
+  min_delay_s: 3.0
+  jitter_s: 2.0
+  max_retries: 3
+  backoff_base_s: 2.0
+  backoff_cap_s: 60.0
   
   proxy:
     mode: none
@@ -57,6 +59,7 @@ analysis:
     enabled: true
     mode: per_video
     model: "openai/gpt-5.2"
+    per_video_concurrency: 1
     max_input_tokens: 320000
     max_output_tokens: 80000
     system_prompt: |

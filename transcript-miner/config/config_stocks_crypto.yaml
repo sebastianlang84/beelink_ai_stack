@@ -1,7 +1,7 @@
 api:
   youtube_api_key: ${YOUTUBE_API_KEY} # API-Schlüssel aus Umgebungsvariable YOUTUBE_API_KEY laden
-  # Optional: hilft gegen 429/Block in Datacenter-IPs (Datei liegt außerhalb des Repo; Tool-Container mountet /etc/ai-stack nach /host_secrets)
-  youtube_cookies: ${YOUTUBE_COOKIES_FILE}
+  # Cookies absichtlich deaktiviert (privacy-safe); Rate-Limit-Strategie nutzen.
+  youtube_cookies: null
 
 # YouTube-Konfiguration
 youtube:
@@ -30,12 +30,12 @@ youtube:
   # dann an der Pydantic-Validierung (erwartet: list[string]).
   keywords: []
   
-  # WSL/Privat-Optimierung gegen Rate-Limiting
-  min_delay_s: 20.0      # Erhöht auf 20s für stabilen lokalen Run ohne Proxy
-  jitter_s: 5.0         # Mehr Zufall
-  max_retries: 5
-  backoff_base_s: 5.0
-  backoff_cap_s: 300.0
+  # Rate-Limit-Strategie (ohne Cookies)
+  min_delay_s: 3.0
+  jitter_s: 2.0
+  max_retries: 3
+  backoff_base_s: 2.0
+  backoff_cap_s: 60.0
   # PROXY-KONFIGURATION (Deaktiviert, da Credentials ungültig/abgelaufen)
   proxy:
     mode: none
@@ -77,7 +77,7 @@ analysis:
     max_transcripts: 200
     max_input_tokens: 320000
     max_output_tokens: 80000
-    per_video_concurrency: 2
+    per_video_concurrency: 1
     per_video_min_delay_s: 1.0
     per_video_jitter_s: 0.5
     system_prompt: |

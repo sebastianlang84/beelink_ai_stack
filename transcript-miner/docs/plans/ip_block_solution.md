@@ -17,8 +17,9 @@ Die in diesem Plan beschriebenen Maßnahmen wurden erfolgreich umgesetzt und dur
 - **Neu:** Sticky Sessions für Webshare (IP-Stabilität pro Video).
 - **Neu:** Länder-Filter (`filter_ip_locations`).
 
-### D) Cookies (Deaktiviert) - [x]
-- Status: Dokumentiert als "derzeit nicht funktionsfähig".
+### D) Cookie-freier Betrieb (Default) - [x]
+- Status: Default-Profil nutzt keine Cookies (`youtube_cookies: null`).
+- Empfehlung: konservative Delays über [`config/config_wsl_optimized.yaml`](../../config/config_wsl_optimized.yaml:1).
 
 ### E) User-Agent - [x]
 - Moderner Chrome User-Agent wird standardmäßig verwendet.

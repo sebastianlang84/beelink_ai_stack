@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: YouTube 429 als TODO erfasst (Runbook/Tests fuer stabile Fetch-Strategie)
 - docs: YouTube 429 Einordnung/Workarounds/Alternativen im Block-Report ergaenzt
 - docs: Report zum aktuellen YouTube Transcript Block (HTTP 429)
 - transcript-miner: Tool `tools/youtube_block_probe.py` fuer systematische Rate-Limit Tests

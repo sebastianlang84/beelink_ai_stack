@@ -346,6 +346,9 @@ YouTube-Kanäle und Filter-/Download-Parameter (siehe [`YoutubeConfig`](../src/c
 - `youtube.backoff_cap_s` *(float, default 120.0)*: Maximum für exponentiellen Backoff.
 - `youtube.cooldown_on_block_s` *(int, default 900)*: Cooldown-Zeit nach einem IP-Block (Sekunden).
 
+Hinweis (cookie-frei):
+- Für private/WSL/VPN-Umgebungen ohne Cookies gibt es ein konservatives Profil: [`config/config_wsl_optimized.yaml`](../config/config_wsl_optimized.yaml:1).
+
 #### Proxy-Konfiguration (`youtube.proxy`)
 
 - `youtube.proxy.mode` *("none"|"generic"|"webshare", default "none")*: Proxy-Modus.

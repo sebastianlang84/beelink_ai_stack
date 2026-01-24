@@ -36,9 +36,24 @@ Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen
 4. Service-Config setzen (non-secret): `mcp-transcript-miner/.config.env.example` → `mcp-transcript-miner/.config.env` (nicht committen).
 5. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)
 
+Diagnose-Scripts (Transcript Miner):
+- Cookie-Load + Transcript-Request: `transcript-miner/tools/repro_cookie_load.py`
+- IP-Block-Repro: `transcript-miner/tools/repro_ip_block.py`
+
+## Quickstart (Watchdog)
+Ziel: Lightweight Monitoring fuer CPU/Temperatur/Disk (Host) plus Docker-Hygiene.
+1. Shared Secrets setzen: `.env.example` -> `.env` (nicht noetig fuer Watchdog, aber konsistent).
+2. Shared Config setzen (non-secret): `.config.env.example` -> `.config.env` (optional).
+3. Service-Config setzen (non-secret): `watchdog/.config.env.example` -> `watchdog/.config.env` (gitignored).
+4. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file watchdog/.config.env -f watchdog/docker-compose.yml up -d --build`
+
 ## Smoke Test (P0)
 - Runbook: `docs/runbook_smoke_test.md:1`
 - Script: `./scripts/smoke_test_ai_stack.sh --up --build`
+- Reindex (Embedding-Model-Wechsel): `docs/runbook_openwebui_reindex_knowledge.md:1`
+
+## Monitoring (Plan)
+- Watchdog-Ideen (CPU/Temp/Disk): `docs/plan_watchdog_monitoring.md`
 
 ## Open WebUI External Tools (Import JSON)
 - Context7 (MCP Streamable HTTP): `open-webui/tool-imports/tool_import_context7.json`
@@ -65,6 +80,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `mcp-transcript-miner/` — **Transcript Miner** MCP Server (Configs/Runs/Outputs + Knowledge Indexing)
 - `transcript-miner/` — TranscriptMiner Pipeline-Engine (Python; Transcripts + Summaries)
 - `qdrant/` — Qdrant (optional)
+- `watchdog/` — Monitoring-Watchdog (CPU/Temperatur/Disk + Docker-Hygiene)
 
 ## Security (Kurz)
 - Secrets liegen in `.env` (gitignored, secrets-only). Non-Secrets liegen in `.config.env` + `<service>/.config.env` (gitignored). Policy: `docs/policy_secrets_environment_variables_ai_stack.md:1`.

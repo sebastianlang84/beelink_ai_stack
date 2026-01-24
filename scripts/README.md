@@ -31,6 +31,11 @@
   - `./scripts/smoke_test_ai_stack.sh --up --build`
   - Runbook: `docs/runbook_smoke_test.md:1`
 
+## Transcript Miner Run Status
+- Check a specific TM run (status, log tail, cookie availability):
+  - `./scripts/check_tm_run_status.sh <run_id>`
+  - Optional env: `TM_CONTAINER=tm`
+
 ## Provision / Migration (Naming SSOT)
 - Provision shared Docker objects (network + named volumes):
   - `./scripts/provision_ai_stack_docker_objects.sh`

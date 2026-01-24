@@ -248,12 +248,40 @@ def test_stocks_per_video_extract_mvp_ok(
         "raw_hash": "sha256:" + ("0" * 64),
         "transcript_quality": {"grade": "ok", "reasons": []},
         "macro_insights": [
-            {"claim": "Inflation tends to pressure margins.", "tags": []}
+            {
+                "claim": "Inflation tends to pressure margins.",
+                "tags": ["macro", "inflation"],
+                "evidence": [
+                    {
+                        "video_id": "vid1",
+                        "transcript_path": str(t1),
+                        "snippet_sha256": "sha256:" + ("1" * 64),
+                        "quote": "Intro...",
+                        "role": "other",
+                    }
+                ],
+            }
         ],
         "stocks_covered": [
             {
                 "canonical": "MSFT",
                 "why_covered": "Deep dive into the business model.",
+                "evidence": [
+                    {
+                        "video_id": "vid1",
+                        "transcript_path": str(t1),
+                        "snippet_sha256": "sha256:" + ("2" * 64),
+                        "quote": "We like MSFT.",
+                        "role": "thesis",
+                    },
+                    {
+                        "video_id": "vid1",
+                        "transcript_path": str(t1),
+                        "snippet_sha256": "sha256:" + ("3" * 64),
+                        "quote": "Outro...",
+                        "role": "risk",
+                    },
+                ],
             }
         ],
         "errors": [],

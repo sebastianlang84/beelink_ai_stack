@@ -15,6 +15,7 @@ except ImportError:
     RICH_AVAILABLE = False
 
 from common.config import Config, PROJECT_ROOT
+from common.error_history import attach_error_history_handler
 
 
 def setup_logging(config: Config) -> logging.Logger:
@@ -70,15 +71,26 @@ def setup_logging(config: Config) -> logging.Logger:
 
     logger.addHandler(console_handler)
 
-    # Ensure logs directory exists
+    # Determine a default logs directory.
+    #
+    # Important: in containerized deployments we often mount the code repo read-only,
+    # so creating `<PROJECT_ROOT>/logs` would fail even when `config.logging.file`
+    # points to a writable location. We therefore only use `<PROJECT_ROOT>/logs`
+    # as a fallback when no explicit log file path is configured.
     log_path = Path(PROJECT_ROOT) / "logs"
-    log_path.mkdir(parents=True, exist_ok=True)
+    try:
+        if getattr(getattr(config, "logging", None), "file", None):
+            log_path = Path(config.logging.file).parent
+        log_path.mkdir(parents=True, exist_ok=True)
+    except Exception as e:
+        logger.warning("Could not create logs directory %s: %s", log_path, e)
 
     # Setup main log file
     _setup_main_log_file(logger, config, formatter, log_path, log_level)
 
     # Setup error log file
     _setup_error_log_file(logger, config, formatter)
+    attach_error_history_handler(logger, config)
 
     # Cleanup old logs if rotation is enabled
     if config.logging.rotation_enabled:

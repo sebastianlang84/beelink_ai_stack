@@ -77,6 +77,17 @@ Persistenz/Backup: `docs/runbook_backup_restore.md:1`
 
 ## Troubleshooting
 
+### Run schlägt fehl: `Read-only file system` (z. B. `/transcript_miner_repo/logs`)
+Ursache: Der TranscriptMiner-Code-Ordner ist im Tool-Container absichtlich **read-only** gemountet (`/transcript_miner_repo:ro`).
+
+Fix:
+- Stelle sicher, dass du den aktuellen Stand nutzt (Logging schreibt dann nach `TRANSCRIPT_MINER_OUTPUT_DIR/logs`).
+- Falls du eigene Configs verwendest: setze `logging.file`/`logging.error_log_file` auf einen **schreibbaren** Pfad (z. B. unter `TRANSCRIPT_MINER_OUTPUT_DIR`).
+
+### Fehler-History landet nicht auf dem Host
+Wenn `output.global` in der Config auf `/home/wasti/ai_stack_data/...` zeigt, muss dieser Pfad im Container gemountet sein.
+Stelle sicher, dass `AI_STACK_DATA_DIR_HOST=/home/wasti/ai_stack_data` gesetzt ist (siehe `.config.env.example`).
+
 ### YouTube 429 / Block (Too Many Requests)
 Wenn `POST /transcript` oder ein Run häufig mit `429`/`Too Many Requests` fehlschlägt, hilft oft ein `cookies.txt`.
 

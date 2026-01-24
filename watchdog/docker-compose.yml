@@ -1,0 +1,38 @@
+name: watchdog
+services:
+  watchdog:
+    container_name: watchdog
+    image: watchdog:latest
+    build:
+      context: .
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Europe/Vienna}
+      WATCHDOG_INTERVAL_SEC: ${WATCHDOG_INTERVAL_SEC:-900}
+      WATCHDOG_CPU_THRESHOLD_PCT: ${WATCHDOG_CPU_THRESHOLD_PCT:-90}
+      WATCHDOG_TEMP_THRESHOLD_C: ${WATCHDOG_TEMP_THRESHOLD_C:-85}
+      WATCHDOG_DISK_THRESHOLD_PCT: ${WATCHDOG_DISK_THRESHOLD_PCT:-90}
+      WATCHDOG_BURST_SEC: ${WATCHDOG_BURST_SEC:-20}
+      WATCHDOG_BURST_INTERVAL_SEC: ${WATCHDOG_BURST_INTERVAL_SEC:-2}
+      WATCHDOG_HYGIENE_INTERVAL_SEC: ${WATCHDOG_HYGIENE_INTERVAL_SEC:-21600}
+      WATCHDOG_CONTAINER_NAMES: ${WATCHDOG_CONTAINER_NAMES:-owui,tm,context6,qdrant}
+      WATCHDOG_LOG_PATH: ${WATCHDOG_LOG_PATH:-/data/watchdog.log.jsonl}
+      WATCHDOG_ALERT_PATH: ${WATCHDOG_ALERT_PATH:-/data/watchdog.alert.jsonl}
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - watchdog-data:/data
+    networks:
+      - ai-stack
+
+volumes:
+  watchdog-data:
+    external: true
+    name: watchdog-data
+
+networks:
+  ai-stack:
+    external: true
+    name: ai-stack

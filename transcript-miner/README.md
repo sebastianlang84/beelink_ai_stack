@@ -122,14 +122,16 @@ Benötigte Variablen:
 - **Symptom:** Miner bricht mit `IpBlocked` oder `RequestBlocked` ab.
 - **Ursache:** YouTube blockiert Datacenter-IPs (Cloud) und IPs mit geringer Reputation (VPN, WSL-Hosts) für den Transcript-Endpunkt.
 - **Diagnose:** Nutze `uv run python tools/repro_ip_block.py <video_id>`, um zu prüfen, ob ein isolierter Request funktioniert.
+- **Diagnose (Matrix):** Nutze `uv run python tools/youtube_block_probe.py --config config/config_stocks_crypto.yaml --videos <video_id>` um Rate-Limit-Parameter systematisch zu testen.
 - **Lösung:** 
   - Nutze **Residential Proxies** (z.B. Webshare.io Residential Plan). Datacenter-Proxies funktionieren oft nicht.
-  - Erhöhe `min_delay_s` und `jitter_s` in der Config (siehe [`config/config_wsl_optimized.yaml`](config/config_wsl_optimized.yaml:1)).
+  - Nutze das konservative, cookie-freie Profil in [`config/config_wsl_optimized.yaml`](config/config_wsl_optimized.yaml:1) oder erhöhe `min_delay_s`/`jitter_s` entsprechend.
   - Teste einen Handy-Hotspot, um ISP-seitige Blocks auszuschließen.
 
 Hinweis zu Logs:
 
 - Überblick über relevante Logfiles: [`logs/README.md`](logs/README.md:1).
+- Fehler-History (JSONL, append-only): `output/data/diagnostics/errors.jsonl` (ERROR+ aus der Pipeline; bei globalem Output-Layout).
 
 ## Konfiguration
 

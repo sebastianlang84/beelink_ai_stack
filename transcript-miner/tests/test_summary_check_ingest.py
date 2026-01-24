@@ -11,12 +11,17 @@ from common.config_models import Config, YoutubeConfig, OutputConfig
 
 def _write_valid_summary(summary_path: Path, *, video_id: str) -> None:
     summary_path.write_text(
-        json.dumps(
-            {
-                "schema_version": 1,
-                "task": "stocks_per_video_extract",
-                "source": {"video_id": video_id},
-            }
+        "\n".join(
+            [
+                "---",
+                "schema_version: 1",
+                "task: stocks_per_video_extract",
+                f"video_id: {video_id}",
+                "---",
+                "",
+                "# Summary",
+                "",
+            ]
         ),
         encoding="utf-8",
     )
@@ -34,7 +39,7 @@ def test_sync_progress_keeps_id_if_summary_exists(tmp_path: Path) -> None:
     video_id = "vid12345678"
 
     # No transcript file, but summary exists
-    _write_valid_summary(summaries_dir / f"{video_id}.json", video_id=video_id)
+    _write_valid_summary(summaries_dir / f"{video_id}.md", video_id=video_id)
 
     # Initial progress with the video_id
     progress_data = {channel_id: [video_id]}
@@ -68,7 +73,7 @@ def test_process_single_video_skips_download_if_summary_exists(tmp_path: Path) -
     }
 
     # Summary exists
-    _write_valid_summary(summaries_dir / f"{video_id}.json", video_id=video_id)
+    _write_valid_summary(summaries_dir / f"{video_id}.md", video_id=video_id)
 
     config = Config(
         youtube=YoutubeConfig(
@@ -125,7 +130,7 @@ def test_process_single_video_downloads_if_force_redownload(
     }
 
     # Summary exists
-    _write_valid_summary(summaries_dir / f"{video_id}.json", video_id=video_id)
+    _write_valid_summary(summaries_dir / f"{video_id}.md", video_id=video_id)
 
     config = Config(
         youtube=YoutubeConfig(channels=[channel_id], force_redownload_transcripts=True),

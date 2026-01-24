@@ -8,6 +8,137 @@ from .validator_core import ValidationIssue, issue
 
 _RAW_HASH_RE = re.compile(r"^sha256:[0-9a-fA-F]{64}$")
 
+_ALLOWED_EVIDENCE_ROLES = {
+    "thesis",
+    "risk",
+    "catalyst",
+    "numbers_valuation",
+    "comparison",
+    "other",
+}
+
+_ALLOWED_MACRO_TAGS = {
+    "rates",
+    "inflation",
+    "liquidity",
+    "credit",
+    "usd",
+    "commodities",
+    "growth",
+    "sentiment",
+    "policy",
+    "recession",
+    "soft-landing",
+}
+
+_ALLOWED_CRYPTO_TAGS = {
+    "btc",
+    "eth",
+    "alts",
+    "stablecoins",
+    "onchain",
+    "derivatives",
+    "regulation",
+    "mining",
+    "cefi",
+    "defi",
+    "rwa",
+}
+
+
+def _validate_evidence_item(
+    *, ev: Any, base: str, issues: list[ValidationIssue]
+) -> None:
+    if not isinstance(ev, dict):
+        issues.append(
+            issue(
+                code="llm_missing_required_fields",
+                message="evidence[] entry must be an object",
+                path=base,
+                details={"type": type(ev).__name__},
+            )
+        )
+        return
+
+    for key in ["video_id", "transcript_path", "quote", "role"]:
+        if not isinstance(ev.get(key), str) or not ev.get(key):
+            issues.append(
+                issue(
+                    code="llm_missing_required_fields",
+                    message=f"Missing or invalid evidence[].{key}",
+                    path=f"{base}.{key}",
+                )
+            )
+
+    snippet_sha256 = ev.get("snippet_sha256")
+    if not isinstance(snippet_sha256, str) or not _RAW_HASH_RE.match(snippet_sha256):
+        issues.append(
+            issue(
+                code="llm_missing_required_fields",
+                message="Missing or invalid evidence[].snippet_sha256 (expected 'sha256:<64hex>')",
+                path=f"{base}.snippet_sha256",
+            )
+        )
+
+    role = ev.get("role")
+    if isinstance(role, str) and role and role not in _ALLOWED_EVIDENCE_ROLES:
+        issues.append(
+            issue(
+                code="llm_invalid_evidence_role",
+                message="Invalid evidence[].role",
+                path=f"{base}.role",
+                details={"role": role, "allowed": sorted(_ALLOWED_EVIDENCE_ROLES)},
+            )
+        )
+
+
+def _validate_macro_tags(*, tags: Any, base: str, issues: list[ValidationIssue]) -> None:
+    if not isinstance(tags, list) or any(not isinstance(x, str) for x in tags):
+        issues.append(
+            issue(
+                code="llm_missing_required_fields",
+                message="Invalid macro_insights[].tags (expected array[string])",
+                path=f"{base}.tags",
+            )
+        )
+        return
+
+    # Policy: tag taxonomy is a 2-tuple: ["macro", "<subtag>"] or ["crypto", "<subtag>"].
+    if len(tags) < 2:
+        issues.append(
+            issue(
+                code="llm_policy_violation_macro_tags_missing_taxonomy",
+                message="macro_insights[].tags must include ['macro'| 'crypto', '<subtag>']",
+                path=f"{base}.tags",
+                details={"tags": tags},
+            )
+        )
+        return
+
+    category = tags[0]
+    subtag = tags[1]
+    if category not in {"macro", "crypto"}:
+        issues.append(
+            issue(
+                code="llm_policy_violation_macro_tags_invalid_category",
+                message="macro_insights[].tags[0] must be 'macro' or 'crypto'",
+                path=f"{base}.tags[0]",
+                details={"category": category},
+            )
+        )
+        return
+
+    allowed = _ALLOWED_MACRO_TAGS if category == "macro" else _ALLOWED_CRYPTO_TAGS
+    if subtag not in allowed:
+        issues.append(
+            issue(
+                code="llm_policy_violation_macro_tags_invalid_subtag",
+                message="macro_insights[].tags[1] must be a known taxonomy subtag",
+                path=f"{base}.tags[1]",
+                details={"category": category, "subtag": subtag, "allowed": sorted(allowed)},
+            )
+        )
+
 
 def _has_forbidden_persisted_keys(obj: Any) -> list[str]:
     """Return a list of JSON paths where forbidden 'mentions/name-drops' keys appear.
@@ -363,15 +494,30 @@ def validate_stocks_per_video_extract_payload(
                 )
             )
         tags = item.get("tags")
-        if tags is not None:
-            if not isinstance(tags, list) or any(not isinstance(x, str) for x in tags):
+        if tags is None:
+            issues.append(
+                issue(
+                    code="llm_missing_required_fields",
+                    message="Missing macro_insights[].tags (required for taxonomy)",
+                    path=f"{base}.tags",
+                )
+            )
+        else:
+            _validate_macro_tags(tags=tags, base=base, issues=issues)
+
+        evidence = item.get("evidence")
+        if evidence is not None:
+            if not isinstance(evidence, list):
                 issues.append(
                     issue(
                         code="llm_missing_required_fields",
-                        message="Invalid macro_insights[].tags (expected array[string])",
-                        path=f"{base}.tags",
+                        message="Invalid macro_insights[].evidence (expected array[object])",
+                        path=f"{base}.evidence",
                     )
                 )
+            else:
+                for j, ev in enumerate(evidence):
+                    _validate_evidence_item(ev=ev, base=f"{base}.evidence[{j}]", issues=issues)
 
     covered = parsed_obj.get("stocks_covered")
     if not isinstance(covered, list):
@@ -420,6 +566,50 @@ def validate_stocks_per_video_extract_payload(
                         code="llm_policy_violation_why_covered_is_list",
                         message="why_covered must be a justification, not a pure list/enumeration",
                         path=f"{base}.why_covered",
+                    )
+                )
+
+        evidence = item.get("evidence")
+        if not isinstance(evidence, list):
+            issues.append(
+                issue(
+                    code="llm_missing_required_fields",
+                    message="Missing or invalid stocks_covered[].evidence (must be array)",
+                    path=f"{base}.evidence",
+                )
+            )
+            evidence = []
+        elif len(evidence) < 2:
+            issues.append(
+                issue(
+                    code="llm_policy_violation_stock_not_deep_dive",
+                    message="stocks_covered[] must include at least 2 evidence items (deep-dive policy)",
+                    path=f"{base}.evidence",
+                    details={"evidence_count": len(evidence)},
+                )
+            )
+
+        roles: list[str] = []
+        for j, ev in enumerate(evidence):
+            _validate_evidence_item(ev=ev, base=f"{base}.evidence[{j}]", issues=issues)
+            if isinstance(ev, dict) and isinstance(ev.get("role"), str):
+                roles.append(ev["role"])
+
+        if evidence:
+            has_thesis = any(r == "thesis" for r in roles)
+            has_supporting = any(
+                r in {"risk", "catalyst", "numbers_valuation", "comparison"} for r in roles
+            )
+            if not has_thesis or not has_supporting:
+                issues.append(
+                    issue(
+                        code="llm_policy_violation_stock_not_deep_dive",
+                        message=(
+                            "stocks_covered[] must include role='thesis' and at least one supporting role "
+                            "(risk|catalyst|numbers_valuation|comparison)"
+                        ),
+                        path=f"{base}.evidence",
+                        details={"roles": roles},
                     )
                 )
 

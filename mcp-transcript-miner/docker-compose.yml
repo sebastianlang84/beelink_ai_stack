@@ -33,6 +33,8 @@ services:
       # Host output root (bind-mount). Recommended: /srv/ai-stack/transcript-miner/output
       # Legacy default: /home/wasti/ai_stack_data/transcript-miner/output
       - ${TRANSCRIPT_MINER_OUTPUT_ROOT_HOST:-/home/wasti/ai_stack_data/transcript-miner/output}:/transcript_miner_output
+      # Host data root (bind-mount) to keep config absolute paths valid inside the container.
+      - ${AI_STACK_DATA_DIR_HOST:-/home/wasti/ai_stack_data}:/home/wasti/ai_stack_data
       - ../transcript-miner:/transcript_miner_repo:ro
       # Host secrets artefacts dir (e.g. youtube_cookies.txt). Default mounts repo root.
       - ${AI_STACK_SECRETS_DIR_HOST:-..}:/host_secrets:ro

@@ -12,6 +12,7 @@ Scope: tracked Markdown files in this repository.
 - [`architecture.md`](architecture.md)
 - [`PRD.md`](PRD.md)
 - [`config.md`](config.md)
+- Example config (cookie-free, WSL/VPN-friendly): [`../config/config_wsl_optimized.yaml`](../config/config_wsl_optimized.yaml) — conservative delays for block-prone networks.
 
 ## ADRs
 - [`adr/README.md`](adr/README.md)

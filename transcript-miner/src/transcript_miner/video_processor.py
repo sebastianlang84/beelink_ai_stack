@@ -20,6 +20,7 @@ from common.utils import (
 )
 from common.telemetry import record_pipeline_error
 from .transcript_downloader import download_transcript_result, search_keywords
+from common.error_history import append_error_history
 from .transcript_models import TranscriptStatus
 
 # Default token limit for transcripts (used when no model limit is configured)
@@ -724,6 +725,20 @@ def process_single_video(
     )
 
     if dl.status == TranscriptStatus.BLOCKED:
+        append_error_history(
+            config,
+            {
+                "stage": "transcript_download",
+                "status": dl.status.value,
+                "reason": dl.reason,
+                "error_type": dl.error_type,
+                "error_message": dl.error_message,
+                "video_id": video_id,
+                "video_title": video_title,
+                "channel_handle": channel_handle,
+                "channel_name": channel_name,
+            },
+        )
         logger.critical(
             "CRITICAL: YouTube blocked the request. Circuit breaker triggered. "
             "Aborting run to prevent further blocking."
@@ -733,6 +748,20 @@ def process_single_video(
         raise RuntimeError(f"YouTube IP Block detected: {dl.error_message}")
 
     if not dl.is_success():
+        append_error_history(
+            config,
+            {
+                "stage": "transcript_download",
+                "status": dl.status.value,
+                "reason": dl.reason,
+                "error_type": dl.error_type,
+                "error_message": dl.error_message,
+                "video_id": video_id,
+                "video_title": video_title,
+                "channel_handle": channel_handle,
+                "channel_name": channel_name,
+            },
+        )
         if dl.status in {
             TranscriptStatus.NO_TRANSCRIPT,
             TranscriptStatus.TRANSCRIPTS_DISABLED,
