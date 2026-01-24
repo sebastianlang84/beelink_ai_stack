@@ -1,6 +1,31 @@
 # Changelog
 
 ## Unreleased
+- docs: YouTube 429 Einordnung/Workarounds/Alternativen im Block-Report ergaenzt
+- docs: Report zum aktuellen YouTube Transcript Block (HTTP 429)
+- transcript-miner: Tool `tools/youtube_block_probe.py` fuer systematische Rate-Limit Tests
+- docs: Watchdog-Schwellwerte auf Intel N150 Kontext ergaenzt
+- docs: Watchdog-Plan erweitert (PSI/Memory/Inodes/Schwellwerte/Trigger-Logik)
+- watchdog: Temp-Schutz (>=60C bei 2 Messungen) stoppt konfigurierbare Container
+- watchdog: `--once` CLI fuer sofortige Messung via stdout
+- watchdog: Container-Name explizit auf `watchdog` gesetzt (abweichend von Standard-Compose-Naming)
+- watchdog: Container fuer Host-Monitoring (CPU/Temperatur/Disk + Docker-Hygiene)
+- docs: Watchdog-Plan fuer CPU/Temperatur/Disk Monitoring (`docs/plan_watchdog_monitoring.md`)
+- transcript-miner: Tool ergänzt zur Reproduktion von Cookie-Load/Transcript-Request Fehlern (`tools/repro_cookie_load.py`)
+- repo: `youtube_cookies.txt` gitignored (lokale Cookie-Datei für YouTube)
+- transcript-miner: Fehler-History als JSONL unter `output/data/diagnostics/errors.jsonl` (append-only, ERROR+ aus der Pipeline)
+- mcp-transcript-miner: Host-Data-Dir in Container gemountet, damit `output.global` Pfade (z. B. Fehler-History) persistent bleiben
+- transcript-miner: Cookie-freie Rate-Limit-Strategie in `config_stocks_crypto.yaml`/`config_ai_knowledge.yaml` + LLM-Concurrency=1; `config_wsl_optimized.yaml` mit konservativen (WSL/VPN) Delays ohne Cookies
+- transcript-miner: README verweist auf cookie-freies WSL-Profil als Block-Mitigation
+- transcript-miner: docs/config.md verweist auf cookie-freies WSL-Profil
+- transcript-miner: docs/README.md listet cookie-freies WSL-Profil als Beispiel-Config
+- transcript-miner: docs/README.md ergänzt Hinweis zu konservativen Delays im WSL-Profil
+- transcript-miner: docs/plans/ip_block_solution.md auf cookie-freien Default + WSL-Profil aktualisiert
+- ai_stack: `config/knowledge_ids.json` auf aktuelle Open WebUI Knowledge-IDs angepasst
+- docs: Reindex-Runbook für Open WebUI Knowledge ohne Tool-Abhängigkeit präzisiert
+- scripts: `check_tm_run_status.sh` zur Run-Diagnose (Status + Cookie-Check)
+- TranscriptMiner: LLM-Validator erzwingt Macro/Crypto Tag-Taxonomie + Evidence-Rollen + Deep-Dive-Kriterium für `stocks_covered`
+- TranscriptMiner: Logging-Setup robust gegen read-only Repo-Mounts (kein hardes `mkdir <PROJECT_ROOT>/logs`, wenn `logging.file` gesetzt ist)
 - Secrets/Env: repo-local `.env` (secrets-only) + `.config.env`/`<service>/.config.env` (non-secrets), alles gitignored (keine Werte in Git)
 - ai_stack: Smoke-Test Runbook + Script ergänzt (`docs/runbook_smoke_test.md`, `scripts/smoke_test_ai_stack.sh`)
 - Naming/Compose: SSOT Naming v2 umgesetzt (Network bleibt `ai-stack`; Stacks `owui|tm|context6|qdrant`, Volumes `owui-data|tm-data|context6-{data,cache}|qdrant-data|emb-bench-cache`, Images `tm:latest`, `context6:latest`)
