@@ -997,18 +997,12 @@ def write_config(config_id: str, req: ConfigWriteRequest) -> ConfigWriteResponse
 def start_run(req: RunStartRequest) -> RunStartResponse:
     config_filename = req.config_id
     config_text = ""
-    normalized = req.config_id.strip().lower().replace("-", "_")
     candidate_ids = [
         req.config_id,
         f"{req.config_id}.yaml",
         f"{req.config_id}.yml",
         f"config_{req.config_id}.yaml",
         f"config_{req.config_id}.yml",
-        normalized,
-        f"{normalized}.yaml",
-        f"{normalized}.yml",
-        f"config_{normalized}.yaml",
-        f"config_{normalized}.yml",
     ]
     found = False
     for cid in candidate_ids:

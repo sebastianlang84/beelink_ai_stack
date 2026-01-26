@@ -30,7 +30,7 @@ Validiert YAML und schreibt (optional) die Config.
 ### `POST /runs/start`
 Startet einen TranscriptMiner-Run asynchron (im Container) anhand einer Config aus `/configs`.
 Antwort enthält eine `run_id`. Status über `GET /runs/{run_id}`.
-Hinweis: `config_id` akzeptiert kurze Namen und normalisiert `-`→`_` (z. B. `investing-test` → `config_investing_test.yaml`).
+Hinweis: `config_id` akzeptiert auch kurze Namen (z. B. `investing_test` → `config_investing_test.yaml`).
 Die Antwort enthält zusätzlich `requested_config_id` und `resolved_config_id`.
 
 ### `GET /runs/{run_id}`
