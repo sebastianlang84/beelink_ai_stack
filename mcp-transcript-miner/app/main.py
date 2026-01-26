@@ -221,9 +221,6 @@ class RunStartResponse(BaseModel):
     command: list[str] | None = None
     log_path: str | None = None
     error: str | None = None
-    requested_config_id: str | None = None
-    resolved_config_id: str | None = None
-    tried: list[str] | None = None
 
 
 class RunStatusResponse(BaseModel):
@@ -235,7 +232,6 @@ class RunStatusResponse(BaseModel):
     finished_at: str | None = None
     exit_code: int | None = None
     config_id: str | None = None
-    requested_config_id: str | None = None
     topic: str | None = None
     log_tail: str | None = None
     error: str | None = None
@@ -1017,8 +1013,6 @@ def start_run(req: RunStartRequest) -> RunStartResponse:
         return RunStartResponse(
             status="error",
             error=f"config_id not found: {req.config_id} (try {hint})",
-            requested_config_id=req.config_id,
-            tried=candidate_ids,
         )
 
     rewritten, topic = _rewrite_config_for_container(config_text or "")
@@ -1059,22 +1053,13 @@ def start_run(req: RunStartRequest) -> RunStartResponse:
         "finished_at": None,
         "exit_code": None,
         "config_id": config_filename,
-        "requested_config_id": req.config_id,
         "topic": topic,
         "command": cmd,
         "log_path": log_path,
         "tmp_config_path": tmp_cfg,
     }
     _write_run_meta(run_id, meta)
-    return RunStartResponse(
-        status="started",
-        run_id=run_id,
-        topic=topic,
-        command=cmd,
-        log_path=log_path,
-        requested_config_id=req.config_id,
-        resolved_config_id=config_filename,
-    )
+    return RunStartResponse(status="started", run_id=run_id, topic=topic, command=cmd, log_path=log_path)
 
 
 @app.get("/runs/{run_id}", summary="Get run status + log tail", operation_id="runs_get")
@@ -1133,7 +1118,6 @@ def get_run(run_id: str) -> RunStatusResponse:
         finished_at=finished_at,
         exit_code=exit_code if isinstance(exit_code, int) else None,
         config_id=meta.get("config_id"),
-        requested_config_id=meta.get("requested_config_id"),
         topic=meta.get("topic"),
         log_tail=log_tail,
         error=meta.get("error"),
