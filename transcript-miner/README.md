@@ -43,6 +43,9 @@ uv sync
 
 ```bash
 uv run python -m transcript_miner --config config/config_investing.yaml
+
+# Schnelltest (2 Videos, 2 Channels)
+uv run python -m transcript_miner --config config/config_investing_test.yaml
 ```
 
 Default-Verhalten (ohne zusätzliche Flags): der Lauf führt **Mining → Index → LLM-Summaries → Aggregation/Report** aus.
