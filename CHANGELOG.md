@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- mcp-transcript-miner: runs.start beantwortet requested/resolved config_id (klarer für Nutzer)
 - mcp-transcript-miner: runs.start akzeptiert kurze config_id (auto `config_*.yaml`) und gibt klare Fehlermeldung
 - ops: Webshare als funktionierende Mitigation gegen YouTube 429 bestätigt
 - docs: Knowledge-Name = Topic als No-Fuss Workflow dokumentiert
