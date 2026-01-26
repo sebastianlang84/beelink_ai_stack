@@ -28,6 +28,16 @@ EOF
 
 imports_dir="open-webui/tool-imports"
 base_url="${OPEN_WEBUI_BASE_URL:-http://127.0.0.1:3000}"
+
+# Load .env (secrets) if present so OPEN_WEBUI_API_KEY is available.
+if [[ -z "${OPEN_WEBUI_TOKEN:-}" && -z "${OPEN_WEBUI_API_KEY:-}" && -z "${OWUI_API_KEY:-}" ]]; then
+  if [[ -f ".env" ]]; then
+    set -a
+    source ./.env
+    set +a
+  fi
+fi
+
 token="${OPEN_WEBUI_TOKEN:-${OPEN_WEBUI_API_KEY:-${OWUI_API_KEY:-}}}"
 dry_run="false"
 

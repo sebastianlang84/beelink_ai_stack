@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- scripts: openwebui_apply_tool_imports lädt .env automatisch für OPEN_WEBUI_API_KEY
 - mcp-transcript-miner: Tool-Docs empfehlen summary statt log_path/log_tail in Antworten
 - mcp-transcript-miner: youtube-transcript-api auf 1.2.3 aktualisiert (proxies Modul vorhanden)
 - mcp-transcript-miner: runs.start/runs.status liefern `summary` (kurzer Klartext)
