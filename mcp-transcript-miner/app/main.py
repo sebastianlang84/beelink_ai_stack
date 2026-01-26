@@ -222,6 +222,7 @@ class RunStartResponse(BaseModel):
     topic: str | None = None
     command: list[str]
     log_path: str
+    summary: str | None = None
 
 
 class RunStatusResponse(BaseModel):
@@ -236,6 +237,7 @@ class RunStatusResponse(BaseModel):
     topic: str | None = None
     log_tail: str | None = None
     error: str | None = None
+    summary: str | None = None
 
 
 class RunStatusMcpRequest(BaseModel):
@@ -1053,7 +1055,15 @@ def start_run(req: RunStartRequest) -> RunStartResponse:
         "tmp_config_path": tmp_cfg,
     }
     _write_run_meta(run_id, meta)
-    return RunStartResponse(status="started", run_id=run_id, topic=topic, command=cmd, log_path=log_path)
+    summary = f"Run gestartet. ID: {run_id}. Config: {config_filename}."
+    return RunStartResponse(
+        status="started",
+        run_id=run_id,
+        topic=topic,
+        command=cmd,
+        log_path=log_path,
+        summary=summary,
+    )
 
 
 @app.get("/runs/{run_id}", summary="Get run status + log tail", operation_id="runs_get")
@@ -1103,6 +1113,13 @@ def get_run(run_id: str) -> RunStatusResponse:
             exit_code = meta.get("exit_code")
 
     log_tail = _tail_file(_run_log_path(run_id))
+    summary = None
+    if state == "finished":
+        summary = f"Run beendet. ID: {run_id}. Exit-Code: {exit_code}."
+    elif state == "running":
+        summary = f"Run läuft. ID: {run_id}."
+    elif state == "queued":
+        summary = f"Run queued. ID: {run_id}."
     return RunStatusResponse(
         status="success",
         run_id=run_id,
@@ -1115,6 +1132,7 @@ def get_run(run_id: str) -> RunStatusResponse:
         topic=meta.get("topic"),
         log_tail=log_tail,
         error=meta.get("error"),
+        summary=summary,
     )
 
 
