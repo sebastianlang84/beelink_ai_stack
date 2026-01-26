@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: knowledge_ids.json.example aktualisiert (ai_knowledge, investing, investing_test)
 - mcp-transcript-miner: fix missing requests import in sync.topic
 - ops: systemd Timer für investing-Run alle 3h (Auto-Sync nach Run)
 - mcp-transcript-miner: optionaler Auto-Sync nach Run-Ende (OPEN_WEBUI_AUTO_SYNC_AFTER_RUN)

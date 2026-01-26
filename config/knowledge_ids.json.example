@@ -1,3 +1,5 @@
 {
-  "topic_name": "knowledge_id"
+  "ai_knowledge": "<knowledge_id>",
+  "investing": "<knowledge_id>",
+  "investing_test": "<knowledge_id>"
 }
