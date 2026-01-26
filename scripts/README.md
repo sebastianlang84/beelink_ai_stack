@@ -56,6 +56,13 @@
   - `scripts/systemd/ai_stack_backup.service`
   - `scripts/systemd/ai_stack_backup.timer`
 
+## Transcript Miner Scheduling (systemd)
+- One-shot run (investing):
+  - `./scripts/run-tm-investing.sh`
+- systemd templates (every 3h):
+  - `scripts/systemd/ai-stack-tm-investing.service`
+  - `scripts/systemd/ai-stack-tm-investing.timer`
+
 ## emb-bench (Terminal)
 - Run `emb-bench/` via Docker (sets UID/GID to avoid root-owned outputs):
   - `./scripts/run_emb_bench.sh -- python -m emb_bench run --config config.local_only.yaml --phase local_vs_remote`

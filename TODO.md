@@ -854,6 +854,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
 
 ## P1 — Betrieb & Sicherheit
 - [x] Open WebUI localhost-only + Healthcheck/Log-Rotation in Compose
+- [x] Geplante Runs: investing alle 3h via systemd Timer (Auto-Sync aktiviert)
 - [ ] Backup-Ziel definieren (Volumes):
   - [x] Repo: Runbook + Scripts für Backup/Restore vorhanden (`docs/runbook_backup_restore.md:1`, `scripts/README.md:1`)
   - [x] Repo: systemd Timer Templates vorhanden (`scripts/systemd/ai_stack_backup.timer`, `scripts/systemd/ai_stack_backup.service`)

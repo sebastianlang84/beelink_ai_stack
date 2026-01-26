@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- ops: systemd Timer für investing-Run alle 3h (Auto-Sync nach Run)
 - mcp-transcript-miner: optionaler Auto-Sync nach Run-Ende (OPEN_WEBUI_AUTO_SYNC_AFTER_RUN)
 - mcp-transcript-miner: runs.start löst config_id über aliases aus configs.list auf
 - scripts: openwebui_apply_tool_imports lädt .env automatisch für OPEN_WEBUI_API_KEY

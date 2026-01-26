@@ -36,6 +36,16 @@ Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen
 4. Service-Config setzen (non-secret): `mcp-transcript-miner/.config.env.example` → `mcp-transcript-miner/.config.env` (nicht committen).
 5. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)
 
+## Scheduled Runs (investing, alle 3h)
+Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):
+1. Sicherstellen: `OPEN_WEBUI_AUTO_SYNC_AFTER_RUN=true` in `mcp-transcript-miner/.config.env`.
+2. Install:
+   - `sudo cp /home/wasti/ai_stack/scripts/systemd/ai-stack-tm-investing.service /etc/systemd/system/`
+   - `sudo cp /home/wasti/ai_stack/scripts/systemd/ai-stack-tm-investing.timer /etc/systemd/system/`
+   - `sudo systemctl daemon-reload`
+   - `sudo systemctl enable --now ai-stack-tm-investing.timer`
+3. Status: `systemctl status ai-stack-tm-investing.timer`
+
 Diagnose-Scripts (Transcript Miner):
 - Cookie-Load + Transcript-Request: `transcript-miner/tools/repro_cookie_load.py`
 - IP-Block-Repro: `transcript-miner/tools/repro_ip_block.py`
