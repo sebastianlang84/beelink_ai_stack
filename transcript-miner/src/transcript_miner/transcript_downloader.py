@@ -5,16 +5,19 @@ Dieses Modul stellt Funktionen zum Herunterladen von Transkripten von YouTube-Vi
 und zum Durchsuchen dieser Transkripte nach Schlüsselwörtern bereit.
 """
 
+import hashlib
 import logging
 import re
 import time
 import random
 import threading
+from http.cookiejar import MozillaCookieJar
 from typing import List, Tuple, Optional, Any
 from xml.etree.ElementTree import ParseError
 
 import requests
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import GenericProxyConfig, WebshareProxyConfig
 from youtube_transcript_api._errors import (
     CouldNotRetrieveTranscript,
     NoTranscriptFound,
@@ -39,6 +42,11 @@ DEFAULT_LANGUAGES = [
     "es",
     "fr",
 ]  # Standard-Sprachen für YouTube-Transkripte
+DEFAULT_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/123.0.0.0 Safari/537.36"
+)
 
 # Globaler Limiter-State für Thread-Sicherheit (Vorbereitung auf Parallelisierung)
 _limiter_lock = threading.Lock()
@@ -67,26 +75,42 @@ def _apply_rate_limit(min_delay: float, jitter: float):
 def _get_proxy_config(
     proxy_settings: Optional[Any], video_id: Optional[str] = None
 ) -> Optional[Any]:
-    """Erstellt Proxy-Dict für youtube-transcript-api (requests-style)."""
+    """Erstellt Proxy-Config für youtube-transcript-api."""
     if not proxy_settings or proxy_settings.mode == "none":
         return None
 
     if proxy_settings.mode == "webshare":
-        # Previously implemented via youtube_transcript_api.proxies.* which is not available
-        # in youtube-transcript-api 0.6.x. If we ever need webshare again, we can implement
-        # URL generation explicitly here.
-        logging.warning("Proxy mode 'webshare' is not supported in this build (mode ignored).")
-        return None
+        username = proxy_settings.webshare_username
+        password = proxy_settings.webshare_password
+        if not username or not password:
+            logging.warning("Proxy mode 'webshare' selected but credentials missing.")
+            return None
+
+        if "-rotate" in username and video_id:
+            base = username.replace("-rotate", "")
+            session_id = hashlib.sha1(video_id.encode("utf-8")).hexdigest()[:8]
+            username = f"{base}-session-{session_id}"
+
+        try:
+            return WebshareProxyConfig(
+                proxy_username=username,
+                proxy_password=password,
+                filter_ip_locations=proxy_settings.filter_ip_locations or None,
+            )
+        except Exception as exc:
+            logging.warning("Failed to configure Webshare proxy: %s", exc)
+            return None
 
     if proxy_settings.mode == "generic":
-        proxies = {}
-        if proxy_settings.http_url:
-            proxies["http"] = proxy_settings.http_url
-        if proxy_settings.https_url:
-            proxies["https"] = proxy_settings.https_url
-
-        if proxies:
-            return proxies
+        if proxy_settings.http_url or proxy_settings.https_url:
+            try:
+                return GenericProxyConfig(
+                    http_url=proxy_settings.http_url,
+                    https_url=proxy_settings.https_url,
+                )
+            except Exception as exc:
+                logging.warning("Failed to configure generic proxy: %s", exc)
+                return None
         logging.warning("Generic proxy mode selected but URLs missing.")
         return None
 
@@ -95,11 +119,28 @@ def _get_proxy_config(
 
 def _list_transcripts(
     video_id: str,
+    *,
     cookies: Optional[str] = None,
-    proxy_config: Optional[dict[str, str]] = None,
+    proxy_config: Optional[Any] = None,
+    session: Optional[requests.Session] = None,
 ):
-    """Compatibility wrapper for youtube-transcript-api 0.6.x."""
-    return YouTubeTranscriptApi.list_transcripts(video_id, proxies=proxy_config, cookies=cookies)
+    """youtube-transcript-api 1.x wrapper with proxy/session support."""
+    http_client = session
+    if http_client is None:
+        http_client = requests.Session()
+
+    if cookies:
+        try:
+            jar = MozillaCookieJar()
+            jar.load(cookies, ignore_discard=True, ignore_expires=True)
+            http_client.cookies.update(jar)
+        except Exception as exc:
+            logging.warning("Failed to load cookie file '%s': %s", cookies, exc)
+
+    api = YouTubeTranscriptApi(proxy_config=proxy_config, http_client=http_client)
+    if "User-Agent" not in http_client.headers:
+        http_client.headers.update({"User-Agent": DEFAULT_USER_AGENT})
+    return api.list(video_id)
 
 
 def download_transcript(
@@ -168,7 +209,10 @@ def download_transcript_result(
                 f"Attempting to download transcript for video ID: {video_id} (Attempt {attempt})"
             )
             transcript_list = _list_transcripts(
-                video_id, cookies=cookie_file, proxy_config=proxy_cfg
+                video_id,
+                cookies=cookie_file,
+                proxy_config=proxy_cfg,
+                session=session,
             )
 
             transcript = None

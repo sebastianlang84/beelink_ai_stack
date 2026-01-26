@@ -26,6 +26,46 @@ class ProxyConfig(BaseModel):
         description="Liste von Länder-Codes für Proxies (z.B. ['us', 'de'])",
     )
 
+    @field_validator("mode", mode="before")
+    @classmethod
+    def resolve_mode_env_vars(cls, value: Optional[str]) -> str:
+        """Ersetzt Umgebungsvariablen im Proxy-Modus."""
+        if not value:
+            return "none"
+        if isinstance(value, str):
+            resolved = substitute_env_vars(value).strip().lower()
+            if not resolved or re.search(r"\${[^}]+}", resolved):
+                return "none"
+            return resolved
+        return "none"
+
+    @field_validator("http_url", "https_url", "webshare_username", "webshare_password")
+    @classmethod
+    def resolve_proxy_env_vars(cls, value: Optional[str]) -> Optional[str]:
+        """Ersetzt Umgebungsvariablen in Proxy-Strings."""
+        if not value or not isinstance(value, str):
+            return value
+
+        resolved = substitute_env_vars(value)
+        if re.search(r"\${[^}]+}", resolved):
+            return None
+        return resolved
+
+    @field_validator("filter_ip_locations", mode="before")
+    @classmethod
+    def resolve_filter_locations(cls, value: Optional[object]) -> List[str]:
+        """Erlaubt CSV-Strings oder Env-Substitution für Länder-Codes."""
+        if value is None:
+            return []
+        if isinstance(value, list):
+            return value
+        if isinstance(value, str):
+            resolved = substitute_env_vars(value)
+            if not resolved or re.search(r"\${[^}]+}", resolved):
+                return []
+            return [item.strip().lower() for item in resolved.split(",") if item.strip()]
+        return []
+
 
 class YoutubeConfig(BaseModel):
     """YouTube-spezifische Konfiguration (Kanäle und Filteroptionen)."""

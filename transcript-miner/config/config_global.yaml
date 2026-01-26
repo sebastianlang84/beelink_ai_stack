@@ -9,6 +9,13 @@ youtube:
   api_timeout_s: 30
   lookback_days: 30
   max_videos_per_channel: 5
+  proxy:
+    mode: ${YOUTUBE_PROXY_MODE}
+    http_url: ${YOUTUBE_PROXY_HTTP_URL}
+    https_url: ${YOUTUBE_PROXY_HTTPS_URL}
+    webshare_username: ${WEBSHARE_USERNAME}
+    webshare_password: ${WEBSHARE_PASSWORD}
+    filter_ip_locations: ${YOUTUBE_PROXY_FILTER_IP_LOCATIONS}
 
 analysis:
   llm:

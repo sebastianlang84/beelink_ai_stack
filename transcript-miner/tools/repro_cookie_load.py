@@ -5,6 +5,7 @@ import os
 import sys
 from http.cookiejar import MozillaCookieJar
 from pathlib import Path
+import requests
 
 # Add project root to sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent / "src"))
@@ -44,8 +45,13 @@ def _test_transcript_request(video_id: str, cookie_file: str) -> None:
         print(f"Failed to import youtube-transcript-api: {exc}")
         sys.exit(2)
 
-    print(f"Calling YouTubeTranscriptApi.list_transcripts({video_id})...")
-    transcript_list = YouTubeTranscriptApi.list_transcripts(video_id, cookies=cookie_file)
+    print(f"Calling YouTubeTranscriptApi().list({video_id})...")
+    session = requests.Session()
+    jar = MozillaCookieJar()
+    jar.load(cookie_file, ignore_discard=True, ignore_expires=True)
+    session.cookies.update(jar)
+    api = YouTubeTranscriptApi(http_client=session)
+    transcript_list = api.list(video_id)
     langs = [f"{t.language} ({t.language_code}) [generated={t.is_generated}]" for t in transcript_list]
     print(f"Success. Transcripts: {', '.join(langs) if langs else 'none'}")
 

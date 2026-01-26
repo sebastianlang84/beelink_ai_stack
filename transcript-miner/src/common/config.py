@@ -8,11 +8,12 @@ from __future__ import annotations
 
 import logging
 import yaml
+import os
 from pathlib import Path
 from typing import Any, Optional, Union
 
 from .config_models import Config
-from .path_utils import resolve_paths
+from .path_utils import resolve_paths, substitute_env_vars
 
 
 # Define project root relative to this file's location
@@ -49,6 +50,39 @@ def _deep_merge_global_then_topic(global_cfg: Any, topic_cfg: Any) -> Any:
         return merged
 
     return topic_cfg if topic_cfg is not None else global_cfg
+
+
+def _apply_proxy_env_overrides(config_data: dict[str, Any]) -> dict[str, Any]:
+    """Override youtube.proxy via env vars (global across all configs)."""
+    proxy_mode = os.environ.get("YOUTUBE_PROXY_MODE", "").strip()
+    http_url = os.environ.get("YOUTUBE_PROXY_HTTP_URL", "").strip()
+    https_url = os.environ.get("YOUTUBE_PROXY_HTTPS_URL", "").strip()
+    ws_user = os.environ.get("WEBSHARE_USERNAME", "").strip()
+    ws_pass = os.environ.get("WEBSHARE_PASSWORD", "").strip()
+    locations = os.environ.get("YOUTUBE_PROXY_FILTER_IP_LOCATIONS", "").strip()
+
+    if not any([proxy_mode, http_url, https_url, ws_user, ws_pass, locations]):
+        return config_data
+
+    youtube_cfg = config_data.setdefault("youtube", {})
+    proxy_cfg = youtube_cfg.setdefault("proxy", {})
+
+    if proxy_mode:
+        proxy_cfg["mode"] = substitute_env_vars(proxy_mode)
+    if http_url:
+        proxy_cfg["http_url"] = substitute_env_vars(http_url)
+    if https_url:
+        proxy_cfg["https_url"] = substitute_env_vars(https_url)
+    if ws_user:
+        proxy_cfg["webshare_username"] = substitute_env_vars(ws_user)
+    if ws_pass:
+        proxy_cfg["webshare_password"] = substitute_env_vars(ws_pass)
+    if locations:
+        proxy_cfg["filter_ip_locations"] = [
+            item.strip().lower() for item in locations.split(",") if item.strip()
+        ]
+
+    return config_data
 
 
 def load_config(
@@ -116,6 +150,8 @@ def load_config(
 
         # Merge: global -> topic (topic wins on conflicts)
         config_data = _deep_merge_global_then_topic(global_data, topic_data)
+        # Env overrides (global across configs)
+        config_data = _apply_proxy_env_overrides(config_data)
 
         # Config-Objekt erstellen und zurückgeben
         return Config(**config_data)
