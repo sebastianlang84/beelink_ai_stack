@@ -817,8 +817,8 @@ SSOT (Projektzielbild): `docs/prd-tool-owui-transcript-miner-sync.md:1` und `doc
   - [x] Tailnet hat Serve aktiviert (Admin-Konsole)
   - [x] `sudo tailscale serve --bg --https=443 http://127.0.0.1:3000`
   - [x] URL prüfen: `sudo tailscale serve status`
-  - [ ] Test im VPN am Client: Open WebUI lädt über die `https://<node>.<tailnet>.ts.net/` URL
-  - [ ] Zugriff von extern verifizieren (Handy LTE + Tailscale): Browser im VPN erreicht die URL ohne Tunnel-Probleme
+  - [x] Test im VPN am Client: Open WebUI lädt über die `https://<node>.<tailnet>.ts.net/` URL
+  - [x] Zugriff von extern verifizieren (Handy LTE + Tailscale): Browser im VPN erreicht die URL ohne Tunnel-Probleme
 
 ## P0 — TranscriptMiner × Open WebUI Sync Tool (v0, core-first)
 Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video** in eine Knowledge Collection indexieren (keine Raw-Transkripte, keine Reports).
@@ -835,9 +835,9 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
     - [x] `YOUTUBE_API_KEY` + `OPENROUTER_API_KEY` (für Runs mit LLM-Analyse)
     - [x] `OPEN_WEBUI_API_KEY` (JWT Bearer; `OWUI_API_KEY` ist deprecated Alias)
     - [ ] `OPEN_WEBUI_API_KEY` rotieren, falls er jemals im Repo/Logs/Chat sichtbar war
-  - [ ] DRINGEND: Secrets vs Config sauber trennen (nur Secrets in `*.secrets.env`)
-    - [ ] `*.secrets.env` darf nur enthalten: Tokens/Keys/Passwörter/private Keys (keine Pfade/Hosts/IDs/Mappings)
-    - [ ] Nicht-Secrets als committed Service-Config (YAML/JSON im Service-Ordner) oder hostseitig unter `/srv/ai-stack/<service>/…` ablegen (Entscheidung + Doku)
+  - [x] Secrets vs Config sauber trennen (nur Secrets in `.env`)
+    - [x] `.env` darf nur enthalten: Tokens/Keys/Passwörter/private Keys (keine Pfade/Hosts/IDs/Mappings)
+    - [x] Nicht-Secrets in `.config.env` bzw. `<service>/.config.env` (Policy + Doku)
   - [ ] `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`/`OPEN_WEBUI_KNOWLEDGE_ID` ersetzen durch Mapping nach Knowledge-Name (IDs sind fragil) + Laufzeit-Resolution per OWUI API
   - [ ] Betriebs-Workflow: Mapping ändern ohne “Gefummel” (klarer Runbook-Schritt; ggf. Tool-Reload/Restart dokumentieren)
 - [ ] YouTube Transcript Block (HTTP 429) entschärfen: stabile Fetch-Strategie (IP/Proxy/Cookies), Runbook + Tests
@@ -847,7 +847,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] Host: `curl http://127.0.0.1:3000/` → `200`
   - [x] Tool→OWUI API erreichbar (Auth OK; `/api/v1/files/` → `200`)
   - [x] 1 Topic (z. B. `stocks_crypto`), 2–3 Videos: Summaries in Knowledge indexed (verifiziert via `/api/v1/knowledge/<id>/files`)
-  - [ ] Chat-Retrieval in Open WebUI manuell prüfen (Collection aktivieren, Frage stellen, Sources prüfen)
+  - [x] Chat-Retrieval in Open WebUI manuell prüfen (Collection aktivieren, Frage stellen, Sources prüfen)
   - [ ] Falls YouTube 429/Block: `youtube_cookies.txt` unter Repo-Root hinterlegen (gitignored) + `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt` in `mcp-transcript-miner/.config.env` setzen
 
 ## P1 — Betrieb & Sicherheit
@@ -856,13 +856,13 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] Repo: Runbook + Scripts für Backup/Restore vorhanden (`docs/runbook_backup_restore.md:1`, `scripts/README.md:1`)
   - [x] Repo: systemd Timer Templates vorhanden (`scripts/systemd/ai_stack_backup.timer`, `scripts/systemd/ai_stack_backup.service`)
   - [x] Host: Backup-Verzeichnis festlegen (z. B. `/srv/ai-stack/backups`, chmod `700`) + systemd Timer installieren/aktivieren
-  - [ ] `owui-data` sichern (Open WebUI Data)
-  - [ ] `tm-data` sichern (Runs/State/SQLite/Backups)
-  - [ ] TranscriptMiner Output Root sichern (bind-mount; Zielpfad festlegen, z. B. `/srv/ai-stack/transcript-miner/output`)
+  - [x] `owui-data` sichern (Open WebUI Data)
+  - [x] `tm-data` sichern (Runs/State/SQLite/Backups)
+  - [x] TranscriptMiner Output Root sichern (bind-mount; Zielpfad: `/home/wasti/ai_stack_data/transcript-miner/output`)
 - [ ] Offene Entscheidung: “Schöne URL” für Open WebUI im VPN-only Setup
   - [ ] Option A (einfach): Tailscale Serve URL so lassen (ts.net) + Bookmark-Titel/Shortcut am Client
   - [ ] Option B (Client-Alias): Hosts/DNS am Client setzen (Merknamen wie `openwebui` → zeigt auf Server/Tailscale), weiterhin Zugriff via Serve-URL (TLS Hostname bleibt ts.net)
-  - [ ] Option C (Tailscale Custom Domain/Hostname): eigene Domain/Hostname in der Tailscale Admin Console für Serve konfigurieren (wenn gewünscht/unterstützt)
+  - [x] Option C (Tailscale Custom Domain/Hostname): eigene Domain/Hostname in der Tailscale Admin Console für Serve konfigurieren (merknamen.ts.net)
   - [ ] Option D (Reverse Proxy): Caddy/Traefik + eigene Domain + TLS (mehr Setup/Wartung; später)
   - [ ] Option E (ohne Serve): Open WebUI direkt an Tailscale-IP binden und per `http://<tailscale-ip>:3000` nutzen (kein HTTPS; öffnet Port im Tailnet)
 
