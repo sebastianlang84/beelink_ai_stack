@@ -216,10 +216,11 @@ class RunStartRequest(BaseModel):
 
 class RunStartResponse(BaseModel):
     status: str
-    run_id: str
+    run_id: str | None = None
     topic: str | None = None
-    command: list[str]
-    log_path: str
+    command: list[str] | None = None
+    log_path: str | None = None
+    error: str | None = None
 
 
 class RunStatusResponse(BaseModel):
@@ -990,15 +991,29 @@ def write_config(config_id: str, req: ConfigWriteRequest) -> ConfigWriteResponse
 
 @app.post("/runs/start", summary="Start TranscriptMiner run (async)", operation_id="runs_start")
 def start_run(req: RunStartRequest) -> RunStartResponse:
-    try:
-        config_filename, config_text = _read_config_text(req.config_id)
-    except Exception:
-        config_filename = req.config_id
-        config_text = ""
+    config_filename = req.config_id
+    config_text = ""
+    candidate_ids = [
+        req.config_id,
+        f"{req.config_id}.yaml",
+        f"{req.config_id}.yml",
+        f"config_{req.config_id}.yaml",
+        f"config_{req.config_id}.yml",
+    ]
+    found = False
+    for cid in candidate_ids:
         try:
-            config_filename, config_text = _read_config_text(f"{req.config_id}.yaml")
+            config_filename, config_text = _read_config_text(cid)
+            found = True
+            break
         except Exception:
-            pass
+            continue
+    if not found:
+        hint = f"config_{req.config_id}.yaml"
+        return RunStartResponse(
+            status="error",
+            error=f"config_id not found: {req.config_id} (try {hint})",
+        )
 
     rewritten, topic = _rewrite_config_for_container(config_text or "")
     run_id = uuid.uuid4().hex
