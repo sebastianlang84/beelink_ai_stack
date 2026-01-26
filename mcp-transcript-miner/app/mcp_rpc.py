@@ -69,7 +69,7 @@ def make_tools(*, models: dict[str, type[BaseModel]]) -> list[ToolDef]:
         ),
         ToolDef(
             name="runs.start",
-            description="Start a TranscriptMiner run (async) for a config_id. Use configs.list first to pick the correct config_id.",
+            description="Start a TranscriptMiner run (async) for a config_id. Use configs.list first to pick the correct config_id. Prefer the `summary` field for user-facing replies; avoid `log_path` unless explicitly asked.",
             input_schema=_simple_schema(
                 props={
                     "config_id": {"type": "string"},
@@ -84,7 +84,7 @@ def make_tools(*, models: dict[str, type[BaseModel]]) -> list[ToolDef]:
         ),
         ToolDef(
             name="runs.status",
-            description="Get run status + log tail by run_id",
+            description="Get run status + log tail by run_id. Prefer the `summary` field for user-facing replies; avoid `log_tail` unless explicitly asked.",
             input_schema=_simple_schema(props={"run_id": {"type": "string"}}, required=["run_id"]),
         ),
         ToolDef(

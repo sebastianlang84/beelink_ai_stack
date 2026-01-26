@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- mcp-transcript-miner: Tool-Docs empfehlen summary statt log_path/log_tail in Antworten
 - mcp-transcript-miner: youtube-transcript-api auf 1.2.3 aktualisiert (proxies Modul vorhanden)
 - mcp-transcript-miner: runs.start/runs.status liefern `summary` (kurzer Klartext)
 - mcp-transcript-miner: configs.list liefert display_name/aliases; Tool-Docs raten zu configs.list vor runs.start

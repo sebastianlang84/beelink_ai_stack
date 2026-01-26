@@ -33,9 +33,11 @@ Startet einen TranscriptMiner-Run asynchron (im Container) anhand einer Config a
 Antwort enthält eine `run_id`. Status über `GET /runs/{run_id}`.
 Hinweis für LLMs: zuerst `configs.list` aufrufen und den exakten `config_id` verwenden.
 Antwort enthält zusätzlich ein `summary` (kurzer Klartext für Nutzer).
+Empfehlung: `summary` für Nutzertexte verwenden; `log_path` nur auf Nachfrage.
 
 ### `GET /runs/{run_id}`
 Liefert Status und Log-Tail des Runs.
+Empfehlung: `summary` für Nutzertexte verwenden; `log_tail` nur auf Nachfrage.
 
 ### `POST /transcript`
 Request JSON:
