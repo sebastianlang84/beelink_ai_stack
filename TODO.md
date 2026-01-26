@@ -855,7 +855,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
 - [ ] Backup-Ziel definieren (Volumes):
   - [x] Repo: Runbook + Scripts für Backup/Restore vorhanden (`docs/runbook_backup_restore.md:1`, `scripts/README.md:1`)
   - [x] Repo: systemd Timer Templates vorhanden (`scripts/systemd/ai_stack_backup.timer`, `scripts/systemd/ai_stack_backup.service`)
-  - [ ] Host: Backup-Verzeichnis festlegen (z. B. `/srv/ai-stack/backups`, chmod `700`) + systemd Timer installieren/aktivieren
+  - [x] Host: Backup-Verzeichnis festlegen (z. B. `/srv/ai-stack/backups`, chmod `700`) + systemd Timer installieren/aktivieren
   - [ ] `owui-data` sichern (Open WebUI Data)
   - [ ] `tm-data` sichern (Runs/State/SQLite/Backups)
   - [ ] TranscriptMiner Output Root sichern (bind-mount; Zielpfad festlegen, z. B. `/srv/ai-stack/transcript-miner/output`)

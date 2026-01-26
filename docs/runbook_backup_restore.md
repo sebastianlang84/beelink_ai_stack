@@ -18,7 +18,7 @@ Hinweis: Backups enthalten die Rohdaten (inkl. Tokens/DBs/Uploads). Behandle Bac
 
 ### 3) TranscriptMiner Output Root (Host-Pfad, Bind-Mount)
 
-- Host-Pfad (Default): `/srv/ai-stack/transcript-miner/output`
+- Host-Pfad (Default): `/home/wasti/ai_stack_data/transcript-miner/output`
 - Alternative Zielpfade möglich (siehe `mcp-transcript-miner/docker-compose.yml`)
 
 ### 4) context6 (MCP) Daten (PoC)
@@ -50,10 +50,14 @@ sudo chmod 700 /srv/ai-stack/backups
 ./scripts/backup_docker_volume.sh tm-data /srv/ai-stack/backups
 ```
 
+Hinweis: Volume-Backups laufen über Docker und werden typischerweise als `root:root` geschrieben.
+Das ist erwartetes Verhalten. Falls du einheitliche Ownership willst, kannst du die Dateien nachträglich
+auf `wasti:wasti` umstellen (z. B. `sudo chown wasti:wasti /srv/ai-stack/backups/*.tar.gz`).
+
 ### Output Root (Bind-Mount) Backup
 
 ```bash
-./scripts/backup_path.sh /srv/ai-stack/transcript-miner/output /srv/ai-stack/backups
+./scripts/backup_path.sh /home/wasti/ai_stack_data/transcript-miner/output /srv/ai-stack/backups
 ```
 
 ## Regelmäßige Backups (systemd Timer)
@@ -78,7 +82,7 @@ sudo systemctl start ai_stack_backup.service
 
 Konfiguration (Defaults im Service-File):
 - `BACKUP_DIR=/srv/ai-stack/backups`
-- `OUTPUT_ROOT=/srv/ai-stack/transcript-miner/output`
+- `OUTPUT_ROOT=/home/wasti/ai_stack_data/transcript-miner/output`
 - `RETENTION_DAYS=14`
 
 ## Restore (Achtung: destruktiv)

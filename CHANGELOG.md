@@ -1,9 +1,13 @@
 # Changelog
 
 ## Unreleased
+- backup: Output-Root Default auf `/home/wasti/ai_stack_data/transcript-miner/output` vereinheitlicht (Runbook + systemd + Scripts) + Hinweis zu root-owned Volume-Backups ergänzt
 - docs: YouTube 429 als TODO erfasst (Runbook/Tests fuer stabile Fetch-Strategie)
 - docs: YouTube 429 Einordnung/Workarounds/Alternativen im Block-Report ergaenzt
 - docs: Report zum aktuellen YouTube Transcript Block (HTTP 429)
+- transcript-miner: Downloader/Tools auf youtube-transcript-api v1 angepasst (list() API)
+- transcript-miner: Proxy-Config (Webshare/Generic) reaktiviert + Env-Substitution fuer Proxy-Credentials
+- transcript-miner: Globaler Proxy-Default via config_global.yaml + .config.env; Standard-User-Agent gesetzt
 - transcript-miner: Tool `tools/youtube_block_probe.py` fuer systematische Rate-Limit Tests
 - docs: Watchdog-Schwellwerte auf Intel N150 Kontext ergaenzt
 - docs: Watchdog-Plan erweitert (PSI/Memory/Inodes/Schwellwerte/Trigger-Logik)

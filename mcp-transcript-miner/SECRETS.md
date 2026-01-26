@@ -18,7 +18,7 @@ Required (Knowledge Target):
 
 Recommended:
 - `OPEN_WEBUI_BASE_URL` (Default im Container: `http://owui:8080`)
-- `TRANSCRIPT_MINER_OUTPUT_ROOT_HOST` (z. B. `/srv/ai-stack/transcript-miner/output`)
+- `TRANSCRIPT_MINER_OUTPUT_ROOT_HOST` (z. B. `/home/wasti/ai_stack_data/transcript-miner/output`)
 
 Optional:
 - `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt`

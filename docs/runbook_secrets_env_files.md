@@ -54,7 +54,7 @@ Config `.config.env` (Beispiele, **non-secret**):
 - alternativ: `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH=/config/knowledge_ids.json`
 - optional: `OPEN_WEBUI_BASE_URL=http://owui:8080`
 - optional: `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt`
-- optional: `TRANSCRIPT_MINER_OUTPUT_ROOT_HOST=/srv/ai-stack/transcript-miner/output`
+- optional: `TRANSCRIPT_MINER_OUTPUT_ROOT_HOST=/home/wasti/ai_stack_data/transcript-miner/output`
 
 Hinweis: JSON-Werte am besten in **einfachen Anführungszeichen** notieren, damit Shell/Compose das nicht “zerlegt”.
 

@@ -12,8 +12,8 @@ Defaults:
   backup_dir: /srv/ai-stack/backups
 
 Examples:
-  ./scripts/backup_path.sh /srv/ai-stack/transcript-miner/output
-  ./scripts/backup_path.sh /srv/ai-stack/transcript-miner/output /srv/ai-stack/backups
+  ./scripts/backup_path.sh /home/wasti/ai_stack_data/transcript-miner/output
+  ./scripts/backup_path.sh /home/wasti/ai_stack_data/transcript-miner/output /srv/ai-stack/backups
 EOF
 }
 
