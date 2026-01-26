@@ -678,16 +678,7 @@ def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
 def _strip_frontmatter(markdown: str) -> str:
     text = markdown.lstrip()
     if not text.startswith("---"):
-    return markdown
-
-
-def _load_metadata(path: str) -> dict[str, Any]:
-    try:
-        with open(path, "r", encoding="utf-8") as fh:
-            obj = json.load(fh)
-        return obj if isinstance(obj, dict) else {}
-    except Exception:
-        return {}
+        return markdown
     lines = markdown.splitlines(keepends=True)
     if not lines:
         return markdown
@@ -701,6 +692,15 @@ def _load_metadata(path: str) -> dict[str, Any]:
     if end is None:
         return markdown
     return "".join(lines[end + 1 :]).lstrip()
+
+
+def _load_metadata(path: str) -> dict[str, Any]:
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            obj = json.load(fh)
+        return obj if isinstance(obj, dict) else {}
+    except Exception:
+        return {}
 
 
 def _read_text_file(path: str, *, max_chars: int) -> tuple[bool, str]:

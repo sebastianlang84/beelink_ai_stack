@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- mcp-transcript-miner: fix _strip_frontmatter indentation regression
 - transcript-miner: Summary-Regeneration bei Topic-Mismatch + Index filtert auf youtube.channels
 - mcp-transcript-miner: auto-create Knowledge Collection option + besser benannte Upload-Dateien
 - docs: knowledge_ids.json.example aktualisiert (ai_knowledge, investing, investing_test)
