@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- mcp-transcript-miner: Knowledge-ID Mapping optional; Sync löst Knowledge-ID per Name=Topic über OWUI API auf
 - docs: Topic `stocks_crypto` überall auf `investing` umbenannt (Config/Template/Beispiele/Runbooks)
 - backup: Output-Root Default auf `/home/wasti/ai_stack_data/transcript-miner/output` vereinheitlicht (Runbook + systemd + Scripts) + Hinweis zu root-owned Volume-Backups ergänzt
 - docs: YouTube 429 als TODO erfasst (Runbook/Tests fuer stabile Fetch-Strategie)

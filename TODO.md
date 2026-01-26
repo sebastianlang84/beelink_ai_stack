@@ -838,7 +838,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] Secrets vs Config sauber trennen (nur Secrets in `.env`)
     - [x] `.env` darf nur enthalten: Tokens/Keys/Passwörter/private Keys (keine Pfade/Hosts/IDs/Mappings)
     - [x] Nicht-Secrets in `.config.env` bzw. `<service>/.config.env` (Policy + Doku)
-  - [ ] `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`/`OPEN_WEBUI_KNOWLEDGE_ID` ersetzen durch Mapping nach Knowledge-Name (IDs sind fragil) + Laufzeit-Resolution per OWUI API
+  - [x] `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`/`OPEN_WEBUI_KNOWLEDGE_ID` optional; Default ist Knowledge-Name = Topic (OWUI API Resolution)
   - [ ] Betriebs-Workflow: Mapping ändern ohne “Gefummel” (klarer Runbook-Schritt; ggf. Tool-Reload/Restart dokumentieren)
 - [ ] YouTube Transcript Block (HTTP 429) entschärfen: stabile Fetch-Strategie (IP/Proxy/Cookies), Runbook + Tests
 - [ ] Smoke-Test Runbook:

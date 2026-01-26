@@ -12,10 +12,10 @@ Required:
 
 ## Service Config (`/home/wasti/ai_stack/mcp-transcript-miner/.config.env`)
 
-Required (Knowledge Target):
-- `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON` (recommended) **oder** `OPEN_WEBUI_KNOWLEDGE_ID` (fallback)
+Knowledge Target (optional Mapping):
+- Default: Knowledge-Name = Topic (z. B. `investing`)
+- Optional: `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON` (Mapping) **oder** `OPEN_WEBUI_KNOWLEDGE_ID` (Fallback)
   - optional: `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH=/config/knowledge_ids.json` (Datei statt Inline-JSON)
-  - Naming-Policy: Knowledge-Name = Topic (z. B. `investing`)
 
 Recommended:
 - `OPEN_WEBUI_BASE_URL` (Default im Container: `http://owui:8080`)

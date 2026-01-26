@@ -68,7 +68,7 @@ Wenn `TRANSCRIPT_MINER_OUTPUT_DIR` gemountet ist:
 
 ### Indexing (Open WebUI Knowledge)
 - `POST /index/transcript` — upload/poll/add (idempotent via SQLite, keyed by `source_id`)
-- `POST /sync/topic/{topic}` — indexiert per-video Summaries für ein Topic (benötigt `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)
+- `POST /sync/topic/{topic}` — indexiert per-video Summaries für ein Topic (Knowledge-Name = Topic; optionales Mapping via `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)
 
 ## Betrieb
 - Standalone (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)

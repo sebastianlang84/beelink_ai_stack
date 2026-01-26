@@ -95,7 +95,7 @@ Notes:
 - `POST /runs/start` requires `YOUTUBE_API_KEY` and (if LLM analysis enabled) `OPENROUTER_API_KEY` in the tool container environment.
   - Example: start a run: `POST /runs/start` with `{"config_id":"config_investing.yaml"}`
   - Then poll: `GET /runs/{run_id}`
-  - Then index: `POST /sync/topic/investing` (requires `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)
+  - Then index: `POST /sync/topic/investing` (Knowledge-Name = Topic; optional mapping via `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)
 """
 
 app = FastAPI(
@@ -410,6 +410,46 @@ def _load_knowledge_map() -> dict[str, str]:
         if isinstance(k, str) and k.strip() and isinstance(v, str) and v.strip():
             out[k.strip()] = v.strip()
     return out
+
+
+def _list_knowledge() -> list[dict[str, Any]]:
+    url = f"{OPEN_WEBUI_BASE_URL}/api/v1/knowledge/"
+    resp = requests.get(url, headers=_auth_headers(), timeout=60)
+    if resp.status_code >= 400:
+        raise RuntimeError(f"knowledge list failed: {resp.status_code} {resp.text}")
+    data = resp.json()
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict) and isinstance(data.get("items"), list):
+        return list(data["items"])
+    if isinstance(data, dict) and isinstance(data.get("data"), list):
+        return list(data["data"])
+    if isinstance(data, dict) and isinstance(data.get("knowledge"), list):
+        return list(data["knowledge"])
+    return []
+
+
+def _find_knowledge_by_name(name: str) -> dict[str, Any] | None:
+    name_norm = (name or "").strip().casefold()
+    if not name_norm:
+        return None
+    for kb in _list_knowledge():
+        kb_name = str(kb.get("name") or "").strip().casefold()
+        if kb_name == name_norm:
+            return kb
+    return None
+
+
+def _resolve_knowledge_id_for_topic(topic: str) -> str | None:
+    knowledge_map = _load_knowledge_map()
+    mapped = knowledge_map.get(topic)
+    if mapped:
+        return mapped
+    kb = _find_knowledge_by_name(topic)
+    if not kb:
+        return None
+    kid = str(kb.get("id") or "").strip()
+    return kid or None
 
 
 def _db() -> sqlite3.Connection:
@@ -1076,10 +1116,16 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
     except ValueError:
         return SyncTopicResponse(status="error", topic=topic, last_error="invalid topic")
 
-    knowledge_map = _load_knowledge_map()
-    knowledge_id = knowledge_map.get(safe_topic)
+    try:
+        knowledge_id = _resolve_knowledge_id_for_topic(safe_topic)
+    except Exception as exc:
+        return SyncTopicResponse(status="error", topic=safe_topic, last_error=str(exc))
     if not knowledge_id:
-        return SyncTopicResponse(status="error", topic=safe_topic, last_error="missing OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON mapping")
+        return SyncTopicResponse(
+            status="error",
+            topic=safe_topic,
+            last_error="knowledge not found (expected Knowledge name = topic, or set OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON)",
+        )
 
     index_dir = os.path.join(_indexes_root(), safe_topic, "current")
     transcripts_jsonl = os.path.join(index_dir, "transcripts.jsonl")
