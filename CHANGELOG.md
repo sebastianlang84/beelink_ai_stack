@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- mcp-transcript-miner: fix missing requests import in sync.topic
 - ops: systemd Timer für investing-Run alle 3h (Auto-Sync nach Run)
 - mcp-transcript-miner: optionaler Auto-Sync nach Run-Ende (OPEN_WEBUI_AUTO_SYNC_AFTER_RUN)
 - mcp-transcript-miner: runs.start löst config_id über aliases aus configs.list auf
