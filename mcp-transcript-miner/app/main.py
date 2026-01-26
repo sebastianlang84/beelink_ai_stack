@@ -3,6 +3,7 @@ import json
 import os
 import sqlite3
 import time
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 import subprocess
@@ -53,6 +54,7 @@ DEFAULT_KNOWLEDGE_ID = os.getenv("OPEN_WEBUI_KNOWLEDGE_ID", "").strip()
 POLL_INTERVAL = int(os.getenv("OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS", "3"))
 PROCESS_TIMEOUT = int(os.getenv("OPEN_WEBUI_PROCESS_TIMEOUT_SECONDS", "900"))
 INDEXER_DB_PATH = os.getenv("INDEXER_DB_PATH", "/data/indexer.sqlite3")
+AUTO_SYNC_AFTER_RUN = os.getenv("OPEN_WEBUI_AUTO_SYNC_AFTER_RUN", "").strip().lower() in {"1", "true", "yes"}
 
 CAPABILITIES_MARKDOWN = """\
 ## Transcript Miner — Capabilities
@@ -223,6 +225,7 @@ class RunStartResponse(BaseModel):
     command: list[str]
     log_path: str
     summary: str | None = None
+    auto_sync: bool = False
 
 
 class RunStatusResponse(BaseModel):
@@ -238,6 +241,7 @@ class RunStatusResponse(BaseModel):
     log_tail: str | None = None
     error: str | None = None
     summary: str | None = None
+    auto_sync: bool = False
 
 
 class RunStatusMcpRequest(BaseModel):
@@ -247,6 +251,7 @@ class RunStatusMcpRequest(BaseModel):
 class SyncTopicRequest(BaseModel):
     max_videos: int = Field(default=0, ge=0, le=5000, description="0 = no limit.")
     dry_run: bool = False
+    run_id: str | None = None
 
 
 class SyncTopicResponse(BaseModel):
@@ -258,6 +263,7 @@ class SyncTopicResponse(BaseModel):
     skipped: int = 0
     errors: int = 0
     last_error: str | None = None
+    run_id: str | None = None
 
 
 class SyncTopicMcpRequest(SyncTopicRequest):
@@ -825,6 +831,19 @@ def _rewrite_config_for_container(config_text: str) -> tuple[str, str | None]:
     return rewritten, topic_str
 
 
+def _queue_auto_sync(run_id: str, topic: str) -> None:
+    def _worker() -> None:
+        try:
+            req = SyncTopicRequest()
+            req.run_id = run_id
+            sync_topic(topic, req)
+        except Exception:
+            pass
+
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+
+
 def _fetch_with_retries(transcript_obj: Any, retries: int) -> list[dict[str, Any]]:
     last_exc: Exception | None = None
     for attempt in range(retries + 1):
@@ -1095,6 +1114,7 @@ def start_run(req: RunStartRequest) -> RunStartResponse:
         command=cmd,
         log_path=log_path,
         summary=summary,
+        auto_sync=AUTO_SYNC_AFTER_RUN,
     )
 
 
@@ -1138,11 +1158,20 @@ def get_run(run_id: str) -> RunStatusResponse:
                     meta["finished_at"] = meta.get("finished_at") or datetime.now(timezone.utc).isoformat()
                     meta["state"] = "finished"
 
-        if meta.get("state") == "finished":
+    if meta.get("state") == "finished":
+        _write_run_meta(run_id, meta)
+        state = meta["state"]
+        finished_at = meta.get("finished_at")
+        exit_code = meta.get("exit_code")
+        if (
+            AUTO_SYNC_AFTER_RUN
+            and exit_code == 0
+            and meta.get("auto_synced") is not True
+            and meta.get("topic")
+        ):
+            meta["auto_synced"] = True
             _write_run_meta(run_id, meta)
-            state = meta["state"]
-            finished_at = meta.get("finished_at")
-            exit_code = meta.get("exit_code")
+            _queue_auto_sync(run_id, str(meta.get("topic")))
 
     log_tail = _tail_file(_run_log_path(run_id))
     summary = None
@@ -1165,6 +1194,7 @@ def get_run(run_id: str) -> RunStatusResponse:
         log_tail=log_tail,
         error=meta.get("error"),
         summary=summary,
+        auto_sync=AUTO_SYNC_AFTER_RUN,
     )
 
 
@@ -1173,23 +1203,24 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
     try:
         safe_topic = _safe_id(topic, label="topic")
     except ValueError:
-        return SyncTopicResponse(status="error", topic=topic, last_error="invalid topic")
+        return SyncTopicResponse(status="error", topic=topic, last_error="invalid topic", run_id=req.run_id)
 
     try:
         knowledge_id = _resolve_knowledge_id_for_topic(safe_topic)
     except Exception as exc:
-        return SyncTopicResponse(status="error", topic=safe_topic, last_error=str(exc))
+        return SyncTopicResponse(status="error", topic=safe_topic, last_error=str(exc), run_id=req.run_id)
     if not knowledge_id:
         return SyncTopicResponse(
             status="error",
             topic=safe_topic,
             last_error="knowledge not found (expected Knowledge name = topic, or set OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON)",
+            run_id=req.run_id,
         )
 
     index_dir = os.path.join(_indexes_root(), safe_topic, "current")
     transcripts_jsonl = os.path.join(index_dir, "transcripts.jsonl")
     if not os.path.isfile(transcripts_jsonl):
-        return SyncTopicResponse(status="not_found", topic=safe_topic, knowledge_id=knowledge_id, last_error="missing transcripts.jsonl")
+        return SyncTopicResponse(status="not_found", topic=safe_topic, knowledge_id=knowledge_id, last_error="missing transcripts.jsonl", run_id=req.run_id)
 
     processed = indexed = skipped = errors = 0
     last_error: str | None = None
@@ -1264,6 +1295,7 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
         skipped=skipped,
         errors=errors,
         last_error=last_error,
+        run_id=req.run_id,
     )
 
 

@@ -77,3 +77,6 @@ Ziel: Ein echter Indexing-Durchlauf in eine Knowledge Collection.
 4. Prüfen:
    - Knowledge Collection enthält neue Summary-Dokumente
    - Chat-Retrieval mit der Collection liefert passende Zitate/Referenzen
+
+Hinweis: Optional kann Auto-Sync aktiviert werden (Service-Config):
+- `OPEN_WEBUI_AUTO_SYNC_AFTER_RUN=true`
