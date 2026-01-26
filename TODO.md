@@ -834,7 +834,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] Repo: `.env` mit echten Werten befüllt (und niemals committen):
     - [x] `YOUTUBE_API_KEY` + `OPENROUTER_API_KEY` (für Runs mit LLM-Analyse)
     - [x] `OPEN_WEBUI_API_KEY` (JWT Bearer; `OWUI_API_KEY` ist deprecated Alias)
-    - [ ] `OPEN_WEBUI_API_KEY` rotieren, falls er jemals im Repo/Logs/Chat sichtbar war
+    - [x] `OPEN_WEBUI_API_KEY` Rotation nicht nötig (nie im Repo/Logs/Chat sichtbar)
   - [x] Secrets vs Config sauber trennen (nur Secrets in `.env`)
     - [x] `.env` darf nur enthalten: Tokens/Keys/Passwörter/private Keys (keine Pfade/Hosts/IDs/Mappings)
     - [x] Nicht-Secrets in `.config.env` bzw. `<service>/.config.env` (Policy + Doku)

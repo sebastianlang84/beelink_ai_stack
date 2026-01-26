@@ -50,8 +50,9 @@ Shared `.env` (**nur Secrets**, ohne Werte hier):
 - `OPEN_WEBUI_API_KEY=...` (preferred) **oder** `OWUI_API_KEY=...` (deprecated Alias)
 
 Config `.config.env` (Beispiele, **non-secret**):
-- `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON='{"ai_knowledge":"<knowledge_id_here>"}'` (optional; sonst Knowledge-Name = Topic)
-- alternativ: `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH=/config/knowledge_ids.json` (optional)
+- **Default:** Knowledge-Name = Topic (kein Mapping nötig)
+- Optional: `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON='{"ai_knowledge":"<knowledge_id_here>"}'`
+- Optional: `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH=/config/knowledge_ids.json`
 - optional: `OPEN_WEBUI_BASE_URL=http://owui:8080`
 - optional: `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt`
 - optional: `TRANSCRIPT_MINER_OUTPUT_ROOT_HOST=/home/wasti/ai_stack_data/transcript-miner/output`

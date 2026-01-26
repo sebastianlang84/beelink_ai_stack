@@ -69,10 +69,9 @@ Erwartung: Zugriff im VPN über `https://<node>.<tailnet>.ts.net/` lädt Open We
 
 Ziel: Ein echter Indexing-Durchlauf in eine Knowledge Collection.
 
-1. In Open WebUI eine Knowledge Collection anlegen, **Name = Topic** (z. B. `investing`) und deren ID notieren.
-2. In Open WebUI: Knowledge-Name = Topic (z. B. `investing`).
-   - Optional in `mcp-transcript-miner/.config.env` setzen (Mapping, falls IDs explizit nötig):
-     - `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON='{"investing":"<knowledge_id>"}'`
+1. In Open WebUI eine Knowledge Collection anlegen, **Name = Topic** (z. B. `investing`).
+2. Optional: Nur wenn der Name nicht dem Topic entspricht, Mapping setzen:
+   - `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON='{"investing":"<knowledge_id>"}'`
 3. Mit dem Tool einen Topic-Sync triggern:
    - In Open WebUI als External Tool „Transcript Miner“ verwenden: `sync.topic` mit `topic=investing`
 4. Prüfen:

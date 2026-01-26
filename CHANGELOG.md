@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: Knowledge-Name = Topic als No-Fuss Workflow dokumentiert
 - docs: Runbook für YouTube Transcript 429 (Tests + Mitigation) ergänzt
 - mcp-transcript-miner: Knowledge-ID Mapping optional; Sync löst Knowledge-ID per Name=Topic über OWUI API auf
 - docs: Topic `stocks_crypto` überall auf `investing` umbenannt (Config/Template/Beispiele/Runbooks)
