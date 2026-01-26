@@ -461,6 +461,7 @@ Wichtigste Felder:
 #### 2) `transcripts.jsonl` (Index der Transkriptreferenzen)
 
 Format: JSONL (eine JSON-Map pro Zeile). Quelle der Felder: [`TranscriptRef`](src/transcript_miner/transcript_index/models.py:11) + [`TranscriptRef.to_json()`](src/transcript_miner/transcript_index/models.py:21).
+Hinweis: Der Index wird auf die in der Config definierten `youtube.channels` gefiltert (Topic‑isoliert).
 
 Felder pro Zeile:
 

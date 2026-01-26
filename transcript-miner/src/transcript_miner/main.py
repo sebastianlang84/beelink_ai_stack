@@ -587,7 +587,13 @@ def _run_analysis_pipeline_for_config(
         from transcript_miner.transcript_index.runner import write_analysis_index
 
         logger.info("Building analysis index: %s", index_dir)
-        rc = write_analysis_index(output_dir=index_dir, input_roots=[profile_root])
+        channel_list = []
+        try:
+            raw_channels = getattr(config.youtube, "channels", []) or []
+            channel_list = [str(c).strip().lstrip("@").replace("/", "_").replace("\\", "_").lower() for c in raw_channels if str(c).strip()]
+        except Exception:
+            channel_list = []
+        rc = write_analysis_index(output_dir=index_dir, input_roots=[profile_root], allowed_channels=channel_list)
         if rc != 0:
             logger.error("Analysis index failed (exit=%s).", rc)
             return 1

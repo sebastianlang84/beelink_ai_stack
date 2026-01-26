@@ -106,6 +106,7 @@ def _existing_summary_is_valid(
     summary_path: Path,
     ref: "TranscriptRef",
     raw_hash: str,
+    expected_topic: str | None,
 ) -> tuple[bool, str]:
     try:
         text = summary_path.read_text(encoding="utf-8")
@@ -122,6 +123,8 @@ def _existing_summary_is_valid(
         return False, "transcript_path_mismatch"
     if meta.get("raw_hash") != raw_hash:
         return False, "raw_hash_mismatch"
+    if expected_topic and meta.get("topic") and meta.get("topic") != expected_topic:
+        return False, "topic_mismatch"
 
     return True, "ok"
 
@@ -1074,7 +1077,10 @@ def run_llm_analysis(
             target_summaries_dir = summary_path.parent
             if summary_path.exists():
                 is_valid, reason = _existing_summary_is_valid(
-                    summary_path=summary_path, ref=ref, raw_hash=raw_hash
+                    summary_path=summary_path,
+                    ref=ref,
+                    raw_hash=raw_hash,
+                    expected_topic=cfg.output.get_topic(),
                 )
                 if is_valid:
                     _append_audit(

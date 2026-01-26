@@ -43,7 +43,7 @@ def _compute_run_fingerprint(
     return h.hexdigest()
 
 
-def write_analysis_index(*, output_dir: Path, input_roots: list[Path]) -> int:
+def write_analysis_index(*, output_dir: Path, input_roots: list[Path], allowed_channels: list[str] | None = None) -> int:
     """Scan transcript outputs and write analysis artefacts.
 
     Artefact layout (Batch 1):
@@ -63,7 +63,10 @@ def write_analysis_index(*, output_dir: Path, input_roots: list[Path]) -> int:
     transcripts_lines: list[str] = []
     audit_lines: list[str] = []
 
+    allowed_set = {c.strip().lower() for c in (allowed_channels or []) if isinstance(c, str) and c.strip()}
     for ref in scan.transcripts:
+        if allowed_set and ref.channel_namespace.lower() not in allowed_set:
+            continue
         unique_video_ids.add(ref.video_id)
         transcripts_lines.append(json.dumps(ref.to_json(), ensure_ascii=False))
 
