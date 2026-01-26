@@ -16,6 +16,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 - `docs/runbook_backup_restore.md` — Backups/Restore für Volumes + Output Root
 - `docs/runbook_smoke_test.md` — Smoke Test (P0): Open WebUI + Transcript Miner Tool + Tool→OWUI Auth
 - `docs/runbook_openwebui_reindex_knowledge.md` — Reindex nach Embedding‑Model‑Wechsel (Knowledge Collections Recovery)
+- `docs/runbook_youtube_429_mitigation.md` — Runbook für YouTube Transcript 429 (Tests + Mitigation)
 
 ## Reports / Incidents
 - `docs/report_youtube_ip_block.md` — YouTube Transcript Block (HTTP 429) Status & Optionen

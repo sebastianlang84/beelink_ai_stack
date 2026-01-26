@@ -841,6 +841,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`/`OPEN_WEBUI_KNOWLEDGE_ID` optional; Default ist Knowledge-Name = Topic (OWUI API Resolution)
   - [ ] Betriebs-Workflow: Mapping ändern ohne “Gefummel” (klarer Runbook-Schritt; ggf. Tool-Reload/Restart dokumentieren)
 - [ ] YouTube Transcript Block (HTTP 429) entschärfen: stabile Fetch-Strategie (IP/Proxy/Cookies), Runbook + Tests
+  - [x] Runbook + Tests dokumentiert (`docs/runbook_youtube_429_mitigation.md`)
 - [ ] Smoke-Test Runbook:
   - [x] Repo: Runbook + Script vorhanden (`docs/runbook_smoke_test.md:1`, `scripts/smoke_test_ai_stack.sh:1`)
   - [x] Services laufen (Compose `ps` zeigt `healthy`)

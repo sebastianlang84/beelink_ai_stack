@@ -5,6 +5,8 @@ Stand: 2026-01-24
 ## Kurzfassung
 Transcript-Requests schlagen auf dem Host bereits bei einem einzelnen Video mit HTTP 429 (Too Many Requests) fehl. Damit sind Runs blockiert, bis die IP-Reputation wieder reicht oder ein alternativer Zugriff genutzt wird (Cookies/Residential Proxy/anderes Netz).
 
+Runbook: `docs/runbook_youtube_429_mitigation.md`
+
 ## Repro (minimal)
 - Tool: `transcript-miner/tools/youtube_block_probe.py`
 - Ein einzelner Request (1 Video, 1 Versuch) -> Status `blocked`
