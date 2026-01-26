@@ -35,9 +35,9 @@ python /transcript_miner_repo/tools/youtube_block_probe.py \
 - Block betrifft den Transcript-Endpoint, nicht nur die Data API
 
 ## Optionen zur Entblockung
-1) IP wechseln (anderes Netz/Hotspot)
-2) Cookies nutzen (eingeloggte Session)
-3) Residential Proxy (statt Datacenter Proxy)
+1) Residential Proxy (Webshare) — **empfohlen**; im Test erfolgreich
+2) IP wechseln (anderes Netz/Hotspot)
+3) Cookies nutzen (eingeloggte Session)
 4) Wartefenster (Reset nicht deterministisch; oft Stunden bis >24h)
 
 ## Einordnung: Warum 429 bereits beim 1. Request plausibel ist

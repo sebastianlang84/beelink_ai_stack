@@ -86,8 +86,8 @@ WEBSHARE_PASSWORD=...
 Probe (wie T0).
 
 ## Mitigation-Strategie (priorisiert)
-1) **Netzwechsel** (Hotspot / anderes WAN)  
-2) **Residential Proxy (webshare)**  
+1) **Residential Proxy (Webshare)** — funktioniert im Test  
+2) **Netzwechsel** (Hotspot / anderes WAN)  
 3) **Cookies** (nur wenn nötig; Account-Risiko beachten)
 
 ## Hinweise
