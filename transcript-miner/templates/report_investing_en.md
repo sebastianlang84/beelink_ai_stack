@@ -1,5 +1,5 @@
 <!--
-Template for topic: stocks_crypto
+Template for topic: investing
 Source: user_data/report_template_vorschlag.md (translated)
 -->
 

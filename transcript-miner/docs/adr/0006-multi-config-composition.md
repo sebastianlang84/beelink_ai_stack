@@ -211,7 +211,7 @@ Wir definieren eine `config_set_id` als String:
 1. `names_part`:
    - Nimm die Basenames der ConfigFiles (ohne Extension), in kanonischer Order.
    - „Join“ mit `+`.
-   - Beispiel: `config_stocks.yaml` + `config_ai_knowledge.yaml` → `config_stocks+config_ai_knowledge`.
+   - Beispiel: `config_investing.yaml` + `config_ai_knowledge.yaml` → `config_investing+config_ai_knowledge`.
 2. `hash_part`:
    - Berechne SHA-256 über die Bytes der ConfigFiles in kanonischer Order, getrennt durch ein Null-Byte (`\0`).
    - Nimm z.B. die ersten 12 hex chars als Kurzform.
@@ -277,7 +277,7 @@ Mehrere Configs sollen angebbar sein, ohne das Single-Config Verhalten zu breche
 
 Inputs:
 
-- [`config/config_stocks.yaml`](../../config/config_stocks_crypto.yaml:1)
+- [`config/config_investing.yaml`](../../config/config_investing.yaml:1)
 - [`config/config_ai_knowledge.yaml`](../../config/config_ai_knowledge.yaml:1)
 
 Entwurf:
@@ -285,7 +285,7 @@ Entwurf:
 ```bash
 # Draft: mehrere Configs + multi-run
 uv run python -m transcript_miner \
-  --config config/config_stocks.yaml \
+  --config config/config_investing.yaml \
   --config config/config_ai_knowledge.yaml \
   --config-mode multi-run
 ```
@@ -296,7 +296,7 @@ Entwurf:
 
 ```bash
 uv run python -m transcript_miner \
-  --config config/config_stocks.yaml \
+  --config config/config_investing.yaml \
   --config config/config_ai_knowledge.yaml \
   --config-mode union
 ```

@@ -108,14 +108,14 @@ Beispiele mit existierenden YAMLs:
 ```bash
 # Multi-Run: Stocks + AI Knowledge
 uv run python -m transcript_miner \
-  --config config/config_stocks.yaml \
+  --config config/config_investing.yaml \
   --config config/config_ai_knowledge.yaml
 ```
 
 ```bash
 # Multi-Run: zwei Configs
 uv run python -m transcript_miner \
-  --config config/config_stocks.yaml \
+  --config config/config_investing.yaml \
   --config config/config_ai_knowledge.yaml
 ```
 
@@ -265,7 +265,7 @@ Dieses Beispiel nutzt ausschließlich bestehende Single-Config Runs und danach d
 1) Miner separat ausführen:
 
 ```bash
-uv run python -m transcript_miner config/config_stocks.yaml
+uv run python -m transcript_miner config/config_investing.yaml
 uv run python -m transcript_miner config/config_ai_knowledge.yaml
 ```
 
@@ -284,7 +284,7 @@ Quelle für den Index-Runner Aufruf: [`README.md`](../README.md:409).
 ```bash
 # Ist-Zustand: Multi-Run ist der Default, sobald mehrere `--config` angegeben werden.
 uv run python -m transcript_miner \
-  --config config/config_stocks.yaml \
+  --config config/config_investing.yaml \
   --config config/config_ai_knowledge.yaml
 ```
 
@@ -295,7 +295,7 @@ Quelle des CLI-Entwurfs: [`docs/adr/0006-multi-config-composition.md`](adr/0006-
 ```bash
 # PROPOSED: union-Modus (Flags existieren im aktuellen Code nicht)
 uv run python -m transcript_miner \
-  --config config/config_stocks.yaml \
+  --config config/config_investing.yaml \
   --config config/config_ai_knowledge.yaml \
   --config-mode union
 ```
@@ -357,6 +357,12 @@ Hinweis (cookie-frei):
 - `youtube.proxy.webshare_username` *(string, optional)*: Webshare.io Username.
 - `youtube.proxy.webshare_password" *(string, optional)*: Webshare.io Password.
 - `youtube.proxy.filter_ip_locations` *(list[string], optional)*: Liste von Länder-Codes (z.B. `["us", "de"]`), um den IP-Pool einzuschränken.
+- Hinweis: Proxy-Credentials sollten via `${VAR}` aus der Env geladen werden (Secrets-only).
+
+**Globaler Proxy-Default (alle Configs):**
+- `config/config_global.yaml` setzt `youtube.proxy.*` per Env-Substitution (z. B. `${YOUTUBE_PROXY_MODE}`).
+- CLI lädt `.env` (secrets) und `.config.env` (non-secrets) automatisch.
+- Wenn `YOUTUBE_PROXY_MODE` gesetzt ist, überschreibt es proxy-Einstellungen in Topic-Configs.
 
 **Besonderheit Webshare & Sticky Sessions:**
 Das Tool implementiert eine automatische **Sticky Session** Logik für Webshare-Proxies. Wenn der Username `-rotate` enthält, wird dieser intern pro Video-ID durch eine Session-ID ersetzt. Dies stellt sicher, dass die IP-Adresse während des gesamten Abrufs eines Videos (von der Video-Seite bis zum Transcript-Download) stabil bleibt, was die Erfolgsrate bei YouTube massiv erhöht.

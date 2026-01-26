@@ -40,8 +40,8 @@ Scope: tracked Markdown files in this repository.
 - [`use-cases/stocks.md`](use-cases/stocks.md)
 
 ## Templates
-- [`../templates/report_stocks_crypto_de.md`](../templates/report_stocks_crypto_de.md)
-- [`../templates/report_stocks_crypto_en.md`](../templates/report_stocks_crypto_en.md)
+- [`../templates/report_investing_de.md`](../templates/report_investing_de.md)
+- [`../templates/report_investing_en.md`](../templates/report_investing_en.md)
 - [`../templates/report_stocks_de.md`](../templates/report_stocks_de.md)
 - [`../templates/report_stocks_en.md`](../templates/report_stocks_en.md)
 

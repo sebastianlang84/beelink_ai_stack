@@ -50,15 +50,15 @@ output:
   # - global: gemeinsames Root-Verzeichnis
   # - topic: Topic/Namespace für Reports/History/Index
   global: /home/wasti/ai_stack_data/transcript-miner/output
-  topic: stocks_crypto
+  topic: investing
   metadata: true
   write_timeout_report: true
 
 # Logging-Konfiguration
 logging:
   level: DEBUG #INFO, DEBUG, ERROR, CRITICAL
-  file: ../logs/stocks_crypto.log
-  error_log_file: ../logs/stocks_crypto-error.log
+  file: ../logs/investing.log
+  error_log_file: ../logs/investing-error.log
   rotation_enabled: true
   rotation_when: D
   rotation_interval: 1

@@ -190,7 +190,7 @@ def generate_timeout_report(
         now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%SZ")
 
     lines = []
-    lines.append("# Timeout Budget Report: stocks_crypto")
+    lines.append("# Timeout Budget Report: investing")
     lines.append("")
     lines.append(f"Generated (UTC): {now_utc}")
     lines.append("")

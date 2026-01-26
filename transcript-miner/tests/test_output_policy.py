@@ -33,7 +33,7 @@ def test_output_get_transcripts_path_channel_subfolder_when_enabled(
 
 
 def test_output_global_layout_paths(tmp_path: Path) -> None:
-    cfg = OutputConfig(**{"global": tmp_path / "out", "topic": "stocks_crypto"})
+    cfg = OutputConfig(**{"global": tmp_path / "out", "topic": "investing"})
 
     assert cfg.get_transcripts_path() == (
         tmp_path / "out" / "data" / "transcripts" / "by_video_id"
@@ -41,8 +41,8 @@ def test_output_global_layout_paths(tmp_path: Path) -> None:
     assert cfg.get_summaries_path() == (
         tmp_path / "out" / "data" / "summaries" / "by_video_id"
     )
-    assert cfg.get_reports_path() == (tmp_path / "out" / "reports" / "stocks_crypto")
-    assert cfg.get_history_root() == (tmp_path / "out" / "history" / "stocks_crypto")
+    assert cfg.get_reports_path() == (tmp_path / "out" / "reports" / "investing")
+    assert cfg.get_history_root() == (tmp_path / "out" / "history" / "investing")
     assert cfg.get_index_path() == (
-        tmp_path / "out" / "data" / "indexes" / "stocks_crypto" / "current"
+        tmp_path / "out" / "data" / "indexes" / "investing" / "current"
     )

@@ -704,7 +704,7 @@ def _validate_config_or_exit(
         return (
             False,
             "output.topic must be set when using output.global layout.",
-            "Hint: set e.g.\n  output:\n    global: ../output\n    topic: stocks_crypto",
+            "Hint: set e.g.\n  output:\n    global: ../output\n    topic: investing",
         )
 
     # Output policy enforcement (deterministic, collision-free multi-channel runs).
@@ -742,13 +742,16 @@ def _run_with_parsed_args(args: argparse.Namespace) -> int:
     logger = setup_basic_logging()
     logger.info("Basic logging configured. Starting Transcript Miner...")
 
-    # Load .env (best-effort) only after argparse handled `--help`.
+    # Load .env/.config.env (best-effort) only after argparse handled `--help`.
     try:
         from dotenv import load_dotenv, find_dotenv
 
         dotenv_path = find_dotenv(usecwd=True)
         if dotenv_path:
             load_dotenv(dotenv_path)
+        config_env_path = find_dotenv(filename=".config.env", usecwd=True)
+        if config_env_path:
+            load_dotenv(config_env_path, override=False)
     except Exception:
         # Keep CLI robust in minimal/offline environments.
         pass

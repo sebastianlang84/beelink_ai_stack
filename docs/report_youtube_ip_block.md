@@ -12,7 +12,7 @@ Transcript-Requests schlagen auf dem Host bereits bei einem einzelnen Video mit 
 Beispiel (im Container `tm`):
 ```
 python /transcript_miner_repo/tools/youtube_block_probe.py \
-  --config /transcript_miner_config/config_stocks_crypto.yaml \
+  --config /transcript_miner_config/config_investing.yaml \
   --videos jNQXAC9IVRw \
   --min-delay-s 0 --jitter-s 0 --max-retries 0 --repeat 1
 ```
@@ -24,7 +24,7 @@ python /transcript_miner_repo/tools/youtube_block_probe.py \
 
 ## Aktuelle Umgebung
 - Transcript Miner laeuft im Container `tm`
-- Config: `config_stocks_crypto.yaml`
+- Config: `config_investing.yaml`
 - Cookies: deaktiviert
 - Proxy: deaktiviert
 

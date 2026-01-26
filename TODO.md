@@ -10,14 +10,14 @@
     - `stocks_covered` nur bei Deep-Dive (min. 2 Evidence items, thesis + risk/catalyst/etc).
     - `macro_insights` mit Tag-Taxonomie (rates, inflation, btc, eth, etc).
     - Evidence-Rollen: thesis, risk, catalyst, numbers_valuation, comparison.
-  - DoD: Validator unterstützt neue Rollen/Tags; Prompts in `config_stocks_crypto.yaml` sind aktualisiert.
+  - DoD: Validator unterstützt neue Rollen/Tags; Prompts in `config_investing.yaml` sind aktualisiert.
 
 - [ ] **P1: Investor-Grade Report Template**
   - Ziel: Report-Struktur gemäß `user_data/report_template_vorschlag.md`.
   - Umsetzung:
     - Sektionen: Meta, Stocks (Thesis Cards), Macro (Szenarien), Crypto (Narratives), Appendix (Evidence IDs).
     - Strikte Trennung: Fact vs. Claim vs. Interpretation.
-  - DoD: `templates/report_stocks_crypto_de.md` (und en) entsprechen dem neuen Standard.
+  - DoD: `templates/report_investing_de.md` (und en) entsprechen dem neuen Standard.
 
 - [ ] **P1: Begriffs-Bereinigung (Creator vs. Channel vs. Topic)**
   - Ziel: Korrekte Terminologie in Reports und Logs gemäß `user_data/kritik...`.
@@ -81,7 +81,7 @@
     - Zwei Configs im selben Multi-Run laden überlappende Videos **nicht** erneut herunter.
     - Parallel Runs vermeiden Race-Conditions (Lock/Atomic).
    - Checks:
-     - `uv run python -m transcript_miner --config config/config_stocks_crypto.yaml --config config/config_ai_knowledge.yaml`
+     - `uv run python -m transcript_miner --config config/config_investing.yaml --config config/config_ai_knowledge.yaml`
      - Logs zeigen für bereits vorhandene Canonicals “skip download”.
 
 - [x] **P0: Global Summary Store (Canonical by `video_id`)**
@@ -326,7 +326,7 @@ Definition of Done (für v1 „funktionierendes Programm“):
 - Analyse soll zwei Ebenen abdecken:
   1. **Stock-Coverage pro Aktie:** „wer (Channel) erwähnt welche Aktie wie oft“ inkl. Evidence.
   2. **Gesamtanalyse über alle heruntergeladenen Transkripte** (globaler Summary/Report).
-- Zusätzlich: **Multi-Config Runs / Config Composition**: mehrere YAMLs kombinieren (z.B. [`config/config_stocks_crypto.yaml`](config/config_stocks_crypto.yaml:1) + [`config/config_ai_knowledge.yaml`](config/config_ai_knowledge.yaml:1)) und daraus eine **gemeinsame Analyse** erzeugen.
+- Zusätzlich: **Multi-Config Runs / Config Composition**: mehrere YAMLs kombinieren (z.B. [`config/config_investing.yaml`](config/config_investing.yaml:1) + [`config/config_ai_knowledge.yaml`](config/config_ai_knowledge.yaml:1)) und daraus eine **gemeinsame Analyse** erzeugen.
 - Optional (Entscheidung offen): Evaluieren, ob Analyse-Artefakte langfristig in einer **Datenbank** (statt nur Files/JSON) persistiert werden sollen (siehe Backlog „Datenhaltung / Datenbank-Option“ unten).
 
 Nicht-Ziele (für dieses Zielbild):
@@ -439,7 +439,7 @@ Status-Hinweis (Ist-Zustand):
 ### P1 — UX / Doku
 
 - [x] Dokumentiere Multi-Config Nutzung inkl. Beispiele mit realen Beispielconfigs.
-  - **DoD:** Beispiele referenzieren vorhandene YAMLs unter [`config/`](config:1), z.B. [`config/config_stocks_crypto.yaml`](config/config_stocks_crypto.yaml:1) und [`config/config_ai_knowledge.yaml`](config/config_ai_knowledge.yaml:1).
+  - **DoD:** Beispiele referenzieren vorhandene YAMLs unter [`config/`](config:1), z.B. [`config/config_investing.yaml`](config/config_investing.yaml:1) und [`config/config_ai_knowledge.yaml`](config/config_ai_knowledge.yaml:1).
   - Evidence: „Wie benutze ich das heute?“ + Beispiele in [`docs/config.md`](docs/config.md:86).
 
 ---
@@ -846,7 +846,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] Services laufen (Compose `ps` zeigt `healthy`)
   - [x] Host: `curl http://127.0.0.1:3000/` → `200`
   - [x] Tool→OWUI API erreichbar (Auth OK; `/api/v1/files/` → `200`)
-  - [x] 1 Topic (z. B. `stocks_crypto`), 2–3 Videos: Summaries in Knowledge indexed (verifiziert via `/api/v1/knowledge/<id>/files`)
+  - [x] 1 Topic (z. B. `investing`), 2–3 Videos: Summaries in Knowledge indexed (verifiziert via `/api/v1/knowledge/<id>/files`)
   - [x] Chat-Retrieval in Open WebUI manuell prüfen (Collection aktivieren, Frage stellen, Sources prüfen)
   - [ ] Falls YouTube 429/Block: `youtube_cookies.txt` unter Repo-Root hinterlegen (gitignored) + `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt` in `mcp-transcript-miner/.config.env` setzen
 

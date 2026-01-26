@@ -1,5 +1,5 @@
 <!--
-Template fuer Topic: stocks_crypto
+Template fuer Topic: investing
 Quelle: user_data/report_template_vorschlag.md
 -->
 

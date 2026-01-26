@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+- **Topic-Rename:** `stocks_crypto` → `investing` (Config `config_investing.yaml`, Report-Templates und Beispiel-Referenzen angepasst).
+- **YouTube Transcript API v1 Compatibility:** Umstellung auf `YouTubeTranscriptApi().list(...)` in Downloader und Tools, damit die aktuelle API-Version funktioniert.
+- **Proxy Support (v1):** Webshare/Generic Proxy-Config wieder aktiv, inklusive Env-Substitution für Proxy-Credentials.
+- **Global Proxy Defaults:** `config_global.yaml` + `.config.env` laden Proxy-Defaults für alle Configs.
+- **Request Headers:** Standard-User-Agent gesetzt, um Requests weniger bot-typisch wirken zu lassen.
+
 ## [0.3.4] – 2025-12-30
 
 ### Changed

@@ -25,7 +25,7 @@ api:
     topic_cfg.write_text(
         """
 output:
-  topic: stocks_crypto
+  topic: investing
 youtube:
   channels: ["@CouchInvestor"]
 """.lstrip(),
@@ -34,7 +34,7 @@ youtube:
 
     cfg = load_config(topic_cfg, global_config_path=global_cfg)
 
-    assert cfg.output.get_topic() == "stocks_crypto"
+    assert cfg.output.get_topic() == "investing"
     assert str(cfg.output.get_global_root()).endswith("/output")
     assert cfg.youtube.min_delay_s == 9.0
     assert cfg.youtube.jitter_s == 3.0

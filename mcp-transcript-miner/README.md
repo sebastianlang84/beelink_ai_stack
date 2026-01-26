@@ -94,4 +94,4 @@ Wenn `POST /transcript` oder ein Run häufig mit `429`/`Too Many Requests` fehls
 - Lege die Datei auf dem Host ab: `/home/wasti/ai_stack/youtube_cookies.txt` (nicht committen)
 - Setze in `mcp-transcript-miner/.config.env`:
   - `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt`
-- Stelle sicher, dass deine Config `api.youtube_cookies: ${YOUTUBE_COOKIES_FILE}` enthält (z. B. `transcript-miner/config/config_stocks_crypto.yaml`)
+- Stelle sicher, dass deine Config `api.youtube_cookies: ${YOUTUBE_COOKIES_FILE}` enthält (z. B. `transcript-miner/config/config_investing.yaml`)

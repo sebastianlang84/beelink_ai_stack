@@ -21,7 +21,7 @@ def test_detect_summary_coverage_gaps_reports_missing() -> None:
 
 def test_run_aggregation_fails_on_summary_gap(tmp_path: Path) -> None:
     output_root = tmp_path / "output"
-    topic_root = output_root / "stocks_crypto"
+    topic_root = output_root / "investing"
     summaries_dir = output_root / "data" / "summaries" / "by_video_id"
     summaries_dir.mkdir(parents=True, exist_ok=True)
 

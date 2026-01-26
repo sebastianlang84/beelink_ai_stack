@@ -105,8 +105,9 @@ if not user_ids:
 user_id = user_ids[0]
 
 # Map: knowledge_id -> name (anpassen!)
+# Naming-Policy: Knowledge-Name = Topic (z. B. "investing").
 name_map = {
-    # "30db72bd-1086-45ae-964e-505543d3951b": "stocks_crypto",
+    # "30db72bd-1086-45ae-964e-505543d3951b": "investing",
     # "67242f2f-f286-41c1-8ecc-eef9bf5aef53": "ai_knowledge",
 }
 

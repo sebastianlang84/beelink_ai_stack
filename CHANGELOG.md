@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: Topic `stocks_crypto` überall auf `investing` umbenannt (Config/Template/Beispiele/Runbooks)
 - backup: Output-Root Default auf `/home/wasti/ai_stack_data/transcript-miner/output` vereinheitlicht (Runbook + systemd + Scripts) + Hinweis zu root-owned Volume-Backups ergänzt
 - docs: YouTube 429 als TODO erfasst (Runbook/Tests fuer stabile Fetch-Strategie)
 - docs: YouTube 429 Einordnung/Workarounds/Alternativen im Block-Report ergaenzt
@@ -20,7 +21,7 @@
 - repo: `youtube_cookies.txt` gitignored (lokale Cookie-Datei für YouTube)
 - transcript-miner: Fehler-History als JSONL unter `output/data/diagnostics/errors.jsonl` (append-only, ERROR+ aus der Pipeline)
 - mcp-transcript-miner: Host-Data-Dir in Container gemountet, damit `output.global` Pfade (z. B. Fehler-History) persistent bleiben
-- transcript-miner: Cookie-freie Rate-Limit-Strategie in `config_stocks_crypto.yaml`/`config_ai_knowledge.yaml` + LLM-Concurrency=1; `config_wsl_optimized.yaml` mit konservativen (WSL/VPN) Delays ohne Cookies
+- transcript-miner: Cookie-freie Rate-Limit-Strategie in `config_investing.yaml`/`config_ai_knowledge.yaml` + LLM-Concurrency=1; `config_wsl_optimized.yaml` mit konservativen (WSL/VPN) Delays ohne Cookies
 - transcript-miner: README verweist auf cookie-freies WSL-Profil als Block-Mitigation
 - transcript-miner: docs/config.md verweist auf cookie-freies WSL-Profil
 - transcript-miner: docs/README.md listet cookie-freies WSL-Profil als Beispiel-Config

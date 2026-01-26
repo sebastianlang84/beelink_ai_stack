@@ -302,9 +302,9 @@ flowchart TD
 - [E2] video_id: def456; transcript_path: output/data/transcripts/by_video_id/def456.txt; quote: "..."
 
 ## Sources
-- [S1] source_analysis_date_utc: 2025-12-01T00:00:00Z; source_id: output/history/stocks_crypto/2025-12-01/2025-12-01__0000__aggregate__abcd1234/report.json
-- [S2] source_analysis_date_utc: 2025-11-01T00:00:00Z; source_id: output/history/stocks_crypto/2025-11-01/2025-11-01__0000__aggregate__efgh5678/report.json
-- [S3] source_analysis_date_utc: 2025-01-01T00:00:00Z; source_id: output/history/stocks_crypto/2025-01-01/2025-01-01__0000__aggregate__ijkl9012/report.json
+- [S1] source_analysis_date_utc: 2025-12-01T00:00:00Z; source_id: output/history/investing/2025-12-01/2025-12-01__0000__aggregate__abcd1234/report.json
+- [S2] source_analysis_date_utc: 2025-11-01T00:00:00Z; source_id: output/history/investing/2025-11-01/2025-11-01__0000__aggregate__efgh5678/report.json
+- [S3] source_analysis_date_utc: 2025-01-01T00:00:00Z; source_id: output/history/investing/2025-01-01/2025-01-01__0000__aggregate__ijkl9012/report.json
 
 ## Method Notes
 ```mermaid

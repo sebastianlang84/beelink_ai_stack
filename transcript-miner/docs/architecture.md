@@ -168,7 +168,7 @@ Diese Sektion definiert den **Artefakt-Vertrag** für die Aggregation (Extraktio
 #### 4.3.1 Begriffe & Invarianten
 
 - **GLOBAL_ROOT**: Output-Root aus `output.global` (z.B. `output/`).
-- **TOPIC**: Namespace aus `output.topic` (z.B. `stocks_crypto`).
+- **TOPIC**: Namespace aus `output.topic` (z.B. `investing`).
 - **HISTORY_BUNDLE**: Run-Bundle unter `output/history/<topic>/<YYYY-MM-DD>/<YYYY-MM-DD>__<HHMM>__<model>__<fingerprint>/`.
 - **PROFILE_ROOT**: Legacy-Root (`output.root_path`), nur für Rückwärtskompatibilität.
 - **Artefakt**: stabiler Output-Vertrag (siehe definition in Abschnitt „Glossar“ oben).

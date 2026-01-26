@@ -14,4 +14,4 @@ def load_yaml(filename):
         return yaml.safe_load(f)
 
 
-# Beispiel: config_data = load_yaml('config_stocks.yaml')
+# Beispiel: config_data = load_yaml('config_investing.yaml')

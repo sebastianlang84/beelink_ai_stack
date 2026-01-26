@@ -121,7 +121,7 @@ def main() -> int:
     parser.add_argument(
         "--config",
         required=True,
-        help="Path to topic config (e.g. transcript-miner/config/config_stocks_crypto.yaml)",
+        help="Path to topic config (e.g. transcript-miner/config/config_investing.yaml)",
     )
     parser.add_argument("--videos", help="Comma-separated video IDs.")
     parser.add_argument("--videos-file", help="File with one video ID per line.")

@@ -15,6 +15,7 @@ Required:
 Required (Knowledge Target):
 - `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON` (recommended) **oder** `OPEN_WEBUI_KNOWLEDGE_ID` (fallback)
   - optional: `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH=/config/knowledge_ids.json` (Datei statt Inline-JSON)
+  - Naming-Policy: Knowledge-Name = Topic (z. B. `investing`)
 
 Recommended:
 - `OPEN_WEBUI_BASE_URL` (Default im Container: `http://owui:8080`)

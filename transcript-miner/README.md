@@ -42,7 +42,7 @@ uv sync
 3) Run
 
 ```bash
-uv run python -m transcript_miner --config config/config_stocks_crypto.yaml
+uv run python -m transcript_miner --config config/config_investing.yaml
 ```
 
 Default-Verhalten (ohne zusätzliche Flags): der Lauf führt **Mining → Index → LLM-Summaries → Aggregation/Report** aus.
@@ -87,6 +87,8 @@ In CI läuft ein Secret-Scan über Gitleaks (Workflow: [`.github/workflows/gitle
 ## Secrets / `.env`
 
 Dieses Projekt verwendet eine lokale [`.env`](.env:1) für **Secrets**.
+Zusätzlich wird eine lokale [`.config.env`](.config.env:1) für **Non-Secrets** geladen
+(z. B. Proxy-Modus), sofern vorhanden.
 
 Regeln:
 
@@ -98,6 +100,9 @@ Benötigte Variablen:
 
 - `YOUTUBE_API_KEY`: YouTube Data API v3 Key
 - `OPENROUTER_API_KEY`: OpenRouter API Key (für LLM-Analyse)
+Optional:
+- `WEBSHARE_USERNAME` / `WEBSHARE_PASSWORD`: Webshare Proxy Credentials (Secrets)
+- `YOUTUBE_PROXY_HTTP_URL` / `YOUTUBE_PROXY_HTTPS_URL`: Generic Proxy URLs (Secrets, falls Credentials enthalten)
 
 ### Troubleshooting (Secrets / API-Key)
 
@@ -122,7 +127,7 @@ Benötigte Variablen:
 - **Symptom:** Miner bricht mit `IpBlocked` oder `RequestBlocked` ab.
 - **Ursache:** YouTube blockiert Datacenter-IPs (Cloud) und IPs mit geringer Reputation (VPN, WSL-Hosts) für den Transcript-Endpunkt.
 - **Diagnose:** Nutze `uv run python tools/repro_ip_block.py <video_id>`, um zu prüfen, ob ein isolierter Request funktioniert.
-- **Diagnose (Matrix):** Nutze `uv run python tools/youtube_block_probe.py --config config/config_stocks_crypto.yaml --videos <video_id>` um Rate-Limit-Parameter systematisch zu testen.
+- **Diagnose (Matrix):** Nutze `uv run python tools/youtube_block_probe.py --config config/config_investing.yaml --videos <video_id>` um Rate-Limit-Parameter systematisch zu testen.
 - **Lösung:** 
   - Nutze **Residential Proxies** (z.B. Webshare.io Residential Plan). Datacenter-Proxies funktionieren oft nicht.
   - Nutze das konservative, cookie-freie Profil in [`config/config_wsl_optimized.yaml`](config/config_wsl_optimized.yaml:1) oder erhöhe `min_delay_s`/`jitter_s` entsprechend.
@@ -241,7 +246,7 @@ Beispiele (reale YAMLs unter [`config/`](config:1)):
 ```bash
 # Beispiel 1: Stocks + AI Knowledge als Multi-Run
 uv run python -m transcript_miner \
-  --config config/config_stocks.yaml \
+  --config config/config_investing.yaml \
   --config config/config_ai_knowledge.yaml
 ```
 
@@ -330,7 +335,7 @@ Wenn `report.llm` in der Config gesetzt ist, erzeugt die Aggregation einen Repor
 Der Generator kann weiterhin manuell genutzt werden (z.B. für Re-Runs):
 
 ```bash
-uv run python tools/generate_llm_report.py --config config/config_stocks.yaml
+uv run python tools/generate_llm_report.py --config config/config_investing.yaml
 ```
 
 **Features:**
@@ -493,7 +498,7 @@ Event-Typen (`kind`):
 ```bash
 uv run python -m transcript_miner.transcript_index \
   --input-root ../output \
-  --output-dir ../output/data/indexes/stocks_crypto/current
+  --output-dir ../output/data/indexes/investing/current
 ```
 
 ## Analysis (LLM) — optional (Chat Completions)
@@ -534,11 +539,11 @@ ANALYSIS_ROOT=../output/_analysis_stocks
 # 1. Index erstellen
 uv run python -m transcript_miner.transcript_index \
   --input-root ../output \
-  --output-dir "$ANALYSIS_ROOT/data/indexes/stocks_crypto/current"
+  --output-dir "$ANALYSIS_ROOT/data/indexes/investing/current"
 
 # 2. LLM-Analyse ausführen
 uv run python -m transcript_ai_analysis.llm \
-  --config config/config_stocks.yaml \
+  --config config/config_investing.yaml \
   --profile-root "$ANALYSIS_ROOT"
 ```
 

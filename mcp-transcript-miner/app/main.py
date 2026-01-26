@@ -93,9 +93,9 @@ Notes:
 - If a tool call fails, reduce output size using `max_chars` and retry.
 - If tools are not enabled in the current chat, the model cannot call them.
 - `POST /runs/start` requires `YOUTUBE_API_KEY` and (if LLM analysis enabled) `OPENROUTER_API_KEY` in the tool container environment.
-  - Example: start a run: `POST /runs/start` with `{"config_id":"config_stocks_crypto.yaml"}`
+  - Example: start a run: `POST /runs/start` with `{"config_id":"config_investing.yaml"}`
   - Then poll: `GET /runs/{run_id}`
-  - Then index: `POST /sync/topic/stocks_crypto` (requires `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)
+  - Then index: `POST /sync/topic/investing` (requires `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)
 """
 
 app = FastAPI(
@@ -206,7 +206,7 @@ class ConfigWriteMcpRequest(ConfigWriteRequest):
 
 
 class RunStartRequest(BaseModel):
-    config_id: str = Field(min_length=1, description="Config filename from /configs (e.g. config_stocks_crypto.yaml).")
+    config_id: str = Field(min_length=1, description="Config filename from /configs (e.g. config_investing.yaml).")
     skip_index: bool = False
     skip_llm: bool = False
     skip_report: bool = False

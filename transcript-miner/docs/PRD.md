@@ -154,7 +154,7 @@ Im MVP: keine Klassifikation nötig. Optional später: Video-Kategorie + Scope-K
 Globales Output-Root + Topic (empfohlen):
 
 - `output.global`: `project_root/output/`
-- `output.topic`: `stocks_crypto`, `ai_knowledge`, …
+- `output.topic`: `investing`, `ai_knowledge`, …
 
 ### 8.2 Speicher-Schichten (Retention)
 
