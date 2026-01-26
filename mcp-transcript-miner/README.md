@@ -34,6 +34,7 @@ Antwort enthält eine `run_id`. Status über `GET /runs/{run_id}`.
 Hinweis für LLMs: zuerst `configs.list` aufrufen und den exakten `config_id` verwenden.
 Antwort enthält zusätzlich ein `summary` (kurzer Klartext für Nutzer).
 Empfehlung: `summary` für Nutzertexte verwenden; `log_path` nur auf Nachfrage.
+Der Server akzeptiert auch Aliases aus `configs.list` und löst sie auf `config_id` auf.
 
 ### `GET /runs/{run_id}`
 Liefert Status und Log-Tail des Runs.

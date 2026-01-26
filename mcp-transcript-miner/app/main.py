@@ -360,6 +360,26 @@ def _list_configs() -> list[ConfigInfo]:
     return out
 
 
+def _resolve_config_id(requested: str) -> str | None:
+    req = (requested or "").strip()
+    if not req:
+        return None
+    configs = _list_configs()
+    # Exact match on config_id/filename first.
+    for cfg in configs:
+        if req == cfg.config_id or req == cfg.filename:
+            return cfg.config_id
+    # Match display_name/aliases (case-insensitive).
+    req_norm = req.casefold()
+    for cfg in configs:
+        if req_norm == cfg.display_name.casefold():
+            return cfg.config_id
+        for alias in cfg.aliases:
+            if req_norm == alias.casefold():
+                return cfg.config_id
+    return None
+
+
 def _read_config_text(config_id: str) -> tuple[str, str]:
     path = _resolve_config_path(config_id)
     cid = os.path.basename(path)
@@ -1001,15 +1021,27 @@ def write_config(config_id: str, req: ConfigWriteRequest) -> ConfigWriteResponse
 
 @app.post("/runs/start", summary="Start TranscriptMiner run (async)", operation_id="runs_start")
 def start_run(req: RunStartRequest) -> RunStartResponse:
+    resolved = _resolve_config_id(req.config_id)
+    if not resolved:
+        return RunStartResponse(
+            status="error",
+            run_id="",
+            topic=None,
+            command=[],
+            log_path="",
+            summary=f"Config nicht gefunden: {req.config_id}. Bitte configs.list verwenden.",
+        )
     try:
-        config_filename, config_text = _read_config_text(req.config_id)
+        config_filename, config_text = _read_config_text(resolved)
     except Exception:
-        config_filename = req.config_id
-        config_text = ""
-        try:
-            config_filename, config_text = _read_config_text(f"{req.config_id}.yaml")
-        except Exception:
-            pass
+        return RunStartResponse(
+            status="error",
+            run_id="",
+            topic=None,
+            command=[],
+            log_path="",
+            summary=f"Config konnte nicht gelesen werden: {resolved}.",
+        )
 
     rewritten, topic = _rewrite_config_for_container(config_text or "")
     run_id = uuid.uuid4().hex
