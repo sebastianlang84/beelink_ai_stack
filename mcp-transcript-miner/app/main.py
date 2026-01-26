@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import requests
+import re
 import sqlite3
 import time
 import threading
@@ -56,6 +57,7 @@ POLL_INTERVAL = int(os.getenv("OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS", "3"))
 PROCESS_TIMEOUT = int(os.getenv("OPEN_WEBUI_PROCESS_TIMEOUT_SECONDS", "900"))
 INDEXER_DB_PATH = os.getenv("INDEXER_DB_PATH", "/data/indexer.sqlite3")
 AUTO_SYNC_AFTER_RUN = os.getenv("OPEN_WEBUI_AUTO_SYNC_AFTER_RUN", "").strip().lower() in {"1", "true", "yes"}
+AUTO_CREATE_KNOWLEDGE = os.getenv("OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING", "").strip().lower() in {"1", "true", "yes"}
 
 CAPABILITIES_MARKDOWN = """\
 ## Transcript Miner — Capabilities
@@ -600,6 +602,16 @@ def _add_to_knowledge(knowledge_id: str, file_id: str) -> dict[str, Any]:
     return resp.json() if resp.content else {"status": "ok"}
 
 
+def _create_knowledge(name: str) -> dict[str, Any]:
+    url = f"{OPEN_WEBUI_BASE_URL}/api/v1/knowledge/create"
+    headers = _auth_headers() | {"Content-Type": "application/json"}
+    payload = {"name": name, "description": ""}
+    resp = requests.post(url, headers=headers, json=payload, timeout=60)
+    if resp.status_code >= 400:
+        raise RuntimeError(f"knowledge create failed: {resp.status_code} {resp.text}")
+    return resp.json() if resp.content else {"status": "ok"}
+
+
 def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
     knowledge_id = (req.knowledge_id or DEFAULT_KNOWLEDGE_ID or "").strip()
     if not knowledge_id:
@@ -615,7 +627,28 @@ def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
         if row and row[0] == sha and row[2] == knowledge_id:
             return {"status": "skipped", "reason": "same_sha256", "source_id": req.source_id, "file_id": row[1], "knowledge_id": row[2]}
 
-        filename = f"{req.source_id.replace(':', '_')}.md"
+        def _slug(s: str, max_len: int = 80) -> str:
+            s = re.sub(r"[^A-Za-z0-9]+", "_", s.strip())
+            s = re.sub(r"_+", "_", s).strip("_")
+            if not s:
+                return "na"
+            return s[:max_len]
+
+        def _video_id_from_source(src: str) -> str:
+            if src.startswith("youtube:"):
+                return src.split(":", 1)[1]
+            return src
+
+        vid = _video_id_from_source(req.source_id)
+        parts = ["youtube"]
+        if req.published_at:
+            parts.append(_slug(req.published_at[:10]))
+        if req.channel:
+            parts.append(_slug(req.channel, 32))
+        if req.title:
+            parts.append(_slug(req.title, 80))
+        parts.append(_slug(vid, 16))
+        filename = "__".join(parts) + ".md"
         markdown = _render_markdown(req)
         file_id = _upload_file(markdown, filename=filename)
 
@@ -645,7 +678,16 @@ def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
 def _strip_frontmatter(markdown: str) -> str:
     text = markdown.lstrip()
     if not text.startswith("---"):
-        return markdown
+    return markdown
+
+
+def _load_metadata(path: str) -> dict[str, Any]:
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            obj = json.load(fh)
+        return obj if isinstance(obj, dict) else {}
+    except Exception:
+        return {}
     lines = markdown.splitlines(keepends=True)
     if not lines:
         return markdown
@@ -1211,12 +1253,19 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
     except Exception as exc:
         return SyncTopicResponse(status="error", topic=safe_topic, last_error=str(exc), run_id=req.run_id)
     if not knowledge_id:
-        return SyncTopicResponse(
-            status="error",
-            topic=safe_topic,
-            last_error="knowledge not found (expected Knowledge name = topic, or set OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON)",
-            run_id=req.run_id,
-        )
+        if AUTO_CREATE_KNOWLEDGE:
+            try:
+                _create_knowledge(safe_topic)
+                knowledge_id = _resolve_knowledge_id_for_topic(safe_topic)
+            except Exception as exc:
+                return SyncTopicResponse(status="error", topic=safe_topic, last_error=str(exc), run_id=req.run_id)
+        if not knowledge_id:
+            return SyncTopicResponse(
+                status="error",
+                topic=safe_topic,
+                last_error="knowledge not found (expected Knowledge name = topic, or set OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON)",
+                run_id=req.run_id,
+            )
 
     index_dir = os.path.join(_indexes_root(), safe_topic, "current")
     transcripts_jsonl = os.path.join(index_dir, "transcripts.jsonl")
@@ -1255,11 +1304,19 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
                 skipped += 1
                 continue
 
+            meta = {}
+            meta_path = str(ref.get("metadata_path") or "")
+            if meta_path:
+                meta = _load_metadata(meta_path)
+
             payload = {
                 "source_id": f"youtube:{video_id}",
                 "text": body,
                 "url": f"https://www.youtube.com/watch?v={video_id}",
                 "knowledge_id": knowledge_id,
+                "title": meta.get("video_title"),
+                "channel": meta.get("channel_name") or meta.get("channel_handle") or ref.get("channel_namespace"),
+                "published_at": meta.get("published_at") or ref.get("published_date"),
             }
 
             processed += 1
@@ -1273,6 +1330,9 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
                         source_id=payload["source_id"],
                         text=payload["text"],
                         url=payload.get("url"),
+                        title=payload.get("title"),
+                        channel=payload.get("channel"),
+                        published_at=payload.get("published_at"),
                         knowledge_id=payload.get("knowledge_id"),
                     )
                 )

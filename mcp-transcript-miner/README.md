@@ -81,6 +81,10 @@ No-Fuss Workflow:
 2. `sync.topic` aufrufen (kein Mapping nötig).
 3. Nur wenn der Name abweicht: Mapping setzen.
 
+Optional:
+- `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true` erstellt die Collection automatisch, wenn sie fehlt.
+- Upload-Dateinamen werden aus Datum/Channel/Title/Video-ID gebildet (lesbar).
+
 ## Betrieb
 - Standalone (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)
 

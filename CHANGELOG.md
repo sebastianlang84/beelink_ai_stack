@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- mcp-transcript-miner: auto-create Knowledge Collection option + besser benannte Upload-Dateien
 - docs: knowledge_ids.json.example aktualisiert (ai_knowledge, investing, investing_test)
 - mcp-transcript-miner: fix missing requests import in sync.topic
 - ops: systemd Timer für investing-Run alle 3h (Auto-Sync nach Run)

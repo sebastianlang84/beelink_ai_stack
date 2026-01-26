@@ -80,3 +80,5 @@ Ziel: Ein echter Indexing-Durchlauf in eine Knowledge Collection.
 
 Hinweis: Optional kann Auto-Sync aktiviert werden (Service-Config):
 - `OPEN_WEBUI_AUTO_SYNC_AFTER_RUN=true`
+Optional: Collections automatisch anlegen:
+- `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`
