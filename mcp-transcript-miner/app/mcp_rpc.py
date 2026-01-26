@@ -45,7 +45,7 @@ def make_tools(*, models: dict[str, type[BaseModel]]) -> list[ToolDef]:
         ),
         ToolDef(
             name="configs.list",
-            description="List available TranscriptMiner YAML configs",
+            description="List available TranscriptMiner YAML configs (includes display_name + aliases for matching).",
             input_schema={"type": "object", "properties": {}},
         ),
         ToolDef(
@@ -69,7 +69,7 @@ def make_tools(*, models: dict[str, type[BaseModel]]) -> list[ToolDef]:
         ),
         ToolDef(
             name="runs.start",
-            description="Start a TranscriptMiner run (async) for a config_id",
+            description="Start a TranscriptMiner run (async) for a config_id. Use configs.list first to pick the correct config_id.",
             input_schema=_simple_schema(
                 props={
                     "config_id": {"type": "string"},

@@ -18,6 +18,7 @@ Tool-Discovery/Invocation für Open WebUI/RooCode. Tools:
 
 ### `GET /configs`
 Listet verfügbare TranscriptMiner Configs (YAML) aus `TRANSCRIPT_MINER_CONFIG_DIR`.
+Enthält `display_name` und `aliases` zur besseren Zuordnung durch LLMs.
 
 ### `GET /configs/{config_id}`
 Gibt den YAML-Inhalt einer Config zurück.
@@ -30,6 +31,7 @@ Validiert YAML und schreibt (optional) die Config.
 ### `POST /runs/start`
 Startet einen TranscriptMiner-Run asynchron (im Container) anhand einer Config aus `/configs`.
 Antwort enthält eine `run_id`. Status über `GET /runs/{run_id}`.
+Hinweis für LLMs: zuerst `configs.list` aufrufen und den exakten `config_id` verwenden.
 
 ### `GET /runs/{run_id}`
 Liefert Status und Log-Tail des Runs.

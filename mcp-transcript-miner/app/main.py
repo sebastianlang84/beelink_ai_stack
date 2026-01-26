@@ -124,6 +124,8 @@ class ConfigInfo(BaseModel):
     filename: str
     bytes: int
     updated_at: int
+    display_name: str
+    aliases: list[str]
 
 
 class ConfigListResponse(BaseModel):
@@ -338,12 +340,19 @@ def _list_configs() -> list[ConfigInfo]:
         except OSError:
             continue
         config_id = name
+        base = name.rsplit(".", 1)[0]
+        display = base
+        if display.startswith("config_"):
+            display = display[len("config_") :]
+        aliases = {display, display.replace("_", "-"), base, config_id}
         out.append(
             ConfigInfo(
                 config_id=config_id,
                 filename=name,
                 bytes=int(st.st_size),
                 updated_at=int(st.st_mtime),
+                display_name=display,
+                aliases=sorted(a for a in aliases if a),
             )
         )
     return out

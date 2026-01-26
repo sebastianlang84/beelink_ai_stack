@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- mcp-transcript-miner: configs.list liefert display_name/aliases; Tool-Docs raten zu configs.list vor runs.start
 - ops: Webshare als funktionierende Mitigation gegen YouTube 429 bestätigt
 - docs: Knowledge-Name = Topic als No-Fuss Workflow dokumentiert
 - docs: Runbook für YouTube Transcript 429 (Tests + Mitigation) ergänzt
