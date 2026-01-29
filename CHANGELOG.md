@@ -2,6 +2,35 @@
 
 ## Unreleased
 - config: aktualisierte Open WebUI Knowledge-ID fuer Topic `investing` (Sync-Fehler durch stale Mapping behoben)
+- mcp-transcript-miner: Knowledge-ID Mapping validiert (Fallback auf Name=Topic bei stale IDs)
+- docs: agent diary eingefuehrt (`docs/agent_diary.md`)
+- agents: Tagebuch-Pflicht + Commit-Regeln in `AGENTS.md` verankert
+- mcp-transcript-miner: Auto‑Sync läuft jetzt unabhängig vom Status‑Polling (Watcher‑Thread) und schreibt Sync‑Result/Errors in Run‑Status + Run‑Log
+- mcp-transcript-miner: `sync/topic` heilt fehlende Summaries automatisch via LLM‑Only‑Run vor dem Indexing (optional steuerbar per Request)
+- mcp-transcript-miner: proxy env vars (Webshare/generic) werden an Tool-Container durchgereicht
+- transcript-miner: YouTube Block-Klassifikation korrigiert (Subtitles disabled ≠ IP-Block)
+- transcript-miner: Proxy Quickcheck Tool (tools/proxy_quickcheck.py)
+- transcript-miner: Streaming Summaries (opt-in) parallel zum Transcript-Download
+- transcript-miner: Timing-Logs für Transcript-Downloads und per-video Summaries
+- scripts: purge_topic_data.sh zum vollständigen Löschen eines Test-Topics (inkl. OWUI Knowledge)
+- scripts: purge_topic_data.sh nutzt OWUI `/knowledge/{id}/delete` + Container-Fallback bei fehlendem python3/Permissions
+- configs: analysis.llm.model auf google/gemini-3-flash-preview + reasoning_effort=high (Investing/Test/AI-Knowledge)
+- transcript-miner: investing LLM prompt auf Schema v2 erweitert (stocks_mentioned/other_insights/numbers + Coverage-Regeln)
+- transcript-miner: investing_test LLM prompt auf Schema v2 erweitert (stocks_mentioned/other_insights/numbers + Coverage-Regeln)
+- transcript-miner: Report-Prompt rendert jetzt stocks_mentioned/numbers/other_insights (Investing + Test)
+- transcript-miner: Validator akzeptiert Schema v2 + prüft stocks_mentioned/other_insights/numbers
+- docs: LLM Prompt Spec um Schema v2 (stocks_per_video_extract) ergänzt
+- docs: Use-Case Stocks auf Evidence/Confidence im Investing-Setup aktualisiert
+- templates: report_stocks_{de,en} um Stocks Mentioned + Other Insights erweitert
+- docs/templates/configs: Begriffe Creator/Influencer auf Channel vereinheitlicht (Investing Reports)
+- reports: Quellenformat jetzt überall Channel + Video-Titel + Video-ID (Templates/Prompts/LLM-Report)
+- config: Config-Template ergänzt OpenRouter Attribution (X-Title / HTTP-Referer)
+- ci: md_link_audit als verpflichtender Doc-Link-Check integriert
+- mcp-transcript-miner: Auto-Sync läuft jetzt auch bei Run-Exit != 0 (synct alle vorhandenen Summaries)
+- transcript-miner: Per-Video Summary-Renderer zeigt jetzt stocks_mentioned/numbers/other_insights
+- config: knowledge_ids.json entfernt investing_test Mapping (damit Test-Collection neu erzeugt werden kann)
+- mcp-transcript-miner: OPEN_WEBUI_AUTO_SYNC_AFTER_RUN und OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING werden an den Container durchgereicht
+- transcript-miner: IP-Block-Zähler in Run-Summary + sichtbare Meldung bei YouTube-Block (Run-Status)
 - mcp-transcript-miner: fix _strip_frontmatter indentation regression
 - transcript-miner: Summary-Regeneration bei Topic-Mismatch + Index filtert auf youtube.channels
 - mcp-transcript-miner: auto-create Knowledge Collection option + besser benannte Upload-Dateien

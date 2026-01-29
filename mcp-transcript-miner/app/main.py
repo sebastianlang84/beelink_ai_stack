@@ -469,6 +469,20 @@ def _list_knowledge() -> list[dict[str, Any]]:
     return []
 
 
+def _get_knowledge_by_id(knowledge_id: str) -> dict[str, Any] | None:
+    knowledge_id = (knowledge_id or "").strip()
+    if not knowledge_id:
+        return None
+    url = f"{OPEN_WEBUI_BASE_URL}/api/v1/knowledge/{knowledge_id}"
+    resp = requests.get(url, headers=_auth_headers(), timeout=30)
+    if resp.status_code == 404:
+        return None
+    if resp.status_code >= 400:
+        raise RuntimeError(f"knowledge get failed: {resp.status_code} {resp.text}")
+    data = resp.json()
+    return data if isinstance(data, dict) else None
+
+
 def _find_knowledge_by_name(name: str) -> dict[str, Any] | None:
     name_norm = (name or "").strip().casefold()
     if not name_norm:
@@ -484,7 +498,8 @@ def _resolve_knowledge_id_for_topic(topic: str) -> str | None:
     knowledge_map = _load_knowledge_map()
     mapped = knowledge_map.get(topic)
     if mapped:
-        return mapped
+        if _get_knowledge_by_id(mapped):
+            return mapped
     kb = _find_knowledge_by_name(topic)
     if not kb:
         return None
