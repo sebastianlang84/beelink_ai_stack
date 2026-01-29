@@ -27,3 +27,9 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Start a new `investing` run to validate per-summary sync.
 - Issues/Bugs: None (manual trigger).
 - Resolution: Triggered `POST /runs/start` with `config_investing.yaml` (run_id=e25029b7c98d401089ab4dc3f21912d8).
+- Task: Ensure per-summary sync also triggers for existing summaries and streaming workers.
+- Issues/Bugs: No per-summary sync logs; streaming path and “summary exists” short-circuit bypassed sync.
+- Resolution: Added sync for valid-existing summaries and streaming LLM summary writes.
+- Task: Restart tm to load per-summary sync changes and start a new investing run.
+- Issues/Bugs: Previous run used old code without streaming/skip sync hooks.
+- Resolution: Restarted `tm` and started `config_investing.yaml` (run_id=e66ad93907e24e338ffbea492cd120f7).

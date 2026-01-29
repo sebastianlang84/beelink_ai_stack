@@ -5,6 +5,7 @@
 - mcp-transcript-miner: Knowledge-ID Mapping validiert (Fallback auf Name=Topic bei stale IDs)
 - mcp-transcript-miner: Knowledge-Name Resolution ohne ID-Mapping konfiguriert (Mapping-Path geleert)
 - transcript-miner: sofortiger per-Video Knowledge-Sync nach Summary-Write (optional via OPEN_WEBUI_SYNC_ON_SUMMARY)
+- transcript-miner: per-summary Sync auch bei bereits vorhandenen Summaries (valid) und im Streaming-Worker
 - docs: agent diary eingefuehrt (`docs/agent_diary.md`)
 - agents: Tagebuch-Pflicht + Commit-Regeln in `AGENTS.md` verankert
 - mcp-transcript-miner: Auto‑Sync läuft jetzt unabhängig vom Status‑Polling (Watcher‑Thread) und schreibt Sync‑Result/Errors in Run‑Status + Run‑Log

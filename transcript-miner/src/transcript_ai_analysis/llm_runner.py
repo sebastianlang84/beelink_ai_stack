@@ -175,6 +175,41 @@ def _maybe_sync_summary_to_owui(
     )
 
 
+def _summary_meta_from_markdown(text: str) -> dict[str, str]:
+    meta, _ = _split_markdown_frontmatter(text)
+    return {
+        "title": meta.get("title", "").strip(),
+        "published_at": meta.get("published_at", "").strip(),
+        "channel_namespace": meta.get("channel_namespace", "").strip(),
+    }
+
+
+def _sync_existing_summary(
+    *,
+    summary_path: Path,
+    topic: str,
+    ref: "TranscriptRef",
+    fallback_title: str,
+    fallback_published_at: str,
+) -> None:
+    if not _truthy_env("OPEN_WEBUI_SYNC_ON_SUMMARY"):
+        return
+    try:
+        text = summary_path.read_text(encoding="utf-8")
+    except Exception as exc:
+        logger.warning("OWUI per-summary sync read failed: %s", exc)
+        return
+    meta = _summary_meta_from_markdown(text)
+    _maybe_sync_summary_to_owui(
+        topic=topic,
+        video_id=ref.video_id,
+        channel_namespace=meta.get("channel_namespace") or ref.channel_namespace,
+        title=meta.get("title") or fallback_title,
+        published_at=meta.get("published_at") or fallback_published_at,
+        markdown=text,
+    )
+
+
 def _now_utc_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -197,6 +232,330 @@ def _sha256_raw_hash(path: Path) -> str:
 def _model_slug(value: str) -> str:
     cleaned = re.sub(r"[^a-zA-Z0-9._-]+", "_", value or "").strip("_")
     return cleaned or "model"
+
+
+def _resolve_openrouter_api_key(cfg: Any) -> str | None:
+    return (
+        getattr(cfg.api, "openrouter_api_key", None)
+        or os.environ.get("OPENROUTER_API_KEY")
+        or os.environ.get("openrouter_key")
+        or getattr(cfg.api, "openai_api_key", None)
+        or os.environ.get("OPENAI_API_KEY")
+    )
+
+
+def _build_openrouter_headers(cfg: Any) -> dict[str, str]:
+    headers: dict[str, str] = {}
+    title_value = (getattr(cfg.api, "openrouter_app_title", None) or "TranscriptMiner").strip()
+    if title_value:
+        headers["X-Title"] = title_value
+    referer_value = (getattr(cfg.api, "openrouter_http_referer", None) or "").strip()
+    if referer_value:
+        headers["HTTP-Referer"] = referer_value
+    return headers
+
+
+def summarize_transcript_ref(
+    *,
+    cfg: Any,
+    ref: "TranscriptRef",
+    run_stats: RunStats | None = None,
+    rate_limit: Callable[[], None] | None = None,
+) -> bool:
+    """Generate a per-video summary for a single transcript (streaming-safe)."""
+    llm_cfg = cfg.analysis.llm
+    if not llm_cfg.enabled:
+        return False
+    if llm_cfg.mode != "per_video":
+        logger.warning("Streaming summary skipped (analysis.llm.mode != per_video).")
+        return False
+
+    model = llm_cfg.model or ""
+    system_prompt = llm_cfg.system_prompt or ""
+    user_prompt_template = llm_cfg.user_prompt_template or ""
+    max_input_tokens = llm_cfg.max_input_tokens
+    max_output_tokens = llm_cfg.max_output_tokens
+
+    openrouter_api_key = _resolve_openrouter_api_key(cfg)
+    if not openrouter_api_key:
+        logger.error("LLM API key missing (set OPENROUTER_API_KEY).")
+        if run_stats is not None:
+            run_stats.inc("summaries_failed")
+        return False
+
+    openrouter_headers = _build_openrouter_headers(cfg)
+
+    def _format_user_prompt(*, transcripts: str, transcript_count: int) -> str:
+        return user_prompt_template.format(
+            transcripts=transcripts,
+            transcript_count=str(transcript_count),
+        )
+
+    def _call_llm(*, user_prompt_text: str) -> str | None:
+        try:
+            req_kwargs: dict[str, Any] = {
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt_text},
+                ],
+                "temperature": llm_cfg.temperature,
+            }
+            if llm_cfg.reasoning_effort:
+                req_kwargs["extra_body"] = {"reasoning": {"effort": llm_cfg.reasoning_effort}}
+            if openrouter_headers:
+                req_kwargs["extra_headers"] = dict(openrouter_headers)
+            if max_output_tokens is not None:
+                req_kwargs["max_tokens"] = int(max_output_tokens)
+
+            from openai import OpenAI  # type: ignore
+
+            client = OpenAI(api_key=openrouter_api_key, base_url=_OPENROUTER_BASE_URL)
+            response = call_openai_with_retry(
+                client.chat.completions.create,
+                **req_kwargs,
+                log_json=cfg.logging.llm_request_json,
+            )
+            return _extract_chat_content(response)
+        except Exception as e:
+            logger.error("LLM call failed: %s", e)
+            return None
+
+    tpath = Path(ref.transcript_path)
+    if not tpath.exists():
+        return False
+
+    raw_hash = _sha256_raw_hash(tpath)
+    transcript_text = _load_transcript_text(tpath)
+    transcript_text = transcript_text[: llm_cfg.max_chars_per_transcript]
+
+    summary_path = cfg.output.get_summary_path(
+        ref.video_id, channel_handle=ref.channel_namespace
+    )
+    topic = cfg.output.get_topic() if cfg.output.is_global_layout() else ""
+    was_healed = False
+    if summary_path.exists():
+        is_valid, reason = _existing_summary_is_valid(
+            summary_path=summary_path,
+            ref=ref,
+            raw_hash=raw_hash,
+            expected_topic=cfg.output.get_topic(),
+        )
+        if is_valid:
+            _sync_existing_summary(
+                summary_path=summary_path,
+                topic=topic or ref.channel_namespace,
+                ref=ref,
+                fallback_title="unknown",
+                fallback_published_at="unknown",
+            )
+            if run_stats is not None:
+                run_stats.inc("summaries_skipped_valid")
+            return True
+        _backup_corrupted_summary(summary_path)
+        was_healed = True
+        logger.warning(
+            "Summary invalid; regenerating (video_id=%s channel=%s reason=%s)",
+            ref.video_id,
+            ref.channel_namespace,
+            reason,
+        )
+
+    # Load metadata for prompt
+    video_title = "unknown"
+    published_at = "unknown"
+    channel_id = ref.channel_namespace
+    if ref.metadata_path:
+        mpath = Path(ref.metadata_path)
+        if mpath.exists():
+            try:
+                mdata = json.loads(mpath.read_text(encoding="utf-8"))
+                video_title = mdata.get("video_title", video_title)
+                published_at = mdata.get("published_at", published_at)
+                channel_id = mdata.get("channel_id", channel_id)
+            except Exception:
+                pass
+
+    transcripts_blob = (
+        f"=== Transcript | channel={ref.channel_namespace} | video_id={ref.video_id} ===\n"
+        f"video_title={video_title}\n"
+        f"published_at={published_at}\n"
+        f"channel_id={channel_id}\n"
+        f"transcript_path={ref.transcript_path}\n"
+        f"raw_hash={raw_hash}\n"
+        f"{transcript_text}\n"
+    )
+    per_user_prompt = _format_user_prompt(
+        transcripts=transcripts_blob,
+        transcript_count=1,
+    )
+
+    if max_input_tokens is not None:
+        per_prompt_tokens = calculate_token_count(
+            system_prompt, model=model
+        ) + calculate_token_count(per_user_prompt, model=model)
+        if per_prompt_tokens > max_input_tokens:
+            logger.error(
+                "LLM prompt exceeds max_input_tokens (per-video) video_id=%s",
+                ref.video_id,
+            )
+            if run_stats is not None:
+                run_stats.inc("summaries_failed")
+            return False
+
+    summary_started_at = _now_utc_iso()
+    logger.info(
+        "Summary start: video_id=%s channel=%s at=%s",
+        ref.video_id,
+        ref.channel_namespace,
+        summary_started_at,
+    )
+
+    if rate_limit is not None:
+        rate_limit()
+
+    out = _call_llm(user_prompt_text=per_user_prompt)
+    if out is None:
+        logger.info(
+            "Summary finish: video_id=%s status=failed at=%s",
+            ref.video_id,
+            _now_utc_iso(),
+        )
+        if run_stats is not None:
+            run_stats.inc("summaries_failed")
+        return False
+
+    if max_output_tokens is not None:
+        output_tokens = calculate_token_count(out, model=model)
+        if output_tokens > max_output_tokens:
+            logger.error(
+                "LLM output exceeds max_output_tokens (per-video) video_id=%s",
+                ref.video_id,
+            )
+            if run_stats is not None:
+                run_stats.inc("summaries_failed")
+            return False
+
+    validation = validate_llm_output_content(content=out)
+    if not validation.ok:
+        first_code = validation.issues[0].code if validation.issues else None
+        if first_code == "llm_policy_violation_why_covered_is_list":
+            retry_hint = (
+                "\n\nCRITICAL FORMAT FIX:\n"
+                "- stocks_covered[].why_covered MUST be 1–2 full sentences (string).\n"
+                "- No bullet points, no enumerations, no comma lists.\n"
+            )
+            if rate_limit is not None:
+                rate_limit()
+            out_retry = _call_llm(user_prompt_text=per_user_prompt + retry_hint)
+            if out_retry is not None:
+                out = out_retry
+                validation = validate_llm_output_content(content=out)
+
+        if not validation.ok and isinstance(validation.payload, dict):
+            task = validation.payload.get("task")
+            if task == "stocks_per_video_extract":
+                repaired, repairs = sanitize_stocks_per_video_extract_payload(
+                    validation.payload
+                )
+                if repairs:
+                    repaired_text = json.dumps(repaired, ensure_ascii=False)
+                    validation2 = validate_llm_output_content(content=repaired_text)
+                    if validation2.ok:
+                        out = repaired_text
+                        validation = validation2
+
+    if not validation.ok:
+        logger.error("LLM output validation failed for video_id=%s", ref.video_id)
+        logger.info(
+            "Summary finish: video_id=%s status=failed at=%s",
+            ref.video_id,
+            _now_utc_iso(),
+        )
+        if run_stats is not None:
+            run_stats.inc("summaries_failed")
+        return False
+
+    parsed = validation.payload
+    if not isinstance(parsed, dict):
+        try:
+            parsed = json.loads(out)
+        except Exception:
+            logger.error("LLM output JSON parse failed for video_id=%s", ref.video_id)
+            if run_stats is not None:
+                run_stats.inc("summaries_failed")
+            return False
+
+    src = parsed.get("source") if isinstance(parsed, dict) else None
+    if not isinstance(src, dict):
+        logger.error("LLM output missing source object (video_id=%s)", ref.video_id)
+        if run_stats is not None:
+            run_stats.inc("summaries_failed")
+        return False
+    if src.get("video_id") != ref.video_id:
+        logger.error("LLM output source.video_id mismatch (video_id=%s)", ref.video_id)
+        if run_stats is not None:
+            run_stats.inc("summaries_failed")
+        return False
+    if src.get("channel_namespace") != ref.channel_namespace:
+        logger.error("LLM output source.channel_namespace mismatch (video_id=%s)", ref.video_id)
+        if run_stats is not None:
+            run_stats.inc("summaries_failed")
+        return False
+    if src.get("transcript_path") != ref.transcript_path:
+        logger.error("LLM output source.transcript_path mismatch (video_id=%s)", ref.video_id)
+        if run_stats is not None:
+            run_stats.inc("summaries_failed")
+        return False
+    if parsed.get("raw_hash") != raw_hash:
+        logger.error("LLM output raw_hash mismatch (video_id=%s)", ref.video_id)
+        logger.info(
+            "Summary finish: video_id=%s status=failed at=%s",
+            ref.video_id,
+            _now_utc_iso(),
+        )
+        if run_stats is not None:
+            run_stats.inc("summaries_failed")
+        return False
+
+    md = _render_per_video_summary_markdown(
+        topic=topic or ref.channel_namespace,
+        ref=ref,
+        payload=parsed,
+        raw_hash=raw_hash,
+        video_title=video_title,
+        published_at=published_at,
+        channel_id=channel_id,
+    )
+    _atomic_write_text(summary_path, md)
+    legacy_json = summary_path.with_suffix(".json")
+    if legacy_json.exists() and legacy_json.name.endswith(".summary.json"):
+        try:
+            legacy_json.unlink()
+        except Exception:
+            logger.warning("Failed to delete legacy summary JSON: %s", legacy_json)
+    _maybe_sync_summary_to_owui(
+        topic=topic or ref.channel_namespace,
+        video_id=ref.video_id,
+        channel_namespace=ref.channel_namespace,
+        title=video_title,
+        published_at=published_at,
+        markdown=md,
+    )
+
+    summary_finished_at = _now_utc_iso()
+    logger.info(
+        "Summary finish: video_id=%s status=ok at=%s",
+        ref.video_id,
+        summary_finished_at,
+    )
+
+    if run_stats is not None:
+        run_stats.inc("summaries_created")
+        if was_healed:
+            run_stats.inc("summaries_healed")
+
+    return True
 
 
 def _backup_corrupted_summary(path: Path) -> None:
@@ -366,6 +725,69 @@ def _render_per_video_summary_markdown(
                     lines.append(f"- {canonical}: {why}")
                 else:
                     lines.append(f"- {canonical}")
+            lines.append("")
+
+    mentioned = payload.get("stocks_mentioned")
+    if isinstance(mentioned, list):
+        items = [x for x in mentioned if isinstance(x, dict)]
+        if items:
+            lines.append("## Stocks Mentioned")
+            for item in items:
+                canonical = str(item.get("canonical") or "").strip()
+                summary = str(item.get("summary") or "").strip()
+                mtype = str(item.get("mention_type") or "").strip()
+                if not canonical:
+                    continue
+                if summary and mtype:
+                    lines.append(f"- {canonical} ({mtype}): {summary}")
+                elif summary:
+                    lines.append(f"- {canonical}: {summary}")
+                else:
+                    lines.append(f"- {canonical}")
+            lines.append("")
+
+    numbers = payload.get("numbers")
+    if isinstance(numbers, list):
+        items = [x for x in numbers if isinstance(x, dict)]
+        if items:
+            lines.append("## Numbers / Levels")
+            for item in items:
+                value_raw = str(item.get("value_raw") or "").strip()
+                unit = str(item.get("unit") or "").strip()
+                what = str(item.get("what_it_refers_to") or "").strip()
+                context = str(item.get("context") or "").strip()
+                if not value_raw:
+                    continue
+                parts: list[str] = []
+                if context:
+                    parts.append(context)
+                if what:
+                    parts.append(what)
+                ctx = " — ".join(parts) if parts else ""
+                if unit and unit != "other":
+                    value = f"{value_raw} {unit}"
+                else:
+                    value = value_raw
+                if ctx:
+                    lines.append(f"- {value}: {ctx}")
+                else:
+                    lines.append(f"- {value}")
+            lines.append("")
+
+    other = payload.get("other_insights")
+    if isinstance(other, list):
+        items = [x for x in other if isinstance(x, dict)]
+        if items:
+            lines.append("## Other Insights")
+            for item in items:
+                topic = str(item.get("topic") or "").strip()
+                claim = str(item.get("claim") or "").strip()
+                if not claim:
+                    continue
+                if topic:
+                    lines.append(f"- {topic}: {claim}")
+                else:
+                    lines.append(f"- {claim}")
             lines.append("")
 
     knowledge_items = payload.get("knowledge_items")
@@ -1064,8 +1486,9 @@ def run_llm_analysis(
                     {"role": "user", "content": user_prompt_text},
                 ],
                 "temperature": llm_cfg.temperature,
-                "extra_body": {"reasoning": {"effort": "high"}},
             }
+            if llm_cfg.reasoning_effort:
+                req_kwargs["extra_body"] = {"reasoning": {"effort": llm_cfg.reasoning_effort}}
             if openrouter_headers:
                 req_kwargs["extra_headers"] = dict(openrouter_headers)
             if max_output_tokens is not None:
@@ -1224,6 +1647,13 @@ def run_llm_analysis(
                     expected_topic=cfg.output.get_topic(),
                 )
                 if is_valid:
+                    _sync_existing_summary(
+                        summary_path=summary_path,
+                        topic=cfg.output.get_topic() or ref.channel_namespace,
+                        ref=ref,
+                        fallback_title=video_title,
+                        fallback_published_at=published_at,
+                    )
                     _append_audit(
                         kind="skipped",
                         message="summary exists and valid; skipping LLM",
