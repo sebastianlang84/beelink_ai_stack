@@ -24,3 +24,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Enable immediate per-video sync to Open WebUI after summary completion.
 - Issues/Bugs: Auto-sync only ran after the full run finished.
 - Resolution: Added per-summary sync hook in the TranscriptMiner LLM runner, passed new env flags via tm compose, and enabled `OPEN_WEBUI_SYNC_ON_SUMMARY` in config.
+- Task: Start a new `investing` run to validate per-summary sync.
+- Issues/Bugs: None (manual trigger).
+- Resolution: Triggered `POST /runs/start` with `config_investing.yaml` (run_id=e25029b7c98d401089ab4dc3f21912d8).
