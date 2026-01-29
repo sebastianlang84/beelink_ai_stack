@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- config: aktualisierte Open WebUI Knowledge-ID fuer Topic `investing` (Sync-Fehler durch stale Mapping behoben)
 - mcp-transcript-miner: fix _strip_frontmatter indentation regression
 - transcript-miner: Summary-Regeneration bei Topic-Mismatch + Index filtert auf youtube.channels
 - mcp-transcript-miner: auto-create Knowledge Collection option + besser benannte Upload-Dateien
