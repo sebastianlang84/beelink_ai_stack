@@ -12,3 +12,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Make Knowledge-ID mapping resilient and re-run `investing` sync.
 - Issues/Bugs: Stale Knowledge-ID mapping can break sync even when the collection exists by name.
 - Resolution: Added a mapped-ID existence check with fallback to name lookup, rebuilt/restarted `tm`, and re-ran `sync/topic/investing` (success).
+- Task: Disable Knowledge-ID mapping and verify sync + Knowledge files for `investing`.
+- Issues/Bugs: Mapping can become stale and override name-based resolution.
+- Resolution: Cleared `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH`, restarted `tm`, re-ran `sync/topic/investing` (success), and verified Knowledge files via OWUI API.
