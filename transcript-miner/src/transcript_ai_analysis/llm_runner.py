@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+import requests
+
 from common.config import load_config
 from common.path_utils import archive_existing_reports
 from common.run_summary import RunStats
@@ -32,6 +34,145 @@ _OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 
 logger = logging.getLogger(__name__)
+
+
+def _truthy_env(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _owui_api_key() -> str:
+    return (os.environ.get("OPEN_WEBUI_API_KEY") or os.environ.get("OWUI_API_KEY") or "").strip()
+
+
+def _owui_base_url() -> str:
+    return os.environ.get("OPEN_WEBUI_BASE_URL", "http://owui:8080").rstrip("/")
+
+
+def _owui_sync_base_url() -> str:
+    return os.environ.get("OPEN_WEBUI_SYNC_BASE_URL", "http://127.0.0.1:8000").rstrip("/")
+
+
+def _owui_list_knowledge() -> list[dict[str, Any]]:
+    key = _owui_api_key()
+    if not key:
+        return []
+    url = f"{_owui_base_url()}/api/v1/knowledge/"
+    try:
+        resp = requests.get(url, headers={"Authorization": f"Bearer {key}"}, timeout=30)
+    except Exception as exc:
+        logger.warning("OWUI knowledge list failed: %s", exc)
+        return []
+    if resp.status_code >= 400:
+        logger.warning("OWUI knowledge list failed: %s %s", resp.status_code, resp.text[:200])
+        return []
+    try:
+        data = resp.json()
+    except Exception as exc:
+        logger.warning("OWUI knowledge list JSON error: %s", exc)
+        return []
+    if isinstance(data, list):
+        return data
+    if isinstance(data, dict) and isinstance(data.get("items"), list):
+        return list(data["items"])
+    if isinstance(data, dict) and isinstance(data.get("data"), list):
+        return list(data["data"])
+    if isinstance(data, dict) and isinstance(data.get("knowledge"), list):
+        return list(data["knowledge"])
+    return []
+
+
+def _owui_find_knowledge_id_by_name(name: str) -> str | None:
+    name_norm = (name or "").strip().casefold()
+    if not name_norm:
+        return None
+    for kb in _owui_list_knowledge():
+        kb_name = str(kb.get("name") or "").strip().casefold()
+        if kb_name == name_norm:
+            kid = str(kb.get("id") or "").strip()
+            return kid or None
+    return None
+
+
+def _owui_create_knowledge(name: str) -> str | None:
+    key = _owui_api_key()
+    if not key:
+        return None
+    url = f"{_owui_base_url()}/api/v1/knowledge/create"
+    try:
+        resp = requests.post(
+            url,
+            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+            json={"name": name, "description": ""},
+            timeout=30,
+        )
+    except Exception as exc:
+        logger.warning("OWUI knowledge create failed: %s", exc)
+        return None
+    if resp.status_code >= 400:
+        logger.warning("OWUI knowledge create failed: %s %s", resp.status_code, resp.text[:200])
+        return None
+    try:
+        data = resp.json()
+    except Exception:
+        return None
+    kid = str(data.get("id") or "").strip() if isinstance(data, dict) else ""
+    return kid or None
+
+
+def _maybe_sync_summary_to_owui(
+    *,
+    topic: str,
+    video_id: str,
+    channel_namespace: str,
+    title: str,
+    published_at: str,
+    markdown: str,
+) -> None:
+    if not _truthy_env("OPEN_WEBUI_SYNC_ON_SUMMARY"):
+        return
+    if not topic:
+        logger.warning("OWUI per-summary sync skipped: missing topic")
+        return
+    if not _owui_api_key():
+        logger.warning("OWUI per-summary sync skipped: OPEN_WEBUI_API_KEY not set")
+        return
+
+    knowledge_id = _owui_find_knowledge_id_by_name(topic)
+    if not knowledge_id and _truthy_env("OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING"):
+        knowledge_id = _owui_create_knowledge(topic)
+    if not knowledge_id:
+        logger.warning("OWUI per-summary sync skipped: knowledge not found (topic=%s)", topic)
+        return
+
+    payload = {
+        "source_id": f"youtube:{video_id}",
+        "text": markdown,
+        "title": title,
+        "url": _youtube_url(video_id),
+        "channel": channel_namespace,
+        "published_at": published_at,
+        "fetched_at": _now_utc_iso(),
+        "knowledge_id": knowledge_id,
+    }
+    url = f"{_owui_sync_base_url()}/index/transcript"
+    try:
+        resp = requests.post(url, json=payload, timeout=300)
+    except Exception as exc:
+        logger.warning("OWUI per-summary sync failed: %s", exc)
+        return
+    if resp.status_code >= 400:
+        logger.warning("OWUI per-summary sync failed: %s %s", resp.status_code, resp.text[:200])
+        return
+    try:
+        data = resp.json()
+    except Exception:
+        data = None
+    status = data.get("status") if isinstance(data, dict) else None
+    logger.info(
+        "OWUI per-summary sync done: video_id=%s status=%s",
+        video_id,
+        status or resp.status_code,
+    )
 
 
 def _now_utc_iso() -> str:
@@ -1366,6 +1507,14 @@ def run_llm_analysis(
                     legacy_json.unlink()
                 except Exception:
                     logger.warning("Failed to delete legacy summary JSON: %s", legacy_json)
+            _maybe_sync_summary_to_owui(
+                topic=topic,
+                video_id=ref.video_id,
+                channel_namespace=ref.channel_namespace,
+                title=video_title,
+                published_at=published_at,
+                markdown=md,
+            )
             with per_video_written_lock:
                 per_video_written.append(
                     {
