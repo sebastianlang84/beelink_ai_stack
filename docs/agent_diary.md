@@ -48,3 +48,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Create prompt engineering handover report for META summary quality.
 - Issues/Bugs: Per-video summary considered too short given transcript richness.
 - Resolution: Assembled transcript, summary, and prompt into `enhance_prompt_engineering.md` with gap analysis and recommendations.
+- Task: Capture expert prompt-engineering tips and switch workflow to investing_test for alpha.
+- Issues/Bugs: Current summaries feel thin; repeated full investing runs are too heavy for alpha iteration.
+- Resolution: Added expert tips to `docs/prompt_engineering_expert_notes.md` and documented investing_test focus in `TODO.md`.

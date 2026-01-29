@@ -9,6 +9,8 @@
 - transcript-miner: fix per-summary Sync bei vorhandenen Summaries (Default-Metadaten initialisiert)
 - docs: Hinweis zu OWUI „Updated“ UI-Stamp (nicht zuverlässig bei File-Adds)
 - docs: Prompt-Engineering Handover-Report (enhance_prompt_engineering.md) hinzugefuegt
+- docs: Experten-Notizen fuer Prompt-Engineering (docs/prompt_engineering_expert_notes.md)
+- todo: Fokus auf investing_test fuer Alpha-Iterationen dokumentiert
 - docs: agent diary eingefuehrt (`docs/agent_diary.md`)
 - agents: Tagebuch-Pflicht + Commit-Regeln in `AGENTS.md` verankert
 - mcp-transcript-miner: Auto‑Sync läuft jetzt unabhängig vom Status‑Polling (Watcher‑Thread) und schreibt Sync‑Result/Errors in Run‑Status + Run‑Log

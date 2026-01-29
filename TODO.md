@@ -12,14 +12,14 @@
     - Evidence-Rollen: thesis, risk, catalyst, numbers_valuation, comparison.
   - DoD: Validator unterstützt neue Rollen/Tags; Prompts in `config_investing.yaml` sind aktualisiert.
 
-- [ ] **P1: Investor-Grade Report Template**
+- [x] **P1: Investor-Grade Report Template**
   - Ziel: Report-Struktur gemäß `user_data/report_template_vorschlag.md`.
   - Umsetzung:
     - Sektionen: Meta, Stocks (Thesis Cards), Macro (Szenarien), Crypto (Narratives), Appendix (Evidence IDs).
     - Strikte Trennung: Fact vs. Claim vs. Interpretation.
   - DoD: `templates/report_investing_de.md` (und en) entsprechen dem neuen Standard.
 
-- [ ] **P1: Begriffs-Bereinigung (Creator vs. Channel vs. Topic)**
+- [x] **P1: Begriffs-Bereinigung (Creator vs. Channel vs. Topic)**
   - Ziel: Korrekte Terminologie in Reports und Logs gemäß `user_data/kritik...`.
   - Umsetzung: "1 Creator" durch "1 Topic" oder konkrete Channel-Namen ersetzen.
   - DoD: Reports zeigen `unique_youtube_channels` statt nur "Creator".
@@ -42,6 +42,12 @@
 - [x] **P2: Run-Manifeste / Run-level Versioning für Reports**
 
 ## TODO
+
+- [ ] **Investing-Test Workflow (Alpha, schneller Iterate)**
+  - Ab sofort fuer Experimente/Prompt-Tuning `investing_test` nutzen (kleinere Datenmenge, weniger Kosten/Time).
+  - `config_investing_test.yaml` als Standard fuer Prompt-Iterationen.
+  - Production-Investing nur nach validiertem Prompt/Schema-Update laufen lassen.
+  - Referenz: `docs/prompt_engineering_expert_notes.md`
 
 - [x] **P0: Healing/Validation für Transkripte & Summaries (inkrementell, metadata‑basiert)**
   - Ziel: Gute Files wiederverwenden; nur kaputte/inkomplette Artefakte re‑fetch/re‑generate.
@@ -143,12 +149,12 @@
   - DoD:
     - Keine Breaking-Changes für bestehende Configs/CLI.
 
-- [ ] **P1: Report-Source-Lesbarkeit (Channel + Video Title überall)**
+- [x] **P1: Report-Source-Lesbarkeit (Channel + Video Title überall)**
   - Ziel: im Report niemals nur “(Creator, Video <id>)”, sondern “<Channel> — <Video Title>”.
   - DoD:
     - Aggregation/Report zieht `video_title` + `channel_name` aus Transcript-Meta und nutzt diese im Output.
 
-- [ ] **P2: OpenRouter Attribution (App Name)**
+- [x] **P2: OpenRouter Attribution (App Name)**
   - Ziel: bessere Zuordnung in OpenRouter UI/CSV.
   - Umsetzung:
     - Immer `X-Title` (App Name) und `HTTP-Referer` setzen.
@@ -404,7 +410,7 @@ Status-Hinweis (Ist-Zustand):
   - **DoD:** Klare Fehlermeldungen + Zähler (Telemetry) statt stiller Drops.
 
 - [x] Ergänze Tests (Unit/Integration) für Extraktion + Canonicalization + Aggregation.
-- [ ] **CI-Integration für Doku-Governance:** `tools/md_link_audit.py` als verpflichtenden Check in CI aufnehmen.
+- [x] **CI-Integration für Doku-Governance:** `tools/md_link_audit.py` als verpflichtenden Check in CI aufnehmen.
   - **DoD:** Tests laufen offline ohne externe APIs; repräsentative Sample-Transkripte/Fixtures.
   - Evidence: Aggregation-Tests in [`tests/test_aggregation.py`](tests/test_aggregation.py:1) sowie Offline-Validator-/Fixture-Tests für LLM-Payloads in [`tests/test_llm_output_validation_policy.py`](tests/test_llm_output_validation_policy.py:1).
 
@@ -850,11 +856,12 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
   - [x] Tool→OWUI API erreichbar (Auth OK; `/api/v1/files/` → `200`)
   - [x] 1 Topic (z. B. `investing`), 2–3 Videos: Summaries in Knowledge indexed (verifiziert via `/api/v1/knowledge/<id>/files`)
   - [x] Chat-Retrieval in Open WebUI manuell prüfen (Collection aktivieren, Frage stellen, Sources prüfen)
-  - [ ] Falls YouTube 429/Block: `youtube_cookies.txt` unter Repo-Root hinterlegen (gitignored) + `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt` in `mcp-transcript-miner/.config.env` setzen
+  - [x] Falls YouTube 429/Block: `youtube_cookies.txt` unter Repo-Root hinterlegen (gitignored) + `YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt` in `mcp-transcript-miner/.config.env` setzen
 
 ## P1 — Betrieb & Sicherheit
 - [x] Open WebUI localhost-only + Healthcheck/Log-Rotation in Compose
 - [x] Geplante Runs: investing alle 3h via systemd Timer (Auto-Sync aktiviert)
+- [ ] OpenWebUI + OpenRouter + Tavily + Jupyter Code Interpreter (Tool-Loop) Setup/Plan
 - [ ] Backup-Ziel definieren (Volumes):
   - [x] Repo: Runbook + Scripts für Backup/Restore vorhanden (`docs/runbook_backup_restore.md:1`, `scripts/README.md:1`)
   - [x] Repo: systemd Timer Templates vorhanden (`scripts/systemd/ai_stack_backup.timer`, `scripts/systemd/ai_stack_backup.service`)
