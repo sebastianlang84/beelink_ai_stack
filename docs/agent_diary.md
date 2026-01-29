@@ -15,3 +15,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Disable Knowledge-ID mapping and verify sync + Knowledge files for `investing`.
 - Issues/Bugs: Mapping can become stale and override name-based resolution.
 - Resolution: Cleared `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH`, restarted `tm`, re-ran `sync/topic/investing` (success), and verified Knowledge files via OWUI API.
+- Task: Future-proof Knowledge mapping state.
+- Issues/Bugs: Stale local mapping files can reintroduce ID drift if mapping is re-enabled later.
+- Resolution: Removed local `config/knowledge_ids.json` to avoid accidental stale mappings; rely on name-based resolution unless mapping is explicitly reintroduced.
