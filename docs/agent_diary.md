@@ -39,3 +39,9 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Start a new `investing` run after the per-summary sync fix.
 - Issues/Bugs: None (manual trigger).
 - Resolution: Triggered `POST /runs/start` with `config_investing.yaml` (run_id=9967297b4959455fb07b9536a8caed7d).
+- Task: Check run completion status and auto-sync progress for investing.
+- Issues/Bugs: Auto-sync still running; manual sync attempt timed out.
+- Resolution: Verified run finished (exit_code=0) and auto-sync started; will retry sync status later.
+- Task: Check final run status + auto-sync outcome and document OWUI UI timestamp caveat.
+- Issues/Bugs: Auto-sync failed due to OWUI duplicate-content rejection; UI “Updated” timestamp does not reflect file adds.
+- Resolution: Captured auto-sync error details and documented UI timestamp caveat in smoke-test runbook.

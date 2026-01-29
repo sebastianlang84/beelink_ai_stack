@@ -44,6 +44,21 @@ cd /home/wasti/ai_stack
 docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build
 ```
 
+## 2.1) Optional: YouTube 429/Block (Cookies-Bypass)
+
+Wenn YouTube 429/Block auftritt, nutze einen Cookies-Export (z. B. aus dem Browser).
+
+1) Datei im Repo-Root ablegen (gitignored):
+```bash
+/home/wasti/ai_stack/youtube_cookies.txt
+```
+2) In `mcp-transcript-miner/.config.env` setzen:
+```bash
+YOUTUBE_COOKIES_FILE=/host_secrets/youtube_cookies.txt
+```
+
+Hinweis: Der Container mountet per Default den Repo-Root nach `/host_secrets`.
+
 ## 3) Smoke-Test Script (empfohlen)
 
 ```bash
@@ -77,6 +92,8 @@ Ziel: Ein echter Indexing-Durchlauf in eine Knowledge Collection.
 4. Prüfen:
    - Knowledge Collection enthält neue Summary-Dokumente
    - Chat-Retrieval mit der Collection liefert passende Zitate/Referenzen
+
+Hinweis (Open WebUI UI): Die Collection-Anzeige „Updated …“ wird bei File-Adds in manchen OWUI-Versionen **nicht** aktualisiert. Verlasse dich daher auf `/api/v1/knowledge/<id>/files` (Count + `created_at`) statt auf die UI-Zeitstempel.
 
 Hinweis: Optional kann Auto-Sync aktiviert werden (Service-Config):
 - `OPEN_WEBUI_AUTO_SYNC_AFTER_RUN=true`
