@@ -33,3 +33,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Restart tm to load per-summary sync changes and start a new investing run.
 - Issues/Bugs: Previous run used old code without streaming/skip sync hooks.
 - Resolution: Restarted `tm` and started `config_investing.yaml` (run_id=e66ad93907e24e338ffbea492cd120f7).
+- Task: Fix crash in per-summary sync for existing summaries.
+- Issues/Bugs: Run crashed with `UnboundLocalError` (fallback_title not initialized when summary already exists).
+- Resolution: Initialized default metadata before early return and re-enabled per-summary sync path.

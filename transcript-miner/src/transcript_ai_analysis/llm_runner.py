@@ -1635,6 +1635,11 @@ def run_llm_analysis(
             transcript_text = _load_transcript_text(tpath)
             transcript_text = transcript_text[: llm_cfg.max_chars_per_transcript]
 
+            # Defaults for early-return paths (e.g., summary already exists).
+            video_title = "unknown"
+            published_at = "unknown"
+            channel_id = ref.channel_namespace
+
             summary_path = cfg.output.get_summary_path(
                 ref.video_id, channel_handle=ref.channel_namespace
             )
@@ -1681,9 +1686,6 @@ def run_llm_analysis(
                 )
 
             # Try to load additional metadata for the prompt
-            video_title = "unknown"
-            published_at = "unknown"
-            channel_id = ref.channel_namespace
             if ref.metadata_path:
                 mpath = Path(ref.metadata_path)
                 if mpath.exists():
