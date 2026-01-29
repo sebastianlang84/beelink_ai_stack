@@ -36,3 +36,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Fix crash in per-summary sync for existing summaries.
 - Issues/Bugs: Run crashed with `UnboundLocalError` (fallback_title not initialized when summary already exists).
 - Resolution: Initialized default metadata before early return and re-enabled per-summary sync path.
+- Task: Start a new `investing` run after the per-summary sync fix.
+- Issues/Bugs: None (manual trigger).
+- Resolution: Triggered `POST /runs/start` with `config_investing.yaml` (run_id=9967297b4959455fb07b9536a8caed7d).
