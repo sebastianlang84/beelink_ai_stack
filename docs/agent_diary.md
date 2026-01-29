@@ -18,3 +18,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Future-proof Knowledge mapping state.
 - Issues/Bugs: Stale local mapping files can reintroduce ID drift if mapping is re-enabled later.
 - Resolution: Removed local `config/knowledge_ids.json` to avoid accidental stale mappings; rely on name-based resolution unless mapping is explicitly reintroduced.
+- Task: Start a new Transcript Miner run for `investing`.
+- Issues/Bugs: None (manual trigger).
+- Resolution: Triggered `POST /runs/start` with `config_investing.yaml` (auto-sync enabled).
