@@ -20,6 +20,28 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 
 ## 1) Agent Rules (global, verbindlich)
 
+### Pflicht: Agent-Tagebuch + Abschluss-Tasks
+- Das Agent-Tagebuch ist **verpflichtend** und muss wie alle anderen Dokumentationsarbeiten gepflegt werden.
+- Speicherort: `AGENTDIARY.md` (Repo-Root).
+- Jeder Task muss im Tagebuch festgehalten werden (auch kleine Aenderungen).
+- Ein Eintrag enthaelt **mindestens**:
+  - Datum (YYYY-MM-DD)
+  - Kurzbeschreibung der Aufgabe
+  - Probleme/Bugs/Issues, die auftraten
+  - Wie sie geloest wurden (konkret)
+- **Pflicht am Ende jeder Aufgabe**:
+  1. Agent-Tagebuch aktualisieren (`AGENTDIARY.md`).
+  2. Living Docs pruefen/aktualisieren (mindestens: `README.md`, `TODO.md`, `CHANGELOG.md`).
+  3. Commit erstellen, **sofern der User nicht explizit etwas anderes sagt**.
+
+### Commit-Regeln
+- Keine Secrets committen.
+- Ein Task = ein Commit (inkl. Tagebuch-Update), ausser der User wuenscht etwas anderes.
+- Commit-Message-Format: `type(scope): kurze beschreibung`
+  - `type` in {`docs`, `fix`, `feat`, `chore`, `ops`, `refactor`, `test`}
+  - `scope` kurz, z. B. `agent`, `docs`, `open-webui`, `mcp-tm`
+  - Beispiel: `docs(agent): add mandatory agent diary`
+
 ### Arbeitsstil
 - Bei Unklarheiten zuerst **1–3 gezielte Rückfragen** stellen (Ziel, Umgebung, Constraints).
 - **Repo-first**: erst vorhandene Dateien/Docs prüfen, dann Vorschläge machen; nichts „raten“.

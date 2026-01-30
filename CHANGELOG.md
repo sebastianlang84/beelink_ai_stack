@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: Agent-Tagebuch nach `AGENTDIARY.md` im Repo-Root verschoben
 - config: aktualisierte Open WebUI Knowledge-ID fuer Topic `investing` (Sync-Fehler durch stale Mapping behoben)
 - mcp-transcript-miner: Knowledge-ID Mapping validiert (Fallback auf Name=Topic bei stale IDs)
 - mcp-transcript-miner: Knowledge-Name Resolution ohne ID-Mapping konfiguriert (Mapping-Path geleert)
@@ -11,7 +12,7 @@
 - docs: Prompt-Engineering Handover-Report (enhance_prompt_engineering.md) hinzugefuegt
 - docs: Experten-Notizen fuer Prompt-Engineering (docs/prompt_engineering_expert_notes.md)
 - docs: Investing-Test Workflow (Alpha) dokumentiert (investing_test fuer Prompt-Iterationen)
-- docs: agent diary eingefuehrt (`docs/agent_diary.md`)
+- docs: agent diary eingefuehrt (`AGENTDIARY.md`)
 - agents: Tagebuch-Pflicht + Commit-Regeln in `AGENTS.md` verankert
 - mcp-transcript-miner: Auto‑Sync läuft jetzt unabhängig vom Status‑Polling (Watcher‑Thread) und schreibt Sync‑Result/Errors in Run‑Status + Run‑Log
 - mcp-transcript-miner: `sync/topic` heilt fehlende Summaries automatisch via LLM‑Only‑Run vor dem Indexing (optional steuerbar per Request)

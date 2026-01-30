@@ -8,6 +8,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 - `TODO.md` — Gemeinsames Backlog (TranscriptMiner + ai_stack Ops), living
 - `CHANGELOG.md` — Änderungen / Releases (living)
 - `scripts/README.md` — Scripte (Install/Backup/Restore)
+- `AGENTDIARY.md` — Agent-Tagebuch (Pflicht-Log)
 
 ## Policies
 - `docs/policy_secrets_environment_variables_ai_stack.md` — SSOT/Least-Privilege Policy für Secrets & Env Vars (Compose/systemd)

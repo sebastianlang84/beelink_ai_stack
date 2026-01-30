@@ -90,7 +90,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 ## Repo-Struktur
 - `AGENTS.md` — Arbeitsregeln für Coding Agents
 - `docs/` — Doku-Index (Link-Netzwerk)
-- `docs/agent_diary.md` — Agent-Tagebuch (Pflicht-Log)
+- `AGENTDIARY.md` — Agent-Tagebuch (Pflicht-Log)
 - `skills/` — Projekt-spezifische Codex Skills (Workflows/Checks)
 - `emb-bench/` — Embedding Benchmark Suite (MRL + Local vs OpenRouter)
 - `mcp-context6/` — context6 MCP Server (Doku-Fetch/Index/Search)

@@ -56,3 +56,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Document the investing_test alpha workflow and close the corresponding TODO.
 - Issues/Bugs: Root README lacked a clear, repo-wide workflow for prompt-iteration runs.
 - Resolution: Added an Investing-Test Workflow section to `README.md`, marked the TODO complete, and updated `CHANGELOG.md`.
+- Task: Move the agent diary to the repo root.
+- Issues/Bugs: Agent diary path needed to align with the new location and naming.
+- Resolution: Copied the diary to `AGENTDIARY.md`, removed `docs/agent_diary.md`, and updated docs references.
