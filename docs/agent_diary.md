@@ -51,3 +51,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Capture expert prompt-engineering tips and switch workflow to investing_test for alpha.
 - Issues/Bugs: Current summaries feel thin; repeated full investing runs are too heavy for alpha iteration.
 - Resolution: Added expert tips to `docs/prompt_engineering_expert_notes.md` and documented investing_test focus in `TODO.md`.
+
+## 2026-01-30
+- Task: Document the investing_test alpha workflow and close the corresponding TODO.
+- Issues/Bugs: Root README lacked a clear, repo-wide workflow for prompt-iteration runs.
+- Resolution: Added an Investing-Test Workflow section to `README.md`, marked the TODO complete, and updated `CHANGELOG.md`.

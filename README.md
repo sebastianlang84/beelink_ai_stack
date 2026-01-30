@@ -36,6 +36,14 @@ Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen
 4. Service-Config setzen (non-secret): `mcp-transcript-miner/.config.env.example` → `mcp-transcript-miner/.config.env` (nicht committen).
 5. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)
 
+## Investing-Test Workflow (Alpha)
+Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Datenmenge.
+
+1. Standard fuer Experimente: `transcript-miner/config/config_investing_test.yaml` (Topic: `investing_test`).
+2. Run: `uv run python -m transcript_miner --config config/config_investing_test.yaml`
+3. Erst wenn der Prompt/Schema-Stand validiert ist: auf `config_investing.yaml` wechseln.
+4. Optionaler Reset fuer das Test-Topic (z. B. vor einem Clean-Slate): `OPEN_WEBUI_API_KEY=... ./scripts/purge_topic_data.sh investing_test --force`
+
 ## Scheduled Runs (investing, alle 3h)
 Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):
 1. Sicherstellen: `OPEN_WEBUI_AUTO_SYNC_AFTER_RUN=true` in `mcp-transcript-miner/.config.env`.
@@ -82,6 +90,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 ## Repo-Struktur
 - `AGENTS.md` — Arbeitsregeln für Coding Agents
 - `docs/` — Doku-Index (Link-Netzwerk)
+- `docs/agent_diary.md` — Agent-Tagebuch (Pflicht-Log)
 - `skills/` — Projekt-spezifische Codex Skills (Workflows/Checks)
 - `emb-bench/` — Embedding Benchmark Suite (MRL + Local vs OpenRouter)
 - `mcp-context6/` — context6 MCP Server (Doku-Fetch/Index/Search)

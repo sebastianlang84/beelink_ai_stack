@@ -43,7 +43,7 @@
 
 ## TODO
 
-- [ ] **Investing-Test Workflow (Alpha, schneller Iterate)**
+- [x] **Investing-Test Workflow (Alpha, schneller Iterate)**
   - Ab sofort fuer Experimente/Prompt-Tuning `investing_test` nutzen (kleinere Datenmenge, weniger Kosten/Time).
   - `config_investing_test.yaml` als Standard fuer Prompt-Iterationen.
   - Production-Investing nur nach validiertem Prompt/Schema-Update laufen lassen.
