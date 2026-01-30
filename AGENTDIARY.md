@@ -59,3 +59,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Move the agent diary to the repo root.
 - Issues/Bugs: Agent diary path needed to align with the new location and naming.
 - Resolution: Copied the diary to `AGENTDIARY.md`, removed `docs/agent_diary.md`, and updated docs references.
+- Task: Locate and clean up a possible typo file `AGENETDIARY.md`.
+- Issues/Bugs: File not found in repo root or subdirectories.
+- Resolution: Searched the workspace; no file to delete.
