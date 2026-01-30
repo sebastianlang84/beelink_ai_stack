@@ -62,3 +62,6 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Locate and clean up a possible typo file `AGENETDIARY.md`.
 - Issues/Bugs: File not found in repo root or subdirectories.
 - Resolution: Searched the workspace; no file to delete.
+- Task: Create a Schema v3 prompt-engineering handover report (Meta summary).
+- Issues/Bugs: Current summaries are rendered without quotes/evidence, making them hard to audit.
+- Resolution: Added `enhance_prompt_engineering_v3.md` with a v3 direction (numbers completeness, verbatim vs normalized values, evidence/persistence improvements).

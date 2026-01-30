@@ -2,6 +2,7 @@
 
 ## Unreleased
 - docs: Agent-Tagebuch nach `AGENTDIARY.md` im Repo-Root verschoben
+- docs: Prompt-Engineering Handover Report fuer Schema v3 hinzugefuegt (`enhance_prompt_engineering_v3.md`)
 - config: aktualisierte Open WebUI Knowledge-ID fuer Topic `investing` (Sync-Fehler durch stale Mapping behoben)
 - mcp-transcript-miner: Knowledge-ID Mapping validiert (Fallback auf Name=Topic bei stale IDs)
 - mcp-transcript-miner: Knowledge-Name Resolution ohne ID-Mapping konfiguriert (Mapping-Path geleert)
