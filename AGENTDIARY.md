@@ -202,6 +202,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Letzte 2 JSON-Objekte via jq extrahiert und nach `/home/wasti/ai_stack_data/debug-proxy/last_flows.json` geschrieben.
 
 ## 2026-01-31
+- Aufgabe: Python-Installation versucht.
+- Probleme/Bugs/Issues: Keine Rechte auf APT-Lock (`/var/lib/apt/lists/lock`).
+- Loesung: Abbruch; benoetigt sudo/root fuer `apt-get`.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
