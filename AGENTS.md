@@ -48,6 +48,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - **„Recherchiere“ heißt Context7-first**: bei Produkt-/Tool-Fragen (Open WebUI, RooCode, Qdrant, MCP/OpenAPI, etc.) zuerst Context7 nutzen; `curl`/Logs nur für lokale Verifikation (läuft Endpoint wirklich so?).
 - **No-Fluff**: direkt mit Ergebnis/Schritten/Code starten, kurze Bulletpoints.
 - Änderungen als **kleine, nachvollziehbare Diffs**; keine unnötigen Refactors.
+- **Stetige Verbesserung**: bei jedem Task prüfen, ob ein wiederholbarer/komplexer Workflow als Skill abgebildet werden sollte; Skills bei komplexen Workflows bevorzugt nutzen/erstellen.
 
 ### Sicherheit & Betrieb
 - **Keine Secrets committen** (Tokens, Passwörter, Private Keys).

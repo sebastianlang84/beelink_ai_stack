@@ -40,3 +40,4 @@ open-webui/tool-imports/backup_*.json
 # Convenience symlinks into /home/wasti/ai_stack_data (never commit)
 debug-proxy/flows.jsonl
 debug-proxy/last_flows.json
+debug-proxy/last_flows.local.json

@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- skills: owui-prompt-api-loop fuer API-based Prompt-Tests inkl. Debug-Proxy Flow-Report
+- agents: Regel fuer stetige Verbesserung + Skill-Nutzung bei komplexen Workflows
+- debug-proxy: last_flows.local.json gitignored
 - skills: owui-prompt-debug-loop Scripts nutzen Env-Variablen (keine Bash-Substitution im Python-HereDoc)
 - skills: owui-prompt-debug-loop Referenz-Prompts fuer Model/Folder/RAG befuellt (Investing)
 - skills: owui-prompt-debug-loop fuer PDCA Prompt-Tuning (Model/Folder/RAG) via debug-proxy + webui.db

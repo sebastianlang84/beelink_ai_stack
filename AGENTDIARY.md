@@ -255,3 +255,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Prompt-Test via Open WebUI API (Investing-Chat) ausgefuehrt und Debug-Proxy-Flow erzeugt.
 - Probleme/Bugs/Issues: Erster API-Call lief in Timeout.
 - Loesung: Request mit laengerem Timeout wiederholt; Flow erfolgreich abgeschlossen.
+
+## 2026-01-31
+- Aufgabe: Neues Skill fuer OWUI Prompt-Tests via API erstellt (inkl. Flow-Report) und Regel zur stetigen Verbesserung ergaenzt.
+- Probleme/Bugs/Issues: init_skill.py war nur als python3 verfuegbar.
+- Loesung: Skill mit python3 initialisiert; Scripts + Referenzprompt hinzugefuegt; AGENTS/README/CHANGELOG aktualisiert.
