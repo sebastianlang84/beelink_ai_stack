@@ -120,3 +120,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Watchdog/OWUI Stop Lessons Learned dokumentiert.
 - Probleme/Bugs/Issues: Kontext-Reset kann Wissen ueber Temp-Stop-Trigger verlieren.
 - Loesung: Log-Pfad/Trigger in `docs/plan_watchdog_monitoring.md` festgehalten und TODO abgeschlossen.
+
+## 2026-01-31
+- Aufgabe: Knowledge Auto-Create Governance umgesetzt.
+- Probleme/Bugs/Issues: Auto-Create konnte unbeabsichtigt Collections anlegen.
+- Loesung: Auto-Create nur mit Request-Flag + optionaler Allowlist; Doku/Config aktualisiert.

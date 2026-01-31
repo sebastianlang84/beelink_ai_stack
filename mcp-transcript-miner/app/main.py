@@ -1,10 +1,10 @@
 import hashlib
 import json
 import os
+import time
 import requests
 import re
 import sqlite3
-import time
 import threading
 from datetime import datetime, timezone
 from pathlib import Path
@@ -58,6 +58,11 @@ PROCESS_TIMEOUT = int(os.getenv("OPEN_WEBUI_PROCESS_TIMEOUT_SECONDS", "900"))
 INDEXER_DB_PATH = os.getenv("INDEXER_DB_PATH", "/data/indexer.sqlite3")
 AUTO_SYNC_AFTER_RUN = os.getenv("OPEN_WEBUI_AUTO_SYNC_AFTER_RUN", "").strip().lower() in {"1", "true", "yes"}
 AUTO_CREATE_KNOWLEDGE = os.getenv("OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING", "").strip().lower() in {"1", "true", "yes"}
+AUTO_CREATE_KNOWLEDGE_ALLOWLIST = {
+    t.strip().lower()
+    for t in os.getenv("OPEN_WEBUI_CREATE_KNOWLEDGE_ALLOWLIST", "").split(",")
+    if t.strip()
+}
 
 CAPABILITIES_MARKDOWN = """\
 ## Transcript Miner — Capabilities
@@ -245,6 +250,11 @@ class RunStatusResponse(BaseModel):
     error: str | None = None
     summary: str | None = None
     auto_sync: bool = False
+    auto_sync_state: str | None = None
+    auto_sync_started_at: str | None = None
+    auto_sync_finished_at: str | None = None
+    auto_sync_error: str | None = None
+    auto_sync_result: dict[str, Any] | None = None
 
 
 class RunStatusMcpRequest(BaseModel):
@@ -255,6 +265,26 @@ class SyncTopicRequest(BaseModel):
     max_videos: int = Field(default=0, ge=0, le=5000, description="0 = no limit.")
     dry_run: bool = False
     run_id: str | None = None
+    heal_missing_summaries: bool = Field(
+        default=True,
+        description="Wenn true, wird vor dem Sync ein LLM-Healing-Lauf gestartet, falls Summaries fehlen.",
+    )
+    heal_timeout_s: int = Field(
+        default=900,
+        ge=30,
+        le=3600,
+        description="Maximale Wartezeit für Healing (Sekunden).",
+    )
+    heal_poll_s: int = Field(
+        default=5,
+        ge=1,
+        le=60,
+        description="Polling-Intervall für Healing-Status (Sekunden).",
+    )
+    create_knowledge_if_missing: bool = Field(
+        default=False,
+        description="Erstellt eine Knowledge Collection nur, wenn explizit gesetzt (und Allowlist passt).",
+    )
 
 
 class SyncTopicResponse(BaseModel):
@@ -809,6 +839,16 @@ def _write_run_meta(run_id: str, meta: dict[str, Any]) -> None:
     _atomic_write(path, json.dumps(meta, ensure_ascii=False, indent=2) + "\n")
 
 
+def _append_run_log(run_id: str, message: str) -> None:
+    try:
+        path = _run_log_path(run_id)
+        ts = datetime.now(timezone.utc).isoformat()
+        with open(path, "a", encoding="utf-8") as fh:
+            fh.write(f"[auto-sync {ts}] {message}\n")
+    except Exception:
+        pass
+
+
 def _read_run_meta(run_id: str) -> dict[str, Any] | None:
     path = _run_meta_path(run_id)
     if not os.path.isfile(path):
@@ -889,14 +929,134 @@ def _rewrite_config_for_container(config_text: str) -> tuple[str, str | None]:
     return rewritten, topic_str
 
 
+def _find_config_id_for_topic(topic: str) -> str | None:
+    try:
+        import yaml  # type: ignore
+    except Exception:
+        return None
+
+    for cfg in _list_configs():
+        try:
+            _, cfg_text = _read_config_text(cfg.config_id)
+            obj = yaml.safe_load(cfg_text or "") or {}
+        except Exception:
+            continue
+        if not isinstance(obj, dict):
+            continue
+        output_cfg = obj.get("output")
+        if not isinstance(output_cfg, dict):
+            continue
+        cfg_topic = output_cfg.get("topic")
+        if cfg_topic is None:
+            continue
+        if str(cfg_topic).strip() == topic:
+            return cfg.config_id
+    return None
+
+
+def _list_missing_summaries(transcripts_jsonl: str) -> list[str]:
+    missing: list[str] = []
+    try:
+        with open(transcripts_jsonl, "r", encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    ref = json.loads(line)
+                except Exception:
+                    continue
+                if not isinstance(ref, dict):
+                    continue
+                video_id = str(ref.get("video_id") or "").strip()
+                if not video_id:
+                    continue
+                summary_path = os.path.join(
+                    OUTPUT_DIR, "data", "summaries", "by_video_id", f"{video_id}.summary.md"
+                )
+                if not os.path.isfile(summary_path):
+                    missing.append(video_id)
+    except Exception:
+        return missing
+    return missing
+
+
+def _heal_missing_summaries(
+    *,
+    topic: str,
+    timeout_s: int,
+    poll_s: int,
+) -> tuple[bool, str | None]:
+    config_id = _find_config_id_for_topic(topic)
+    if not config_id:
+        return False, f"no config found for topic: {topic}"
+
+    resp = start_run(RunStartRequest(config_id=config_id, only=["llm"]))
+    if resp.status != "started" or not resp.run_id:
+        return False, resp.summary or "failed to start healing run"
+
+    deadline = time.time() + max(30, int(timeout_s))
+    while time.time() < deadline:
+        status = get_run(resp.run_id)
+        if status.state in ("finished", "failed"):
+            if status.exit_code == 0:
+                return True, None
+            return False, status.summary or status.error or f"healing exit_code={status.exit_code}"
+        time.sleep(max(1, int(poll_s)))
+
+    return False, "healing timeout"
+
+
 def _queue_auto_sync(run_id: str, topic: str) -> None:
     def _worker() -> None:
         try:
-            req = SyncTopicRequest()
-            req.run_id = run_id
-            sync_topic(topic, req)
-        except Exception:
-            pass
+            meta = _read_run_meta(run_id) or {}
+            if meta.get("auto_sync_state") in {"running", "finished", "failed"}:
+                return
+            meta["auto_sync_state"] = "running"
+            meta["auto_sync_started_at"] = datetime.now(timezone.utc).isoformat()
+            _write_run_meta(run_id, meta)
+            _append_run_log(run_id, f"auto-sync start (topic={topic})")
+
+            req = SyncTopicRequest(run_id=run_id)
+            res = sync_topic(topic, req)
+            result = res.model_dump()
+
+            meta = _read_run_meta(run_id) or meta
+            meta["auto_sync_state"] = "finished" if res.status == "success" else "failed"
+            meta["auto_sync_finished_at"] = datetime.now(timezone.utc).isoformat()
+            meta["auto_sync_result"] = result
+            meta["auto_sync_error"] = None if res.status == "success" else (res.last_error or res.status)
+            meta["auto_synced"] = True
+            _write_run_meta(run_id, meta)
+            _append_run_log(run_id, f"auto-sync done status={res.status} processed={res.processed} indexed={res.indexed} skipped={res.skipped} errors={res.errors}")
+        except Exception as exc:
+            meta = _read_run_meta(run_id) or {}
+            meta["auto_sync_state"] = "failed"
+            meta["auto_sync_finished_at"] = datetime.now(timezone.utc).isoformat()
+            meta["auto_sync_error"] = str(exc)[:2000]
+            _write_run_meta(run_id, meta)
+            _append_run_log(run_id, f"auto-sync failed: {exc}")
+
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+
+
+def _watch_run_for_autosync(run_id: str, proc: subprocess.Popen[Any], topic: str | None) -> None:
+    def _worker() -> None:
+        exit_code = proc.wait()
+        meta = _read_run_meta(run_id) or {}
+        meta["exit_code"] = int(exit_code)
+        meta["finished_at"] = meta.get("finished_at") or datetime.now(timezone.utc).isoformat()
+        meta["state"] = "finished"
+        _write_run_meta(run_id, meta)
+        if AUTO_SYNC_AFTER_RUN and topic:
+            if meta.get("auto_sync_state") not in {"running", "finished", "failed"}:
+                meta["auto_sync_state"] = "queued"
+                _write_run_meta(run_id, meta)
+                if exit_code != 0:
+                    _append_run_log(run_id, f"auto-sync queued despite non-zero exit (exit_code={exit_code})")
+                _queue_auto_sync(run_id, topic)
 
     t = threading.Thread(target=_worker, daemon=True)
     t.start()
@@ -1164,6 +1324,7 @@ def start_run(req: RunStartRequest) -> RunStartResponse:
         "tmp_config_path": tmp_cfg,
     }
     _write_run_meta(run_id, meta)
+    _watch_run_for_autosync(run_id, proc, topic)
     summary = f"Run gestartet. ID: {run_id}. Config: {config_filename}."
     return RunStartResponse(
         status="started",
@@ -1224,17 +1385,23 @@ def get_run(run_id: str) -> RunStatusResponse:
         if (
             AUTO_SYNC_AFTER_RUN
             and exit_code == 0
-            and meta.get("auto_synced") is not True
             and meta.get("topic")
+            and meta.get("auto_sync_state") not in {"queued", "running", "finished", "failed"}
         ):
-            meta["auto_synced"] = True
+            meta["auto_sync_state"] = "queued"
             _write_run_meta(run_id, meta)
             _queue_auto_sync(run_id, str(meta.get("topic")))
 
     log_tail = _tail_file(_run_log_path(run_id))
+    block_alert = None
+    if log_tail:
+        if "YouTube IP Block detected" in log_tail or "YouTube blocked the request" in log_tail:
+            block_alert = "YouTube IP Block detected (check proxy/credentials)."
     summary = None
     if state == "finished":
         summary = f"Run beendet. ID: {run_id}. Exit-Code: {exit_code}."
+        if block_alert:
+            summary = f"{summary} ALERT: {block_alert}"
     elif state == "running":
         summary = f"Run läuft. ID: {run_id}."
     elif state == "queued":
@@ -1250,9 +1417,14 @@ def get_run(run_id: str) -> RunStatusResponse:
         config_id=meta.get("config_id"),
         topic=meta.get("topic"),
         log_tail=log_tail,
-        error=meta.get("error"),
+        error=block_alert or meta.get("error"),
         summary=summary,
         auto_sync=AUTO_SYNC_AFTER_RUN,
+        auto_sync_state=meta.get("auto_sync_state"),
+        auto_sync_started_at=meta.get("auto_sync_started_at"),
+        auto_sync_finished_at=meta.get("auto_sync_finished_at"),
+        auto_sync_error=meta.get("auto_sync_error"),
+        auto_sync_result=meta.get("auto_sync_result"),
     )
 
 
@@ -1268,7 +1440,8 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
     except Exception as exc:
         return SyncTopicResponse(status="error", topic=safe_topic, last_error=str(exc), run_id=req.run_id)
     if not knowledge_id:
-        if AUTO_CREATE_KNOWLEDGE:
+        allowlist_ok = not AUTO_CREATE_KNOWLEDGE_ALLOWLIST or safe_topic.lower() in AUTO_CREATE_KNOWLEDGE_ALLOWLIST
+        if AUTO_CREATE_KNOWLEDGE and req.create_knowledge_if_missing and allowlist_ok:
             try:
                 _create_knowledge(safe_topic)
                 knowledge_id = _resolve_knowledge_id_for_topic(safe_topic)
@@ -1278,7 +1451,7 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
             return SyncTopicResponse(
                 status="error",
                 topic=safe_topic,
-                last_error="knowledge not found (expected Knowledge name = topic, or set OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON)",
+                last_error="knowledge not found (expected Knowledge name = topic, or set OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON; auto-create requires create_knowledge_if_missing=true and allowlist match)",
                 run_id=req.run_id,
             )
 
@@ -1286,6 +1459,23 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
     transcripts_jsonl = os.path.join(index_dir, "transcripts.jsonl")
     if not os.path.isfile(transcripts_jsonl):
         return SyncTopicResponse(status="not_found", topic=safe_topic, knowledge_id=knowledge_id, last_error="missing transcripts.jsonl", run_id=req.run_id)
+
+    if not req.dry_run and req.heal_missing_summaries:
+        missing = _list_missing_summaries(transcripts_jsonl)
+        if missing:
+            ok, err = _heal_missing_summaries(
+                topic=safe_topic,
+                timeout_s=req.heal_timeout_s,
+                poll_s=req.heal_poll_s,
+            )
+            if not ok:
+                return SyncTopicResponse(
+                    status="error",
+                    topic=safe_topic,
+                    knowledge_id=knowledge_id,
+                    last_error=f"healing failed: {err}",
+                    run_id=req.run_id,
+                )
 
     processed = indexed = skipped = errors = 0
     last_error: str | None = None

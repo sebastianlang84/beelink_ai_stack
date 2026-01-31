@@ -39,6 +39,9 @@ Der Server akzeptiert auch Aliases aus `configs.list` und löst sie auf `config_
 ### `GET /runs/{run_id}`
 Liefert Status und Log-Tail des Runs.
 Empfehlung: `summary` für Nutzertexte verwenden; `log_tail` nur auf Nachfrage.
+Auto‑Sync‑Statusfelder (best effort):
+- `auto_sync_state` = queued|running|finished|failed
+- `auto_sync_error` / `auto_sync_result` (falls vorhanden)
 
 ### `POST /transcript`
 Request JSON:
@@ -75,6 +78,8 @@ Wenn `TRANSCRIPT_MINER_OUTPUT_DIR` gemountet ist:
 ### Indexing (Open WebUI Knowledge)
 - `POST /index/transcript` — upload/poll/add (idempotent via SQLite, keyed by `source_id`)
 - `POST /sync/topic/{topic}` — indexiert per-video Summaries für ein Topic (Knowledge-Name = Topic; optionales Mapping via `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)
+  - Standard: fehlende Summaries → LLM‑Healing‑Run (nur LLM) für das passende Config‑Topic, dann Sync
+  - Optional im Request: `heal_missing_summaries` (default `true`), `heal_timeout_s` (default `900`), `heal_poll_s` (default `5`)
 
 No-Fuss Workflow:
 1. Knowledge Collection in Open WebUI anlegen, **Name = Topic** (z. B. `investing`).
@@ -82,7 +87,10 @@ No-Fuss Workflow:
 3. Nur wenn der Name abweicht: Mapping setzen.
 
 Optional:
-- `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true` erstellt die Collection automatisch, wenn sie fehlt.
+- Auto-Create ist nur aktiv, wenn **beides** gesetzt ist:
+  - Env: `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`
+  - Request: `create_knowledge_if_missing=true`
+  - Optional: Allowlist via `OPEN_WEBUI_CREATE_KNOWLEDGE_ALLOWLIST=investing,investing_test,...` (leer = alle)
 - Upload-Dateinamen werden aus Datum/Channel/Title/Video-ID gebildet (lesbar).
 
 ## Betrieb

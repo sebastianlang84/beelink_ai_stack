@@ -99,3 +99,5 @@ Hinweis: Optional kann Auto-Sync aktiviert werden (Service-Config):
 - `OPEN_WEBUI_AUTO_SYNC_AFTER_RUN=true`
 Optional: Collections automatisch anlegen:
 - `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`
+- Request-Flag bei `sync.topic`: `create_knowledge_if_missing=true`
+- Optional: Allowlist via `OPEN_WEBUI_CREATE_KNOWLEDGE_ALLOWLIST=investing,investing_test,...` (leer = alle)
