@@ -110,3 +110,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Offene Tasks aus TODO beantwortet.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Status aus `TODO.md` gelesen und offene Punkte zusammengefasst.
+
+## 2026-01-31
+- Aufgabe: Watchdog OWUI-Stop geklaert und Defaults geschaerft.
+- Probleme/Bugs/Issues: OWUI wurde wegen Temp-Stop bei 60C/2 Messungen gestoppt.
+- Loesung: Alert-Log verifiziert (2026-01-31T00:29:43Z, 63C) und Defaults in `watchdog/.config.env.example` auf 95C/3 Messungen angehoben; Doku aktualisiert.

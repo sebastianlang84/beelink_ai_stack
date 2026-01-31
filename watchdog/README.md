@@ -18,6 +18,8 @@ Ausloeser erzeugen Burst-Diagnosen (Top-Prozesse + Container-Stats).
 
 ## Temp-Schutz (Auto-Stop)
 - Wenn `temperature.max_c` >= `WATCHDOG_TEMP_STOP_THRESHOLD_C` fuer `WATCHDOG_TEMP_STOP_CONSEC` Messungen hintereinander gilt, werden die Container in `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` gestoppt.
+- Deaktivieren: `WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` (leer).
+- Log-Check: `/data/watchdog.alert.jsonl` (Action: `stop_containers_temp_threshold`).
 
 ## One-shot Status (stdout)
 - `docker exec watchdog python -m app.main --once`

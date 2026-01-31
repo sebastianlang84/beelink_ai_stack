@@ -73,11 +73,10 @@
   - Scope: alle `*.md`, mit erlaubter `.markdownlint.json`/`.markdownlint.yaml` Konfiguration.
   - CI: optional als eigener Job (fast fail bei Lint-Fehlern).
 
-- [ ] **Watchdog: OWUI-Stop aufklaeren + Regeln schaerfen**
-  - Fakt: Watchdog stoppt Container **nur** beim Temp-Stop (Default: 60C, 2 Messungen) und Default-Target ist `owui`.
-  - Check: `/data/watchdog.alert.jsonl` nach `action=stop_containers_temp_threshold` um 2026-01-31 ~01:29.
-  - Entscheidung: `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` leeren **oder** Schwellen/Consec erhoehen.
-  - Optional: explizites Log-Level/Notice, wenn ein Container gestoppt wird (inkl. Grund).
+- [x] **Watchdog: OWUI-Stop aufklaeren + Regeln schaerfen**
+  - Fakt: Watchdog stoppt Container **nur** beim Temp-Stop und Default-Target ist `owui`.
+  - Check: `/data/watchdog.alert.jsonl` → `2026-01-31T00:29:43Z` mit `temp_max_c=63.0` bei `threshold_c=60` (Action: `stop_containers_temp_threshold`).
+  - Entscheidung: Defaults in `watchdog/.config.env.example` auf 95C/3 Messungen angehoben; Auto-Stop via `WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` deaktivierbar.
 
 - [ ] **Watchdog/OWUI Stop: Lessons Learned + Knowledge sichern (Context-Erase)**
   - Lessons: zuerst `watchdog.alert.jsonl` pruefen (Temp-Stop ist der einzige Stop-Trigger).

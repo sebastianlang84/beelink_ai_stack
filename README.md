@@ -63,6 +63,7 @@ Ziel: Lightweight Monitoring fuer CPU/Temperatur/Disk (Host) plus Docker-Hygiene
 1. Shared Secrets setzen: `.env.example` -> `.env` (nicht noetig fuer Watchdog, aber konsistent).
 2. Shared Config setzen (non-secret): `.config.env.example` -> `.config.env` (optional).
 3. Service-Config setzen (non-secret): `watchdog/.config.env.example` -> `watchdog/.config.env` (gitignored).
+   - Hinweis: Auto-Stop bei hoher Temperatur ist aktiv, wenn `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` gesetzt ist. Deaktivieren: leer setzen.
 4. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file watchdog/.config.env -f watchdog/docker-compose.yml up -d --build`
 
 ## Smoke Test (P0)

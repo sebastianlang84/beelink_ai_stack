@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- watchdog: Temp-Stop Defaults geschaerft (95C/3) + Doku-Hinweis zum Deaktivieren
+- transcript-miner: per-video Summaries sind jetzt Markdown-only mit festen Sections (Source/Summary/Key Points/Numbers/Chances/Risks/Unknowns)
+- transcript-miner: JSON-Validatoren entfernt; Summary-Validity check basiert auf Source-Block
+- transcript-miner: Aggregation liest neue Markdown-Summaries (Source-Block + Sections)
+- scripts: purge_all_summaries_everywhere.sh zum Loeschen aller Summaries lokal + Open WebUI Knowledge
 - docs: Agent-Tagebuch nach `AGENTDIARY.md` im Repo-Root verschoben
 - docs: Prompt-Engineering Handover Report fuer Schema v3 hinzugefuegt (`enhance_prompt_engineering_v3.md`)
 - config: aktualisierte Open WebUI Knowledge-ID fuer Topic `investing` (Sync-Fehler durch stale Mapping behoben)
