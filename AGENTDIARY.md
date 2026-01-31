@@ -310,3 +310,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OpenClaw Upstream-Repo geklont und docker-setup.sh ausgefuehrt.
 - Probleme/Bugs/Issues: Gateway-Token wurde im Setup-Output ausgegeben (secrets exposure in terminal output).
 - Loesung: Token in repo .env uebernommen; Hinweis zur Rotation gegeben.
+
+## 2026-01-31
+- Aufgabe: OpenClaw Gateway Status geprueft.
+- Probleme/Bugs/Issues: Gateway restartet mit "Missing config".
+- Loesung: Setup erforderlich (openclaw setup); Hinweis fuer naechsten Schritt.
