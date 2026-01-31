@@ -21,6 +21,9 @@ Das Script:
 - erzeugt ein Gateway-Token und schreibt es in `.env`
 - schreibt Config/Workspace auf den Host unter `~/.openclaw/`
 
+Hinweis:
+- `openclaw/upstream/` ist ein lokaler Clone und wird im Repo gitignored.
+
 Nach dem Lauf:
 - UI oeffnen: `http://127.0.0.1:18789/`
 - Token im Control UI unter Settings eintragen

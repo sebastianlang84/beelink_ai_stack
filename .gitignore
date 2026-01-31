@@ -41,3 +41,6 @@ open-webui/tool-imports/backup_*.json
 debug-proxy/flows.jsonl
 debug-proxy/last_flows.json
 debug-proxy/last_flows.local.json
+
+# OpenClaw upstream repo (local clone)
+openclaw/upstream/

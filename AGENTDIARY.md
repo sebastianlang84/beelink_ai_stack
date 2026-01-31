@@ -305,3 +305,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OpenClaw Service-Ordner scaffolded (Compose + Config + README) und Doku-Index aktualisiert.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: openclaw/ mit docker-compose.yml, .config.env.example, README; README/Docs/Changelog aktualisiert.
+
+## 2026-01-31
+- Aufgabe: OpenClaw Upstream-Repo geklont und docker-setup.sh ausgefuehrt.
+- Probleme/Bugs/Issues: Gateway-Token wurde im Setup-Output ausgegeben (secrets exposure in terminal output).
+- Loesung: Token in repo .env uebernommen; Hinweis zur Rotation gegeben.

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- openclaw: upstream repo geklont und docker-setup.sh ausgefuehrt (gateway laufend)
 - openclaw: neues Service-Scaffold (docker-compose.yml, .config.env.example, README)
 - open-webui: openclaw user email auf wasticlaw-1@example.com gesetzt
 - open-webui: openclaw user display name auf wasticlaw-1 gesetzt
