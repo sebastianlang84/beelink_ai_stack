@@ -95,3 +95,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Aktuelle CPU-Temperatur auf dem Host ausgelesen.
 - Probleme/Bugs/Issues: Python/Python3 nicht installiert; Locale nutzte Komma als Dezimaltrennzeichen.
 - Loesung: Messung per sysfs + awk (LC_ALL=C) ausgefuehrt und Max/Min ermittelt.
+
+## 2026-01-31
+- Aufgabe: Frage nach Zeitraum fuer Max/Min-Temperaturen geklaert.
+- Probleme/Bugs/Issues: Missverstaendnis, ob Max/Min historische Werte sind.
+- Loesung: Erklaert, dass sysfs-Reads Momentaufnahmen sind; Hinweis auf Watchdog-Logs fuer Verlauf.
