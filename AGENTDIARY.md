@@ -245,3 +245,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Apache Tika fuer Open WebUI als Compose-Service integriert.
 - Probleme/Bugs/Issues: OWUI lief (optional) hinter debug-proxy; interner Tika-Call darf nicht ueber Proxy laufen.
 - Loesung: `tika` Service in `open-webui/docker-compose.yml` hinzugefuegt und `OWUI_NO_PROXY` um `tika` erweitert.
+
+## 2026-01-31
+- Aufgabe: OWUI Prompt-Debug-Loop vorbereitet (Investing) und Patch-Skripte repariert.
+- Probleme/Bugs/Issues: Bash-HereDoc nutzte ungueltige Substitutionen ("${...!r}") und brach bei owui_dump/patch ab.
+- Loesung: Scripts auf Env-Variablen umgestellt und Referenz-Prompts fuer Model/Folder/RAG befuellt; Prompt-Update in der OWUI DB angewendet.

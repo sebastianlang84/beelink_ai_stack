@@ -55,15 +55,22 @@ RAG_TEMPLATE="$(cat "$RAG_TEMPLATE_FILE")"
 
 docker exec owui sh -lc 'mkdir -p /app/backend/data/backups && cp /app/backend/data/webui.db "/app/backend/data/backups/webui.db.$(date -u +%Y%m%dT%H%M%SZ)"'
 
-docker exec -i owui python - <<PY
+docker exec -i \
+  -e MODEL_ID="$MODEL_ID" \
+  -e FOLDER_NAME="$FOLDER_NAME" \
+  -e MODEL_SYSTEM="$MODEL_SYSTEM" \
+  -e FOLDER_SYSTEM="$FOLDER_SYSTEM" \
+  -e RAG_TEMPLATE="$RAG_TEMPLATE" \
+  owui python - <<'PY'
 import json, sqlite3, sys
+import os
 
 DB='/app/backend/data/webui.db'
-MODEL_ID=${MODEL_ID!r}
-FOLDER_NAME=${FOLDER_NAME!r}
-MODEL_SYSTEM=${MODEL_SYSTEM!r}
-FOLDER_SYSTEM=${FOLDER_SYSTEM!r}
-RAG_TEMPLATE=${RAG_TEMPLATE!r}
+MODEL_ID=os.environ.get("MODEL_ID", "")
+FOLDER_NAME=os.environ.get("FOLDER_NAME", "")
+MODEL_SYSTEM=os.environ.get("MODEL_SYSTEM", "")
+FOLDER_SYSTEM=os.environ.get("FOLDER_SYSTEM", "")
+RAG_TEMPLATE=os.environ.get("RAG_TEMPLATE", "")
 
 def die(msg):
     print(msg, file=sys.stderr)

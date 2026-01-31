@@ -30,12 +30,16 @@ if [[ -z "$MODEL_ID" || -z "$FOLDER_NAME" ]]; then
   exit 2
 fi
 
-docker exec -i owui python - <<PY
+docker exec -i \
+  -e MODEL_ID="$MODEL_ID" \
+  -e FOLDER_NAME="$FOLDER_NAME" \
+  owui python - <<'PY'
 import json, sqlite3, sys
+import os
 
 DB='/app/backend/data/webui.db'
-MODEL_ID=${MODEL_ID!r}
-FOLDER_NAME=${FOLDER_NAME!r}
+MODEL_ID=os.environ.get("MODEL_ID", "")
+FOLDER_NAME=os.environ.get("FOLDER_NAME", "")
 
 def die(msg):
     print(msg, file=sys.stderr)
@@ -93,4 +97,3 @@ print("=== config.rag.template ===")
 print(tmpl or "")
 print()
 PY
-

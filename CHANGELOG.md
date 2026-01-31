@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- skills: owui-prompt-debug-loop Scripts nutzen Env-Variablen (keine Bash-Substitution im Python-HereDoc)
+- skills: owui-prompt-debug-loop Referenz-Prompts fuer Model/Folder/RAG befuellt (Investing)
 - skills: owui-prompt-debug-loop fuer PDCA Prompt-Tuning (Model/Folder/RAG) via debug-proxy + webui.db
 - open-webui: Apache Tika Service im Compose (Content Extraction) + OWUI_NO_PROXY um `tika` erweitert
 - debug-proxy: Ringbuffer kappt an JSONL-Zeilengrenzen (parsebar) + Default auf 150k Zeichen
