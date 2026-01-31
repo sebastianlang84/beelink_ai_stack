@@ -2,6 +2,7 @@
 
 ## Unreleased
 - skills: owui-prompt-debug-loop fuer PDCA Prompt-Tuning (Model/Folder/RAG) via debug-proxy + webui.db
+- open-webui: Apache Tika Service im Compose (Content Extraction) + OWUI_NO_PROXY um `tika` erweitert
 - debug-proxy: Ringbuffer kappt an JSONL-Zeilengrenzen (parsebar) + Default auf 150k Zeichen
 - debug-proxy: Ringbuffer arbeitet byte-basiert (verhindert UTF-8 Decode-Fehler)
 - debug-proxy: gzip-Responses werden fuer Logs entpackt
@@ -10,7 +11,7 @@
 - debug-proxy: neuer MITM Debug-Proxy (JSONL Logs) + OWUI Proxy-Config
 - mcp-transcript-miner: optionaler Pre-Check gegen OWUI-Duplikate (Hash/Filename) vor Upload
 - ops: OWUI Knowledge (investing) dedupliziert (Hash/Dateiname), Bestand reduziert
-- docs: TODO fuer Apache Tika Docker-Installation ergaenzt
+- docs: Apache Tika Setup fuer Open WebUI dokumentiert (`open_web_ui_apache_tika_install_setup.md`)
 - mcp-transcript-miner: Duplicate-Content bei Knowledge-Add wird als "skipped" behandelt (kein Hard-Fail)
 - mcp-transcript-miner: Knowledge Auto-Create nur mit Request-Flag + optionaler Allowlist
 - docs: Watchdog Temp-Stop Lessons Learned (Log-Pfad/Trigger) dokumentiert

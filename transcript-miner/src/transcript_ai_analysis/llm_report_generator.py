@@ -225,9 +225,9 @@ def _build_deterministic_appendix(
             )
 
         # Traceability: sources per top stock
-        sources_by_key: dict[str, dict[str, set[str]]] = {}
+        sources_by_key: dict[str, list[tuple[str, str, str]]] = {}
         quality_by_video: dict[str, str] = {}
-        quotes_by_key: dict[str, list[tuple[str, str]]] = {}
+        quotes_by_key: dict[str, list[tuple[str, str, str]]] = {}
         for s in summaries:
             if not isinstance(s, dict):
                 continue
@@ -240,6 +240,9 @@ def _build_deterministic_appendix(
             channel = _normalize_channel_namespace(
                 source.get("channel_namespace"), source.get("transcript_path")
             )
+            title = s.get("video_title") or s.get("title")
+            if not isinstance(title, str) or not title.strip():
+                title = ""
             quality_by_video[video_id] = _quality_bucket(s.get("transcript_quality"))
             for stock in (s.get("stocks_covered") or []):
                 if not isinstance(stock, dict):
@@ -248,7 +251,7 @@ def _build_deterministic_appendix(
                 if not isinstance(canonical, str) or not canonical.strip():
                     continue
                 key = _canonicalize_symbol_key(canonical)
-                sources_by_key.setdefault(key, {}).setdefault(channel, set()).add(video_id)
+                sources_by_key.setdefault(key, []).append((channel, title, video_id))
                 evidence = stock.get("evidence") or []
                 if isinstance(evidence, list):
                     for ev in evidence:
@@ -256,7 +259,7 @@ def _build_deterministic_appendix(
                             continue
                         q = ev.get("quote")
                         if isinstance(q, str) and q.strip():
-                            quotes_by_key.setdefault(key, []).append((video_id, q.strip()))
+                            quotes_by_key.setdefault(key, []).append((channel, title, q.strip()))
 
         lines.append("")
         lines.append("### Sources (Top Stocks)" if lang == "en" else "### Quellen (Top-Aktien)")
@@ -265,11 +268,18 @@ def _build_deterministic_appendix(
             label = m.get("preferred_label") or key
             if not isinstance(key, str) or not key:
                 continue
-            sources = sources_by_key.get(key) or {}
+            sources = sources_by_key.get(key) or []
             parts = []
-            for ch in sorted(sources.keys()):
-                vids = ", ".join(sorted(sources[ch]))
-                parts.append(f"{ch} ({vids})")
+            seen_src: set[tuple[str, str, str]] = set()
+            for ch, title, vid in sorted(sources, key=lambda x: (x[0], x[2], x[1])):
+                key_t = (ch, title or "", vid)
+                if key_t in seen_src:
+                    continue
+                seen_src.add(key_t)
+                if title:
+                    parts.append(f"{ch} — {title} ({vid})")
+                else:
+                    parts.append(f"{ch} ({vid})")
             src_line = "; ".join(parts) if parts else ("(none)" if lang == "en" else "(keine)")
 
             # Quality summary for this key based on source videos
@@ -291,16 +301,17 @@ def _build_deterministic_appendix(
             quotes = quotes_by_key.get(key, [])
             if quotes:
                 seen: set[str] = set()
-                picked: list[tuple[str, str]] = []
-                for vid, q in quotes:
+                picked: list[tuple[str, str, str]] = []
+                for ch, title, q in quotes:
                     if q in seen:
                         continue
                     seen.add(q)
-                    picked.append((vid, q))
+                    picked.append((ch, title, q))
                     if len(picked) >= 2:
                         break
-                for vid, q in picked:
-                    lines.append(f"  - quote ({vid}): {q}")
+                for ch, title, q in picked:
+                    src = f"{ch} — {title}" if title else ch
+                    lines.append(f"  - quote ({src}): {q}")
 
     # Channel table (with transcript/summaries counts if present)
     cmetrics = (by_channel_data or {}).get("metrics") or []
@@ -601,9 +612,9 @@ def generate_reports(
 
         preamble_title = "Transkript-Analysebericht" if lang["code"] == "de" else "Transcript Analysis Report"
         disclaimer = (
-            "Hinweis: Dieser Report fasst Creator-Content zusammen und ist keine Anlageberatung."
+            "Hinweis: Dieser Report fasst Channel-Content zusammen und ist keine Anlageberatung."
             if lang["code"] == "de"
-            else "Note: This report summarizes creator content and is not investment advice."
+            else "Note: This report summarizes channel content and is not investment advice."
         )
         quality_legend_title = "Datenqualität (Skala)" if lang["code"] == "de" else "Data quality (scale)"
         quality_legend_body = (
@@ -625,10 +636,10 @@ def generate_reports(
                 "Bitte erstelle einen Markdown-Bericht.\n"
                 "Wichtig:\n"
                 "- Keine erfundenen Fakten/Zahlen; nutze nur das Material.\n"
-                "- Harte Aussagen immer mit Quellenbezug (YouTube-Channel/Video) und Unsicherheit bei `low`/`truncated`.\n"
-                "- Für Top-Aktien: Bull-Case, Bear-Case, Katalysatoren, Widerlegungskriterien (alles aus Creator-Content abgeleitet).\n"
+                "- Harte Aussagen immer mit Quellenbezug (Channel + Video-Titel + Video-ID) und Unsicherheit bei `low`/`truncated`.\n"
+                "- Für Top-Aktien: Bull-Case, Bear-Case, Katalysatoren, Widerlegungskriterien (alles aus Channel-Content abgeleitet).\n"
                 "- Mini-Factsheet: Zahlen/Multiples nur wenn explizit im Material; sonst weglassen/unknown.\n"
-                "- Quellenformat: nenne nach Möglichkeit den YouTube-Channel + Video-Titel + Video-ID (nicht nur Video-ID).\n"
+                "- Quellenformat (pflicht): Channel + Video-Titel + Video-ID (wenn Titel fehlt: Channel + Video-ID).\n"
                 f"{template_instruction}\n\n"
                 "**Berichts-Metadaten**:\n"
                 f"- Run ID: {run_id}\n"
@@ -644,10 +655,10 @@ def generate_reports(
                 "Please generate a Markdown report.\n"
                 "Important:\n"
                 "- Do not invent facts/numbers; only use the provided material.\n"
-                "- For hard claims, include source linkage (YouTube channel/video) and signal uncertainty for `low`/`truncated`.\n"
-                "- For top stocks: bull case, bear case, catalysts, invalidation criteria (derived from creator content).\n"
+                "- For hard claims, include source linkage (channel + video title + video id) and signal uncertainty for `low`/`truncated`.\n"
+                "- For top stocks: bull case, bear case, catalysts, invalidation criteria (derived from channel content).\n"
                 "- Mini factsheet: numbers/multiples only if explicitly present; otherwise omit/unknown.\n"
-                "- Source format: if possible include YouTube channel + video title + video id (not just the id).\n"
+                "- Source format (required): channel + video title + video id (if title missing: channel + video id).\n"
                 f"{template_instruction}\n\n"
                 "**Report Metadata**:\n"
                 f"- Run ID: {run_id}\n"

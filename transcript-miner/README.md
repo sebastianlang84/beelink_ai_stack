@@ -131,6 +131,7 @@ Optional:
 - **Ursache:** YouTube blockiert Datacenter-IPs (Cloud) und IPs mit geringer Reputation (VPN, WSL-Hosts) für den Transcript-Endpunkt.
 - **Diagnose:** Nutze `uv run python tools/repro_ip_block.py <video_id>`, um zu prüfen, ob ein isolierter Request funktioniert.
 - **Diagnose (Matrix):** Nutze `uv run python tools/youtube_block_probe.py --config config/config_investing.yaml --videos <video_id>` um Rate-Limit-Parameter systematisch zu testen.
+- **Proxy Quickcheck:** Nutze `uv run python tools/proxy_quickcheck.py --video <video_id>` (liest Env, keine Secrets in Args/Output).
 - **Lösung:** 
   - Nutze **Residential Proxies** (z.B. Webshare.io Residential Plan). Datacenter-Proxies funktionieren oft nicht.
   - Nutze das konservative, cookie-freie Profil in [`config/config_wsl_optimized.yaml`](config/config_wsl_optimized.yaml:1) oder erhöhe `min_delay_s`/`jitter_s` entsprechend.
@@ -508,6 +509,8 @@ uv run python -m transcript_miner.transcript_index \
 ## Analysis (LLM) — optional (Chat Completions)
 
 Dieser Schritt ist **optional** und läuft nur, wenn `analysis.llm.enabled: true` in der YAML gesetzt ist (siehe Guard in [`transcript_ai_analysis.llm_runner.run_llm_analysis()`](src/transcript_ai_analysis/llm_runner.py:203)).
+
+Optional: `analysis.llm.stream_summaries=true` startet per‑video Summaries **bereits während** des Transcript-Downloads (Streaming/Queue), um die Gesamtlaufzeit zu reduzieren.
 
 Runner:
 

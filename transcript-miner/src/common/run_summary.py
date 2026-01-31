@@ -20,6 +20,7 @@ class RunStats:
     transcripts_skipped_summary: int = 0
     transcripts_healed: int = 0
     transcripts_unavailable: int = 0
+    transcript_blocks: int = 0
     transcript_errors: int = 0
     summaries_created: int = 0
     summaries_skipped_valid: int = 0
@@ -62,6 +63,7 @@ def write_run_summary_md(
         f"- Skipped (summary exists): {stats.transcripts_skipped_summary}",
         f"- Healed (re-downloaded): {stats.transcripts_healed}",
         f"- Unavailable (no transcript/disabled): {stats.transcripts_unavailable}",
+        f"- IP blocks (YouTube): {stats.transcript_blocks}",
         f"- Errors: {stats.transcript_errors}",
         "",
         "## Summaries",

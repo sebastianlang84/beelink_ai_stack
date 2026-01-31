@@ -7,14 +7,15 @@ Source: user_data/report_template_vorschlag.md (translated)
 - Timeframe: **last X days** + "older videos only as context"
 - Channels in the run + coverage per category
 - "Bias warnings": top-channel share, missing recency, data quality
+- Source format (required): channel + video title + video id (if title missing: channel + video id)
 
 ---
 
-## 1) Stocks - Influencer Stock Radar
+## 1) Stocks - Channel Stock Radar
 
 ### 1.1 Coverage Map (quick)
 - **Top themes/sectors** (e.g. AI, Solar, Smallcaps, Biotech ...)
-- **Top tickers/companies** (with *how many influencers* + *recency*)
+- **Top tickers/companies** (with *how many channels* + *recency*)
 - **New / Re-rating / Drop**
   - New = mentioned for the first time
   - Re-rating = sentiment turns or thesis changes
@@ -27,13 +28,23 @@ For each stock:
 - **Catalysts** (next 1-2 quarters + mid-term)
 - **Kill switch (hard criteria)**: 2-3 measurable thresholds
   (e.g. revenue growth < X% for 2 quarters, margin falls > Y bp, cash runway < Z months)
-- **Evidence links**: list of video IDs + short quotes (appendix)
+- **Evidence links**: channel + video title + video id + short quotes (appendix)
+- **Labeling**: mark every statement as *Fact* / *Claim* / *Interpretation*.
 
-### 1.3 Influencer overlay (favorite view)
-- Per influencer:
+### 1.3 Channel overlay (favorite view)
+- Per channel:
   - **Top 5 picks / Top 5 avoids**
   - **Recurring patterns** (e.g. "likes high-growth, ignores valuation")
   - **Track record note** (optional later: hit rate/revisions)
+
+### 1.4 Stocks Mentioned (non Deep-Dive)
+- Short summary per stock (1-3 sentences) + evidence links (channel + video title + video id).
+
+### 1.5 Numbers / Multiples / Levels
+- List key numbers (context + unit + evidence links with channel + video title + video id).
+
+### 1.6 Other Insights
+- Relevant insights outside stocks/macro/crypto (1-2 sentences) + evidence links (channel + video title + video id).
 
 ---
 
@@ -56,6 +67,7 @@ For each stock:
   - **USD/commodities**
   - **Risk-on / Risk-off**
 In practice: 3-5 clear "if-then" sentences.
+- **Labeling**: mark every statement as *Fact* / *Claim* / *Interpretation*.
 
 ---
 
@@ -74,13 +86,14 @@ For each coin/project:
 
 ### 3.3 Macro link (crypto as risk asset)
 - In which scenario is crypto favored/disfavored?
-- What do influencers say (and who disagrees)?
+- What do channels say (and who disagrees)? Source format: channel + video title + video id.
+- **Labeling**: mark every statement as *Fact* / *Claim* / *Interpretation*.
 
 ---
 
 ## Appendix A - Evidence (Audit)
 - Per claim:
-  - Video ID, channel, date
+  - Channel + video title + video id + date
   - Timestamp (optional; if available)
   - Quote (short) + paraphrase
   - Marker: "Transcript fact" vs "External fact needed"

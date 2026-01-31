@@ -59,9 +59,14 @@
 ## Transcript Miner Scheduling (systemd)
 - One-shot run (investing):
   - `./scripts/run-tm-investing.sh`
+- The run script waits for completion and triggers a `sync.topic` for `investing` (Knowledge auto-sync).
 - systemd templates (every 3h):
   - `scripts/systemd/ai-stack-tm-investing.service`
   - `scripts/systemd/ai-stack-tm-investing.timer`
+
+## Maintenance / Cleanup
+- Purge a test topic (transcripts, summaries, reports, history + Open WebUI Knowledge):
+  - `OPEN_WEBUI_API_KEY=... ./scripts/purge_topic_data.sh investing_test --force`
 
 ## emb-bench (Terminal)
 - Run `emb-bench/` via Docker (sets UID/GID to avoid root-owned outputs):

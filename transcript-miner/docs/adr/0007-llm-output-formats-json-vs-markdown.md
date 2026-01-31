@@ -18,7 +18,7 @@ In der Praxis ist der Text dadurch in vielen Editoren schwer lesbar, weil Zeilen
   - [`audit.jsonl`](../../src/transcript_ai_analysis/llm_runner.py:253)
   - [`system_prompt.txt`](../../src/transcript_ai_analysis/llm_runner.py:384), [`user_prompt.txt`](../../src/transcript_ai_analysis/llm_runner.py:385)
   (siehe Writer/Callsite: derived + metadata werden nach `report.json` erzeugt via [`_write_derived_report_and_metadata()`](../../src/transcript_ai_analysis/llm_runner.py:73)).
-- Der Validator prüft das Artefakt-Bundle offline, inkl. Byte-Identität des derived Reports zu `report.json.output.content`: [`validate_llm_report_artefacts()`](../../src/transcript_ai_analysis/llm_output_validator.py:60).
+- Hinweis: Ein separater Offline-Validator fuer das Artefakt-Bundle wurde entfernt (kein `validate_llm_report_artefacts()` mehr im aktuellen Code).
 - Das Repo hat explizite Artefakt-/Audit-Prinzipien („keine stillen Overwrites ohne klare Policy“, Outputs sind auditierbare Artefakte) (siehe Policy in [`AGENTS.md`](../../AGENTS.md:138)).
 
 ## Entscheidungskriterien
@@ -108,7 +108,7 @@ Ziel: die „derived“ Datei ist eine **View** auf `output.content` und kann de
   - Hinweis: diese Namen sind eine **Konvention**, keine eigene Schnittstelle; die kanonische Quelle bleibt immer [`report.json`](../../src/transcript_ai_analysis/llm_runner.py:450).
 - **Inhalt/Encoding:** UTF-8; Dateiinhalt ist byte-identisch zu `report.json.output.content` (keine zusätzlichen Header/Wrapper, keine JSON-Escapes).
 - **Determinismus:** die derived Datei muss bei gleicher [`report.json`](../../src/transcript_ai_analysis/llm_runner.py:450) deterministisch reproduzierbar sein.
-- **Integrität:** Hashes/Kopplung sind bereits im Metadata-File vorhanden und offline validierbar (Hash-Erzeugung: [`_write_derived_report_and_metadata()`](../../src/transcript_ai_analysis/llm_runner.py:73), Validierung: [`validate_llm_report_artefacts()`](../../src/transcript_ai_analysis/llm_output_validator.py:60)).
+- **Integrität:** Hashes/Kopplung sind im Metadata-File vorhanden (Hash-Erzeugung: [`_write_derived_report_and_metadata()`](../../src/transcript_ai_analysis/llm_runner.py:73)); aktuell ohne separaten Offline-Validator.
 
 ## Konsequenzen
 
@@ -148,7 +148,7 @@ python -c 'import json,sys; p=sys.argv[1]; o=sys.argv[2]; d=json.load(open(p,enc
 
 ### Phase 2 (optional, zukünftige Policy): Koppelung/Integritätscheck
 
-Wenn künftig zusätzliche Rolling-Window-/Provenienz-Felder in `metadata.json` ergänzt werden, muss die Kopplung zwischen JSON und derived View weiterhin deterministisch und offline validierbar bleiben. Der Basis-Integritätscheck über Hashes ist bereits implementiert (siehe `metadata.derived.output_content_sha256` in [`_write_derived_report_and_metadata()`](../../src/transcript_ai_analysis/llm_runner.py:73) und Cross-Check in [`validate_llm_report_artefacts()`](../../src/transcript_ai_analysis/llm_output_validator.py:60)).
+Wenn künftig zusätzliche Rolling-Window-/Provenienz-Felder in `metadata.json` ergänzt werden, muss die Kopplung zwischen JSON und derived View weiterhin deterministisch bleiben. Der Basis-Integritätscheck über Hashes ist bereits implementiert (siehe `metadata.derived.output_content_sha256` in [`_write_derived_report_and_metadata()`](../../src/transcript_ai_analysis/llm_runner.py:73)).
 
 ## Offene Punkte
 

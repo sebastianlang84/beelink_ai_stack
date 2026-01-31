@@ -11,6 +11,10 @@ api:
   
   # OpenRouter API Key für LLM-Analyse. Bevorzugt via Umgebungsvariable.
   openrouter_api_key: ${OPENROUTER_API_KEY}
+  # OpenRouter Attribution (optional)
+  # (setzt X-Title / HTTP-Referer Header)
+  openrouter_app_title: "TranscriptMiner"
+  openrouter_http_referer: "https://github.com/sebastianlang84/TranscriptMiner"
 
 # 2. YOUTUBE - Quellen & Download-Parameter
 # ------------------------------------------------------------------------------
@@ -75,7 +79,12 @@ analysis:
   llm:
     enabled: true
     mode: aggregate
-    model: openai/gpt-5.2
+    model: google/gemini-3-flash-preview
+    reasoning_effort: high
+    # Streaming: per-video Summaries bereits während des Downloads erzeugen
+    stream_summaries: false
+    stream_worker_concurrency: 1
+    stream_queue_size: 100
     # Optionale harte Token-Limits (None deaktiviert)
     max_input_tokens: null
     max_output_tokens: null

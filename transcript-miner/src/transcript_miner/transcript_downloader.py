@@ -266,12 +266,37 @@ def download_transcript_result(
                 error_message=str(e),
             )
         except (YouTubeRequestFailed, CouldNotRetrieveTranscript) as e:
+            msg = str(e)
+            msg_lower = msg.lower()
             logging.error(f"YouTube request failed: {e}")
+            if "subtitles are disabled" in msg_lower or "transcripts are disabled" in msg_lower:
+                return TranscriptDownloadResult(
+                    status=TranscriptStatus.TRANSCRIPTS_DISABLED,
+                    reason="transcripts_disabled",
+                )
+            if "no transcript" in msg_lower or "no transcripts" in msg_lower:
+                return TranscriptDownloadResult(
+                    status=TranscriptStatus.NO_TRANSCRIPT,
+                    reason="no_transcript_found",
+                )
+            if (
+                "too many requests" in msg_lower
+                or "429" in msg_lower
+                or "blocking requests from your ip" in msg_lower
+                or "ip has been blocked" in msg_lower
+                or "requestblocked" in msg_lower
+            ):
+                return TranscriptDownloadResult(
+                    status=TranscriptStatus.BLOCKED,
+                    reason="request_failed",
+                    error_type=e.__class__.__name__,
+                    error_message=msg,
+                )
             return TranscriptDownloadResult(
-                status=TranscriptStatus.BLOCKED,
+                status=TranscriptStatus.ERROR,
                 reason="request_failed",
                 error_type=e.__class__.__name__,
-                error_message=str(e),
+                error_message=msg,
             )
         except TranscriptsDisabled:
             logging.info(f"Transcripts are disabled for video ID: {video_id}")

@@ -98,39 +98,83 @@ def _has_summary(
         )
         return False
 
-    if not text.startswith("---\n"):
-        _backup_corrupted_summary(summary_path, logger=logger)
-        logger.warning("Summary missing frontmatter; treating as missing (video_id=%s)", video_id)
-        return False
+    if text.startswith("---\n"):
+        end = text.find("\n---\n", 4)
+        if end == -1:
+            _backup_corrupted_summary(summary_path, logger=logger)
+            logger.warning(
+                "Summary frontmatter not terminated; treating as missing (video_id=%s)",
+                video_id,
+            )
+            return False
 
-    end = text.find("\n---\n", 4)
-    if end == -1:
-        _backup_corrupted_summary(summary_path, logger=logger)
-        logger.warning("Summary frontmatter not terminated; treating as missing (video_id=%s)", video_id)
-        return False
+        raw = text[4:end]
+        meta: dict[str, str] = {}
+        for line in raw.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or ":" not in line:
+                continue
+            k, v = line.split(":", 1)
+            k = k.strip()
+            v = v.strip()
+            if k:
+                meta[k] = v
 
-    raw = text[4:end]
-    meta: dict[str, str] = {}
-    for line in raw.splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or ":" not in line:
-            continue
-        k, v = line.split(":", 1)
-        k = k.strip()
-        v = v.strip()
-        if k:
-            meta[k] = v
+        if meta.get("video_id") != video_id:
+            _backup_corrupted_summary(summary_path, logger=logger)
+            logger.warning(
+                "Summary video_id mismatch; treating as missing (video_id=%s, found=%s)",
+                video_id,
+                meta.get("video_id"),
+            )
+            return False
 
-    if meta.get("video_id") != video_id:
+        return True
+
+    source_meta = _parse_source_block(text)
+    if not source_meta:
         _backup_corrupted_summary(summary_path, logger=logger)
         logger.warning(
-            "Summary video_id mismatch; treating as missing (video_id=%s, found=%s)",
+            "Summary missing Source block; treating as missing (video_id=%s)",
             video_id,
-            meta.get("video_id"),
+        )
+        return False
+    if source_meta.get("video_id") != video_id:
+        _backup_corrupted_summary(summary_path, logger=logger)
+        logger.warning(
+            "Summary Source video_id mismatch; treating as missing (video_id=%s, found=%s)",
+            video_id,
+            source_meta.get("video_id"),
         )
         return False
 
     return True
+
+
+def _parse_source_block(text: str) -> dict[str, str]:
+    """Extract key/value pairs from a '## Source' block."""
+    idx = text.find("## Source")
+    if idx == -1:
+        return {}
+    lines = text[idx:].splitlines()
+    if not lines:
+        return {}
+    meta: dict[str, str] = {}
+    for line in lines[1:]:
+        line = line.strip()
+        if line.startswith("## "):
+            break
+        if not line.startswith("- "):
+            continue
+        item = line[2:].strip()
+        if ":" not in item:
+            continue
+        key, value = item.split(":", 1)
+        key = key.strip()
+        value = value.strip()
+        if key:
+            meta[key] = value
+    return meta
 
 
 def _backup_corrupted_summary(path: Path, *, logger: logging.Logger) -> None:
@@ -629,6 +673,7 @@ def process_single_video(
     skipped_file: Path,
     channel_handle: Optional[str] = None,
     run_stats: Optional["RunStats"] = None,
+    stream_queue=None,
 ) -> bool:
     """
     Process a single video: download transcript, save files, update progress.
@@ -712,6 +757,13 @@ def process_single_video(
     logger.info(f"Processing video: {video_title} (ID: {video_id})")
 
     # Download transcript (differentiated result)
+    download_started_at = datetime.now(timezone.utc)
+    logger.info(
+        "Transcript download start: video_id=%s channel=%s at=%s",
+        video_id,
+        channel_handle or channel_name,
+        download_started_at.isoformat(),
+    )
     dl = download_transcript_result(
         video_id,
         config.youtube.preferred_languages,
@@ -722,6 +774,15 @@ def process_single_video(
         max_retries=config.youtube.max_retries,
         backoff_base=config.youtube.backoff_base_s,
         backoff_cap=config.youtube.backoff_cap_s,
+    )
+    download_finished_at = datetime.now(timezone.utc)
+    download_duration_s = (download_finished_at - download_started_at).total_seconds()
+    logger.info(
+        "Transcript download finish: video_id=%s status=%s duration_s=%.2f at=%s",
+        video_id,
+        dl.status.value,
+        download_duration_s,
+        download_finished_at.isoformat(),
     )
 
     if dl.status == TranscriptStatus.BLOCKED:
@@ -739,6 +800,8 @@ def process_single_video(
                 "channel_name": channel_name,
             },
         )
+        if run_stats is not None:
+            run_stats.inc("transcript_blocks")
         logger.critical(
             "CRITICAL: YouTube blocked the request. Circuit breaker triggered. "
             "Aborting run to prevent further blocking."
@@ -934,6 +997,31 @@ def process_single_video(
             logger.info(f"Saved metadata to {metadata_filepath}")
         else:
             logger.error(f"Failed to save metadata to {metadata_filepath}")
+
+    # Optional: enqueue streaming summary job
+    if stream_queue is not None:
+        try:
+            from transcript_ai_analysis.llm_runner import TranscriptRef
+            from queue import Full
+
+            channel_ns = (channel_handle or channel_name).lstrip("@").replace("/", "_").replace("\\", "_")
+            metadata_path = None
+            if config.output.metadata:
+                metadata_path = str(metadata_filepath)
+
+            ref = TranscriptRef(
+                output_root=str(config.output.get_path()),
+                channel_namespace=channel_ns,
+                video_id=video_id,
+                transcript_path=str(transcript_filepath),
+                metadata_path=metadata_path,
+            )
+            stream_queue.put(ref, timeout=5)
+            logger.debug("Queued transcript for streaming summary (video_id=%s)", video_id)
+        except Full:
+            logger.warning("Streaming summary queue full; skipping video_id=%s", video_id)
+        except Exception as exc:
+            logger.warning("Streaming summary enqueue failed (video_id=%s): %s", video_id, exc)
 
     # Mark video as processed
     channel_processed.append(video_id)

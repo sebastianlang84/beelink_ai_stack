@@ -3,6 +3,13 @@
 ## [Unreleased]
 
 ### Changed
+- **Markdown-only Summaries:** Per-video Summaries werden jetzt als Strict Markdown (fixe Sections + Source-Block) erzeugt; JSON-Extract-Validatoren und task-spezifische Schema-Validatoren wurden entfernt.
+- **IP-Block Reporting:** Run-Summary zeigt YouTube-IP-Blocks separat; Block-Events werden als Alert im Run-Status sichtbar.
+- **Block-Klassifikation:** `Subtitles disabled`/`No transcript` wird nicht mehr als IP-Block behandelt; echte Rate-Limits bleiben Block.
+- **Proxy Quickcheck Tool:** `tools/proxy_quickcheck.py` für schnellen Proxy-Test via Env.
+- **Streaming Summaries (Opt-in):** per-video Summaries können parallel zum Transcript-Download erzeugt werden (`analysis.llm.stream_summaries`).
+- **Timing Logs:** Start/Finish + Dauer für Transcript-Downloads und Summaries (per Video) werden geloggt.
+- **Config Update:** `analysis.llm.model` auf `google/gemini-3-flash-preview` + `reasoning_effort=high` in Test/Investing/AI-Knowledge.
 - **Topic-Rename:** `stocks_crypto` → `investing` (Config `config_investing.yaml`, Report-Templates und Beispiel-Referenzen angepasst).
 - **Test Config:** `config_investing_test.yaml` ergänzt (2 Videos, 2 Channels) für schnelle Runs.
 - **YouTube Transcript API v1 Compatibility:** Umstellung auf `YouTubeTranscriptApi().list(...)` in Downloader und Tools, damit die aktuelle API-Version funktioniert.
@@ -57,9 +64,9 @@
 - **Stock-Exports (Batch 2 → Artefakte):**
   - `by_symbol.json` / `by_channel.json` / `global.json` werden vom Aggregations-Runner geschrieben (siehe [`run_aggregation()`](src/transcript_ai_analysis/aggregation_runner.py:152)).
 
-- **LLM Output Validation (Strict JSON + Evidence-Policy):** offline-validierbare Checks für `output.content` (siehe [`transcript_ai_analysis.llm_output_validator.validate_llm_output_content()`](src/transcript_ai_analysis/llm_output_validator.py:500)).
+- **LLM Output Validation (Strict JSON + Evidence-Policy):** (historisch) Es gab offline-validierbare Checks fuer Strict-JSON Outputs; diese Validatoren wurden spaeter entfernt, als die per-video Summaries auf Markdown-only umgestellt wurden.
 
-- **LLM derived report + metadata + artefact validator:** aus `report.json.output.content` wird deterministisch ein menschenlesbares Artefakt (`report.md` oder `report.txt`) plus `metadata.json` erzeugt, und ein Offline-Validator prüft Bundle-Konsistenz (Hashes, byte-identischer Derived Report; Rolling-Window-Guardrails nur falls in `metadata.json` repräsentiert) (siehe [`run_llm_analysis()`](src/transcript_ai_analysis/llm_runner.py:236) → [`_write_derived_report_and_metadata()`](src/transcript_ai_analysis/llm_runner.py:73) und [`validate_llm_report_artefacts()`](src/transcript_ai_analysis/llm_output_validator.py:60); Tests: [`tests/test_llm_output_validation_policy.py`](tests/test_llm_output_validation_policy.py:1)).
+- **LLM derived report + metadata + artefact validator:** (historisch) Derived Reports + Metadata hatten einen Offline-Validator; wurde spaeter entfernt.
 
 ## 2025-12-28 – Testlauf & Robustheit
 

@@ -36,6 +36,9 @@ jobs:
       - name: Run pytest
         run: uv run pytest -q
 
+      - name: Doc link audit (md->md)
+        run: uv run python tools/md_link_audit.py
+
       - name: CLI smoke (help + import)
         run: |
           uv run python -m transcript_miner --help

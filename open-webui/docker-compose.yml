@@ -38,6 +38,26 @@ services:
     networks:
       - ai-stack
 
+  # Apache Tika for document content extraction (used by Open WebUI "Documents" settings).
+  # Security default: no host ports => reachable only inside the Docker network as http://tika:9998/tika
+  tika:
+    container_name: tika
+    image: apache/tika:${TIKA_IMAGE_TAG:-latest-full}
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:9998/version >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - ai-stack
+
 volumes:
   owui-data:
     external: true

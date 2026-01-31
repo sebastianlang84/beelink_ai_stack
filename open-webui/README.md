@@ -33,10 +33,24 @@ Ziel: Prompt-Ketten + Tool-Calls als JSONL mitschneiden.
 2. In `open-webui/.config.env` setzen:
    - `OWUI_HTTP_PROXY=http://debug-proxy:8080`
    - `OWUI_HTTPS_PROXY=http://debug-proxy:8080`
-   - `OWUI_NO_PROXY=owui,tm,context6,qdrant,localhost,127.0.0.1`
+   - `OWUI_NO_PROXY=owui,tika,tm,context6,qdrant,localhost,127.0.0.1`
    - `OWUI_CA_BUNDLE_PATH=/debug-proxy/mitmproxy/mitmproxy-ca-cert.pem`
    - `DEBUG_PROXY_DATA_DIR_HOST=/home/wasti/ai_stack_data/debug-proxy`
 3. OWUI neu starten.
+
+## Optional: Apache Tika (Content Extraction fuer Documents/RAG)
+Ziel: bessere Text-Extraktion (inkl. OCR bei Scan-PDFs mit `latest-full`).
+
+1. Tika Service starten (ist im Compose enthalten):
+   - `docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml up -d`
+2. In Open WebUI:
+   - Admin Panel -> Settings -> Documents
+   - Content Extraction Engine: `Tika`
+   - Tika Server URL: `http://tika:9998/tika`
+
+Notizen:
+- Wenn Debug-Proxy aktiv ist: `tika` muss in `OWUI_NO_PROXY` stehen, sonst versucht OWUI ggf. den internen Call zu proxien.
+- Setup-Notiz: `open_web_ui_apache_tika_install_setup.md:1`
 
 ## External Tools (Import JSON)
 Templates: `open-webui/tool-imports/README.md:1`

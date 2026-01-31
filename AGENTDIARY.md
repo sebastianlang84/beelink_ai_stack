@@ -240,3 +240,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Codex Skill fuer OWUI Prompt-Debug/PDCA erstellt.
 - Probleme/Bugs/Issues: Prompt-Settings liegen in OWUI `webui.db` (Container) und Debugging war nicht reproduzierbar dokumentiert.
 - Loesung: Skill `skills/owui-prompt-debug-loop/` angelegt inkl. Scripts zum Extrahieren/Reporten von `debug-proxy/flows.jsonl` und zum sicheren Dump/Patch von Model-/Folder-Prompts + RAG-Template (mit DB-Backup).
+
+## 2026-01-31
+- Aufgabe: Apache Tika fuer Open WebUI als Compose-Service integriert.
+- Probleme/Bugs/Issues: OWUI lief (optional) hinter debug-proxy; interner Tika-Call darf nicht ueber Proxy laufen.
+- Loesung: `tika` Service in `open-webui/docker-compose.yml` hinzugefuegt, `OWUI_NO_PROXY` um `tika` erweitert, Setup-Doku bereinigt/aktualisiert (`open_web_ui_apache_tika_install_setup.md`).

@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import logging
 import os
+import random
 import sys
 import time
 from datetime import datetime, timedelta, timezone
@@ -174,6 +175,7 @@ def process_channel(
     processed_videos: Dict[str, List[str]],
     progress: Optional["Progress"] = None,
     run_stats: Optional["RunStats"] = None,
+    stream_queue=None,
 ) -> bool:
     """
     Process a single channel: resolve, fetch videos, and process each video.
@@ -328,6 +330,7 @@ def process_channel(
                 skipped_file,
                 channel_handle=channel_input,
                 run_stats=run_stats,
+                stream_queue=stream_queue,
             )
             if not success:
                 logger.warning(
@@ -353,7 +356,12 @@ def process_channel(
         return False
 
 
-def run_miner(config: "Config", *, run_stats: Optional["RunStats"] = None) -> int:
+def run_miner(
+    config: "Config",
+    *,
+    run_stats: Optional["RunStats"] = None,
+    stream_llm: bool = False,
+) -> int:
     """Main function to run the transcript mining process with Resume/Stop support."""
     logger = logging.getLogger("transcript_miner.run_miner")
 
@@ -386,6 +394,75 @@ def run_miner(config: "Config", *, run_stats: Optional["RunStats"] = None) -> in
         return 1
     logger.info("YouTube client initialized successfully")
 
+    # Optional: streaming summaries while downloading transcripts
+    stream_queue = None
+    stream_threads: list[object] = []
+    if stream_llm and getattr(config.analysis.llm, "stream_summaries", False):
+        if config.analysis.llm.mode != "per_video":
+            logger.warning(
+                "Streaming summaries enabled but analysis.llm.mode != per_video; skipping streaming."
+            )
+        else:
+            try:
+                import queue
+                import threading
+                from transcript_ai_analysis.llm_runner import summarize_transcript_ref
+
+                per_video_min_delay_s = max(0.0, config.analysis.llm.per_video_min_delay_s)
+                per_video_jitter_s = max(0.0, config.analysis.llm.per_video_jitter_s)
+                worker_count = max(1, config.analysis.llm.stream_worker_concurrency)
+                queue_size = max(1, config.analysis.llm.stream_queue_size)
+                stream_queue = queue.Queue(maxsize=queue_size)
+                rate_limit_lock = threading.Lock()
+                last_request_time = 0.0
+
+                def _rate_limit() -> None:
+                    nonlocal last_request_time
+                    if per_video_min_delay_s <= 0 and per_video_jitter_s <= 0:
+                        return
+                    with rate_limit_lock:
+                        now = time.time()
+                        actual_delay = per_video_min_delay_s + (
+                            random.random() * per_video_jitter_s
+                        )
+                        elapsed = now - last_request_time
+                        wait_time = actual_delay - elapsed
+                        if wait_time > 0:
+                            time.sleep(wait_time)
+                        last_request_time = time.time()
+
+                def _worker() -> None:
+                    while True:
+                        ref = stream_queue.get()
+                        if ref is None:
+                            stream_queue.task_done()
+                            break
+                        try:
+                            summarize_transcript_ref(
+                                cfg=config,
+                                ref=ref,
+                                run_stats=run_stats,
+                                rate_limit=_rate_limit,
+                            )
+                        except Exception:
+                            logger.exception("Streaming summary worker failed")
+                        finally:
+                            stream_queue.task_done()
+
+                for _ in range(worker_count):
+                    t = threading.Thread(target=_worker, daemon=True)
+                    t.start()
+                    stream_threads.append(t)
+                logger.info(
+                    "Streaming summaries enabled: workers=%s queue_size=%s",
+                    worker_count,
+                    queue_size,
+                )
+            except Exception as exc:
+                logger.warning("Failed to start streaming summaries: %s", exc)
+                stream_queue = None
+                stream_threads = []
+
     # Process each channel from config
     logger.info(f"Starting to process {len(config.youtube.channels)} channels")
 
@@ -405,35 +482,53 @@ def run_miner(config: "Config", *, run_stats: Optional["RunStats"] = None) -> in
     except ImportError:
         rich_available = False
 
-    if rich_available:
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TaskProgressColumn(),
-            TimeRemainingColumn(),
-            transient=True,
-        ) as progress:
-            channel_task = progress.add_task(
-                "[green]Processing channels...", total=len(config.youtube.channels)
-            )
+    try:
+        if rich_available:
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(),
+                TaskProgressColumn(),
+                TimeRemainingColumn(),
+                transient=True,
+            ) as progress:
+                channel_task = progress.add_task(
+                    "[green]Processing channels...", total=len(config.youtube.channels)
+                )
+                for channel_input in config.youtube.channels:
+                    if process_channel(
+                        youtube,
+                        channel_input,
+                        config,
+                        processed_videos,
+                        progress=progress,
+                        run_stats=run_stats,
+                        stream_queue=stream_queue,
+                    ):
+                        success_count += 1
+                    progress.advance(channel_task)
+        else:
             for channel_input in config.youtube.channels:
                 if process_channel(
                     youtube,
                     channel_input,
                     config,
                     processed_videos,
-                    progress=progress,
                     run_stats=run_stats,
+                    stream_queue=stream_queue,
                 ):
                     success_count += 1
-                progress.advance(channel_task)
-    else:
-        for channel_input in config.youtube.channels:
-            if process_channel(
-                youtube, channel_input, config, processed_videos, run_stats=run_stats
-            ):
-                success_count += 1
+    finally:
+        if stream_queue is not None and stream_threads:
+            # Wait for queued items to finish, then stop workers.
+            stream_queue.join()
+            for _ in stream_threads:
+                stream_queue.put(None)
+            for t in stream_threads:
+                try:
+                    t.join(timeout=30)
+                except Exception:
+                    pass
 
     # Record pipeline duration
     duration = time.time() - start_time
@@ -914,7 +1009,7 @@ def _run_with_parsed_args(args: argparse.Namespace) -> int:
                 len(loaded_configs),
             )
             try:
-                result_code = run_miner(config, run_stats=run_stats)
+                result_code = run_miner(config, run_stats=run_stats, stream_llm=do_llm)
                 logger.info("Mining finished with exit code: %s", result_code)
                 if result_code != 0:
                     exit_code = 1

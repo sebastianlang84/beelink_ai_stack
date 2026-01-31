@@ -35,6 +35,7 @@ Diese Datei existiert, weil mehrere Stellen im Repo auf sie verweisen (z.B. [`do
 ## Minimal-Output-Shape (empfohlen)
 
 > Hinweis: Das ist ein **Doku-Vorschlag** zur Konsistenz, kein zwingendes Runtime-Schema.
+> `schema_version` ist beispielhaft (kann je nach Task variieren).
 
 ```json
 {
@@ -62,7 +63,32 @@ Diese Datei existiert, weil mehrere Stellen im Repo auf sie verweisen (z.B. [`do
 
 ---
 
+## stocks_per_video_extract (Schema v2)
+
+Hinweis: Für das Investing-Setup wird das per-Video-Extract auf **Schema v2**
+geführt (zusätzliche Auffangnetze). Erwartete Top-Level-Felder:
+
+- `schema_version`: `2`
+- `task`: `stocks_per_video_extract`
+- `macro_insights`, `stocks_covered`, **`stocks_mentioned`**, **`other_insights`**, **`numbers`**, `errors`
+
+Kurz-Skizze (gekürzt):
+
+```json
+{
+  "schema_version": 2,
+  "task": "stocks_per_video_extract",
+  "macro_insights": [],
+  "stocks_covered": [],
+  "stocks_mentioned": [],
+  "other_insights": [],
+  "numbers": [],
+  "errors": []
+}
+```
+
+---
+
 ## Abgrenzung zu Markdown-Reports
 
 - Für menschenlesbare Reports (Markdown) siehe Report-Layout/Guardrails in [`docs/analysis/llm_report_markdown_layout_provenance_guardrails.md`](llm_report_markdown_layout_provenance_guardrails.md:1).
-

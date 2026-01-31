@@ -4,7 +4,7 @@ Diese Dokumentation beschreibt den Use-Case für die Analyse von Finfluencer-Kan
 
 ## 1. Zielsetzung (Phase 1)
 Analyse einer Menge von Finfluencer-Channels, um eine **Coverage-Übersicht pro Aktie** zu erhalten.
-- **Kernmetriken:** `creator_count` (Anzahl Influencer) und `video_count` (Anzahl Videos) pro Aktie.
+- **Kernmetriken:** `creator_count` (Anzahl Channels) und `video_count` (Anzahl Videos) pro Aktie.
 - **Output:** Balkendiagramm und strukturierte Reports.
 
 ---
@@ -14,7 +14,7 @@ Analyse einer Menge von Finfluencer-Channels, um eine **Coverage-Übersicht pro 
 ### Grundprinzipien
 - **LLM-first für Semantik:** Das LLM entscheidet über die Relevanz von Themen/Entities.
 - **Inkrementell & Idempotent:** Nur neue Videos werden verarbeitet. Bereits vorhandene Summaries werden nicht neu generiert, außer es wird explizit verlangt.
-- **Kein Evidence/Confidence im MVP:** Gemäß PRD (Abschnitt 4) wird in Phase 1 auf Belege und Konfidenzwerte verzichtet, um die Komplexität gering zu halten.
+- **Evidence/Confidence aktiv (Investing-Setup):** Für `stocks_per_video_extract` wird Strict-JSON mit Evidence + Confidence genutzt (Schema v2), um Claims nachvollziehbar zu belegen.
 
 ### Definition „Covered“ (MVP)
 Ein Video gilt als Coverage für eine Aktie, wenn diese inhaltlich Thema ist (nicht nur Name-Dropping). Das LLM liefert hierfür eine strukturierte Liste von Entities/Topics.
@@ -33,7 +33,7 @@ Ein Video gilt als Coverage für eine Aktie, wenn diese inhaltlich Thema ist (ni
 
 ### Stage 2: Aggregation (Deterministisch)
 - Zusammenführung der Video-Ergebnisse.
-- Berechnung von `creator_count` und `video_count`.
+- Berechnung von `creator_count` (Channels) und `video_count`.
 - Erstellung eines History-Bundles unter `output/history/<topic>/...` und aktueller Reports unter `output/reports/<topic>/`.
 
 ---

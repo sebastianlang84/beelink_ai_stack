@@ -5,7 +5,7 @@
 
 ## 1) Problem & Kontext
 
-YouTube-/Podcast-Transkripte sind lang, fehlerhaft (ASR = Automatic Speech Recognition) und verteilt über viele Creator. Du willst daraus verlässlich:
+YouTube-/Podcast-Transkripte sind lang, fehlerhaft (ASR = Automatic Speech Recognition) und verteilt über viele Channels. Du willst daraus verlässlich:
 
 - **Coverage (Topics/Entities):** Welche Themen/Entities werden von wie vielen YouTubern erwähnt? (Stocks sind nur ein möglicher Entity-Typ)
 - **Wissensextraktion:** Kernaussagen, Thesen, Katalysatoren, Risiken, Zahlen/Behauptungen (mit Unsicherheits-Flag).
@@ -33,7 +33,7 @@ Ein CLI-Tool, das für eine Menge Transkripte (N Videos) in einem Lauf:
 
 2) **Video-Analyse (LLM, pro Video):** Extrahiert pro Video Topics/Entities in strukturierter Form (ohne Evidence/Confidence).
 
-3) **Aggregation (ohne LLM):** Coverage-Stats (**creator_count, video_count**) + Duplikate zusammenführen.
+3) **Aggregation (ohne LLM):** Coverage-Stats (**creator_count, video_count**) + Duplikate zusammenführen. (`creator_count` = Anzahl Channels)
 
 4) **Reporting:** Markdown-Report + maschinenlesbare Artefakte.
 
@@ -48,7 +48,7 @@ Ein CLI-Tool, das für eine Menge Transkripte (N Videos) in einem Lauf:
 ## 3) Ziele (MUST)
 
 - MUST: Ingest ist inkrementell und idempotent: bereits vorhandene Videos/Transkripte werden nicht erneut geladen; fehlende, **benötigte** Artefakte werden nachgeladen.
-- MUST: Coverage-Metriken pro Entity/Topic: **creator_count, video_count**.
+- MUST: Coverage-Metriken pro Entity/Topic: **creator_count, video_count**. (`creator_count` = Anzahl Channels)
 - MUST: Pro-Video strukturierter Output: Liste von Entities/Topics + einfache Highlights/Claims (ohne Belege).
 - MUST: Reproduzierbarkeit: gleiche Inputs + gleiche Config → gleicher Output (bis auf LLM-Nondeterminismus).
 - MUST: Sauberer Output-Vertrag (Dateipfade/Schema-Versionierung).
@@ -342,7 +342,7 @@ MVP: Wenn unklar, lieber weglassen oder als „unsicher“ in highlights/claims 
 
 ### Bias-Hinweis
 
-Creator-Bias: Clickbait, Confirmation Bias (Bestätigungsfehler) etc.
+Channel-Bias: Clickbait, Confirmation Bias (Bestätigungsfehler) etc.
 
 ---
 
@@ -365,7 +365,7 @@ MUST:
 - CLI run verarbeitet mindestens 50 Videos in einem Batch (mit Sharding).
 - Erzeugt alle Mindest-Artefakte (Manifest, VideoResults, Coverage, Report, Errors).
 - Coverage-Stats korrekt:
-  - Für einen bekannten Testsatz ist creator_count und video_count deterministisch reproduzierbar.
+  - Für einen bekannten Testsatz ist creator_count (Channels) und video_count deterministisch reproduzierbar.
 - LLM Budget wird eingehalten (Run bricht ab oder degradiert sauber, wenn Budget erreicht).
 - Fehlertoleranz: einzelne kaputte Inputs stoppen nicht den ganzen Run.
 
@@ -384,13 +384,13 @@ MUST:
 
 Dieses Pack ist ein Beispiel-Extractor für den Spezialfall „Finfluencer/Stocks“. Es ist optional und kann später als eigenes Pack aktiviert werden.
 
-### Definition „Creator covert Stock X“
+### Definition „Channel covert Stock X“
 
-Ein Creator covert Stock X, wenn in den letzten N Videos mindestens ein Video existiert, in dem Stock X inhaltlich Thema ist.
+Ein Channel covert Stock X, wenn in den letzten N Videos mindestens ein Video existiert, in dem Stock X inhaltlich Thema ist.
 
 „Inhaltlich Thema“ = mehr als Name-Dropping (z.B. Zahlen/News/Produkte/Bewertung/Strategie/Wettbewerb).
 
-Ein Creator zählt pro Stock maximal 1× (Set-Logik).
+Ein Channel zählt pro Stock maximal 1× (Set-Logik).
 
 ### LLM Output (Beispiel-Schema; JSONL)
 

@@ -250,27 +250,45 @@ def run_aggregation(
             key=lambda p: str(p),
         )
 
-        def _split_frontmatter(text: str) -> tuple[dict[str, str], str]:
-            if not text.startswith("---\n"):
-                return {}, text
-            end = text.find("\n---\n", 4)
-            if end == -1:
-                return {}, text
-            raw = text[4:end]
-            body = text[end + len("\n---\n") :]
+        def _parse_markdown_sections(text: str) -> dict[str, list[str]]:
+            sections: dict[str, list[str]] = {}
+            current: str | None = None
+            for raw_line in text.splitlines():
+                line = raw_line.rstrip("\n")
+                if line.startswith("## "):
+                    current = line[3:].strip()
+                    sections[current] = []
+                    continue
+                if current is not None:
+                    sections[current].append(line)
+            return sections
+
+        def _parse_source_block(lines: list[str]) -> dict[str, str]:
             meta: dict[str, str] = {}
-            for line in raw.splitlines():
-                line = line.strip()
-                if not line or line.startswith("#"):
+            for raw_line in lines:
+                line = raw_line.strip()
+                if not line.startswith("- "):
                     continue
-                if ":" not in line:
+                item = line[2:].strip()
+                if ":" not in item:
                     continue
-                key, value = line.split(":", 1)
+                key, value = item.split(":", 1)
                 key = key.strip()
                 value = value.strip()
                 if key:
                     meta[key] = value
-            return meta, body
+            return meta
+
+        def _extract_bullets(lines: list[str]) -> list[str]:
+            items: list[str] = []
+            for raw_line in lines:
+                line = raw_line.strip()
+                if not line.startswith("- "):
+                    continue
+                item = line[2:].strip()
+                if item:
+                    items.append(item)
+            return items
 
         def _load_summary_payload(path: Path) -> dict[str, Any] | None:
             if path.name.endswith(".summary.json"):
@@ -280,118 +298,61 @@ def run_aggregation(
 
             if path.name.endswith(".summary.md"):
                 text = path.read_text(encoding="utf-8")
-                meta, body = _split_frontmatter(text)
-                if not meta:
+                title_line = ""
+                first_line = text.splitlines()[:1]
+                if first_line and first_line[0].startswith("# "):
+                    title_line = first_line[0][2:].strip()
+
+                sections = _parse_markdown_sections(text)
+                source_lines = sections.get("Source", [])
+                source_meta = _parse_source_block(source_lines)
+                if not source_meta:
                     return None
 
-                task = meta.get("task") or "unknown"
-                out: dict[str, Any] = {"task": task}
-                schema_version = meta.get("schema_version")
-                if schema_version and schema_version.isdigit():
-                    out["schema_version"] = int(schema_version)
-
-                video_id = meta.get("video_id") or _summary_video_id(path)
-                source = {
-                    "video_id": video_id,
-                    "channel_namespace": meta.get("channel_namespace") or "",
-                    "transcript_path": meta.get("transcript_path") or "",
+                video_id = source_meta.get("video_id") or _summary_video_id(path)
+                out: dict[str, Any] = {
+                    "task": "markdown_summary",
+                    "source": {
+                        "video_id": video_id,
+                        "channel_namespace": source_meta.get("channel_namespace", ""),
+                        "url": source_meta.get("url", ""),
+                        "title": source_meta.get("title", ""),
+                        "published_at": source_meta.get("published_at", ""),
+                        "fetched_at": source_meta.get("fetched_at", ""),
+                        "info_density": source_meta.get("info_density", ""),
+                    },
                 }
-                out["source"] = source
-                out["raw_hash"] = meta.get("raw_hash") or ""
 
-                if meta.get("title"):
-                    out["video_title"] = meta.get("title")
-                    out["title"] = meta.get("title")
-                if meta.get("published_at"):
-                    out["published_at"] = meta.get("published_at")
-                if meta.get("channel_id"):
-                    out["channel_id"] = meta.get("channel_id")
+                if title_line:
+                    out["title"] = title_line
+                    out["video_title"] = title_line
+                if source_meta.get("published_at"):
+                    out["published_at"] = source_meta.get("published_at")
 
-                tq_grade = meta.get("transcript_quality_grade")
-                tq_reasons = meta.get("transcript_quality_reasons")
-                if tq_grade or tq_reasons:
-                    reasons_list: list[str] = []
-                    if isinstance(tq_reasons, str) and tq_reasons.strip():
-                        reasons_list = [p.strip() for p in tq_reasons.split(";") if p.strip()]
-                    out["transcript_quality"] = {
-                        "grade": (tq_grade or "unknown").strip().lower(),
-                        "reasons": reasons_list,
-                    }
+                summary_lines = sections.get("Summary", [])
+                summary_text = "\n".join(l for l in summary_lines if l.strip()).strip()
+                if summary_text:
+                    out["summary"] = summary_text
 
-                # Parse a small subset of sections for downstream aggregation.
-                section: str | None = None
-                stocks: list[dict[str, Any]] = []
-                macro: list[dict[str, Any]] = []
-                knowledge: list[dict[str, Any]] = []
-                errors: list[str] = []
+                key_points = _extract_bullets(sections.get("Key Points & Insights", []))
+                if key_points:
+                    out["knowledge_items"] = [{"text": item} for item in key_points]
 
-                for raw_line in body.splitlines():
-                    line = raw_line.strip()
-                    if line.startswith("## "):
-                        section = line[3:].strip().lower()
-                        continue
-                    if not line.startswith("- "):
-                        continue
-                    item = line[2:].strip()
-                    if not item:
-                        continue
+                numbers = _extract_bullets(sections.get("Numbers", []))
+                if numbers:
+                    out["numbers"] = numbers
 
-                    if section == "stocks covered":
-                        if ":" in item:
-                            canonical, why = item.split(":", 1)
-                            canonical = canonical.strip()
-                            why = why.strip()
-                            if canonical:
-                                stocks.append(
-                                    {"canonical": canonical, "why_covered": why}
-                                )
-                        else:
-                            stocks.append({"canonical": item, "why_covered": ""})
-                    elif section == "macro insights":
-                        # Format: "<claim> (tags: a, b)"
-                        claim = item
-                        tags: list[str] = []
-                        if "(tags:" in item and item.endswith(")"):
-                            head, tail = item.rsplit("(tags:", 1)
-                            claim = head.strip()
-                            tail = tail[:-1].strip()
-                            tags = [t.strip() for t in tail.split(",") if t.strip()]
-                        macro.append({"claim": claim, "tags": tags or None})
-                    elif section == "knowledge items":
-                        text_value = item
-                        entities: list[str] = []
-                        if "(entities:" in item and item.endswith(")"):
-                            head, tail = item.rsplit("(entities:", 1)
-                            text_value = head.strip()
-                            tail = tail[:-1].strip()
-                            entities = [e.strip() for e in tail.split(",") if e.strip()]
-                        knowledge.append({"text": text_value, "entities": entities or None})
-                    elif section == "errors":
-                        errors.append(item)
+                chances = _extract_bullets(sections.get("Chances", []))
+                if chances:
+                    out["chances"] = chances
 
-                if stocks:
-                    out["stocks_covered"] = stocks
-                if macro:
-                    # Remove None tags to keep downstream stable.
-                    cleaned_macro: list[dict[str, Any]] = []
-                    for m in macro:
-                        if not isinstance(m, dict):
-                            continue
-                        if m.get("tags") is None:
-                            m = {k: v for k, v in m.items() if k != "tags"}
-                        cleaned_macro.append(m)
-                    out["macro_insights"] = cleaned_macro
-                if knowledge:
-                    cleaned_knowledge: list[dict[str, Any]] = []
-                    for k in knowledge:
-                        if not isinstance(k, dict):
-                            continue
-                        if k.get("entities") is None:
-                            k = {kk: vv for kk, vv in k.items() if kk != "entities"}
-                        cleaned_knowledge.append(k)
-                    out["knowledge_items"] = cleaned_knowledge
-                if errors:
-                    out["errors"] = errors
+                risks = _extract_bullets(sections.get("Risks", []))
+                if risks:
+                    out["risks"] = risks
+
+                unknowns = _extract_bullets(sections.get("Unknowns", []))
+                if unknowns:
+                    out["unknowns"] = unknowns
 
                 return out
 

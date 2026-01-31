@@ -7,14 +7,15 @@ Quelle: user_data/report_template_vorschlag.md
 - Zeitraum: **letzte X Tage** + "aeltere Videos nur als Kontext"
 - Channels im Run + Abdeckung pro Kategorie
 - "Bias-Warnungen": Top-Channel-Anteil, fehlende Recency, Datenqualitaet
+- Quellenformat (pflicht): Channel + Video-Titel + Video-ID (wenn Titel fehlt: Channel + Video-ID)
 
 ---
 
-## 1) Stocks - Influencer Stock Radar
+## 1) Stocks - Channel Stock Radar
 
 ### 1.1 Coverage Map (schnell)
 - **Top Themen/Sektoren** (z. B. AI, Solar, Smallcaps, Biotech ...)
-- **Top Ticker/Companies** (mit *wie viele Influencer* + *Recency*)
+- **Top Ticker/Companies** (mit *wie viele Channels* + *Recency*)
 - **Neu / Re-Rating / Drop**
   - Neu = erstmals erwaehnt
   - Re-Rating = Sentiment dreht oder These aendert sich
@@ -27,13 +28,23 @@ Fuer jede Aktie:
 - **Katalysatoren** (naechste 1-2 Quartale + mittelfristig)
 - **Kill-Switch (harte Kriterien)**: 2-3 messbare Schwellenwerte
   (z. B. Umsatzwachstum < X% fuer 2 Quartale, Marge faellt > Y bp, Cash runway < Z Monate)
-- **Evidence-Links**: Liste der Video-IDs + kurze Zitate (Appendix)
+- **Evidence-Links**: Channel + Video-Titel + Video-ID + kurzes Zitat (Appendix)
+- **Kennzeichnung**: Jede Aussage als *Fakt* / *Claim* / *Interpretation* markieren.
 
-### 1.3 Influencer-Overlay (dein "Lieblings-Blick")
-- Pro Influencer:
+### 1.3 Channel-Overlay (dein "Lieblings-Blick")
+- Pro Channel:
   - **Top 5 Picks / Top 5 Avoids**
   - **Wiederkehrende Muster** (z. B. "Mag high-growth, ignoriert Bewertung")
   - **Track-Record Note** (optional spaeter: Trefferquote/Revisionen)
+
+### 1.4 Stocks Mentioned (non Deep-Dive)
+- Kurze Zusammenfassung pro Aktie (1-3 Saetze) + Evidence-Links (Channel + Video-Titel + Video-ID).
+
+### 1.5 Numbers / Multiples / Levels
+- Liste der wichtigsten Zahlen (Kontext + Einheit + Evidence-Links mit Channel + Video-Titel + Video-ID).
+
+### 1.6 Other Insights
+- Relevante Erkenntnisse ausserhalb Stocks/Macro/Crypto (1-2 Saetze) + Evidence-Links (Channel + Video-Titel + Video-ID).
 
 ---
 
@@ -56,6 +67,7 @@ Fuer jede Aktie:
   - **USD/Commodities**
   - **Risk-On / Risk-Off**
 Praktisch heisst das: 3-5 klare "Wenn-Dann" Saetze.
+- **Kennzeichnung**: Jede Aussage als *Fakt* / *Claim* / *Interpretation* markieren.
 
 ---
 
@@ -74,13 +86,14 @@ Pro Coin/Projekt:
 
 ### 3.3 Macro-Link (Crypto als Risk Asset)
 - In welchem Szenario wird Crypto bevorzugt/benachteiligt?
-- Was sagen die Influencer dazu (und wer widerspricht)?
+- Was sagen die Channels dazu (und wer widerspricht)? Quellenformat: Channel + Video-Titel + Video-ID.
+- **Kennzeichnung**: Jede Aussage als *Fakt* / *Claim* / *Interpretation* markieren.
 
 ---
 
 ## Appendix A - Evidence (Audit)
 - Pro Aussage:
-  - Video-ID, Kanal, Datum
+  - Channel + Video-Titel + Video-ID + Datum
   - Timestamp (optional; falls vorhanden)
   - Zitat (kurz) + Paraphrase
   - Markierung: "Transkript-Fakt" vs "Externer Fakt noetig"

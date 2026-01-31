@@ -633,11 +633,29 @@ class LlmAnalysisConfig(BaseModel):
         ge=0.0,
         description="Maximaler Jitter (Sekunden) für per_video Rate-Limit.",
     )
+    stream_summaries: bool = Field(
+        False,
+        description="Wenn true, startet per-video Summaries parallel zum Transcript-Download (Streaming).",
+    )
+    stream_worker_concurrency: int = Field(
+        1,
+        ge=1,
+        description="Anzahl paralleler Streaming-Worker für per-video Summaries.",
+    )
+    stream_queue_size: int = Field(
+        100,
+        ge=1,
+        description="Maximale Queue-Größe für Streaming-Summaries (Backpressure).",
+    )
     temperature: Optional[float] = Field(
         None,
         ge=0.0,
         le=2.0,
         description="Optional: Sampling temperature (Provider-spezifisch).",
+    )
+    reasoning_effort: Optional[Literal["low", "medium", "high"]] = Field(
+        "high",
+        description="Optional: Reasoning effort for compatible providers (low|medium|high).",
     )
 
     @model_validator(mode="after")

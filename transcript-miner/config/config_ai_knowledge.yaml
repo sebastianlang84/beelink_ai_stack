@@ -58,52 +58,52 @@ analysis:
   llm:
     enabled: true
     mode: per_video
-    model: "openai/gpt-5.2"
+    model: "google/gemini-3-flash-preview"
     per_video_concurrency: 1
+    reasoning_effort: high
+    # Streaming: Summaries parallel zum Transcript-Download
+    stream_summaries: true
+    stream_worker_concurrency: 1
+    stream_queue_size: 100
     max_input_tokens: 320000
     max_output_tokens: 80000
     system_prompt: |
-      You are an expert analyst extracting structured knowledge from video transcripts.
-      Your goal is to extract key insights, arguments, facts, and claims.
+      You are an analyst summarizing technology/AI content from video transcripts.
 
-      Output Format:
-      You must output STRICT JSON. No markdown fences, no prose before/after.
-      Do NOT wrap the JSON in ```json ... ``` blocks.
-      
-      Schema:
-      {
-        "schema_version": 1,
-        "task": "knowledge_extract",
-        "source": {
-          "video_id": "<video_id from input>",
-          "channel_namespace": "<channel_namespace from input>",
-          "transcript_path": "<transcript_path from input>"
-        },
-        "raw_hash": "<raw_hash from input>",
-        "video_id": "<video_id from input>",
-        "channel_id": "<channel_id from input>",
-        "title": "<title from input>",
-        "published_at": "<published_at from input>",
-        "knowledge_items": [
-          {
-            "text": "The core insight or claim (concise, 1-2 sentences).",
-            "entities": ["Entity1", "Topic2"]
-          }
-        ]
-      }
-      
-      Rules:
-      1. Be conservative. Do not hallucinate. If unsure, omit.
-      2. Extract 5-10 most important items per video.
-      3. Entities should be specific (e.g. "Tesla", "Inflation", "AI").
-      4. Use the provided metadata in the transcript header (video_id, channel_id, video_title, published_at) to fill the corresponding JSON fields.
+      OUTPUT (STRICT MARKDOWN):
+      - Output ONLY Markdown. No JSON. No code fences. No preface text.
+      - Write in the SAME language as the transcript.
+      - No external facts. No web browsing. Only what is in the transcript.
+      - Concise, factual, no filler.
+
+      REQUIRED STRUCTURE (always, in this exact order):
+      ## Source
+      ## Summary
+      ## Key Points & Insights
+      ## Numbers
+      ## Chances
+      ## Risks
+      ## Unknowns
+
+      SOURCE FORMAT (bullet list; all keys required):
+      - topic: <topic>
+      - video_id: <video_id>
+      - url: <url>
+      - title: <title>
+      - channel_namespace: <channel_namespace>
+      - published_at: YYYY-MM-DD HH:MM UTC (or \"unknown\")
+      - fetched_at: YYYY-MM-DD HH:MM UTC (or \"unknown\")
+      - info_density: low|medium|high
+
+      RULES:
+      - If you are unsure, put it under ## Unknowns (do not guess).
+      - Sections must exist; if empty write exactly: - none
+      - Inline quotes are allowed (optional) inside parentheses, max 200 characters, verbatim.
     user_prompt_template: |
-      Analyze the following transcript and extract knowledge items.
-      
+      Create a Markdown summary for EXACTLY ONE transcript below.
+      Topic: ai_knowledge
+
       {transcripts}
-      
-      Extract the knowledge items now in strict JSON. Remember: NO markdown fences.
-      Ensure all top-level fields (video_id, channel_id, title, published_at) are filled using the metadata provided in the header above.
 
 # 6. REPORT - Finale Berichterstellung (Bilingual)
 # ------------------------------------------------------------------------------
