@@ -78,10 +78,10 @@
   - Check: `/data/watchdog.alert.jsonl` → `2026-01-31T00:29:43Z` mit `temp_max_c=63.0` bei `threshold_c=60` (Action: `stop_containers_temp_threshold`).
   - Entscheidung: Defaults in `watchdog/.config.env.example` auf 95C/3 Messungen angehoben; Auto-Stop via `WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` deaktivierbar.
 
-- [ ] **Watchdog/OWUI Stop: Lessons Learned + Knowledge sichern (Context-Erase)**
+- [x] **Watchdog/OWUI Stop: Lessons Learned + Knowledge sichern (Context-Erase)**
   - Lessons: zuerst `watchdog.alert.jsonl` pruefen (Temp-Stop ist der einzige Stop-Trigger).
   - Doku-Optionen (persistenter Kontext):
-    - `docs/plan_watchdog_monitoring.md`: Default-Temp-Stop (60C/2) + Log-Pfad + Hinweis auf OWUI-Stop.
+    - `docs/plan_watchdog_monitoring.md`: Default-Temp-Stop (95C/3) + Log-Pfad + Hinweis auf OWUI-Stop.
     - `README.md`: kurzer Warnhinweis im Watchdog-Quickstart + wie man Temp-Stop abstellt/erhoeht.
     - `CHANGELOG.md`: Eintrag fuer Doku-Update (Watchdog Temp-Stop Hinweis).
     - Optional: eigenes Runbook `docs/runbook_watchdog_temp_stop.md` (Check → Ursache → Fix).

@@ -59,6 +59,7 @@ Ziel: Ein leichter Waechter, der CPU-Last, Temperatur und Festplattenspeicher be
 - Auto-Aktion (implementiert): Temp-Schutz stoppt definierte Container nach X Messungen ueber Schwellwert
 - Alternative (nicht implementiert): zuerst CPU-Limit setzen (z. B. 50%) fuer 10-15 Minuten, erst bei weiterem Anstieg stoppen
 - Safety: Docker-Socket ist Root-aehnlich, nur mounten wenn Container-Stats benoetigt werden
+  - Lessons Learned: Temp-Stop ist der einzige automatische Stop-Trigger; Events stehen in `/data/watchdog.alert.jsonl` (Action: `stop_containers_temp_threshold`)
 
 ## 6) Schwellwerte (Startwerte, Vorschlag)
 Hinweis: Intel N150 (Tjunction 105C, Base Power 6W) im Mini-PC-Gehaeuse. Ziel ist Stabilisierung vor dauerhaftem Throttling.

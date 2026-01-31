@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: Watchdog Temp-Stop Lessons Learned (Log-Pfad/Trigger) dokumentiert
 - watchdog: Temp-Stop Defaults geschaerft (95C/3) + Doku-Hinweis zum Deaktivieren
 - transcript-miner: per-video Summaries sind jetzt Markdown-only mit festen Sections (Source/Summary/Key Points/Numbers/Chances/Risks/Unknowns)
 - transcript-miner: JSON-Validatoren entfernt; Summary-Validity check basiert auf Source-Block
