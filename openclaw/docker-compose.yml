@@ -1,0 +1,35 @@
+name: openclaw
+services:
+  openclaw-gateway:
+    container_name: openclaw-gateway
+    build:
+      context: ./upstream
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
+    volumes:
+      - ${OPENCLAW_HOME_HOST:-/home/wasti/.openclaw}:/home/node/.openclaw
+    ports:
+      - "${OPENCLAW_BIND_ADDRESS:-127.0.0.1}:${OPENCLAW_HOST_PORT:-18789}:18789"
+    networks:
+      - ai-stack
+
+  openclaw-cli:
+    container_name: openclaw-cli
+    build:
+      context: ./upstream
+      dockerfile: Dockerfile
+    entrypoint: ["openclaw"]
+    environment:
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
+    volumes:
+      - ${OPENCLAW_HOME_HOST:-/home/wasti/.openclaw}:/home/node/.openclaw
+    profiles: ["cli"]
+    networks:
+      - ai-stack
+
+networks:
+  ai-stack:
+    external: true
+    name: ai-stack

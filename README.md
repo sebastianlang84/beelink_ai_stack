@@ -100,6 +100,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `emb-bench/` — Embedding Benchmark Suite (MRL + Local vs OpenRouter)
 - `mcp-context6/` — context6 MCP Server (Doku-Fetch/Index/Search)
 - `mcp-owui-roo-connector/` — MCP Connector (Open WebUI)
+- `openclaw/` — OpenClaw Gateway (Docker; Telegram + MCP)
 - `open-webui/` — Open WebUI (Compose, Secrets, README)
 - `mcp-transcript-miner/` — **Transcript Miner** MCP Server (Configs/Runs/Outputs + Knowledge Indexing)
 - `transcript-miner/` — TranscriptMiner Pipeline-Engine (Python; Transcripts + Summaries)

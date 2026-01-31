@@ -29,6 +29,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 - `mcp-transcript-miner/README.md` — **Transcript Miner** MCP Server (Configs/Runs/Outputs + Knowledge Indexing)
 - `mcp-transcript-miner/PRD.md` — Produkt-/Scope-Definition (YouTube Transcript HTTP Tool)
 - `open-webui/README.md` — Open WebUI (LLM UI) Betrieb
+- `openclaw/README.md` — OpenClaw Gateway (Docker)
 - `emb-bench/README.md` — Embedding Benchmark Suite (MRL + Local vs OpenRouter)
 - `mcp-context6/README.md` — context6 MCP Server (PoC, MCP Streamable HTTP)
 - `qdrant/README.md` — Qdrant Vector DB (localhost-only)

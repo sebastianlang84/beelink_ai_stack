@@ -300,3 +300,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI openclaw user email auf wasticlaw-1@example.com umgestellt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: User per Admin API aktualisiert und Record-Datei angepasst.
+
+## 2026-01-31
+- Aufgabe: OpenClaw Service-Ordner scaffolded (Compose + Config + README) und Doku-Index aktualisiert.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: openclaw/ mit docker-compose.yml, .config.env.example, README; README/Docs/Changelog aktualisiert.
