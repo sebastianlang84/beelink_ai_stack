@@ -10,7 +10,7 @@
     - `stocks_covered` nur bei Deep-Dive (min. 2 Evidence items, thesis + risk/catalyst/etc).
     - `macro_insights` mit Tag-Taxonomie (rates, inflation, btc, eth, etc).
     - Evidence-Rollen: thesis, risk, catalyst, numbers_valuation, comparison.
-  - DoD: Validator unterstützt neue Rollen/Tags; Prompts in `config_investing.yaml` sind aktualisiert.
+  - DoD: Prompts in `config_investing.yaml` sind aktualisiert; JSON-Validatoren wurden später entfernt.
 
 - [x] **P1: Investor-Grade Report Template**
   - Ziel: Report-Struktur gemäß `user_data/report_template_vorschlag.md`.
@@ -38,10 +38,34 @@
 - [x] **P1: Aggregation: Dedupe-Metriken + Creator-Felder sauber trennen**
 - [x] **P1: `resolve_paths` vervollständigen** (alle Pfadfelder erfassen)
 - [x] **P1: Validator modularisieren + Golden-File-Tests**
+  - Hinweis: Validatoren wurden später entfernt (Markdown-only Summaries).
 - [x] **P2: Concurrency im Per-Video-Modus mit Rate-Limit**
 - [x] **P2: Run-Manifeste / Run-level Versioning für Reports**
 
 ## TODO
+
+- [ ] **Open WebUI Knowledge: Auto-Create Governance (klarer User-Intent)**
+  - Problem: LLM/RAG-Queries können neue Collections (z. B. `bitcoin`, `crypto`) auto-anlegen, wenn `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`.
+  - Ziel: Auto-Create nur, wenn es explizit gewollt ist.
+  - Optionen:
+    - A) Auto-Create nur bei explizitem Request-Flag (z. B. `create_knowledge_if_missing=true`) — Default: *kein* Auto-Create.
+    - B) Allowlist-Topics (z. B. `investing`, `investing_test`, `ai_knowledge`) — alle anderen blocken.
+    - C) Kombination aus A + B (Flag **und** Allowlist).
+  - UX: klare Fehlermeldung, wenn Knowledge fehlt und Auto-Create blockiert ist.
+  - Doku/Config: `.config.env` / `mcp-transcript-miner/.config.env` + README aktualisieren.
+
+- [ ] **Open WebUI Knowledge: Unerwuenschte Collections aufraeumen**
+  - Option: `bitcoin`/`crypto` Collections loeschen (nur falls User bestaetigt).
+  - Danach: Sync/Index nur fuer erlaubte Topics.
+
+- [ ] **Open WebUI Knowledge: Duplikate sichtbar machen**
+  - CLI/Script, das pro Collection Dateinamen + Duplikate ausgibt (id/filename/count).
+  - Optionaler Fix: Duplikate loeschen (nur nach Bestätigung).
+
+- [ ] **Re-Sync nach Summary-Rebuild**
+  - Status: Summaries neu erzeugt (investing_test + ai_knowledge); investing Run teilweise/unterbrochen.
+  - ToDo: investing Run fertigstellen, danach `sync/topic/investing` + Duplikat-Check.
+  - Hinweis: Live-Events ohne Transkript (VideoUnplayable) bleiben Skip.
 
 - [x] **Investing-Test Workflow (Alpha, schneller Iterate)**
   - Ab sofort fuer Experimente/Prompt-Tuning `investing_test` nutzen (kleinere Datenmenge, weniger Kosten/Time).
@@ -52,7 +76,7 @@
 - [x] **P0: Healing/Validation für Transkripte & Summaries (inkrementell, metadata‑basiert)**
   - Ziel: Gute Files wiederverwenden; nur kaputte/inkomplette Artefakte re‑fetch/re‑generate.
   - Transkripte: Validierungsregeln definieren (z.B. Datei fehlt/leer/zu kurz, Meta weist auf Fehler/Block hin, Meta↔Datei‑Mismatch).
-  - Summaries: JSON parsebar + schema‑konform (Validator) + Konsistenz (`source.video_id`, `source.transcript_path`, `raw_hash`); sonst neu generieren.
+  - Summaries: Markdown-only, Source-Block + Pflicht-Sections + `video_id`-Konsistenz; sonst neu generieren.
   - Metadaten als Signalquelle (published_at, transcript_status, error_type, etc.).
   - Defekte Artefakte sichern (rename/backup) statt still löschen.
   - DoD:
@@ -233,7 +257,7 @@
 
 - [x] **Hybrid-Semantik: `mentioned` vs `covered` (thematic) als zwei getrennte Metriken** (Canvas Definition „Influencer covert Stock X“: [`docs/use-cases/stocks.md`](docs/use-cases/stocks.md))
   - Ziel: Die Pipeline liefert *immer* ein stabiles Grundsignal (`mentioned`) und *optional* ein stärkeres Signal (`covered`), ohne Begriffe zu vermischen.
-  - Evidence: Aggregation konsumiert `stocks_covered` aus per-video Summaries in [`run_aggregation()`](src/transcript_ai_analysis/aggregation_runner.py:300); Strict-JSON/Evidence-Policy für `stocks_per_video_extract` in [`validate_llm_output_content()`](src/transcript_ai_analysis/llm_output_validator.py:547) und Stocks-Validator in [`validate_stocks_per_video_extract_payload()`](src/transcript_ai_analysis/validator_stocks.py:246).
+  - Evidence: Aggregation liest Markdown-Per-Video-Summaries (Source-Block + Sections) in [`run_aggregation()`](src/transcript_ai_analysis/aggregation_runner.py:300); JSON-Validatoren wurden entfernt.
 
   - **Definition 1: `mentioned` (deterministisch, Aggregation-kompatibel)**
     - Ein Influencer/Channel „mentioned“ Stock X, wenn in den letzten **N** Videos mindestens **eine** valide Mention existiert.
@@ -261,13 +285,13 @@
   - Evidence: Normative Policy „Single-Run vs Sharding“ in [`docs/adr/0008-llm-scaling-jobs-agents-rag-instructions.md`](docs/adr/0008-llm-scaling-jobs-agents-rag-instructions.md:102).
 
 - [x] **LLM Prompt-Anforderungen: maschinenlesbar + Evidence-Pflicht + strikte Regeln** (Canvas „LLM-Prompt-Anforderungen“: [`docs/use-cases/stocks.md`](docs/use-cases/stocks.md))
-   - Spezifikation (normativ, implementierbar): [`docs/analysis/llm_prompt_spec_strict_json_evidence.md`](docs/analysis/llm_prompt_spec_strict_json_evidence.md:1)
-   - Output: bevorzugt **strict JSON** (keine Prosa außerhalb des JSON), Schema-Versionierung.
+   - Spezifikation (normativ, implementierbar): Markdown-only Summary-Layout (Source + feste Sections).
+   - Output: **Markdown-only** (keine JSON-Schemata/Validatoren).
    - Für jede Aussage (z.B. `covered`): Evidence muss wörtlich aus Transcript stammen (Snippet/Quote) + Referenz (`video_id`, optional Char-Spans).
    - Unsicherheit: `confidence` oder Status-Feld; bei Unsicherheit lieber weglassen oder als „ambiguous“ markieren.
    - Guardrails: keine erfundenen Ticker/Entities; klare Negativ-Regeln (Name-Dropping, Sponsoring, Metaphern).
    - DoD: Prompts/Inputs werden für Audit gespeichert (vgl. existierende LLM-Artefakte unter `3_reports/run_.../*`, Doku: [`README.md`](README.md:448)).
-   - Implementierung/Enforcement: Prompt-/Artefakt-Schreiben in [`run_llm_analysis()`](src/transcript_ai_analysis/llm_runner.py:236) und Strict-JSON+Evidence-Policy in [`validate_llm_output_content()`](src/transcript_ai_analysis/llm_output_validator.py:500).
+   - Implementierung/Enforcement: Prompt-/Artefakt-Schreiben in [`run_llm_analysis()`](src/transcript_ai_analysis/llm_runner.py:236); Validatoren wurden entfernt.
 
 - [x] **Fehlerquellen/Countermeasures als Qualitäts-Policy für `covered` + Canonicalization** (Canvas „Typische Fehlerquellen“: [`docs/use-cases/stocks.md`](docs/use-cases/stocks.md))
   - „Apple“ (Wort) vs Apple (Company): Ticker-Fokus + Evidence; optional Stoplist/Context-Regeln.
@@ -275,7 +299,7 @@
   - Schlechte ASR/Transkriptqualität: Confidence nutzen; optional `transcript_quality`/Warn-Events im Audit.
   - Ticker-Fakes: keine Regex-only Entscheidung; lieber Canonicalization + Whitelist/Blacklist + Evidence.
   - DoD: Diese Regeln sind als Tests/Fixtures oder Audit-Checks abgedeckt (Offline).
-  - Evidence: Offline-Policy-Enforcement in [`validate_llm_output_content()`](src/transcript_ai_analysis/llm_output_validator.py:500) + Policy-Tests in [`tests/test_llm_output_validation_policy.py`](tests/test_llm_output_validation_policy.py:384).
+  - Evidence: Prompt-Regeln + Markdown-Summary-Layout; Offline-Validatoren wurden entfernt.
 
 - [x] **Optimierung der Output-Ordnerstruktur (Refactoring)**
   - Ziel: Entwicklung einer besseren Strategie für die Output-Ordnerstruktur.
@@ -412,7 +436,7 @@ Status-Hinweis (Ist-Zustand):
 - [x] Ergänze Tests (Unit/Integration) für Extraktion + Canonicalization + Aggregation.
 - [x] **CI-Integration für Doku-Governance:** `tools/md_link_audit.py` als verpflichtenden Check in CI aufnehmen.
   - **DoD:** Tests laufen offline ohne externe APIs; repräsentative Sample-Transkripte/Fixtures.
-  - Evidence: Aggregation-Tests in [`tests/test_aggregation.py`](tests/test_aggregation.py:1) sowie Offline-Validator-/Fixture-Tests für LLM-Payloads in [`tests/test_llm_output_validation_policy.py`](tests/test_llm_output_validation_policy.py:1).
+  - Evidence: Aggregation-Tests in [`tests/test_aggregation.py`](tests/test_aggregation.py:1); Validator-/Fixture-Tests wurden entfernt.
 
 ---
 
@@ -572,7 +596,7 @@ Kontext: Aktuell ist die Offline-Analyse heuristisch/deterministisch (Index/Aggr
 
 - [x] **Entscheidung: LLM Output-Formate (JSON vs. Markdown/Text) & Readability**
   - Ist-Zustand: `3_reports/run_.../report.json` speichert den LLM-Output als String unter `output.content`.
-  - Umsetzung: zusätzlich wird deterministisch ein derived Report (`report.md` oder `report.txt`) plus `metadata.json` geschrieben (Writer: [`_write_derived_report_and_metadata()`](src/transcript_ai_analysis/llm_runner.py:73); Validator: [`validate_llm_report_artefacts()`](src/transcript_ai_analysis/llm_output_validator.py:60)).
+  - Umsetzung: zusätzlich wird deterministisch ein derived Report (`report.md` oder `report.txt`) plus `metadata.json` geschrieben (Writer: [`_write_derived_report_and_metadata()`](src/transcript_ai_analysis/llm_runner.py:73); Validator entfernt).
   - Decision Record: [`docs/adr/0007-llm-output-formats-json-vs-markdown.md`](docs/adr/0007-llm-output-formats-json-vs-markdown.md:1)
   - Zu klären:
     - Wann/warum ist `report.json` (maschinenlesbar, stabiler Schema-Container) nötig?
@@ -667,10 +691,10 @@ Kontext: Aktuell ist die Offline-Analyse heuristisch/deterministisch (Index/Aggr
   - **DoD (Akzeptanzkriterien):**
     - Status-Enum wird im Report konsistent verwendet (case-sensitive, exact match).
     - Für mindestens 3 exemplarische Fälle ist dokumentiert, wie sich Status über Runs entwickeln kann (reine Doku; keine neue Implementierung).
-  - Evidence: Guardrails+Status-Enum in [`docs/analysis/llm_report_markdown_layout_provenance_guardrails.md`](docs/analysis/llm_report_markdown_layout_provenance_guardrails.md:144); Offline-Loop/Max-Hop Check (optional via `metadata.rolling_window`) in [`validate_llm_output_content()`](src/transcript_ai_analysis/llm_output_validator.py:60).
+  - Evidence: Guardrails+Status-Enum in [`docs/analysis/llm_report_markdown_layout_provenance_guardrails.md`](docs/analysis/llm_report_markdown_layout_provenance_guardrails.md:144); Offline-Checks sind heute prompt-/layout-basiert (Validator entfernt).
 
 - [x] **Evidenz-/Transparenz-Checks als Offline-Validierung definieren** (Report-Lint/Validator).
-  - DoD: Validator erkennt mindestens:
+  - Legacy-DoD (Validator entfernt): hätte mindestens erkennen sollen:
     - unmarkierte (fehlende Provenienz) Aussagen,
     - Long-term Aussagen ohne Source-Referenz,
     - „neue“ Aussagen ohne Transcript-Evidence-Pointer.
@@ -679,7 +703,7 @@ Kontext: Aktuell ist die Offline-Analyse heuristisch/deterministisch (Index/Aggr
     - Evidence-Pointer, die auf nicht existente Dateien zeigen (Pfad existiert nicht) oder auf das falsche PROFILE_ROOT zeigen.
     - Duplicate Statements (identischer Text nach Normalisierung), getrennt nach `new` und `inherited`.
   - Output (Vorschlag, als solcher markieren): ein maschinenlesbarer Report (z.B. JSON) mit `counts` + `findings[]`, damit Regressionen in CI auffallen.
-  - Evidence: Strict JSON + Evidence-Policy für `output.content` via [`validate_llm_output_content()`](src/transcript_ai_analysis/llm_output_validator.py:500) sowie Artefakt-Bundle-Validator (derived report + metadata cross-checks) via [`validate_llm_report_artefacts()`](src/transcript_ai_analysis/llm_output_validator.py:60) mit Tests in [`tests/test_llm_output_validation_policy.py`](tests/test_llm_output_validation_policy.py:1).
+  - Evidence: Legacy-Validatoren wurden entfernt; Checks sind konzeptuell dokumentiert, aber nicht mehr enforced.
 
 - [x] **Visualisierung im Report: Mermaid als Default, Plots optional (Artefakt-Policy festlegen)**.
   - DoD: Mermaid-Diagramme sind im Markdown eingebettet (diffbar, keine Binary-Artefakte als Default).

@@ -65,3 +65,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Task: Create a Schema v3 prompt-engineering handover report (Meta summary).
 - Issues/Bugs: Current summaries are rendered without quotes/evidence, making them hard to audit.
 - Resolution: Added `enhance_prompt_engineering_v3.md` with a v3 direction (numbers completeness, verbatim vs normalized values, evidence/persistence improvements).
+
+## 2026-01-31
+- Aufgabe: Offene Punkte/Optionen zu Open WebUI Knowledge Auto-Create + Duplikate in TODO dokumentiert.
+- Probleme/Bugs/Issues: Unklarheit zu unerwuenschten Knowledge-Collections (bitcoin/crypto) durch Auto-Create bei RAG-Anfragen.
+- Loesung: TODO-Items mit Optionen (Request-Flag, Allowlist, Kombination) + Cleanup/Sync-Plan erfasst.
