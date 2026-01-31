@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unreleased
-- debug-proxy: Log-Rotation fuer JSONL (size-based)
+- debug-proxy: JSONL-Log wird global auf maximale Zeichenzahl begrenzt
 - debug-proxy: neuer MITM Debug-Proxy (JSONL Logs) + OWUI Proxy-Config
 - mcp-transcript-miner: optionaler Pre-Check gegen OWUI-Duplikate (Hash/Filename) vor Upload
 - ops: OWUI Knowledge (investing) dedupliziert (Hash/Dateiname), Bestand reduziert

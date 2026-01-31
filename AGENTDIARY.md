@@ -162,9 +162,9 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Debug-Proxy als eigenes Service-Root (`debug-proxy/`) mit JSONL-Logging; OWUI-Config angepasst.
 
 ## 2026-01-31
-- Aufgabe: Log-Rotation fuer debug-proxy hinzugefuegt.
-- Probleme/Bugs/Issues: JSONL-Log kann wachsen.
-- Loesung: Size-basierte Rotation (Max-Bytes + Keep) implementiert und dokumentiert.
+- Aufgabe: Debug-Proxy Log-Groesse auf globales Zeichenlimit umgestellt.
+- Probleme/Bugs/Issues: Log sollte insgesamt sehr klein bleiben (ca. 10k Zeichen).
+- Loesung: Rotation entfernt; Datei wird auf die letzten N Zeichen gekappt.
 
 ## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.

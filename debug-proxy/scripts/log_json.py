@@ -6,8 +6,7 @@ from mitmproxy import http
 
 LOG_PATH = os.getenv("PROXY_LOG_PATH", "/data/flows.jsonl")
 MAX_CHARS = int(os.getenv("PROXY_LOG_MAX_CHARS", "10000"))
-MAX_BYTES = int(os.getenv("PROXY_LOG_MAX_BYTES", "10485760"))  # 10 MB
-ROTATE_KEEP = int(os.getenv("PROXY_LOG_ROTATE_KEEP", "5"))
+MAX_TOTAL_CHARS = int(os.getenv("PROXY_LOG_MAX_TOTAL_CHARS", "10000"))
 
 _REDACT_HEADERS = {
     "authorization",
@@ -48,37 +47,29 @@ def _headers_to_dict(headers) -> dict[str, str]:
 
 def _write_log(entry: dict[str, object]) -> None:
     os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
-    _maybe_rotate()
     with open(LOG_PATH, "a", encoding="utf-8") as fh:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    _enforce_max_total_chars()
 
 
-def _maybe_rotate() -> None:
-    if MAX_BYTES <= 0:
+def _enforce_max_total_chars() -> None:
+    if MAX_TOTAL_CHARS <= 0:
         return
     try:
-        size = os.path.getsize(LOG_PATH)
-    except FileNotFoundError:
-        return
+        with open(LOG_PATH, "r+", encoding="utf-8") as fh:
+            fh.seek(0, os.SEEK_END)
+            size = fh.tell()
+            if size <= MAX_TOTAL_CHARS:
+                return
+            # Keep only the last MAX_TOTAL_CHARS characters
+            keep = min(size, MAX_TOTAL_CHARS)
+            fh.seek(size - keep)
+            tail = fh.read(keep)
+            fh.seek(0)
+            fh.write(tail)
+            fh.truncate()
     except OSError:
         return
-    if size < MAX_BYTES:
-        return
-    if ROTATE_KEEP <= 0:
-        return
-    # Rotate: flows.jsonl -> flows.jsonl.1, keep .1..ROTATE_KEEP
-    for i in range(ROTATE_KEEP, 0, -1):
-        src = f"{LOG_PATH}.{i}"
-        dst = f"{LOG_PATH}.{i + 1}"
-        if os.path.exists(src):
-            try:
-                os.replace(src, dst)
-            except OSError:
-                pass
-    try:
-        os.replace(LOG_PATH, f"{LOG_PATH}.1")
-    except OSError:
-        pass
 
 
 def response(flow: http.HTTPFlow) -> None:
