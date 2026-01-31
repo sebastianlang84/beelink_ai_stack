@@ -73,6 +73,12 @@
   - Scope: alle `*.md`, mit erlaubter `.markdownlint.json`/`.markdownlint.yaml` Konfiguration.
   - CI: optional als eigener Job (fast fail bei Lint-Fehlern).
 
+- [ ] **Watchdog: OWUI-Stop aufklaeren + Regeln schaerfen**
+  - Fakt: Watchdog stoppt Container **nur** beim Temp-Stop (Default: 60C, 2 Messungen) und Default-Target ist `owui`.
+  - Check: `/data/watchdog.alert.jsonl` nach `action=stop_containers_temp_threshold` um 2026-01-31 ~01:29.
+  - Entscheidung: `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` leeren **oder** Schwellen/Consec erhoehen.
+  - Optional: explizites Log-Level/Notice, wenn ein Container gestoppt wird (inkl. Grund).
+
 - [x] **Investing-Test Workflow (Alpha, schneller Iterate)**
   - Ab sofort fuer Experimente/Prompt-Tuning `investing_test` nutzen (kleinere Datenmenge, weniger Kosten/Time).
   - `config_investing_test.yaml` als Standard fuer Prompt-Iterationen.

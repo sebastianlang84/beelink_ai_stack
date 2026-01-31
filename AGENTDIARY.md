@@ -75,3 +75,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: TODO um Markdown-Linter-Wunsch ergänzt (Repo-wide, CI-Option).
 - Probleme/Bugs/Issues: Keine.
 - Loesung: Neuer TODO-Eintrag mit Optionen/Scope/CI-Hinweis.
+
+## 2026-01-31
+- Aufgabe: TODO um Watchdog/OWUI-Stop-Klaerung und Aktionen ergaenzt.
+- Probleme/Bugs/Issues: OWUI wurde manuell gestoppt; wahrscheinlich Temp-Stop durch Watchdog (Default-Target owui).
+- Loesung: TODO fuer Log-Check (watchdog.alert.jsonl) + Anpassung der Temp-Stop-Regeln erfasst.
