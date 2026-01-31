@@ -50,7 +50,6 @@ Ziel: bessere Text-Extraktion (inkl. OCR bei Scan-PDFs mit `latest-full`).
 
 Notizen:
 - Wenn Debug-Proxy aktiv ist: `tika` muss in `OWUI_NO_PROXY` stehen, sonst versucht OWUI ggf. den internen Call zu proxien.
-- Setup-Notiz: `open_web_ui_apache_tika_install_setup.md:1`
 
 ## External Tools (Import JSON)
 Templates: `open-webui/tool-imports/README.md:1`

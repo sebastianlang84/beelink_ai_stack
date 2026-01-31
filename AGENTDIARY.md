@@ -244,4 +244,4 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 ## 2026-01-31
 - Aufgabe: Apache Tika fuer Open WebUI als Compose-Service integriert.
 - Probleme/Bugs/Issues: OWUI lief (optional) hinter debug-proxy; interner Tika-Call darf nicht ueber Proxy laufen.
-- Loesung: `tika` Service in `open-webui/docker-compose.yml` hinzugefuegt, `OWUI_NO_PROXY` um `tika` erweitert, Setup-Doku bereinigt/aktualisiert (`open_web_ui_apache_tika_install_setup.md`).
+- Loesung: `tika` Service in `open-webui/docker-compose.yml` hinzugefuegt und `OWUI_NO_PROXY` um `tika` erweitert.
