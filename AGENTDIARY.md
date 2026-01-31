@@ -162,9 +162,9 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Debug-Proxy als eigenes Service-Root (`debug-proxy/`) mit JSONL-Logging; OWUI-Config angepasst.
 
 ## 2026-01-31
-- Aufgabe: Debug-Proxy Log-Groesse auf globales Zeichenlimit umgestellt.
-- Probleme/Bugs/Issues: Log sollte insgesamt sehr klein bleiben (ca. 10k Zeichen).
-- Loesung: Rotation entfernt; Datei wird auf die letzten N Zeichen gekappt.
+- Aufgabe: Debug-Proxy Log-Groessen fuer Debug-Window angepasst.
+- Probleme/Bugs/Issues: Log soll nur letzte 2-3 Prompts fassen und in Context-Window passen.
+- Loesung: Default auf 100k Gesamt + 2k pro Request gesetzt.
 
 ## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.

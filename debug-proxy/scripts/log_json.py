@@ -5,8 +5,8 @@ from datetime import datetime, timezone
 from mitmproxy import http
 
 LOG_PATH = os.getenv("PROXY_LOG_PATH", "/data/flows.jsonl")
-MAX_CHARS = int(os.getenv("PROXY_LOG_MAX_CHARS", "10000"))
-MAX_TOTAL_CHARS = int(os.getenv("PROXY_LOG_MAX_TOTAL_CHARS", "10000"))
+MAX_CHARS = int(os.getenv("PROXY_LOG_MAX_CHARS", "2000"))
+MAX_TOTAL_CHARS = int(os.getenv("PROXY_LOG_MAX_TOTAL_CHARS", "100000"))
 
 _REDACT_HEADERS = {
     "authorization",
