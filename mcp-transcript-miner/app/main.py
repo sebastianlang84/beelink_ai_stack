@@ -63,6 +63,14 @@ AUTO_CREATE_KNOWLEDGE_ALLOWLIST = {
     for t in os.getenv("OPEN_WEBUI_CREATE_KNOWLEDGE_ALLOWLIST", "").split(",")
     if t.strip()
 }
+KNOWLEDGE_DEDUP_PRECHECK = os.getenv("OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK", "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+}
+KNOWLEDGE_DEDUP_CACHE_TTL = int(os.getenv("OPEN_WEBUI_KNOWLEDGE_DEDUP_CACHE_TTL_SECONDS", "900"))
+
+_KNOWLEDGE_FILE_CACHE: dict[str, dict[str, Any]] = {}
 
 CAPABILITIES_MARKDOWN = """\
 ## Transcript Miner — Capabilities
@@ -660,6 +668,88 @@ def _create_knowledge(name: str) -> dict[str, Any]:
     return resp.json() if resp.content else {"status": "ok"}
 
 
+def _fetch_knowledge_files(knowledge_id: str) -> list[dict[str, Any]]:
+    import requests
+
+    url = f"{OPEN_WEBUI_BASE_URL}/api/v1/knowledge/{knowledge_id}/files"
+    headers = _auth_headers()
+    page = 0
+    limit = 200
+    files: list[dict[str, Any]] = []
+    while True:
+        resp = requests.get(
+            url,
+            headers=headers,
+            params={"page": page, "limit": limit},
+            timeout=60,
+        )
+        if resp.status_code >= 400:
+            raise RuntimeError(f"knowledge files failed: {resp.status_code} {resp.text}")
+        data = resp.json()
+        batch = data.get("items") or data.get("files") or []
+        total = data.get("total")
+        if not batch:
+            break
+        files.extend(batch)
+        if total is not None and len(files) >= total:
+            break
+        if len(batch) < limit:
+            break
+        page += 1
+    return files
+
+
+def _knowledge_file_cache_get(knowledge_id: str) -> dict[str, Any] | None:
+    entry = _KNOWLEDGE_FILE_CACHE.get(knowledge_id)
+    if not entry:
+        return None
+    if (time.time() - entry.get("ts", 0)) > KNOWLEDGE_DEDUP_CACHE_TTL:
+        return None
+    return entry
+
+
+def _knowledge_file_cache_set(knowledge_id: str, hashes: set[str], filenames: set[str]) -> None:
+    _KNOWLEDGE_FILE_CACHE[knowledge_id] = {"ts": time.time(), "hashes": hashes, "filenames": filenames}
+
+
+def _knowledge_file_cache_add(knowledge_id: str, sha: str | None, filename: str | None) -> None:
+    entry = _knowledge_file_cache_get(knowledge_id)
+    if not entry:
+        return
+    if sha:
+        entry["hashes"].add(sha)
+    if filename:
+        entry["filenames"].add(filename)
+
+
+def _knowledge_has_duplicate(knowledge_id: str, sha: str | None, filename: str | None) -> bool:
+    if not KNOWLEDGE_DEDUP_PRECHECK:
+        return False
+    entry = _knowledge_file_cache_get(knowledge_id)
+    if not entry:
+        try:
+            files = _fetch_knowledge_files(knowledge_id)
+        except Exception:
+            return False
+        hashes = {str(f.get("hash") or "") for f in files if f.get("hash")}
+        filenames = {
+            str(f.get("filename") or f.get("name") or "")
+            for f in files
+            if (f.get("filename") or f.get("name"))
+        }
+        _knowledge_file_cache_set(knowledge_id, hashes=hashes, filenames=filenames)
+        entry = _knowledge_file_cache_get(knowledge_id)
+        if not entry:
+            return False
+    hashes = entry.get("hashes") or set()
+    filenames = entry.get("filenames") or set()
+    if sha and sha in hashes:
+        return True
+    if filename and filename in filenames:
+        return True
+    return False
+
+
 def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
     knowledge_id = (req.knowledge_id or DEFAULT_KNOWLEDGE_ID or "").strip()
     if not knowledge_id:
@@ -698,6 +788,16 @@ def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
         parts.append(_slug(vid, 16))
         filename = "__".join(parts) + ".md"
         markdown = _render_markdown(req)
+
+        if _knowledge_has_duplicate(knowledge_id, sha=sha, filename=filename):
+            return {
+                "status": "skipped",
+                "reason": "duplicate_remote",
+                "source_id": req.source_id,
+                "knowledge_id": knowledge_id,
+                "filename": filename,
+            }
+
         file_id = _upload_file(markdown, filename=filename)
 
         process_status = _poll_processing(file_id)
@@ -712,6 +812,8 @@ def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
             (req.source_id, sha, file_id, knowledge_id, int(time.time())),
         )
         conn.commit()
+        if add_status != "skipped":
+            _knowledge_file_cache_add(knowledge_id, sha=sha, filename=filename)
         return {
             "status": "skipped" if add_status == "skipped" else "indexed",
             "source_id": req.source_id,

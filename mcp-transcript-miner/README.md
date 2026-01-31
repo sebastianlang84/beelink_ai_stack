@@ -93,6 +93,9 @@ Optional:
   - Request: `create_knowledge_if_missing=true`
   - Optional: Allowlist via `OPEN_WEBUI_CREATE_KNOWLEDGE_ALLOWLIST=investing,investing_test,...` (leer = alle)
 - Upload-Dateinamen werden aus Datum/Channel/Title/Video-ID gebildet (lesbar).
+- Optional: Pre-Check gegen OWUI (Hash/Dateiname) vor Upload:
+  - `OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true`
+  - Cache: `OPEN_WEBUI_KNOWLEDGE_DEDUP_CACHE_TTL_SECONDS=900`
 
 ## Betrieb
 - Standalone (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)

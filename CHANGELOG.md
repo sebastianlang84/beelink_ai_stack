@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- mcp-transcript-miner: optionaler Pre-Check gegen OWUI-Duplikate (Hash/Filename) vor Upload
 - ops: OWUI Knowledge (investing) dedupliziert (Hash/Dateiname), Bestand reduziert
 - docs: TODO fuer Apache Tika Docker-Installation ergaenzt
 - mcp-transcript-miner: Duplicate-Content bei Knowledge-Add wird als "skipped" behandelt (kein Hard-Fail)

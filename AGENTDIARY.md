@@ -147,6 +147,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Entfernen wiederholt bis keine Duplikate mehr vorhanden; Bestand jetzt 109 Files, keine Hash/Name-Duplikate.
 
 ## 2026-01-31
+- Aufgabe: Praeventiven OWUI-Dedup-Precheck implementiert.
+- Probleme/Bugs/Issues: Wiederholte Uploads konnten vor Dedup entstehen.
+- Loesung: Pre-Check gegen OWUI (Hash/Dateiname) vor Upload + Cache-TTL (configurierbar).
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
