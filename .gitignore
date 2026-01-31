@@ -36,3 +36,6 @@ emb-bench/.cache_out/
 emb-bench/runs/
 emb-bench/runs_out/
 open-webui/tool-imports/backup_*.json
+
+# Convenience symlinks into /home/wasti/ai_stack_data (never commit)
+debug-proxy/flows.jsonl

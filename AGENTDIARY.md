@@ -225,3 +225,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
+
+## 2026-01-31
+- Aufgabe: Debug-Proxy Log-Datei im Repo leichter auffindbar gemacht.
+- Probleme/Bugs/Issues: flows.jsonl liegt unter `/home/wasti/ai_stack_data` und ist im Repo nicht sichtbar.
+- Loesung: Lokalen Symlink `debug-proxy/flows.jsonl` angelegt und per `.gitignore` vom Commit ausgeschlossen; README-Hinweis ergaenzt.
