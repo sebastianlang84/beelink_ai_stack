@@ -197,6 +197,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Aktuelle Logs zeigen OpenRouter-Calls; flows.jsonl enthaelt lesbare JSON-Responses.
 
 ## 2026-01-31
+- Aufgabe: Letzte 2 Proxy-Flows extrahiert.
+- Probleme/Bugs/Issues: Host hat kein python; JSONL musste via jq geparst werden.
+- Loesung: Letzte 2 JSON-Objekte via jq extrahiert und nach `/home/wasti/ai_stack_data/debug-proxy/last_flows.json` geschrieben.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
