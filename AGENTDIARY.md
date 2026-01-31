@@ -192,6 +192,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Ringbuffer auf byte-basiertes Truncation umgestellt.
 
 ## 2026-01-31
+- Aufgabe: Debug-Proxy Logs und flows.jsonl geprueft.
+- Probleme/Bugs/Issues: In Logs ist ein alter UTF-8 Decode-Error sichtbar (vor Fix).
+- Loesung: Aktuelle Logs zeigen OpenRouter-Calls; flows.jsonl enthaelt lesbare JSON-Responses.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
