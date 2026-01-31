@@ -21,6 +21,7 @@ Ziel: HTTP(S)-Traffic (z. B. OpenRouter) mitschneiden und als JSONL loggen.
 - JSONL: `${PROXY_LOG_PATH:-/data/flows.jsonl}` (bind-mount unter `DEBUG_PROXY_DATA_DIR_HOST`)
 - Truncation: `${PROXY_LOG_MAX_CHARS:-0}` (0 = kein per-request truncation)
 - Gesamtlimit (Datei): `${PROXY_LOG_MAX_TOTAL_CHARS:-100000}` (haelt die Datei klein)
+ - Gzip-Responses werden automatisch entpackt fuer Lesbarkeit.
 
 ## Zertifikat (TLS MITM)
 - Der Proxy erzeugt ein CA-Zertifikat unter:

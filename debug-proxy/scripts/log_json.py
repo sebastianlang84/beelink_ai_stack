@@ -1,5 +1,6 @@
 import json
 import os
+import gzip
 from datetime import datetime, timezone
 
 from mitmproxy import http
@@ -32,6 +33,18 @@ def _decode_body(body: bytes | None) -> str:
     if not body:
         return ""
     return body.decode("utf-8", errors="replace")
+
+
+def _maybe_decompress(body: bytes | None, headers) -> bytes | None:
+    if not body:
+        return body
+    enc = str(headers.get("content-encoding", "")).lower()
+    if "gzip" in enc:
+        try:
+            return gzip.decompress(body)
+        except OSError:
+            return body
+    return body
 
 
 def _headers_to_dict(headers) -> dict[str, str]:
@@ -75,8 +88,10 @@ def _enforce_max_total_chars() -> None:
 def response(flow: http.HTTPFlow) -> None:
     req = flow.request
     resp = flow.response
-    req_body, req_trunc = _truncate(_decode_body(req.raw_content))
-    resp_body, resp_trunc = _truncate(_decode_body(resp.raw_content))
+    req_body_raw = _maybe_decompress(req.raw_content, req.headers)
+    resp_body_raw = _maybe_decompress(resp.raw_content, resp.headers)
+    req_body, req_trunc = _truncate(_decode_body(req_body_raw))
+    resp_body, resp_trunc = _truncate(_decode_body(resp_body_raw))
 
     entry = {
         "ts": _now_iso(),

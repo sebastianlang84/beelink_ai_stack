@@ -182,6 +182,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: debug-proxy auf `confdir=/data/mitmproxy` fixiert, Doku aktualisiert.
 
 ## 2026-01-31
+- Aufgabe: Debug-Proxy Logs lesbar machen.
+- Probleme/Bugs/Issues: Responses waren gzip-komprimiert.
+- Loesung: Gzip-Responses werden vor Logging entpackt.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
