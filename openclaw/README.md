@@ -25,7 +25,9 @@ Nach dem Lauf:
 - UI oeffnen: `http://127.0.0.1:18789/`
 - Token im Control UI unter Settings eintragen
 
-Quelle: Docker-Setup in der offiziellen Doku. citeturn0search0
+Control UI Referenz: citeturn0search3
+
+Quelle: Docker-Setup in der offiziellen Doku. citeturn0search1
 
 ## Compose in diesem Repo (optional)
 Dieser Ordner enthaelt ein eigenes `docker-compose.yml`, das auf `openclaw/upstream/` als Build-Context zeigt.
@@ -49,7 +51,7 @@ docker compose --env-file .env --env-file .config.env --env-file openclaw/.confi
   channels add --channel telegram --token "$OPENCLAW_TELEGRAM_BOT_TOKEN"
 ```
 
-Quelle: Docker-CLI Channel Setup in der Doku. citeturn0search0
+Quelle: Docker-CLI Channel Setup in der Doku. citeturn0search1
 
 ## Telegram Security (Config)
 Die Telegram-Policies werden in `~/.openclaw/openclaw.json` gesetzt.
@@ -71,7 +73,7 @@ Beispiel (Allowlist + Mention-Gate):
 }
 ```
 
-Config-Referenz + Telegram-Policy Keys: citeturn0search1turn0search2
+Config-Referenz + Telegram-Policy Keys: citeturn0search0turn0search2
 
 ## Healthcheck (optional)
 
@@ -80,4 +82,4 @@ docker compose -f openclaw/docker-compose.yml exec openclaw-gateway \
   node dist/index.js health --token "$OPENCLAW_GATEWAY_TOKEN"
 ```
 
-Quelle: Docker Healthcheck in der Doku. citeturn0search0
+Quelle: Docker Healthcheck in der Doku. citeturn0search1
