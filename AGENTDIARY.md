@@ -100,3 +100,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Frage nach Zeitraum fuer Max/Min-Temperaturen geklaert.
 - Probleme/Bugs/Issues: Missverstaendnis, ob Max/Min historische Werte sind.
 - Loesung: Erklaert, dass sysfs-Reads Momentaufnahmen sind; Hinweis auf Watchdog-Logs fuer Verlauf.
+
+## 2026-01-31
+- Aufgabe: Nachfrage zum Zeitrahmen fuer Temperaturwerte beantwortet.
+- Probleme/Bugs/Issues: Wiederholtes Missverstaendnis zwischen Zeitrahmen und Sensor-Set.
+- Loesung: Klarstellung, dass die Werte eine Momentaufnahme sind (kein Zeitrahmen).
