@@ -295,3 +295,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Passwort fuer wasticlaw-1 gesetzt und in .env hinterlegt (secrets-only).
 - Probleme/Bugs/Issues: Keine.
 - Loesung: User-Passwort via Admin API aktualisiert und OPEN_WEBUI_OPENCLAW_PASSWORD gesetzt.
+
+## 2026-01-31
+- Aufgabe: OWUI openclaw user email auf wasticlaw-1@example.com umgestellt.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: User per Admin API aktualisiert und Record-Datei angepasst.

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- open-webui: openclaw user email auf wasticlaw-1@example.com gesetzt
 - open-webui: openclaw user display name auf wasticlaw-1 gesetzt
 - open-webui: openclaw user (role=user) angelegt; record unter open-webui/openclaw_user.txt
 - open-webui: Default User Permissions via Admin API aktualisiert (features.api_keys=true)
