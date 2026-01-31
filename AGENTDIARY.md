@@ -250,3 +250,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI Prompt-Debug-Loop vorbereitet (Investing) und Patch-Skripte repariert.
 - Probleme/Bugs/Issues: Bash-HereDoc nutzte ungueltige Substitutionen ("${...!r}") und brach bei owui_dump/patch ab.
 - Loesung: Scripts auf Env-Variablen umgestellt und Referenz-Prompts fuer Model/Folder/RAG befuellt; Prompt-Update in der OWUI DB angewendet.
+
+## 2026-01-31
+- Aufgabe: Prompt-Test via Open WebUI API (Investing-Chat) ausgefuehrt und Debug-Proxy-Flow erzeugt.
+- Probleme/Bugs/Issues: Erster API-Call lief in Timeout.
+- Loesung: Request mit laengerem Timeout wiederholt; Flow erfolgreich abgeschlossen.
