@@ -142,6 +142,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Vollstaendigen API-Export mit Pagination ausgewertet: 587 Files, Duplikate vorhanden (109 Filename-Duplikate, 92 Hash-Duplikate).
 
 ## 2026-01-31
+- Aufgabe: OWUI Investing Knowledge dedupliziert (Hash + Dateiname).
+- Probleme/Bugs/Issues: Delete-API meldete teils 400 (File bereits entfernt).
+- Loesung: Entfernen wiederholt bis keine Duplikate mehr vorhanden; Bestand jetzt 109 Files, keine Hash/Name-Duplikate.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.

@@ -62,9 +62,8 @@
   - Option: `bitcoin`/`crypto` Collections loeschen (nur falls User bestaetigt).
   - Danach: Sync/Index nur fuer erlaubte Topics.
 
-- [ ] **Open WebUI Knowledge: Duplikate sichtbar machen**
-  - CLI/Script, das pro Collection Dateinamen + Duplikate ausgibt (id/filename/count).
-  - Optionaler Fix: Duplikate loeschen (nur nach Bestätigung).
+- [x] **Open WebUI Knowledge: Duplikate sichtbar machen**
+  - Ergebnis (investing): 587 Files vor Dedup; Duplikate nach Hash/Name entfernt → 109 Files verbleiben.
 
 - [x] **Re-Sync nach Summary-Rebuild**
   - Status: investing Run fertiggestellt; `sync/topic/investing` erfolgreich (109 processed/109 indexed).
