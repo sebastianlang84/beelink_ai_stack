@@ -67,6 +67,12 @@
   - ToDo: investing Run fertigstellen, danach `sync/topic/investing` + Duplikat-Check.
   - Hinweis: Live-Events ohne Transkript (VideoUnplayable) bleiben Skip.
 
+- [ ] **Markdown Linter integrieren (Repo-wide)**
+  - Ziel: Konsistente Markdown-Qualitaet (MD041/MD022/MD031/MD032 etc.).
+  - Optionen: markdownlint-cli2 oder markdownlint.
+  - Scope: alle `*.md`, mit erlaubter `.markdownlint.json`/`.markdownlint.yaml` Konfiguration.
+  - CI: optional als eigener Job (fast fail bei Lint-Fehlern).
+
 - [x] **Investing-Test Workflow (Alpha, schneller Iterate)**
   - Ab sofort fuer Experimente/Prompt-Tuning `investing_test` nutzen (kleinere Datenmenge, weniger Kosten/Time).
   - `config_investing_test.yaml` als Standard fuer Prompt-Iterationen.

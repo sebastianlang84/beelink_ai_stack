@@ -70,3 +70,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Offene Punkte/Optionen zu Open WebUI Knowledge Auto-Create + Duplikate in TODO dokumentiert.
 - Probleme/Bugs/Issues: Unklarheit zu unerwuenschten Knowledge-Collections (bitcoin/crypto) durch Auto-Create bei RAG-Anfragen.
 - Loesung: TODO-Items mit Optionen (Request-Flag, Allowlist, Kombination) + Cleanup/Sync-Plan erfasst.
+
+## 2026-01-31
+- Aufgabe: TODO um Markdown-Linter-Wunsch ergänzt (Repo-wide, CI-Option).
+- Probleme/Bugs/Issues: Keine.
+- Loesung: Neuer TODO-Eintrag mit Optionen/Scope/CI-Hinweis.
