@@ -230,3 +230,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Debug-Proxy Log-Datei im Repo leichter auffindbar gemacht.
 - Probleme/Bugs/Issues: flows.jsonl liegt unter `/home/wasti/ai_stack_data` und ist im Repo nicht sichtbar.
 - Loesung: Lokalen Symlink `debug-proxy/flows.jsonl` angelegt und per `.gitignore` vom Commit ausgeschlossen; README-Hinweis ergaenzt.
+
+## 2026-01-31
+- Aufgabe: Debug-Proxy last_flows.json im Repo-Tree verlinkt.
+- Probleme/Bugs/Issues: Extrahierte Datei lag nur unter `/home/wasti/ai_stack_data` und war im Service-Ordner nicht sichtbar.
+- Loesung: Lokalen Symlink `debug-proxy/last_flows.json` angelegt und in `.gitignore` ausgeschlossen; README ergaenzt.

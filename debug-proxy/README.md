@@ -23,6 +23,7 @@ Ziel: HTTP(S)-Traffic (z. B. OpenRouter) mitschneiden und als JSONL loggen.
 - Gesamtlimit (Datei): `${PROXY_LOG_MAX_TOTAL_CHARS:-150000}` (haelt die Datei klein; byte-basiertes Ringbuffer, line-aligned)
  - Gzip-Responses werden automatisch entpackt fuer Lesbarkeit.
 - Convenience: Im Repo liegt (lokal) ein Symlink `debug-proxy/flows.jsonl` auf die echte Datei unter `ai_stack_data`, damit man sie schnell im Editor oeffnen kann.
+- Optional: `debug-proxy/last_flows.json` kann ebenfalls lokal als Symlink auf `/home/wasti/ai_stack_data/debug-proxy/last_flows.json` liegen (falls du die extrahierten letzten Flows im Repo-Tree sehen willst).
 
 ## Zertifikat (TLS MITM)
 - Der Proxy erzeugt ein CA-Zertifikat unter:
