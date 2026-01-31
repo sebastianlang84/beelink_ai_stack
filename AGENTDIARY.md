@@ -320,3 +320,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OpenClaw Gateway konfiguriert und lokal gestartet (127.0.0.1:18789).
 - Probleme/Bugs/Issues: openclaw setup scheiterte wegen Berechtigungen; Gateway restartete wegen missing config.
 - Loesung: setup mit --user 1001:1001 ausgefuehrt, openclaw.json lesbar gemacht, Gateway mit repo-compose (localhost bind) gestartet.
+
+## 2026-01-31
+- Aufgabe: OWUI via Tailscale Serve unter /owui stabil gemacht.
+- Probleme/Bugs/Issues: "Backend Required" durch fehlende Asset/API-Weiterleitung bei Pfad-Serve; _app Bundles 404.
+- Loesung: Tailscale Serve Pfade fuer /owui, /_app, /static, /manifest.json, /api auf korrekte Upstream-Pfade gesetzt und Doku ergaenzt.

@@ -135,6 +135,7 @@
 - context6: Qdrant/OpenRouter Embeddings entfernt; Indexing erfolgt via Upload in Open WebUI Knowledge (Open WebUI übernimmt Processing/Embeddings)
 - Projekt-Skills ergänzt: `skills/` (Codex Workflows für Compose-Validation, Secrets-Policy, Tool-Imports, Backup/Restore, etc.)
 - Open WebUI Stack ergänzt: Compose + Doku, Image-Tag gepinnt (0.7.2), localhost-only Port `127.0.0.1:3000`
+- Open WebUI: Tailscale Serve Pfad-Setup für `/owui` inkl. Asset/API-Pfade dokumentiert
 - Open WebUI External Tools: Import-JSON für Context7 MCP ergänzt (`open-webui/tool-imports/tool_import_context7.json`)
 - Open WebUI Indexer in **Transcript Miner** integriert (ein Tool in Open WebUI): `mcp-transcript-miner/` (`POST /index/transcript`, `POST /sync/topic/{topic}`)
 - TranscriptMiner Summaries vereinheitlicht: pro Video `*.summary.md` (kein `*.summary.json` mehr)

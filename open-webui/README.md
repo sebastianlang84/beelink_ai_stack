@@ -15,7 +15,20 @@ Default ist **localhost-only** gemappt: `127.0.0.1:3000 -> 8080` (kein LAN-Port)
 Option A (einfach, VPN-only): im Tailnet bereitstellen:
 - `sudo tailscale serve --bg --https=443 http://127.0.0.1:3000`
 
-Option B (später): Reverse Proxy (Traefik/Caddy) im Docker-Netz.
+Option B (Pfad /owui, Tailnet-HTTPS): zusätzliche Pfade fuer Assets/API erforderlich:
+
+```bash
+sudo tailscale serve reset
+sudo tailscale serve --bg --https=443 --set-path /owui          http://127.0.0.1:3000/
+sudo tailscale serve --bg --https=443 --set-path /_app          http://127.0.0.1:3000/_app
+sudo tailscale serve --bg --https=443 --set-path /static        http://127.0.0.1:3000/static
+sudo tailscale serve --bg --https=443 --set-path /manifest.json http://127.0.0.1:3000/manifest.json
+sudo tailscale serve --bg --https=443 --set-path /api           http://127.0.0.1:3000/api
+```
+
+Hinweis: Ohne die Asset/API-Pfade kommt es zu "Backend Required" oder 404 auf `_app`-Bundles.
+
+Option C (spater): Reverse Proxy (Traefik/Caddy) im Docker-Netz.
 
 ## Persistenz / Backup
 - Volume: `owui-data` (Pfad im Container: `/app/backend/data`)
