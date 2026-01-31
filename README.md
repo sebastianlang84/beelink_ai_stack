@@ -27,6 +27,7 @@ Dokunetz: Einstieg über `docs/README.md:1`.
 5. Zugriff lokal am Server: `http://127.0.0.1:3000` (VPN-only empfohlen via Tailscale Serve)
 
 Betrieb/Access: `open-webui/README.md:1` (default localhost-only; empfohlen via Tailscale Serve im Tailnet).
+RAG Retrieval (aktueller Stand): Embedder Top-K = 30 (reduziert von 100) in Open WebUI UI.
 
 ## Quickstart (Transcript Miner Tool)
 Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen, Runs starten, Summaries indexieren).

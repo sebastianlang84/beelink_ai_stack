@@ -51,6 +51,9 @@ Ziel: bessere Text-Extraktion (inkl. OCR bei Scan-PDFs mit `latest-full`).
 Notizen:
 - Wenn Debug-Proxy aktiv ist: `tika` muss in `OWUI_NO_PROXY` stehen, sonst versucht OWUI ggf. den internen Call zu proxien.
 
+## RAG Retrieval (aktueller Stand)
+- Embedder RAG Setting: Top-K = 30 (reduziert von 100) via Open WebUI UI.
+
 ## External Tools (Import JSON)
 Templates: `open-webui/tool-imports/README.md:1`
 

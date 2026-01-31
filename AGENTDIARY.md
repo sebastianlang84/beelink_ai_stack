@@ -260,3 +260,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Neues Skill fuer OWUI Prompt-Tests via API erstellt (inkl. Flow-Report) und Regel zur stetigen Verbesserung ergaenzt.
 - Probleme/Bugs/Issues: init_skill.py war nur als python3 verfuegbar.
 - Loesung: Skill mit python3 initialisiert; Scripts + Referenzprompt hinzugefuegt; AGENTS/README/CHANGELOG aktualisiert.
+
+## 2026-01-31
+- Aufgabe: RAG Top-K Aenderung (100 -> 30) dokumentiert.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: README/CHANGELOG aktualisiert und aktuellen Setting-Stand erfasst.

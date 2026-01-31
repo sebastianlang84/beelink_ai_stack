@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- open-webui: RAG Top-K im Embedder von 100 auf 30 reduziert (UI-Setting)
 - skills: owui-prompt-api-loop fuer API-based Prompt-Tests inkl. Debug-Proxy Flow-Report
 - agents: Regel fuer stetige Verbesserung + Skill-Nutzung bei komplexen Workflows
 - debug-proxy: last_flows.local.json gitignored
