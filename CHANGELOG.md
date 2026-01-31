@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unreleased
-- debug-proxy: JSONL-Log-Groessen auf Debug-Window (100k total / 2k pro Request) angepasst
+- debug-proxy: JSONL-Log als Ringbuffer (100k total), kein per-request truncation
 - debug-proxy: neuer MITM Debug-Proxy (JSONL Logs) + OWUI Proxy-Config
 - mcp-transcript-miner: optionaler Pre-Check gegen OWUI-Duplikate (Hash/Filename) vor Upload
 - ops: OWUI Knowledge (investing) dedupliziert (Hash/Dateiname), Bestand reduziert

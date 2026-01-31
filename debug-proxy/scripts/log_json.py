@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from mitmproxy import http
 
 LOG_PATH = os.getenv("PROXY_LOG_PATH", "/data/flows.jsonl")
-MAX_CHARS = int(os.getenv("PROXY_LOG_MAX_CHARS", "2000"))
+MAX_CHARS = int(os.getenv("PROXY_LOG_MAX_CHARS", "0"))
 MAX_TOTAL_CHARS = int(os.getenv("PROXY_LOG_MAX_TOTAL_CHARS", "100000"))
 
 _REDACT_HEADERS = {
@@ -23,7 +23,7 @@ def _now_iso() -> str:
 def _truncate(value: str | None) -> tuple[str | None, bool]:
     if value is None:
         return None, False
-    if len(value) <= MAX_CHARS:
+    if MAX_CHARS <= 0 or len(value) <= MAX_CHARS:
         return value, False
     return value[-MAX_CHARS:], True
 
