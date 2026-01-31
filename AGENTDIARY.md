@@ -217,6 +217,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Robust-Parser (invalid lines skip) und Ausgabe der letzten validen Flows inkl. System-Hash.
 
 ## 2026-01-31
+- Aufgabe: Debug-Proxy Ringbuffer an JSONL-Zeilengrenzen ausgerichtet.
+- Probleme/Bugs/Issues: Byte-Truncation konnte JSONL-Zeilen zerschneiden und Parsing erschweren.
+- Loesung: Beim Trunkieren wird die erste unvollstaendige Zeile verworfen; Default-Limit auf 150k erhoeht.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.

@@ -7,7 +7,7 @@ from mitmproxy import http
 
 LOG_PATH = os.getenv("PROXY_LOG_PATH", "/data/flows.jsonl")
 MAX_CHARS = int(os.getenv("PROXY_LOG_MAX_CHARS", "0"))
-MAX_TOTAL_CHARS = int(os.getenv("PROXY_LOG_MAX_TOTAL_CHARS", "100000"))
+MAX_TOTAL_CHARS = int(os.getenv("PROXY_LOG_MAX_TOTAL_CHARS", "150000"))
 
 _REDACT_HEADERS = {
     "authorization",
@@ -77,6 +77,11 @@ def _enforce_max_total_chars() -> None:
             keep = min(size, MAX_TOTAL_CHARS)
             fh.seek(size - keep)
             tail = fh.read(keep)
+            # Ensure we start on a JSONL line boundary. If we cut in the middle of a line,
+            # drop the partial first line so the file stays parseable as JSONL.
+            nl = tail.find(b"\n")
+            if nl != -1:
+                tail = tail[nl + 1 :]
             fh.seek(0)
             fh.write(tail)
             fh.truncate()
