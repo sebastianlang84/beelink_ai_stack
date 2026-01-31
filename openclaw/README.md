@@ -32,8 +32,8 @@ Control UI Referenz: citeturn0search3
 
 Quelle: Docker-Setup in der offiziellen Doku. citeturn0search1
 
-## Compose in diesem Repo (optional)
-Dieser Ordner enthaelt ein eigenes `docker-compose.yml`, das auf `openclaw/upstream/` als Build-Context zeigt.
+## Compose in diesem Repo (optional, empfohlen)
+Dieser Ordner enthaelt ein eigenes `docker-compose.yml`, das auf `openclaw/upstream/` als Build-Context zeigt und den Port lokal auf `127.0.0.1` bindet.
 Start:
 
 ```bash
@@ -44,6 +44,7 @@ docker compose --env-file .env --env-file .config.env --env-file openclaw/.confi
 Wichtig:
 - Host-Port ist `127.0.0.1:18789` (lokal). Keine LAN-Expose ohne Reverse Proxy.
 - Host-Config liegt unter `~/.openclaw/` und wird in den Container gemountet.
+- Falls das Gateway wegen fehlender Config restartet: zuerst `openclaw setup` via CLI ausfuehren.
 
 ## Telegram Channel (CLI-Container)
 Wenn der Bot-Token in `.env` liegt:

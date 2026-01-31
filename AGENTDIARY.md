@@ -315,3 +315,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OpenClaw Gateway Status geprueft.
 - Probleme/Bugs/Issues: Gateway restartet mit "Missing config".
 - Loesung: Setup erforderlich (openclaw setup); Hinweis fuer naechsten Schritt.
+
+## 2026-01-31
+- Aufgabe: OpenClaw Gateway konfiguriert und lokal gestartet (127.0.0.1:18789).
+- Probleme/Bugs/Issues: openclaw setup scheiterte wegen Berechtigungen; Gateway restartete wegen missing config.
+- Loesung: setup mit --user 1001:1001 ausgefuehrt, openclaw.json lesbar gemacht, Gateway mit repo-compose (localhost bind) gestartet.

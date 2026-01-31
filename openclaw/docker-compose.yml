@@ -6,10 +6,15 @@ services:
       context: ./upstream
       dockerfile: Dockerfile
     restart: unless-stopped
+    user: "${OPENCLAW_RUN_AS_UID:-1001}:${OPENCLAW_RUN_AS_GID:-1001}"
     environment:
+      HOME: /home/node
+      OPENCLAW_CONFIG_DIR: ${OPENCLAW_CONFIG_DIR:-/home/wasti/.openclaw}
+      OPENCLAW_WORKSPACE_DIR: ${OPENCLAW_WORKSPACE_DIR:-/home/wasti/.openclaw/workspace}
       OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
     volumes:
-      - ${OPENCLAW_HOME_HOST:-/home/wasti/.openclaw}:/home/node/.openclaw
+      - ${OPENCLAW_CONFIG_DIR:-/home/wasti/.openclaw}:/home/node/.openclaw
+      - ${OPENCLAW_WORKSPACE_DIR:-/home/wasti/.openclaw/workspace}:/home/node/.openclaw/workspace
     ports:
       - "${OPENCLAW_BIND_ADDRESS:-127.0.0.1}:${OPENCLAW_HOST_PORT:-18789}:18789"
     networks:
@@ -21,10 +26,15 @@ services:
       context: ./upstream
       dockerfile: Dockerfile
     entrypoint: ["openclaw"]
+    user: "${OPENCLAW_RUN_AS_UID:-1001}:${OPENCLAW_RUN_AS_GID:-1001}"
     environment:
+      HOME: /home/node
+      OPENCLAW_CONFIG_DIR: ${OPENCLAW_CONFIG_DIR:-/home/wasti/.openclaw}
+      OPENCLAW_WORKSPACE_DIR: ${OPENCLAW_WORKSPACE_DIR:-/home/wasti/.openclaw/workspace}
       OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
     volumes:
-      - ${OPENCLAW_HOME_HOST:-/home/wasti/.openclaw}:/home/node/.openclaw
+      - ${OPENCLAW_CONFIG_DIR:-/home/wasti/.openclaw}:/home/node/.openclaw
+      - ${OPENCLAW_WORKSPACE_DIR:-/home/wasti/.openclaw/workspace}:/home/node/.openclaw/workspace
     profiles: ["cli"]
     networks:
       - ai-stack
