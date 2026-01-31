@@ -275,3 +275,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Open WebUI API-Key-Status lokal geprueft (0.7.2).
 - Probleme/Bugs/Issues: API-Key Erstellung liefert 403 trotz ENABLE_API_KEYS=true.
 - Loesung: Ursache als fehlende Permission identifiziert (features.api_keys default false); Admin wird nicht gebypasst.
+
+## 2026-01-31
+- Aufgabe: API-Key-Erstellung in OWUI 0.7.2 aktiviert (Default User Permissions).
+- Probleme/Bugs/Issues: API-Key Creation lieferte 403 trotz ENABLE_API_KEYS=true.
+- Loesung: Default User Permissions via Admin API gesetzt (features.api_keys=true); API-Key Creation funktioniert danach.

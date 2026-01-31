@@ -28,6 +28,7 @@ Dokunetz: Einstieg über `docs/README.md:1`.
 
 Betrieb/Access: `open-webui/README.md:1` (default localhost-only; empfohlen via Tailscale Serve im Tailnet).
 RAG Retrieval (aktueller Stand): Embedder Top-K = 30 (reduziert von 100) in Open WebUI UI.
+API Keys (aktueller Stand): Default User Permissions erlauben `features.api_keys=true` (siehe `open-webui/README.md:1`).
 
 ## Quickstart (Transcript Miner Tool)
 Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen, Runs starten, Summaries indexieren).

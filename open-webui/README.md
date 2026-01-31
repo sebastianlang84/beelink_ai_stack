@@ -54,6 +54,9 @@ Notizen:
 ## RAG Retrieval (aktueller Stand)
 - Embedder RAG Setting: Top-K = 30 (reduziert von 100) via Open WebUI UI.
 
+## API Keys (aktueller Stand)
+- Default User Permissions: `features.api_keys=true` (aktiviert ueber Admin API; API-Key Erstellung erlaubt).
+
 ## External Tools (Import JSON)
 Templates: `open-webui/tool-imports/README.md:1`
 
