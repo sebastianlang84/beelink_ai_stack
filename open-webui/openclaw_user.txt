@@ -1,0 +1,2 @@
+openclaw_email=openclaw@example.com
+openclaw_role=user

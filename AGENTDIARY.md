@@ -280,3 +280,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: API-Key-Erstellung in OWUI 0.7.2 aktiviert (Default User Permissions).
 - Probleme/Bugs/Issues: API-Key Creation lieferte 403 trotz ENABLE_API_KEYS=true.
 - Loesung: Default User Permissions via Admin API gesetzt (features.api_keys=true); API-Key Creation funktioniert danach.
+
+## 2026-01-31
+- Aufgabe: OWUI User "openclaw" angelegt und als role=user gesetzt.
+- Probleme/Bugs/Issues: Signup scheiterte mit ungueltigem Email-Format (openclaw@local).
+- Loesung: Email auf openclaw@example.com gesetzt, Signup via Admin-Config (ENABLE_SIGNUP temporaer true) durchgefuehrt, danach wieder deaktiviert; Email in open-webui/openclaw_user.txt dokumentiert.

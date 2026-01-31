@@ -56,6 +56,7 @@ Notizen:
 
 ## API Keys (aktueller Stand)
 - Default User Permissions: `features.api_keys=true` (aktiviert ueber Admin API; API-Key Erstellung erlaubt).
+- OpenClaw user record: `open-webui/openclaw_user.txt` (email + role; no secrets).
 
 ## External Tools (Import JSON)
 Templates: `open-webui/tool-imports/README.md:1`

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- open-webui: openclaw user (role=user) angelegt; record unter open-webui/openclaw_user.txt
 - open-webui: Default User Permissions via Admin API aktualisiert (features.api_keys=true)
 - docs: note OpenClaw install sources + Telegram pointers
 - open-webui: RAG Top-K im Embedder von 100 auf 30 reduziert (UI-Setting)
