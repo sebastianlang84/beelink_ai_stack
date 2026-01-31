@@ -270,3 +270,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OpenClaw Install/Telegram Quellen notiert.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: Notizdatei in docs/ angelegt und Doku-Index + Changelog aktualisiert.
+
+## 2026-01-31
+- Aufgabe: Open WebUI API-Key-Status lokal geprueft (0.7.2).
+- Probleme/Bugs/Issues: API-Key Erstellung liefert 403 trotz ENABLE_API_KEYS=true.
+- Loesung: Ursache als fehlende Permission identifiziert (features.api_keys default false); Admin wird nicht gebypasst.
