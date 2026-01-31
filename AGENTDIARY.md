@@ -207,6 +207,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Abbruch; benoetigt sudo/root fuer `apt-get`.
 
 ## 2026-01-31
+- Aufgabe: Python-Installation verifiziert.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: `python3 --version` geprüft (Python 3.13.5).
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
