@@ -44,6 +44,10 @@
 
 ## TODO
 
+- [ ] **Apache Tika als Docker-Service installieren**
+  - Ziel: Tika via Docker bereitstellen (fuer OWUI/Indexing, falls noetig).
+  - Bedarf: Compose-Service + Port/Netzwerk + Healthcheck; Doku/Runbook ergaenzen.
+
 - [x] **Open WebUI Knowledge: Auto-Create Governance (klarer User-Intent)**
   - Problem: LLM/RAG-Queries können neue Collections (z. B. `bitcoin`, `crypto`) auto-anlegen, wenn `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`.
   - Ziel: Auto-Create nur, wenn es explizit gewollt ist.

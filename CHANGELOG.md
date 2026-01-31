@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: TODO fuer Apache Tika Docker-Installation ergaenzt
 - mcp-transcript-miner: Duplicate-Content bei Knowledge-Add wird als "skipped" behandelt (kein Hard-Fail)
 - mcp-transcript-miner: Knowledge Auto-Create nur mit Request-Flag + optionaler Allowlist
 - docs: Watchdog Temp-Stop Lessons Learned (Log-Pfad/Trigger) dokumentiert

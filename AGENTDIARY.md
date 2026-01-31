@@ -135,3 +135,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI Duplicate-Anzeige geprueft (Investing Knowledge).
 - Probleme/Bugs/Issues: UI zeigte viele Duplikate; API zeigte nur 30 Files ohne Duplikate.
 - Loesung: Duplikat-Check via OWUI API (keine doppelten Dateinamen); OWUI-Container neu gestartet.
+
+## 2026-01-31
+- Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
