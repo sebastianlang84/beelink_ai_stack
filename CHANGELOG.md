@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- mcp-transcript-miner: Duplicate-Content bei Knowledge-Add wird als "skipped" behandelt (kein Hard-Fail)
 - mcp-transcript-miner: Knowledge Auto-Create nur mit Request-Flag + optionaler Allowlist
 - docs: Watchdog Temp-Stop Lessons Learned (Log-Pfad/Trigger) dokumentiert
 - watchdog: Temp-Stop Defaults geschaerft (95C/3) + Doku-Hinweis zum Deaktivieren

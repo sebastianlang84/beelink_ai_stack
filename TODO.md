@@ -62,9 +62,8 @@
   - CLI/Script, das pro Collection Dateinamen + Duplikate ausgibt (id/filename/count).
   - Optionaler Fix: Duplikate loeschen (nur nach Bestätigung).
 
-- [ ] **Re-Sync nach Summary-Rebuild**
-  - Status: Summaries neu erzeugt (investing_test + ai_knowledge); investing Run teilweise/unterbrochen.
-  - ToDo: investing Run fertigstellen, danach `sync/topic/investing` + Duplikat-Check.
+- [x] **Re-Sync nach Summary-Rebuild**
+  - Status: investing Run fertiggestellt; `sync/topic/investing` erfolgreich (109 processed/109 indexed).
   - Hinweis: Live-Events ohne Transkript (VideoUnplayable) bleiben Skip.
 
 - [ ] **Markdown Linter integrieren (Repo-wide)**

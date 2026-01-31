@@ -643,7 +643,10 @@ def _add_to_knowledge(knowledge_id: str, file_id: str) -> dict[str, Any]:
     headers = _auth_headers() | {"Content-Type": "application/json"}
     resp = requests.post(url, headers=headers, json={"file_id": file_id}, timeout=60)
     if resp.status_code >= 400:
-        raise RuntimeError(f"knowledge add failed: {resp.status_code} {resp.text}")
+        detail = resp.text or ""
+        if resp.status_code == 400 and "Duplicate content" in detail:
+            return {"status": "skipped", "reason": "duplicate_content", "detail": detail}
+        raise RuntimeError(f"knowledge add failed: {resp.status_code} {detail}")
     return resp.json() if resp.content else {"status": "ok"}
 
 
@@ -702,6 +705,7 @@ def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
             return {"status": "failed", "step": "process", "file_id": file_id, "process": process_status}
 
         add_result = _add_to_knowledge(knowledge_id=knowledge_id, file_id=file_id)
+        add_status = str(add_result.get("status") or "indexed")
 
         conn.execute(
             "INSERT OR REPLACE INTO uploads (source_id, sha256, file_id, knowledge_id, created_at) VALUES (?, ?, ?, ?, ?)",
@@ -709,7 +713,7 @@ def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
         )
         conn.commit()
         return {
-            "status": "indexed",
+            "status": "skipped" if add_status == "skipped" else "indexed",
             "source_id": req.source_id,
             "file_id": file_id,
             "knowledge_id": knowledge_id,

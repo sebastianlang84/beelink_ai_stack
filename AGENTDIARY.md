@@ -125,3 +125,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Knowledge Auto-Create Governance umgesetzt.
 - Probleme/Bugs/Issues: Auto-Create konnte unbeabsichtigt Collections anlegen.
 - Loesung: Auto-Create nur mit Request-Flag + optionaler Allowlist; Doku/Config aktualisiert.
+
+## 2026-01-31
+- Aufgabe: Re-Sync nach Summary-Rebuild fuer investing abgeschlossen.
+- Probleme/Bugs/Issues: Open WebUI meldete Duplicate-Content und brach den Sync ab.
+- Loesung: Duplicate-Content beim Knowledge-Add als `skipped` behandelt; tm neu gebaut; `sync/topic/investing` erfolgreich (109/109).
