@@ -105,3 +105,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Nachfrage zum Zeitrahmen fuer Temperaturwerte beantwortet.
 - Probleme/Bugs/Issues: Wiederholtes Missverstaendnis zwischen Zeitrahmen und Sensor-Set.
 - Loesung: Klarstellung, dass die Werte eine Momentaufnahme sind (kein Zeitrahmen).
+
+## 2026-01-31
+- Aufgabe: Offene Tasks aus TODO beantwortet.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: TODO-Status aus `TODO.md` gelesen und offene Punkte zusammengefasst.
