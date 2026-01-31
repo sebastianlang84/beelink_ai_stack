@@ -177,6 +177,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: `open-webui/.config.env` um Debug-Proxy Variablen ergaenzt, OWUI neu gestartet und Env verifiziert.
 
 ## 2026-01-31
+- Aufgabe: Debug-Proxy CA-Trust Fix.
+- Probleme/Bugs/Issues: OWUI TLS-Verify schlug fehl (mitmproxy nutzte anderes confdir).
+- Loesung: debug-proxy auf `confdir=/data/mitmproxy` fixiert, Doku aktualisiert.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.

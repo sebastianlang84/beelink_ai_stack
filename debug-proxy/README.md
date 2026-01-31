@@ -26,6 +26,7 @@ Ziel: HTTP(S)-Traffic (z. B. OpenRouter) mitschneiden und als JSONL loggen.
 - Der Proxy erzeugt ein CA-Zertifikat unter:
   - `/data/mitmproxy/mitmproxy-ca-cert.pem`
 - OWUI vertraut dem Zertifikat via `OWUI_CA_BUNDLE_PATH`.
+Hinweis: Der Proxy erzwingt `confdir=/data/mitmproxy`, damit OWUI und Proxy dasselbe CA verwenden.
 
 ## On/Off
 - Proxy starten/stoppen via Compose.

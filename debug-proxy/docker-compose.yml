@@ -16,6 +16,8 @@ services:
       - --mode
       - regular
       - --set
+      - confdir=/data/mitmproxy
+      - --set
       - block_global=false
     volumes:
       - ${DEBUG_PROXY_DATA_DIR_HOST:-/home/wasti/ai_stack_data/debug-proxy}:/data

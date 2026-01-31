@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- debug-proxy: confdir fixiert auf /data/mitmproxy (CA-Trust fuer OWUI)
 - debug-proxy: JSONL-Log als Ringbuffer (100k total), kein per-request truncation
 - debug-proxy: neuer MITM Debug-Proxy (JSONL Logs) + OWUI Proxy-Config
 - mcp-transcript-miner: optionaler Pre-Check gegen OWUI-Duplikate (Hash/Filename) vor Upload
