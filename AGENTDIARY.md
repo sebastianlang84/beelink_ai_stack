@@ -172,6 +172,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: `.config.env` aus Example erzeugt, debug-proxy und owui neu gestartet.
 
 ## 2026-01-31
+- Aufgabe: OWUI Proxy-Env gesetzt und neu gestartet.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: `open-webui/.config.env` um Debug-Proxy Variablen ergaenzt, OWUI neu gestartet und Env verifiziert.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
