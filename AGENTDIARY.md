@@ -85,3 +85,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: TODO um Lessons-Learned + Doku-Pfade fuer Watchdog/OWUI-Temp-Stop erweitert.
 - Probleme/Bugs/Issues: Kontext-Reset erfordert persistente Doku; Watchdog Temp-Stop war Ursache fuer OWUI-Ausfall.
 - Loesung: TODO-Erweiterung mit klaren Doku-Optionen (plan/README/CHANGELOG/Runbook).
+
+## 2026-01-31
+- Aufgabe: Anfrage zur CPU-Temperatur-Auslese geprüft (Repo-first).
+- Probleme/Bugs/Issues: Keine.
+- Loesung: Vorhandene Watchdog-Implementierung (sysfs/thermal/hwmon) und Doku als Referenz fuer Host-Temperatur-Auslese herangezogen.
