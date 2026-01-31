@@ -90,3 +90,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Anfrage zur CPU-Temperatur-Auslese geprüft (Repo-first).
 - Probleme/Bugs/Issues: Keine.
 - Loesung: Vorhandene Watchdog-Implementierung (sysfs/thermal/hwmon) und Doku als Referenz fuer Host-Temperatur-Auslese herangezogen.
+
+## 2026-01-31
+- Aufgabe: Aktuelle CPU-Temperatur auf dem Host ausgelesen.
+- Probleme/Bugs/Issues: Python/Python3 nicht installiert; Locale nutzte Komma als Dezimaltrennzeichen.
+- Loesung: Messung per sysfs + awk (LC_ALL=C) ausgefuehrt und Max/Min ermittelt.
