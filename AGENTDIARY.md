@@ -235,3 +235,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Debug-Proxy last_flows.json im Repo-Tree verlinkt.
 - Probleme/Bugs/Issues: Extrahierte Datei lag nur unter `/home/wasti/ai_stack_data` und war im Service-Ordner nicht sichtbar.
 - Loesung: Lokalen Symlink `debug-proxy/last_flows.json` angelegt und in `.gitignore` ausgeschlossen; README ergaenzt.
+
+## 2026-01-31
+- Aufgabe: Codex Skill fuer OWUI Prompt-Debug/PDCA erstellt.
+- Probleme/Bugs/Issues: Prompt-Settings liegen in OWUI `webui.db` (Container) und Debugging war nicht reproduzierbar dokumentiert.
+- Loesung: Skill `skills/owui-prompt-debug-loop/` angelegt inkl. Scripts zum Extrahieren/Reporten von `debug-proxy/flows.jsonl` und zum sicheren Dump/Patch von Model-/Folder-Prompts + RAG-Template (mit DB-Backup).

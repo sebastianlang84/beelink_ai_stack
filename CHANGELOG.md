@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- skills: owui-prompt-debug-loop fuer PDCA Prompt-Tuning (Model/Folder/RAG) via debug-proxy + webui.db
 - debug-proxy: Ringbuffer kappt an JSONL-Zeilengrenzen (parsebar) + Default auf 150k Zeichen
 - debug-proxy: Ringbuffer arbeitet byte-basiert (verhindert UTF-8 Decode-Fehler)
 - debug-proxy: gzip-Responses werden fuer Logs entpackt

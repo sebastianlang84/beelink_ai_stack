@@ -93,6 +93,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `docs/` — Doku-Index (Link-Netzwerk)
 - `AGENTDIARY.md` — Agent-Tagebuch (Pflicht-Log)
 - `skills/` — Projekt-spezifische Codex Skills (Workflows/Checks)
+- `skills/owui-prompt-debug-loop/` — Prompt-Debug/PDCA fuer Open WebUI (Model/Folder/RAG) via debug-proxy + webui.db
 - `emb-bench/` — Embedding Benchmark Suite (MRL + Local vs OpenRouter)
 - `mcp-context6/` — context6 MCP Server (Doku-Fetch/Index/Search)
 - `mcp-owui-roo-connector/` — MCP Connector (Open WebUI)
