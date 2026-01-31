@@ -22,6 +22,9 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 ## Reports / Incidents
 - `docs/report_youtube_ip_block.md` — YouTube Transcript Block (HTTP 429) Status & Optionen
 
+## Notes / Research
+- `docs/notes_openclaw_install_sources.md` — OpenClaw install commands + Telegram setup pointers (sources)
+
 ## Services
 - `mcp-transcript-miner/README.md` — **Transcript Miner** MCP Server (Configs/Runs/Outputs + Knowledge Indexing)
 - `mcp-transcript-miner/PRD.md` — Produkt-/Scope-Definition (YouTube Transcript HTTP Tool)

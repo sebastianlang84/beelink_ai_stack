@@ -265,3 +265,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: RAG Top-K Aenderung (100 -> 30) dokumentiert.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: README/CHANGELOG aktualisiert und aktuellen Setting-Stand erfasst.
+
+## 2026-01-31
+- Aufgabe: OpenClaw Install/Telegram Quellen notiert.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: Notizdatei in docs/ angelegt und Doku-Index + Changelog aktualisiert.
