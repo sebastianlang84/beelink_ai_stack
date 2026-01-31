@@ -167,6 +167,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Per-request truncation deaktiviert; globales Zeichenlimit beibehalten.
 
 ## 2026-01-31
+- Aufgabe: debug-proxy und owui neu gestartet fuer Test.
+- Probleme/Bugs/Issues: debug-proxy .config.env fehlte.
+- Loesung: `.config.env` aus Example erzeugt, debug-proxy und owui neu gestartet.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
