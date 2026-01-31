@@ -79,6 +79,14 @@
   - Entscheidung: `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` leeren **oder** Schwellen/Consec erhoehen.
   - Optional: explizites Log-Level/Notice, wenn ein Container gestoppt wird (inkl. Grund).
 
+- [ ] **Watchdog/OWUI Stop: Lessons Learned + Knowledge sichern (Context-Erase)**
+  - Lessons: zuerst `watchdog.alert.jsonl` pruefen (Temp-Stop ist der einzige Stop-Trigger).
+  - Doku-Optionen (persistenter Kontext):
+    - `docs/plan_watchdog_monitoring.md`: Default-Temp-Stop (60C/2) + Log-Pfad + Hinweis auf OWUI-Stop.
+    - `README.md`: kurzer Warnhinweis im Watchdog-Quickstart + wie man Temp-Stop abstellt/erhoeht.
+    - `CHANGELOG.md`: Eintrag fuer Doku-Update (Watchdog Temp-Stop Hinweis).
+    - Optional: eigenes Runbook `docs/runbook_watchdog_temp_stop.md` (Check → Ursache → Fix).
+
 - [x] **Investing-Test Workflow (Alpha, schneller Iterate)**
   - Ab sofort fuer Experimente/Prompt-Tuning `investing_test` nutzen (kleinere Datenmenge, weniger Kosten/Time).
   - `config_investing_test.yaml` als Standard fuer Prompt-Iterationen.

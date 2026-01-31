@@ -80,3 +80,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: TODO um Watchdog/OWUI-Stop-Klaerung und Aktionen ergaenzt.
 - Probleme/Bugs/Issues: OWUI wurde manuell gestoppt; wahrscheinlich Temp-Stop durch Watchdog (Default-Target owui).
 - Loesung: TODO fuer Log-Check (watchdog.alert.jsonl) + Anpassung der Temp-Stop-Regeln erfasst.
+
+## 2026-01-31
+- Aufgabe: TODO um Lessons-Learned + Doku-Pfade fuer Watchdog/OWUI-Temp-Stop erweitert.
+- Probleme/Bugs/Issues: Kontext-Reset erfordert persistente Doku; Watchdog Temp-Stop war Ursache fuer OWUI-Ausfall.
+- Loesung: TODO-Erweiterung mit klaren Doku-Optionen (plan/README/CHANGELOG/Runbook).
