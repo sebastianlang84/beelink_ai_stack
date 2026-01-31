@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- debug-proxy: neuer MITM Debug-Proxy (JSONL Logs) + OWUI Proxy-Config
 - mcp-transcript-miner: optionaler Pre-Check gegen OWUI-Duplikate (Hash/Filename) vor Upload
 - ops: OWUI Knowledge (investing) dedupliziert (Hash/Dateiname), Bestand reduziert
 - docs: TODO fuer Apache Tika Docker-Installation ergaenzt

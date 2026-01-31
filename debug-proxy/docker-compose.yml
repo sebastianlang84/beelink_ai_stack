@@ -1,0 +1,31 @@
+name: debug-proxy
+services:
+  debug-proxy:
+    container_name: debug-proxy
+    image: mitmproxy/mitmproxy:10.3.0
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Europe/Vienna}
+      MITMPROXY_DIR: /data/mitmproxy
+      PROXY_LOG_PATH: ${PROXY_LOG_PATH:-/data/flows.jsonl}
+      PROXY_LOG_MAX_CHARS: ${PROXY_LOG_MAX_CHARS:-10000}
+    command:
+      - mitmdump
+      - -s
+      - /scripts/log_json.py
+      - --mode
+      - regular
+      - --set
+      - block_global=false
+    volumes:
+      - ${DEBUG_PROXY_DATA_DIR_HOST:-/home/wasti/ai_stack_data/debug-proxy}:/data
+      - ./scripts:/scripts:ro
+    expose:
+      - "8080"
+    networks:
+      - ai-stack
+
+networks:
+  ai-stack:
+    external: true
+    name: ai-stack

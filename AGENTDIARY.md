@@ -157,6 +157,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: `docker compose ... up -d --build` fuer tm ausgefuehrt.
 
 ## 2026-01-31
+- Aufgabe: Debug-Proxy Architektur auf Root-Ordner umgestellt.
+- Probleme/Bugs/Issues: Vorab-Entwurf lag unter `open-webui/`; Name/Scope unklar.
+- Loesung: Debug-Proxy als eigenes Service-Root (`debug-proxy/`) mit JSONL-Logging; OWUI-Config angepasst.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.

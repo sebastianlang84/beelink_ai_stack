@@ -27,6 +27,17 @@ Runbook: `docs/runbook_backup_restore.md:1`
   - `./scripts/provision_ai_stack_docker_objects.sh`
 - Indexer-Service: `mcp-transcript-miner/README.md:1`
 
+## Optional: Debug Proxy (OpenRouter Request Tracing)
+Ziel: Prompt-Ketten + Tool-Calls als JSONL mitschneiden.
+1. Debug-Proxy starten: `debug-proxy/README.md:1`
+2. In `open-webui/.config.env` setzen:
+   - `OWUI_HTTP_PROXY=http://debug-proxy:8080`
+   - `OWUI_HTTPS_PROXY=http://debug-proxy:8080`
+   - `OWUI_NO_PROXY=owui,tm,context6,qdrant,localhost,127.0.0.1`
+   - `OWUI_CA_BUNDLE_PATH=/debug-proxy/mitmproxy/mitmproxy-ca-cert.pem`
+   - `DEBUG_PROXY_DATA_DIR_HOST=/home/wasti/ai_stack_data/debug-proxy`
+3. OWUI neu starten.
+
 ## External Tools (Import JSON)
 Templates: `open-webui/tool-imports/README.md:1`
 

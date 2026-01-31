@@ -19,6 +19,11 @@ Typische Non-Secrets:
 - `OPEN_WEBUI_BIND_ADDRESS`
 - `OPEN_WEBUI_HOST_PORT`
 - `OLLAMA_BASE_URL`
+- `OWUI_HTTP_PROXY`
+- `OWUI_HTTPS_PROXY`
+- `OWUI_NO_PROXY`
+- `OWUI_CA_BUNDLE_PATH`
+- `DEBUG_PROXY_DATA_DIR_HOST`
 
 ## Hinweise
 - `WEBUI_SECRET_KEY` stabil halten (nicht bei jedem Deploy ändern). Generieren z. B. mit `openssl rand -hex 32`.

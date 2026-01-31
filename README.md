@@ -99,6 +99,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `open-webui/` — Open WebUI (Compose, Secrets, README)
 - `mcp-transcript-miner/` — **Transcript Miner** MCP Server (Configs/Runs/Outputs + Knowledge Indexing)
 - `transcript-miner/` — TranscriptMiner Pipeline-Engine (Python; Transcripts + Summaries)
+- `debug-proxy/` — MITM Debug Proxy (JSONL Request Logs, optional)
 - `qdrant/` — Qdrant (optional)
 - `watchdog/` — Monitoring-Watchdog (CPU/Temperatur/Disk + Docker-Hygiene)
 

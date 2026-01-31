@@ -9,6 +9,11 @@ services:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       WEBUI_SECRET_KEY: ${WEBUI_SECRET_KEY:-}
+      HTTP_PROXY: ${OWUI_HTTP_PROXY:-}
+      HTTPS_PROXY: ${OWUI_HTTPS_PROXY:-}
+      NO_PROXY: ${OWUI_NO_PROXY:-}
+      REQUESTS_CA_BUNDLE: ${OWUI_CA_BUNDLE_PATH:-}
+      SSL_CERT_FILE: ${OWUI_CA_BUNDLE_PATH:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     logging:
@@ -24,6 +29,8 @@ services:
       start_period: 30s
     volumes:
       - owui-data:/app/backend/data
+      # Optional: mount debug-proxy CA bundle (only needed when OWUI uses the proxy)
+      - ${DEBUG_PROXY_DATA_DIR_HOST:-/home/wasti/ai_stack_data/debug-proxy}:/debug-proxy:ro
     # Host-Port (localhost-only): sicherer Default für VPN-only via Tailscale Serve.
     # Für LAN/Internet-Expose explizit Reverse Proxy nutzen (nicht 0.0.0.0 setzen).
     ports:
