@@ -152,6 +152,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Pre-Check gegen OWUI (Hash/Dateiname) vor Upload + Cache-TTL (configurierbar).
 
 ## 2026-01-31
+- Aufgabe: TM neu gebaut/neu gestartet, um Dedup-Precheck zu aktivieren.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: `docker compose ... up -d --build` fuer tm ausgefuehrt.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.
