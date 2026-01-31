@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- debug-proxy: Ringbuffer arbeitet byte-basiert (verhindert UTF-8 Decode-Fehler)
 - debug-proxy: gzip-Responses werden fuer Logs entpackt
 - debug-proxy: confdir fixiert auf /data/mitmproxy (CA-Trust fuer OWUI)
 - debug-proxy: JSONL-Log als Ringbuffer (100k total), kein per-request truncation

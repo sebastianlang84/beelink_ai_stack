@@ -187,6 +187,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung: Gzip-Responses werden vor Logging entpackt.
 
 ## 2026-01-31
+- Aufgabe: Ringbuffer stabilisiert.
+- Probleme/Bugs/Issues: UTF-8 Decode-Error beim Trunkieren der Log-Datei.
+- Loesung: Ringbuffer auf byte-basiertes Truncation umgestellt.
+
+## 2026-01-31
 - Aufgabe: TODO fuer Apache Tika Docker-Installation ergaenzt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: TODO-Item in `TODO.md` erfasst; CHANGELOG aktualisiert.

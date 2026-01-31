@@ -69,12 +69,11 @@ def _enforce_max_total_chars() -> None:
     if MAX_TOTAL_CHARS <= 0:
         return
     try:
-        with open(LOG_PATH, "r+", encoding="utf-8") as fh:
+        with open(LOG_PATH, "rb+") as fh:
             fh.seek(0, os.SEEK_END)
             size = fh.tell()
             if size <= MAX_TOTAL_CHARS:
                 return
-            # Keep only the last MAX_TOTAL_CHARS characters
             keep = min(size, MAX_TOTAL_CHARS)
             fh.seek(size - keep)
             tail = fh.read(keep)
