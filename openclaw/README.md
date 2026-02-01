@@ -28,6 +28,19 @@ Nach dem Lauf:
 - UI oeffnen: `http://127.0.0.1:18789/`
 - Token im Control UI unter Settings eintragen
 
+## Zugriff via Tailscale Serve (VPN-only)
+Pfad-Serve fuer die UI (Tailnet-HTTPS):
+
+```bash
+sudo tailscale serve --bg --https=443 --set-path /openclaw http://127.0.0.1:18789
+```
+
+Optional (einmalig), damit `tailscale serve` ohne `sudo` funktioniert:
+
+```bash
+sudo tailscale set --operator=$USER
+```
+
 Control UI Referenz: citeturn0search3
 
 Quelle: Docker-Setup in der offiziellen Doku. citeturn0search1
@@ -45,6 +58,17 @@ Wichtig:
 - Host-Port ist `127.0.0.1:18789` (lokal). Keine LAN-Expose ohne Reverse Proxy.
 - Host-Config liegt unter `~/.openclaw/` und wird in den Container gemountet.
 - Falls das Gateway wegen fehlender Config restartet: zuerst `openclaw setup` via CLI ausfuehren.
+
+## Troubleshooting
+Wenn der Gateway-Log sagt: `gateway.mode=local` fehlt:
+
+```bash
+docker compose --env-file .env --env-file .config.env --env-file openclaw/.config.env \
+  -f openclaw/docker-compose.yml run --rm openclaw-cli \
+  config set gateway.mode local
+docker compose --env-file .env --env-file .config.env --env-file openclaw/.config.env \
+  -f openclaw/docker-compose.yml restart openclaw-gateway
+```
 
 ## Telegram Channel (CLI-Container)
 Wenn der Bot-Token in `.env` liegt:

@@ -325,3 +325,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI via Tailscale Serve unter /owui stabil gemacht.
 - Probleme/Bugs/Issues: "Backend Required" durch fehlende Asset/API-Weiterleitung bei Pfad-Serve; _app Bundles 404.
 - Loesung: Tailscale Serve Pfade fuer /owui, /_app, /static, /manifest.json, /api auf korrekte Upstream-Pfade gesetzt und Doku ergaenzt.
+
+## 2026-02-01
+- Aufgabe: OWUI und OpenClaw Erreichbarkeit wiederhergestellt.
+- Probleme/Bugs/Issues: OWUI Container gestoppt; OpenClaw Pfad fehlte in Tailscale Serve.
+- Loesung: OWUI Container gestartet; Tailscale Serve /openclaw auf 127.0.0.1:18789 gesetzt und Operator-Rechte dokumentiert.
