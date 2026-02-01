@@ -335,3 +335,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Dokumentation zu OWUI Root-Serve und OpenClaw Pfad-Konflikt aktualisiert.
 - Probleme/Bugs/Issues: OWUI redirectet auf `/`; OpenClaw nutzt absolute `/api` und kollidiert mit OWUI bei Pfad-Serve.
 - Loesung: OWUI Root-Serve als stabiler Zugriff dokumentiert; OpenClaw eigener Host/Port empfohlen.
+
+## 2026-02-01
+- Aufgabe: Access-Notiz (Tailscale vs LAN) fuer OWUI/OpenClaw erstellt.
+- Probleme/Bugs/Issues: /owui Login redirectet auf `/` (404 wenn Root nicht gemappt); /openclaw kollidiert wegen absolutem `/api` mit OWUI.
+- Loesung: Notiz unter docs/ abgelegt und in docs/README.md verlinkt.

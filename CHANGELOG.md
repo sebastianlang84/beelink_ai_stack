@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: Notiz zu OWUI/OpenClaw Access-Topologie (Tailscale vs LAN) ergaenzt
 - ops: OWUI Root-Serve als stabiler Zugriff dokumentiert; /owui als fragil vermerkt
 - ops: OpenClaw Pfad-Konflikt (absolute /api) dokumentiert; eigener Host/Port empfohlen
 - ops: OWUI Container neu gestartet; Tailscale Serve Pfad /openclaw gesetzt
