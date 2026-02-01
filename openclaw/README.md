@@ -41,6 +41,9 @@ Optional (einmalig), damit `tailscale serve` ohne `sudo` funktioniert:
 sudo tailscale set --operator=$USER
 ```
 
+Hinweis: OpenClaw nutzt absolute Pfade (`/api`, `/ws`). Ein Pfad-Serve unter `/openclaw` kollidiert mit OWUI (belegt `/api`).
+Empfohlen: eigener Host oder eigener HTTPS-Port via Tailscale Serve.
+
 Control UI Referenz: citeturn0search3
 
 Quelle: Docker-Setup in der offiziellen Doku. citeturn0search1

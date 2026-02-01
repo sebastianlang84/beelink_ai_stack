@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- ops: OWUI Root-Serve als stabiler Zugriff dokumentiert; /owui als fragil vermerkt
+- ops: OpenClaw Pfad-Konflikt (absolute /api) dokumentiert; eigener Host/Port empfohlen
 - ops: OWUI Container neu gestartet; Tailscale Serve Pfad /openclaw gesetzt
 - openclaw: gateway laeuft lokal auf 127.0.0.1:18789 via repo-compose
 - openclaw: upstream repo geklont und docker-setup.sh ausgefuehrt (gateway laufend)

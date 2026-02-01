@@ -330,3 +330,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI und OpenClaw Erreichbarkeit wiederhergestellt.
 - Probleme/Bugs/Issues: OWUI Container gestoppt; OpenClaw Pfad fehlte in Tailscale Serve.
 - Loesung: OWUI Container gestartet; Tailscale Serve /openclaw auf 127.0.0.1:18789 gesetzt und Operator-Rechte dokumentiert.
+
+## 2026-02-01
+- Aufgabe: Dokumentation zu OWUI Root-Serve und OpenClaw Pfad-Konflikt aktualisiert.
+- Probleme/Bugs/Issues: OWUI redirectet auf `/`; OpenClaw nutzt absolute `/api` und kollidiert mit OWUI bei Pfad-Serve.
+- Loesung: OWUI Root-Serve als stabiler Zugriff dokumentiert; OpenClaw eigener Host/Port empfohlen.

@@ -27,6 +27,7 @@ sudo tailscale serve --bg --https=443 --set-path /api           http://127.0.0.1
 ```
 
 Hinweis: Ohne die Asset/API-Pfade kommt es zu "Backend Required" oder 404 auf `_app`-Bundles.
+Wichtig: OWUI redirectet nach Login auf `/`. Ein reines `/owui`-Setup ist daher fragil; Root-Serve ist der stabile Weg.
 
 Option C (spater): Reverse Proxy (Traefik/Caddy) im Docker-Netz.
 
