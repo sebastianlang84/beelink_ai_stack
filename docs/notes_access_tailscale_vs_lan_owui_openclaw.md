@@ -48,6 +48,73 @@ Example:
 - OWUI: `https://owui.tail.../` (or `https://beelink.tail.../`)
 - OpenClaw: `https://openclaw.tail.../`
 
+## Implementation: Hostname Split (No Path/Port Collisions)
+Goal URLs (example Tailnet `tail027324.ts.net`):
+- OWUI: `https://owui.tail027324.ts.net/`
+- OpenClaw: `https://openclaw.tail027324.ts.net/`
+
+Key idea: keep OWUI on one Tailscale node (hostname `owui`) and run a *second* Tailscale node on the same machine
+as a Docker container (hostname `openclaw`). Each node gets its own MagicDNS hostname, so `/api` and `/ws` do not
+collide.
+
+### A) Rename the existing host node to `owui` and serve OWUI on root
+NOTE: renaming changes bookmarks (the old `beelink.tail...` name changes).
+
+```bash
+# Rename this machine's Tailscale node
+sudo tailscale up --hostname=owui
+
+# Make OWUI reachable at https://owui.tail027324.ts.net/
+sudo tailscale serve reset
+sudo tailscale serve --bg --https=443 http://127.0.0.1:3000
+
+# Verify
+tailscale status
+tailscale serve status
+```
+
+### B) Run a second Tailscale node in Docker for OpenClaw (`openclaw`)
+This keeps OpenClaw bound to localhost and does not require LAN expose.
+
+Prereq: create a Tailscale auth key in the admin console (recommended: preauthorized + ephemeral; optionally tagged).
+Treat it as a secret and do not commit it anywhere.
+
+```bash
+# Set once in your shell (do NOT commit)
+export TS_AUTHKEY="tskey-REPLACE_ME"
+
+# Start a separate tailscaled with its own state dir
+docker run -d --name tailscaled-openclaw --restart=unless-stopped \
+  --network=host \
+  --cap-add=NET_ADMIN --cap-add=NET_RAW \
+  -v /dev/net/tun:/dev/net/tun \
+  -v /var/lib/tailscale-openclaw:/var/lib/tailscale \
+  tailscale/tailscale:latest tailscaled
+
+# Join Tailnet as its own node
+docker exec tailscaled-openclaw tailscale up \
+  --auth-key="${TS_AUTHKEY}" \
+  --hostname=openclaw
+
+# Serve OpenClaw at https://openclaw.tail027324.ts.net/
+docker exec tailscaled-openclaw tailscale serve reset
+docker exec tailscaled-openclaw tailscale serve --bg --https=443 http://127.0.0.1:18789
+
+# Verify
+docker exec tailscaled-openclaw tailscale status
+docker exec tailscaled-openclaw tailscale serve status
+```
+
+### C) Smoke checks
+```bash
+curl -I https://owui.tail027324.ts.net/
+curl -I https://openclaw.tail027324.ts.net/
+```
+
+Expected:
+- OWUI login does not end on 404 because it is served at `/`.
+- OpenClaw can keep absolute `/api` and `/ws` because it has its own hostname.
+
 ### Option 3 (most complex): reverse proxy with path rewrites
 Pros: both on one hostname with paths.
 Cons: higher complexity; must rewrite OpenClaw `/openclaw/...` <-> `/...` and handle `/api` and WebSocket routing.
@@ -70,4 +137,3 @@ Possible mitigations if LAN expose is chosen:
 ## Notes / Learnings
 - "HTTP 200 for /owui" is not sufficient; login redirect to `/` must be considered.
 - Two root-assuming apps cannot reliably share one hostname via path-prefix routing.
-

@@ -340,3 +340,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Access-Notiz (Tailscale vs LAN) fuer OWUI/OpenClaw erstellt.
 - Probleme/Bugs/Issues: /owui Login redirectet auf `/` (404 wenn Root nicht gemappt); /openclaw kollidiert wegen absolutem `/api` mit OWUI.
 - Loesung: Notiz unter docs/ abgelegt und in docs/README.md verlinkt.
+
+## 2026-02-01
+- Aufgabe: Doku erweitert: Hostname-Split fuer OWUI/OpenClaw (2 Tailscale Nodes auf einem Host).
+- Probleme/Bugs/Issues: Pfad-Serve kollidiert (OWUI redirect zu `/`, OpenClaw absolute `/api`/`/ws`).
+- Loesung: Konkrete Schritte dokumentiert (Host umbenennen + zweiter tailscaled Docker-Node fuer OpenClaw).
