@@ -355,3 +355,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Transcript-Miner Investing Channel-Liste erweitert.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: YouTube Channel `@BrunoKreidler` in `transcript-miner/config/config_investing.yaml` hinzugefuegt.
+
+## 2026-02-01
+- Aufgabe: Repo-Housekeeping: Codex lokale Metadata aus Git fernhalten.
+- Probleme/Bugs/Issues: Untracked Ordner `.codex/` tauchte im Repo auf.
+- Loesung: `.codex/` in `.gitignore` aufgenommen.

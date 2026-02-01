@@ -44,3 +44,6 @@ debug-proxy/last_flows.local.json
 
 # OpenClaw upstream repo (local clone)
 openclaw/upstream/
+
+# Codex CLI local metadata
+.codex/
