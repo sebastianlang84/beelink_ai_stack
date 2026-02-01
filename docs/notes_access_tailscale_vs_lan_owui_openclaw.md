@@ -62,7 +62,7 @@ NOTE: renaming changes bookmarks (the old `beelink.tail...` name changes).
 
 ```bash
 # Rename this machine's Tailscale node
-sudo tailscale up --hostname=owui
+sudo tailscale up --hostname=owui --operator=wasti
 
 # Make OWUI reachable at https://owui.tail027324.ts.net/
 sudo tailscale serve reset
@@ -83,9 +83,17 @@ Treat it as a secret and do not commit it anywhere.
 # Set once in your shell (do NOT commit)
 export TS_AUTHKEY="tskey-REPLACE_ME"
 
-# Start a separate tailscaled with its own state dir
+# Start a separate tailscaled with its own state dir.
+# IMPORTANT: do NOT use --network=host. Two tailscaled instances in the same network namespace will conflict:
+# - they both try to create a TUN interface named "tailscale0"
+# - they both would want to bind HTTPS on 443
+#
+# Instead, run the second node in its own container network namespace and proxy to OpenClaw over the Docker network.
+#
+# The OpenClaw gateway container is already on the external Docker network "ai-stack", so we attach there and proxy to:
+#   http://openclaw-gateway:18789
 docker run -d --name tailscaled-openclaw --restart=unless-stopped \
-  --network=host \
+  --network=ai-stack \
   --cap-add=NET_ADMIN --cap-add=NET_RAW \
   -v /dev/net/tun:/dev/net/tun \
   -v /var/lib/tailscale-openclaw:/var/lib/tailscale \
@@ -98,7 +106,7 @@ docker exec tailscaled-openclaw tailscale up \
 
 # Serve OpenClaw at https://openclaw.tail027324.ts.net/
 docker exec tailscaled-openclaw tailscale serve reset
-docker exec tailscaled-openclaw tailscale serve --bg --https=443 http://127.0.0.1:18789
+docker exec tailscaled-openclaw tailscale serve --bg --https=443 http://openclaw-gateway:18789
 
 # Verify
 docker exec tailscaled-openclaw tailscale status
