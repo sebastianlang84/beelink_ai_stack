@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- transcript-miner: Investing Channel `@BrunoKreidler` hinzugefuegt
 - docs: Hostname-Split korrigiert (2. tailscaled Node nicht im host network; Proxy via Docker network zu openclaw-gateway)
 - docs: Anleitung fuer Hostname-Split (2 Tailscale Nodes auf 1 Host) fuer OWUI/OpenClaw ergaenzt
 - docs: Notiz zu OWUI/OpenClaw Access-Topologie (Tailscale vs LAN) ergaenzt

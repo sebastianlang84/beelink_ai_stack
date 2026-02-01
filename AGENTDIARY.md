@@ -350,3 +350,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Hostname-Split Anleitung korrigiert (Docker tailscaled ohne host-network).
 - Probleme/Bugs/Issues: Zweiter tailscaled im `--network=host` kollidiert (TUN `tailscale0` busy / Port-Konflikte).
 - Loesung: Zweiten Node im eigenen NetNS laufen lassen und OpenClaw ueber Docker-Netz `ai-stack` via `openclaw-gateway:18789` proxien.
+
+## 2026-02-01
+- Aufgabe: Transcript-Miner Investing Channel-Liste erweitert.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: YouTube Channel `@BrunoKreidler` in `transcript-miner/config/config_investing.yaml` hinzugefuegt.
