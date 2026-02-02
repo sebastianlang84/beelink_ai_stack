@@ -370,3 +370,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Codex/VSC Remote-SSH Auth gegen Tailscale-DNS Ausfaelle gehaertet (dauerhaft, ohne sudo-Abhaengigkeit).
 - Probleme/Bugs/Issues: Erste Version der Cron-Installer-Blockentfernung hatte fehlerhafte `sed` Syntax.
 - Loesung: Guard-Skripte fuer Check/Remediation/Cron-Install erstellt, Blockentfernung auf robustes `awk` umgestellt, Cron aktiv installiert und End-to-End verifiziert (forced failure + auto-fix).
+
+## 2026-02-02
+- Aufgabe: TODO um gewuenschten Transcript-Miner Ausbau fuer Influencer-Trackrecord erweitert.
+- Probleme/Bugs/Issues: Keine technischen Blocker; Anforderungen mussten in umsetzbare Teilziele (Signal-Extraktion, Kurs-Freeze, Langzeitbewertung) strukturiert werden.
+- Loesung: Neues TODO-Backlog-Item mit klaren Datenpunkten, DoD-Entwurf und Auswertungsziel dokumentiert; CHANGELOG entsprechend aktualisiert.

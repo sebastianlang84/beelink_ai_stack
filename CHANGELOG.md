@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: TODO um Transcript-Miner Backlog fuer Influencer-Trackrecord inkl. Kurs-Freeze erweitert
 - ops: Codex Remote-SSH Auth DNS Guard hinzugefuegt (Check + Auto-Remediation + Cron Persistenz)
 - docs: Runbook fuer Codex/VSC SSH Auth DNS Guard ergaenzt
 - ops: OpenClaw Gateway nativ auf Host; socat-Bridge fuer tailscaled-openclaw Serve

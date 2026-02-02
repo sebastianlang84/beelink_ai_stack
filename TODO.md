@@ -66,6 +66,22 @@
   - UX: klare Fehlermeldung, wenn Knowledge fehlt und Auto-Create blockiert ist.
   - Doku/Config: `.config.env` / `mcp-transcript-miner/.config.env` + README aktualisieren.
 
+- [ ] **Transcript Miner: Influencer-Trackrecord fuer Investment-Calls**
+  - Ziel: Historisch auswertbarer Trackrecord je Influencer/Video/Tag aufbauen.
+  - Pro erkannter Aussage speichern:
+    - Influencer (Channel), Video-ID/Titel, Publikationsdatum und Analyse-/Signal-Typ zu Aktie/Asset.
+    - Haltung: bullish/bearish/neutral sowie implizites Signal (eher kaufen/halten/verkaufen).
+    - Begruendung/Evidenz aus dem Transkript (inkl. Zeitstempel/Quote-Referenz).
+  - Kurs-Freeze am Signal-Tag:
+    - Spot-Preis am Tag der Aussage sichern (inkl. Zeitzone, Datenquelle, Ticker-Mapping).
+    - Snapshot persistent speichern, damit spaeter Performance gegen den eingefrorenen Ausgangskurs berechnet werden kann.
+  - Auswertung:
+    - Nach Wochen/Monaten/Jahren Trefferquote und Performance je Influencer und Signal-Typ vergleichen.
+  - DoD (Entwurf):
+    - Reproduzierbare Speicherung als strukturierte Historie (append-only, versionierbar).
+    - Deterministisches Re-Rating bei gleicher Datenlage.
+    - Report/Query moeglich: "Wie richtig lag Influencer X bei Meta seit Datum Y?"
+
 - [ ] **Open WebUI Knowledge: Unerwuenschte Collections aufraeumen**
   - Option: `bitcoin`/`crypto` Collections loeschen (nur falls User bestaetigt).
   - Danach: Sync/Index nur fuer erlaubte Topics.
