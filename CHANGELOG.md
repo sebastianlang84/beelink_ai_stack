@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- docs: OpenClaw Doku auf host-native Betrieb umgestellt (Docker als Legacy-Fallback markiert)
+- ops: stale Container `openclaw-gateway` entfernt (native OpenClaw bleibt aktiv)
 - ops: TM-Summary-Luecke analysiert (2026-02-02/03): tm-Container nutzte stale Docker-DNS Upstream `100.100.100.100`; `tm` neu gestartet (DNS jetzt `192.168.0.1`)
 - docs: TODO um Transcript-Miner Backlog fuer Influencer-Trackrecord inkl. Kurs-Freeze erweitert
 - ops: Codex Remote-SSH Auth DNS Guard hinzugefuegt (Check + Auto-Remediation + Cron Persistenz)

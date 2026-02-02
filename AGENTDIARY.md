@@ -380,3 +380,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Ursache geprueft, warum OWUI bei investing zuletzt "12 hours ago" fuer Summary-Files zeigte.
 - Probleme/Bugs/Issues: `tm`-Runs (z. B. 2026-02-02 20:00 UTC und 23:00 UTC) liefen, hatten aber DNS-Fehler (`Unable to find the server at youtube.googleapis.com`) und konnten keine frischen Transkripte laden.
 - Loesung: Root Cause bestaetigt: Container-DNS zeigte auf stale Docker-Upstream `100.100.100.100` (geerbt aus alter Host-Resolver-Lage); `tm` neu gestartet, DNS im Container auf `192.168.0.1` aktualisiert, manuellen Investing-Run gestartet (`df96c841...`) und neue Summaries erzeugt (11 neue Files in den letzten ~25 Minuten).
+
+## 2026-02-03
+- Aufgabe: OpenClaw-Doku von Docker-first auf host-native Betrieb umgestellt und stale Docker-Reste bereinigt.
+- Probleme/Bugs/Issues: Repo-Doku war noch Docker-zentriert und hat dadurch zu falschen CLI-Empfehlungen gefuehrt.
+- Loesung: `openclaw/README.md`, `README.md` und `docs/README.md` auf host-native Standard aktualisiert; stale Container `openclaw-gateway` entfernt; Healthcheck mit `openclaw gateway status` bestaetigt.

@@ -1,116 +1,59 @@
-# openclaw — Betrieb (Docker)
+# openclaw — Betrieb (Host-native)
 
-Ziel: OpenClaw als Containerized Gateway (Docker Compose), isoliert und lokal gebunden.
+Ziel: OpenClaw laeuft nativ auf dem Host (kein Docker-Compose-Run fuer Gateway/CLI).
 
-## Prereqs
-- Docker Engine + Docker Compose v2
+## Ist-Zustand (dieses Repo)
+- CLI: `/home/wasti/.local/bin/openclaw`
+- Config: `~/.openclaw/openclaw.json`
+- Gateway: lokal auf `127.0.0.1:18789`
 
-## Install (Docker, empfohlene Quick-Start)
-1) Offizielles OpenClaw Repo in `openclaw/upstream/` bereitstellen (Repo-Root muss `docker-setup.sh` enthalten).
-2) Von dort aus:
+## Konfiguration
+Interaktiv:
 
 ```bash
-cd /home/wasti/ai_stack/openclaw/upstream
-./docker-setup.sh
+openclaw configure
 ```
 
-Das Script:
-- baut das Gateway-Image
-- startet Onboarding
-- startet das Gateway via Compose
-- erzeugt ein Gateway-Token und schreibt es in `.env`
-- schreibt Config/Workspace auf den Host unter `~/.openclaw/`
+Einzelwert setzen (Beispiel `gateway.mode=local`):
 
-Hinweis:
-- `openclaw/upstream/` ist ein lokaler Clone und wird im Repo gitignored.
+```bash
+openclaw config set gateway.mode local
+```
 
-Nach dem Lauf:
-- UI oeffnen: `http://127.0.0.1:18789/`
-- Token im Control UI unter Settings eintragen
+Wert pruefen:
 
-## Zugriff via Tailscale Serve (VPN-only)
-Pfad-Serve fuer die UI (Tailnet-HTTPS):
+```bash
+openclaw config get gateway.mode
+```
+
+## Betrieb / Status
+Gateway-Status:
+
+```bash
+openclaw gateway status
+```
+
+Gateway-Probe:
+
+```bash
+openclaw gateway probe
+```
+
+Foreground-Start (falls noetig):
+
+```bash
+openclaw gateway run --bind loopback --port 18789
+```
+
+## Tailscale Zugriff (VPN-only)
+Hinweis: OpenClaw nutzt absolute Pfade (`/api`, `/ws`). Pfad-Serve unter `/openclaw` kollidiert leicht mit OWUI.
+Empfohlen: eigener Hostname oder eigener HTTPS-Port.
+
+Beispiel:
 
 ```bash
 sudo tailscale serve --bg --https=443 --set-path /openclaw http://127.0.0.1:18789
 ```
 
-Optional (einmalig), damit `tailscale serve` ohne `sudo` funktioniert:
-
-```bash
-sudo tailscale set --operator=$USER
-```
-
-Hinweis: OpenClaw nutzt absolute Pfade (`/api`, `/ws`). Ein Pfad-Serve unter `/openclaw` kollidiert mit OWUI (belegt `/api`).
-Empfohlen: eigener Host oder eigener HTTPS-Port via Tailscale Serve.
-
-Control UI Referenz: citeturn0search3
-
-Quelle: Docker-Setup in der offiziellen Doku. citeturn0search1
-
-## Compose in diesem Repo (optional, empfohlen)
-Dieser Ordner enthaelt ein eigenes `docker-compose.yml`, das auf `openclaw/upstream/` als Build-Context zeigt und den Port lokal auf `127.0.0.1` bindet.
-Start:
-
-```bash
-docker compose --env-file .env --env-file .config.env --env-file openclaw/.config.env \
-  -f openclaw/docker-compose.yml up -d --build
-```
-
-Wichtig:
-- Host-Port ist `127.0.0.1:18789` (lokal). Keine LAN-Expose ohne Reverse Proxy.
-- Host-Config liegt unter `~/.openclaw/` und wird in den Container gemountet.
-- Falls das Gateway wegen fehlender Config restartet: zuerst `openclaw setup` via CLI ausfuehren.
-
-## Troubleshooting
-Wenn der Gateway-Log sagt: `gateway.mode=local` fehlt:
-
-```bash
-docker compose --env-file .env --env-file .config.env --env-file openclaw/.config.env \
-  -f openclaw/docker-compose.yml run --rm openclaw-cli \
-  config set gateway.mode local
-docker compose --env-file .env --env-file .config.env --env-file openclaw/.config.env \
-  -f openclaw/docker-compose.yml restart openclaw-gateway
-```
-
-## Telegram Channel (CLI-Container)
-Wenn der Bot-Token in `.env` liegt:
-
-```bash
-docker compose --env-file .env --env-file .config.env --env-file openclaw/.config.env \
-  -f openclaw/docker-compose.yml run --rm openclaw-cli \
-  channels add --channel telegram --token "$OPENCLAW_TELEGRAM_BOT_TOKEN"
-```
-
-Quelle: Docker-CLI Channel Setup in der Doku. citeturn0search1
-
-## Telegram Security (Config)
-Die Telegram-Policies werden in `~/.openclaw/openclaw.json` gesetzt.
-Beispiel (Allowlist + Mention-Gate):
-
-```json
-{
-  "channels": {
-    "telegram": {
-      "dmPolicy": "pairing",
-      "groupPolicy": "allowlist",
-      "groups": {
-        "<chat_id>": {
-          "requireMention": true
-        }
-      }
-    }
-  }
-}
-```
-
-Config-Referenz + Telegram-Policy Keys: citeturn0search0turn0search2
-
-## Healthcheck (optional)
-
-```bash
-docker compose -f openclaw/docker-compose.yml exec openclaw-gateway \
-  node dist/index.js health --token "$OPENCLAW_GATEWAY_TOKEN"
-```
-
-Quelle: Docker Healthcheck in der Doku. citeturn0search1
+## Legacy (nur wenn explizit gewuenscht)
+`openclaw/docker-compose.yml` existiert weiterhin als Fallback, ist aber nicht der Standardbetrieb.
