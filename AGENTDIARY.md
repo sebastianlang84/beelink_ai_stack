@@ -390,3 +390,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Finalen OpenClaw-Cleanup abgeschlossen, um Docker-Reste zu entfernen und Betrieb eindeutig host-native zu halten.
 - Probleme/Bugs/Issues: Veraltete OpenClaw-Docker-Images (`openclaw*`) waren noch lokal vorhanden und konnten zu Missverstaendnissen fuehren.
 - Loesung: `openclaw/docker-compose.yml` + `.config.env.example` klar als deprecated Fallback markiert, alte OpenClaw-Images entfernt, Laufzeit geprueft (`openclaw gateway status` weiterhin OK).
+
+## 2026-02-03
+- Aufgabe: OpenClaw final so bereinigt, dass kein Repo-Betriebspfad mehr ueber Docker laeuft.
+- Probleme/Bugs/Issues: Vorherige Bereinigung liess noch Docker-Fallback-Dateien und Legacy-Formulierungen im Repo.
+- Loesung: `openclaw/docker-compose.yml` und `openclaw/.config.env.example` entfernt, `openclaw/README.md` auf rein host-native Betrieb gestrafft, Root-README bereinigt und lokale OpenClaw-Upstream-Kopie geloescht.

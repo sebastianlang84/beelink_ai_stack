@@ -74,7 +74,7 @@ tailscale serve status
 ```
 
 ### B) Run a second Tailscale node in Docker for OpenClaw (`openclaw`)
-This keeps OpenClaw bound to localhost and does not require LAN expose.
+This keeps OpenClaw host-native (loopback) and does not require LAN expose.
 
 Prereq: create a Tailscale auth key in the admin console (recommended: preauthorized + ephemeral; optionally tagged).
 Treat it as a secret and do not commit it anywhere.
@@ -88,10 +88,7 @@ export TS_AUTHKEY="tskey-REPLACE_ME"
 # - they both try to create a TUN interface named "tailscale0"
 # - they both would want to bind HTTPS on 443
 #
-# Instead, run the second node in its own container network namespace and proxy to OpenClaw over the Docker network.
-#
-# The OpenClaw gateway container is already on the external Docker network "ai-stack", so we attach there and proxy to:
-#   http://openclaw-gateway:18789
+# Instead, run the second node in its own container network namespace and proxy to a host bridge.
 docker run -d --name tailscaled-openclaw --restart=unless-stopped \
   --network=ai-stack \
   --cap-add=NET_ADMIN --cap-add=NET_RAW \
@@ -104,21 +101,6 @@ docker exec tailscaled-openclaw tailscale up \
   --auth-key="${TS_AUTHKEY}" \
   --hostname=openclaw
 
-# Serve OpenClaw at https://openclaw.tail027324.ts.net/
-docker exec tailscaled-openclaw tailscale serve reset
-docker exec tailscaled-openclaw tailscale serve --bg --https=443 http://openclaw-gateway:18789
-
-# Verify
-docker exec tailscaled-openclaw tailscale status
-docker exec tailscaled-openclaw tailscale serve status
-```
-
-### B.1) Variant: OpenClaw runs native (no OpenClaw container)
-If OpenClaw runs natively on the host (bind loopback), the `tailscaled-openclaw` container
-still needs a reachable upstream. Use a local TCP bridge on the Docker gateway IP and point
-Serve to that port.
-
-```bash
 # Native gateway: loopback-only
 nohup openclaw gateway --bind loopback --port 18789 > /tmp/openclaw-native.log 2>&1 &
 
@@ -126,9 +108,13 @@ nohup openclaw gateway --bind loopback --port 18789 > /tmp/openclaw-native.log 2
 HOST_GATEWAY_IP=$(docker network inspect ai-stack -f '{{(index .IPAM.Config 0).Gateway}}')
 nohup socat TCP-LISTEN:18790,bind=${HOST_GATEWAY_IP},fork,reuseaddr TCP:127.0.0.1:18789 > /tmp/openclaw-socat.log 2>&1 &
 
-# Serve OpenClaw at https://openclaw.tail... via the bridge
+# Serve OpenClaw at https://openclaw.tail027324.ts.net/ via bridge
 docker exec tailscaled-openclaw tailscale serve reset
 docker exec tailscaled-openclaw tailscale serve --bg --https=443 "http://${HOST_GATEWAY_IP}:18790"
+
+# Verify
+docker exec tailscaled-openclaw tailscale status
+docker exec tailscaled-openclaw tailscale serve status
 ```
 
 ### C) Smoke checks

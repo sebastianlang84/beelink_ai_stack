@@ -1,11 +1,11 @@
 # openclaw — Betrieb (Host-native)
 
-Ziel: OpenClaw laeuft nativ auf dem Host (kein Docker-Compose-Run fuer Gateway/CLI).
+Ziel: OpenClaw laeuft nativ auf dem Host.
 
-## Ist-Zustand (dieses Repo)
+## Ist-Zustand (dieses Setup)
 - CLI: `/home/wasti/.local/bin/openclaw`
 - Config: `~/.openclaw/openclaw.json`
-- Gateway: lokal auf `127.0.0.1:18789`
+- Gateway: `127.0.0.1:18789`
 
 ## Konfiguration
 Interaktiv:
@@ -14,7 +14,7 @@ Interaktiv:
 openclaw configure
 ```
 
-Einzelwert setzen (Beispiel `gateway.mode=local`):
+Einzelwert setzen (Beispiel):
 
 ```bash
 openclaw config set gateway.mode local
@@ -26,14 +26,14 @@ Wert pruefen:
 openclaw config get gateway.mode
 ```
 
-## Betrieb / Status
-Gateway-Status:
+## Betrieb
+Status:
 
 ```bash
 openclaw gateway status
 ```
 
-Gateway-Probe:
+Probe:
 
 ```bash
 openclaw gateway probe
@@ -46,22 +46,10 @@ openclaw gateway run --bind loopback --port 18789
 ```
 
 ## Tailscale Zugriff (VPN-only)
-Hinweis: OpenClaw nutzt absolute Pfade (`/api`, `/ws`). Pfad-Serve unter `/openclaw` kollidiert leicht mit OWUI.
-Empfohlen: eigener Hostname oder eigener HTTPS-Port.
+OpenClaw nutzt absolute Pfade (`/api`, `/ws`). Deshalb eigenen Hostnamen oder eigenen HTTPS-Port bevorzugen.
 
 Beispiel:
 
 ```bash
 sudo tailscale serve --bg --https=443 --set-path /openclaw http://127.0.0.1:18789
-```
-
-## Legacy (nur wenn explizit gewuenscht)
-`openclaw/docker-compose.yml` existiert weiterhin als Fallback, ist aber nicht der Standardbetrieb.
-
-## Cleanup (empfohlen nach Migration auf host-native)
-Alte OpenClaw-Container/Images aus Docker entfernen:
-
-```bash
-docker rm -f openclaw-gateway openclaw-cli 2>/dev/null || true
-docker rmi openclaw-openclaw-gateway:latest openclaw-openclaw-cli:latest openclaw:local 2>/dev/null || true
 ```
