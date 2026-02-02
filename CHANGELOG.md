@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- ops: OpenClaw Gateway nativ auf Host; socat-Bridge fuer tailscaled-openclaw Serve
 - chore: `.codex/` (lokale Codex Metadata) gitignored
 - transcript-miner: Investing Channel `@BrunoKreidler` hinzugefuegt
 - docs: Hostname-Split korrigiert (2. tailscaled Node nicht im host network; Proxy via Docker network zu openclaw-gateway)

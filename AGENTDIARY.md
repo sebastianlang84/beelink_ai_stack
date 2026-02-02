@@ -360,3 +360,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Repo-Housekeeping: Codex lokale Metadata aus Git fernhalten.
 - Probleme/Bugs/Issues: Untracked Ordner `.codex/` tauchte im Repo auf.
 - Loesung: `.codex/` in `.gitignore` aufgenommen.
+
+## 2026-02-02
+- Aufgabe: OpenClaw Gateway von Container auf native Host-Ausfuehrung umgestellt, Hostname-Setup beibehalten.
+- Probleme/Bugs/Issues: Tailscale-Proxy im `tailscaled-openclaw` Container kann localhost nicht erreichen.
+- Loesung: Native Gateway auf loopback:18789, TCP-Bridge via `socat` an Docker-Gateway-IP:18790, Tailscale Serve auf Bridge umgestellt.

@@ -113,6 +113,24 @@ docker exec tailscaled-openclaw tailscale status
 docker exec tailscaled-openclaw tailscale serve status
 ```
 
+### B.1) Variant: OpenClaw runs native (no OpenClaw container)
+If OpenClaw runs natively on the host (bind loopback), the `tailscaled-openclaw` container
+still needs a reachable upstream. Use a local TCP bridge on the Docker gateway IP and point
+Serve to that port.
+
+```bash
+# Native gateway: loopback-only
+nohup openclaw gateway --bind loopback --port 18789 > /tmp/openclaw-native.log 2>&1 &
+
+# Bridge 172.21.0.1:18790 -> 127.0.0.1:18789 (host)
+HOST_GATEWAY_IP=$(docker network inspect ai-stack -f '{{(index .IPAM.Config 0).Gateway}}')
+nohup socat TCP-LISTEN:18790,bind=${HOST_GATEWAY_IP},fork,reuseaddr TCP:127.0.0.1:18789 > /tmp/openclaw-socat.log 2>&1 &
+
+# Serve OpenClaw at https://openclaw.tail... via the bridge
+docker exec tailscaled-openclaw tailscale serve reset
+docker exec tailscaled-openclaw tailscale serve --bg --https=443 "http://${HOST_GATEWAY_IP}:18790"
+```
+
 ### C) Smoke checks
 ```bash
 curl -I https://owui.tail027324.ts.net/
