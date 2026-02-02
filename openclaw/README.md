@@ -6,6 +6,8 @@ Ziel: OpenClaw laeuft nativ auf dem Host.
 - CLI: `/home/wasti/.local/bin/openclaw`
 - Config: `~/.openclaw/openclaw.json`
 - Gateway: `127.0.0.1:18789`
+- Workspace: `~/.openclaw/workspace`
+- Sessions: `~/.openclaw/agents/main/sessions`
 
 ## Konfiguration
 Interaktiv:

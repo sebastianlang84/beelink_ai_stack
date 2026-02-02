@@ -395,3 +395,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OpenClaw final so bereinigt, dass kein Repo-Betriebspfad mehr ueber Docker laeuft.
 - Probleme/Bugs/Issues: Vorherige Bereinigung liess noch Docker-Fallback-Dateien und Legacy-Formulierungen im Repo.
 - Loesung: `openclaw/docker-compose.yml` und `openclaw/.config.env.example` entfernt, `openclaw/README.md` auf rein host-native Betrieb gestrafft, Root-README bereinigt und lokale OpenClaw-Upstream-Kopie geloescht.
+
+## 2026-02-03
+- Aufgabe: OpenClaw Reconfigure-Ergebnis mit finalen Pfaden dauerhaft dokumentiert.
+- Probleme/Bugs/Issues: Workspace-Pfad war zuvor auf Docker-Home (`/home/node/...`) und fuehrte zu EACCES.
+- Loesung: Host-native Pfade festgehalten (`~/.openclaw/openclaw.json`, `~/.openclaw/workspace`, `~/.openclaw/agents/main/sessions`) und in `openclaw/README.md` verankert.

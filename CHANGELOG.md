@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: OpenClaw Pfade nach Reconfigure dokumentiert (Config/Workspace/Sessions)
 - ops: OpenClaw Docker-Reste aus Repo entfernt (`openclaw/docker-compose.yml`, `openclaw/.config.env.example` geloescht)
 - ops: finale OpenClaw-Cleanup: alte Docker-Images entfernt; nur host-native Gateway + tailscaled-openclaw bleiben
 - docs: `openclaw/docker-compose.yml` und `openclaw/.config.env.example` als deprecated Fallback markiert
