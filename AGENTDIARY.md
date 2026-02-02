@@ -385,3 +385,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OpenClaw-Doku von Docker-first auf host-native Betrieb umgestellt und stale Docker-Reste bereinigt.
 - Probleme/Bugs/Issues: Repo-Doku war noch Docker-zentriert und hat dadurch zu falschen CLI-Empfehlungen gefuehrt.
 - Loesung: `openclaw/README.md`, `README.md` und `docs/README.md` auf host-native Standard aktualisiert; stale Container `openclaw-gateway` entfernt; Healthcheck mit `openclaw gateway status` bestaetigt.
+
+## 2026-02-03
+- Aufgabe: Finalen OpenClaw-Cleanup abgeschlossen, um Docker-Reste zu entfernen und Betrieb eindeutig host-native zu halten.
+- Probleme/Bugs/Issues: Veraltete OpenClaw-Docker-Images (`openclaw*`) waren noch lokal vorhanden und konnten zu Missverstaendnissen fuehren.
+- Loesung: `openclaw/docker-compose.yml` + `.config.env.example` klar als deprecated Fallback markiert, alte OpenClaw-Images entfernt, Laufzeit geprueft (`openclaw gateway status` weiterhin OK).

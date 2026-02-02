@@ -1,3 +1,5 @@
+# DEPRECATED: OpenClaw is operated host-native in this repo.
+# Keep this compose file only as an emergency fallback.
 name: openclaw
 services:
   openclaw-gateway:

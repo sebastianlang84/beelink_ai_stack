@@ -57,3 +57,11 @@ sudo tailscale serve --bg --https=443 --set-path /openclaw http://127.0.0.1:1878
 
 ## Legacy (nur wenn explizit gewuenscht)
 `openclaw/docker-compose.yml` existiert weiterhin als Fallback, ist aber nicht der Standardbetrieb.
+
+## Cleanup (empfohlen nach Migration auf host-native)
+Alte OpenClaw-Container/Images aus Docker entfernen:
+
+```bash
+docker rm -f openclaw-gateway openclaw-cli 2>/dev/null || true
+docker rmi openclaw-openclaw-gateway:latest openclaw-openclaw-cli:latest openclaw:local 2>/dev/null || true
+```

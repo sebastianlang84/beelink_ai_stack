@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- ops: finale OpenClaw-Cleanup: alte Docker-Images entfernt; nur host-native Gateway + tailscaled-openclaw bleiben
+- docs: `openclaw/docker-compose.yml` und `openclaw/.config.env.example` als deprecated Fallback markiert
 - docs: OpenClaw Doku auf host-native Betrieb umgestellt (Docker als Legacy-Fallback markiert)
 - ops: stale Container `openclaw-gateway` entfernt (native OpenClaw bleibt aktiv)
 - ops: TM-Summary-Luecke analysiert (2026-02-02/03): tm-Container nutzte stale Docker-DNS Upstream `100.100.100.100`; `tm` neu gestartet (DNS jetzt `192.168.0.1`)
