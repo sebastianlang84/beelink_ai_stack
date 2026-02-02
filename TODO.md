@@ -48,6 +48,14 @@
   - Ziel: Tika via Docker bereitstellen (fuer OWUI Documents/RAG).
   - Status: Service in `open-webui/docker-compose.yml` (intern-only).
 
+- [x] **Codex Remote-SSH Auth gegen DNS-Ausfall absichern**
+  - Problem: VS Code Codex OAuth scheitert, wenn Tailscale DNS Override (`accept-dns=true`) auf `100.100.100.100` zeigt und Public DNS `SERVFAIL` liefert.
+  - Umsetzung:
+    - `scripts/check_codex_auth_dns.sh` (Healthcheck: CorpDNS + DNS + OAuth Endpoint).
+    - `scripts/remediate_codex_auth_dns.sh` (erzwingt `tailscale set --accept-dns=false` + Verify).
+    - `scripts/install_codex_auth_dns_guard_cron.sh` (`@reboot` + alle 10 Minuten Check/Auto-Remediation).
+  - Doku: `docs/runbook_codex_ssh_auth_dns_guard.md`.
+
 - [x] **Open WebUI Knowledge: Auto-Create Governance (klarer User-Intent)**
   - Problem: LLM/RAG-Queries können neue Collections (z. B. `bitcoin`, `crypto`) auto-anlegen, wenn `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`.
   - Ziel: Auto-Create nur, wenn es explizit gewollt ist.

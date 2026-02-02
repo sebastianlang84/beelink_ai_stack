@@ -365,3 +365,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OpenClaw Gateway von Container auf native Host-Ausfuehrung umgestellt, Hostname-Setup beibehalten.
 - Probleme/Bugs/Issues: Tailscale-Proxy im `tailscaled-openclaw` Container kann localhost nicht erreichen.
 - Loesung: Native Gateway auf loopback:18789, TCP-Bridge via `socat` an Docker-Gateway-IP:18790, Tailscale Serve auf Bridge umgestellt.
+
+## 2026-02-02
+- Aufgabe: Codex/VSC Remote-SSH Auth gegen Tailscale-DNS Ausfaelle gehaertet (dauerhaft, ohne sudo-Abhaengigkeit).
+- Probleme/Bugs/Issues: Erste Version der Cron-Installer-Blockentfernung hatte fehlerhafte `sed` Syntax.
+- Loesung: Guard-Skripte fuer Check/Remediation/Cron-Install erstellt, Blockentfernung auf robustes `awk` umgestellt, Cron aktiv installiert und End-to-End verifiziert (forced failure + auto-fix).

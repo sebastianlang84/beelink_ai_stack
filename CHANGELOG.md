@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- ops: Codex Remote-SSH Auth DNS Guard hinzugefuegt (Check + Auto-Remediation + Cron Persistenz)
+- docs: Runbook fuer Codex/VSC SSH Auth DNS Guard ergaenzt
 - ops: OpenClaw Gateway nativ auf Host; socat-Bridge fuer tailscaled-openclaw Serve
 - chore: `.codex/` (lokale Codex Metadata) gitignored
 - transcript-miner: Investing Channel `@BrunoKreidler` hinzugefuegt

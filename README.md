@@ -73,6 +73,13 @@ Ziel: Lightweight Monitoring fuer CPU/Temperatur/Disk (Host) plus Docker-Hygiene
 - Script: `./scripts/smoke_test_ai_stack.sh --up --build`
 - Reindex (Embedding-Model-Wechsel): `docs/runbook_openwebui_reindex_knowledge.md:1`
 
+## Codex Remote-SSH Auth Guard (DNS)
+- Hintergrund: VS Code Codex Login kann scheitern, wenn Tailscale DNS Override (`accept-dns=true`) auf einen instabilen Resolver zeigt.
+- Check: `./scripts/check_codex_auth_dns.sh`
+- Remediation: `./scripts/remediate_codex_auth_dns.sh --reason manual`
+- Persistenter Guard (`@reboot` + alle 10 Minuten): `./scripts/install_codex_auth_dns_guard_cron.sh`
+- Runbook: `docs/runbook_codex_ssh_auth_dns_guard.md:1`
+
 ## Monitoring (Plan)
 - Watchdog-Ideen (CPU/Temp/Disk): `docs/plan_watchdog_monitoring.md`
 

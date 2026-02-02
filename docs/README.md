@@ -18,6 +18,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 - `docs/runbook_smoke_test.md` — Smoke Test (P0): Open WebUI + Transcript Miner Tool + Tool→OWUI Auth
 - `docs/runbook_openwebui_reindex_knowledge.md` — Reindex nach Embedding‑Model‑Wechsel (Knowledge Collections Recovery)
 - `docs/runbook_youtube_429_mitigation.md` — Runbook für YouTube Transcript 429 (Tests + Mitigation)
+- `docs/runbook_codex_ssh_auth_dns_guard.md` — Codex VS Code Remote-SSH Auth-Guard (Tailscale DNS Override verhindern)
 
 ## Reports / Incidents
 - `docs/report_youtube_ip_block.md` — YouTube Transcript Block (HTTP 429) Status & Optionen

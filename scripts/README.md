@@ -10,6 +10,16 @@
 - Install Tailscale (requires interactive `sudo`):
   - `./scripts/install_tailscale_debian13.sh`
 
+## Codex SSH Auth DNS Guard
+- DNS/Auth check for Codex OAuth endpoint (`auth.openai.com`):
+  - `./scripts/check_codex_auth_dns.sh`
+- Auto-remediation (forces `tailscale --accept-dns=false` + post-check):
+  - `./scripts/remediate_codex_auth_dns.sh --reason manual`
+- Install persistent user-cron guard (`@reboot` + periodic check every 10 min):
+  - `./scripts/install_codex_auth_dns_guard_cron.sh`
+- Default log file:
+  - `${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/codex-auth-dns-guard.log`
+
 ## Docker Networking
 - Provision shared network + volumes (SSOT naming, one-time):
   - `./scripts/provision_ai_stack_docker_objects.sh`
