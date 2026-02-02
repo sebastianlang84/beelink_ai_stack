@@ -375,3 +375,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: TODO um gewuenschten Transcript-Miner Ausbau fuer Influencer-Trackrecord erweitert.
 - Probleme/Bugs/Issues: Keine technischen Blocker; Anforderungen mussten in umsetzbare Teilziele (Signal-Extraktion, Kurs-Freeze, Langzeitbewertung) strukturiert werden.
 - Loesung: Neues TODO-Backlog-Item mit klaren Datenpunkten, DoD-Entwurf und Auswertungsziel dokumentiert; CHANGELOG entsprechend aktualisiert.
+
+## 2026-02-03
+- Aufgabe: Ursache geprueft, warum OWUI bei investing zuletzt "12 hours ago" fuer Summary-Files zeigte.
+- Probleme/Bugs/Issues: `tm`-Runs (z. B. 2026-02-02 20:00 UTC und 23:00 UTC) liefen, hatten aber DNS-Fehler (`Unable to find the server at youtube.googleapis.com`) und konnten keine frischen Transkripte laden.
+- Loesung: Root Cause bestaetigt: Container-DNS zeigte auf stale Docker-Upstream `100.100.100.100` (geerbt aus alter Host-Resolver-Lage); `tm` neu gestartet, DNS im Container auf `192.168.0.1` aktualisiert, manuellen Investing-Run gestartet (`df96c841...`) und neue Summaries erzeugt (11 neue Files in den letzten ~25 Minuten).
