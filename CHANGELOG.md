@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- test(prompt-engineering): Fixture fuer 10 neueste Transcript/Summary-Paare erzeugt (`transcript-miner/tests/prompt-engineering/`)
+- docs: Prompt-Fixture-Workflow in `README.md` und `TODO.md` dokumentiert
 - fix(mcp-transcript-miner): Retry fuer OWUI-Indexing bei transienten Process-Fehlern (Upload/Process/Add mit Backoff)
 - docs: Retry-Env-Variablen und Troubleshooting fuer `status=partial` im Transcript-Miner dokumentiert
 - ops: investing Topic nach Fehlerfall manuell nachgesynct (`sync/topic/investing` -> `indexed=142`, `errors=0`)

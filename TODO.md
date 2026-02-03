@@ -131,6 +131,12 @@
   - Production-Investing nur nach validiertem Prompt/Schema-Update laufen lassen.
   - Referenz: `docs/prompt_engineering_expert_notes.md`
 
+- [x] **Prompt-Engineering Test-Fixture (10 letzte Transcripts)**
+  - Ziel: Altes vs. neues Prompt-Format schnell vergleichbar machen (pro Video: Transcript + old Summary + new Summary).
+  - Ort: `transcript-miner/tests/prompt-engineering/`
+  - Enthalten: `_promptold.md`, `_promptnew.md`, `_manifest.json` und je Video `<video_id>_transcript.md`, `<video_id>_sumold.md`, `<video_id>_sumnew.md`.
+  - Generator: `transcript-miner/tests/prompt-engineering/_build_prompt_engineering_fixture.sh`.
+
 - [x] **P0: Healing/Validation für Transkripte & Summaries (inkrementell, metadata‑basiert)**
   - Ziel: Gute Files wiederverwenden; nur kaputte/inkomplette Artefakte re‑fetch/re‑generate.
   - Transkripte: Validierungsregeln definieren (z.B. Datei fehlt/leer/zu kurz, Meta weist auf Fehler/Block hin, Meta↔Datei‑Mismatch).

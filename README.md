@@ -45,6 +45,9 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
 2. Run: `uv run python -m transcript_miner --config config/config_investing_test.yaml`
 3. Erst wenn der Prompt/Schema-Stand validiert ist: auf `config_investing.yaml` wechseln.
 4. Optionaler Reset fuer das Test-Topic (z. B. vor einem Clean-Slate): `OPEN_WEBUI_API_KEY=... ./scripts/purge_topic_data.sh investing_test --force`
+5. Prompt-Engineering Fixture (10 letzte Paare Transcript/Summary old/new): `transcript-miner/tests/prompt-engineering/`  
+   - Generator: `transcript-miner/tests/prompt-engineering/_build_prompt_engineering_fixture.sh`  
+   - Enthalten: `_promptold.md`, `_promptnew.md`, `_manifest.json` sowie `<video_id>_transcript.md`, `<video_id>_sumold.md`, `<video_id>_sumnew.md`.
 
 ## Scheduled Runs (investing, alle 3h)
 Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):

@@ -410,3 +410,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Ursache fuer ausgebliebenen OWUI-Sync bei Transcript Miner analysiert und stabilisiert.
 - Probleme/Bugs/Issues: Auto-Sync lief als `partial/failed`, obwohl der Run selbst erfolgreich war; Open WebUI File-Processing schlug zeitweise fehl.
 - Loesung: Root Cause auf transienten Proxy/DNS-Fehler eingegrenzt (`debug-proxy` konnte `openrouter.ai` zeitweise nicht aufloesen -> OWUI `process/status=failed`); fehlende Eintraege manuell per `sync/topic/investing` nachgesynct (142/142 indexed, 0 errors); Retry-Logik fuer `POST /index/transcript` (Upload/Process/Add mit Backoff) implementiert und Doku/Config aktualisiert.
+
+## 2026-02-03
+- Aufgabe: Prompt-Engineering Testumgebung mit den 10 neuesten Transcript/Summary-Paaren aufgebaut.
+- Probleme/Bugs/Issues: Lokale Python-Umgebung war teilweise inkonsistent (gebrochener venv-Python Symlink), initiales Generator-Skript lief dadurch nicht.
+- Loesung: Fixture als robustes Bash-Skript umgesetzt (`transcript-miner/tests/prompt-engineering/_build_prompt_engineering_fixture.sh`), OpenRouter direkt per `curl` aufgerufen und je Video drei Vergleichsdateien erzeugt (`_transcript`, `_sumold`, `_sumnew`) plus `_promptold.md`/`_promptnew.md` und `_manifest.json`.
