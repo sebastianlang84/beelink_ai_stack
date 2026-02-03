@@ -13,6 +13,23 @@ Ich baue dieses Test-Folder-Setup, um Prompt-Iteration fuer OWUI/RAG schnell und
   - nachvollziehbarer (klarer Bezug zu Quellen),
   - konsistenter (gleiche Frage -> aehnliche, stabile Struktur) werden.
 
+## Unser aktuelles Setup (Ist-Stand, OWUI/RAG)
+- Open WebUI laeuft als Docker Container:
+  - Image: `ghcr.io/open-webui/open-webui:0.7.2`
+  - Port: `127.0.0.1:3000 -> 8080` (localhost-only)
+  - Persistenz: Docker Volume `owui-data` gemountet nach `/app/backend/data`
+- Storage in `owui-data` (relevant fuer RAG):
+  - SQLite DB: `/app/backend/data/webui.db` (enthaelt u. a. globale OWUI-Konfiguration inkl. RAG-Settings)
+  - Vector Store: `/app/backend/data/vector_db/` (OWUI-internes Embedding/Vector-Storage fuer Knowledge/Documents)
+  - Uploads: `/app/backend/data/uploads/`
+- Content Extraction (Documents): Apache Tika laeuft als Container `tika` im selben Docker-Netz (`http://tika:9998/tika`).
+- RAG/Embedding (OWUI-Config aus `webui.db`):
+  - Embedding Engine: `openai` (in OWUI-Sprache; genutzt gegen OpenRouter API Base URL)
+  - Embedding Model: `baai/bge-m3`
+  - Retrieval: `top_k = 30`
+  - Chunking: `chunk_size = 800`, `chunk_overlap = 120` (OWUI Text Splitter Defaults)
+  - Reranker: `top_k_reranker = 3`, aber `reranking_engine`/`reranking_model` sind aktuell leer (kein expliziter Reranker konfiguriert).
+
 ## Recency/Alter: neuere Infos hoeher gewichten (ohne alte zu ignorieren)
 Problem:
 - Bei Themen wie Bitcoin/Krypto (und auch Earnings/Guidance bei Aktien) sind Summaries von vor Wochen/Monaten oft faktisch ueberholt.
@@ -32,6 +49,11 @@ Moegliche Loesungswege (RAG-seitig):
 - Reranking mit Zeit-Decay (wenn wir den Retrieval-Stack kontrollieren):
   - Score = semantic_similarity * time_decay(published_at)
   - time_decay z. B. exponentiell fuer Krypto, flacher fuer Fundamentals.
+- Reality Check fuer unser Setup:
+  - In OWUI haben wir derzeit **kein** konfiguriertes Reranking-Backend (siehe `reranking_engine` leer).
+  - D. h. ein echtes Time-Decay Reranking erfordert entweder:
+    - einen OWUI-Reranker (falls/when konfigurierbar) oder
+    - einen Retrieval-Workaround (z. B. `recent/archive` Collections oder Recency-Buckets) ohne Aenderungen am OWUI-Scoring.
 - Prompt-Regel im Chat (Answer-Policy):
   - Wenn mehrere Treffer mit widerspruechlichen Aussagen existieren, bevorzuge die juengsten Quellen und nenne das Datum.
   - Nutze aeltere Quellen nur als Kontext/History, nicht fuer "aktueller Stand".

@@ -425,3 +425,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Prompt-Engineering Ziele um Recency-Weighting und Long-term Company-Dossiers erweitert.
 - Probleme/Bugs/Issues: Prompt-/RAG-Problem: aeltere Summaries koennen bei Crypto/News-Topics obsolet sein und sollten weniger Gewicht bekommen; Fundamentals sollen separat langfristig gepflegt werden.
 - Loesung: In `_goals.md` konkrete Strategien dokumentiert (Zeit-Decay/Recency-Buckets, separate Collections recent/archive, Answer-Policy) sowie Ansatz fuer separaten Dossier-Agent mit eigener OWUI Knowledge-Collection (`company_dossiers`).
+
+## 2026-02-03
+- Aufgabe: OWUI/RAG Ist-Setup im Prompt-Engineering Ziel-Dokument festgehalten.
+- Probleme/Bugs/Issues: Fuer Entscheidungen wie \"Zeit-Decay Reranking\" muss klar sein, ob unser aktueller Stack ueberhaupt ein Reranking-Backend nutzt/unterstuetzt.
+- Loesung: `_goals.md` um konkrete Setup-Details erweitert (OWUI in Docker, Persistenz `owui-data`, `webui.db` + `vector_db`, aktuelles Embedding-Modell `baai/bge-m3`, `top_k=30`, Reranker derzeit nicht konfiguriert).

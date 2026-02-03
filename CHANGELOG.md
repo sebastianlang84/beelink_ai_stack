@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(prompt-engineering): OWUI/RAG Ist-Setup in `_goals.md` dokumentiert (DB/Vector Store/Embedder/Top-K)
 - docs(prompt-engineering): Recency-Weighting und Long-term Dossier-Ziele in `_goals.md` ergaenzt
 - docs(prompt-engineering): Ziele fuer RAG-Prompt-Tuning als `_goals.md` zur Fixture hinzugefuegt
 - test(prompt-engineering): Fixture fuer 10 neueste Transcript/Summary-Paare erzeugt (`transcript-miner/tests/prompt-engineering/`)
