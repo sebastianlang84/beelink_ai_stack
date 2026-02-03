@@ -244,6 +244,11 @@
   - DoD:
     - OpenRouter Activity zeigt konsistent `app_name` für Runs (falls Provider das unterstützt).
 
+- [x] **MCP Transcript Miner: Retry bei transientem OWUI-Processing-Fehler**
+  - Problem: `sync/topic` konnte bei kurzer Proxy/DNS-Stoerung mit `step=process` fehlschlagen (`status=partial`).
+  - Umsetzung: Retry-Logik in `POST /index/transcript` (Upload/Process/Add) mit Backoff.
+  - Config: `OPEN_WEBUI_INDEX_MAX_ATTEMPTS`, `OPEN_WEBUI_INDEX_RETRY_BACKOFF_SECONDS`.
+
 - [x] **P0: Default Full-Pipeline Run (Mining → Index → LLM → Report)**
   - Standard-Verhalten: ein Programmlauf macht **alles** (Transkripte downloaden → Index bauen → LLM-Summaries → Aggregation/Report).
   - CLI: Schritte sollen optional überspringbar sein (Flag-Namen TBD; z.B. `--skip-index`, `--skip-llm`, `--skip-report` oder `--only <step>`).

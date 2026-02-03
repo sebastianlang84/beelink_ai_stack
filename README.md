@@ -59,6 +59,7 @@ Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):
 Diagnose-Scripts (Transcript Miner):
 - Cookie-Load + Transcript-Request: `transcript-miner/tools/repro_cookie_load.py`
 - IP-Block-Repro: `transcript-miner/tools/repro_ip_block.py`
+- Falls Auto-Sync `partial/failed` ist: `docker exec tm python -c "import requests; print(requests.post('http://127.0.0.1:8000/sync/topic/investing', json={}, timeout=900).text)"` (holt fehlende OWUI-Indexe nach)
 
 ## Quickstart (Watchdog)
 Ziel: Lightweight Monitoring fuer CPU/Temperatur/Disk (Host) plus Docker-Hygiene.

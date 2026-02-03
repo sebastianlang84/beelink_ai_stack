@@ -405,3 +405,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Offenen OpenClaw-Telegram Blocker fuer naechste Session explizit in TODO verankert.
 - Probleme/Bugs/Issues: Trotz laufendem Telegram-Channel trat weiterhin `disconnected (1008): pairing required` auf; Session musste unterbrochen werden.
 - Loesung: TODO-Eintrag mit aktuellem Status, bereits gesetzten Configs und konkretem naechsten Ablauf (pairing list/approve, Live-Logs, BotFather Privacy) ergaenzt; CHANGELOG aktualisiert.
+
+## 2026-02-03
+- Aufgabe: Ursache fuer ausgebliebenen OWUI-Sync bei Transcript Miner analysiert und stabilisiert.
+- Probleme/Bugs/Issues: Auto-Sync lief als `partial/failed`, obwohl der Run selbst erfolgreich war; Open WebUI File-Processing schlug zeitweise fehl.
+- Loesung: Root Cause auf transienten Proxy/DNS-Fehler eingegrenzt (`debug-proxy` konnte `openrouter.ai` zeitweise nicht aufloesen -> OWUI `process/status=failed`); fehlende Eintraege manuell per `sync/topic/investing` nachgesynct (142/142 indexed, 0 errors); Retry-Logik fuer `POST /index/transcript` (Upload/Process/Add mit Backoff) implementiert und Doku/Config aktualisiert.

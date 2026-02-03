@@ -104,6 +104,16 @@ Persistenz/Backup: `docs/runbook_backup_restore.md:1`
 
 ## Troubleshooting
 
+### Sync teilweise fehlgeschlagen (`status=partial`, `step=process`)
+Typisches Symptom: `auto_sync_state=failed` und in Open WebUI Logs steht ein Embedding/Proxy-Fehler (z. B. `ClientHttpProxyError: 502`).
+
+Mitigation:
+- Ab jetzt retryt der Indexer transient fehlgeschlagene Upload/Process/Add-Schritte automatisch.
+- Steuerung per Env:
+  - `OPEN_WEBUI_INDEX_MAX_ATTEMPTS` (Default `3`)
+  - `OPEN_WEBUI_INDEX_RETRY_BACKOFF_SECONDS` (Default `5`)
+- Danach kann ein manueller Re-Sync die Lücke schließen: `POST /sync/topic/{topic}`.
+
 ### Run schlägt fehl: `Read-only file system` (z. B. `/transcript_miner_repo/logs`)
 Ursache: Der TranscriptMiner-Code-Ordner ist im Tool-Container absichtlich **read-only** gemountet (`/transcript_miner_repo:ro`).
 

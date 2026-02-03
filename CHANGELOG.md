@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- fix(mcp-transcript-miner): Retry fuer OWUI-Indexing bei transienten Process-Fehlern (Upload/Process/Add mit Backoff)
+- docs: Retry-Env-Variablen und Troubleshooting fuer `status=partial` im Transcript-Miner dokumentiert
+- ops: investing Topic nach Fehlerfall manuell nachgesynct (`sync/topic/investing` -> `indexed=142`, `errors=0`)
 - docs: TODO um OpenClaw Telegram Pairing-required Follow-up (naechste Session) erweitert
 - docs: OpenClaw Pfade nach Reconfigure dokumentiert (Config/Workspace/Sessions)
 - ops: OpenClaw Docker-Reste aus Repo entfernt (`openclaw/docker-compose.yml`, `openclaw/.config.env.example` geloescht)

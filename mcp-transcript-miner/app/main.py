@@ -55,6 +55,8 @@ OPEN_WEBUI_API_KEY = (os.getenv("OPEN_WEBUI_API_KEY", "") or os.getenv("OWUI_API
 DEFAULT_KNOWLEDGE_ID = os.getenv("OPEN_WEBUI_KNOWLEDGE_ID", "").strip()
 POLL_INTERVAL = int(os.getenv("OPEN_WEBUI_PROCESS_POLL_INTERVAL_SECONDS", "3"))
 PROCESS_TIMEOUT = int(os.getenv("OPEN_WEBUI_PROCESS_TIMEOUT_SECONDS", "900"))
+INDEX_MAX_ATTEMPTS = max(1, int(os.getenv("OPEN_WEBUI_INDEX_MAX_ATTEMPTS", "3")))
+INDEX_RETRY_BACKOFF_SECONDS = max(0.0, float(os.getenv("OPEN_WEBUI_INDEX_RETRY_BACKOFF_SECONDS", "5")))
 INDEXER_DB_PATH = os.getenv("INDEXER_DB_PATH", "/data/indexer.sqlite3")
 AUTO_SYNC_AFTER_RUN = os.getenv("OPEN_WEBUI_AUTO_SYNC_AFTER_RUN", "").strip().lower() in {"1", "true", "yes"}
 AUTO_CREATE_KNOWLEDGE = os.getenv("OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING", "").strip().lower() in {"1", "true", "yes"}
@@ -798,30 +800,56 @@ def _index_markdown(req: IndexTranscriptRequest) -> dict[str, Any]:
                 "filename": filename,
             }
 
-        file_id = _upload_file(markdown, filename=filename)
+        last_failure: dict[str, Any] | None = None
+        for attempt in range(1, INDEX_MAX_ATTEMPTS + 1):
+            try:
+                file_id = _upload_file(markdown, filename=filename)
+                process_status = _poll_processing(file_id)
+                if (process_status.get("status") or "").lower() == "failed":
+                    last_failure = {
+                        "status": "failed",
+                        "step": "process",
+                        "file_id": file_id,
+                        "process": process_status,
+                        "attempt": attempt,
+                        "attempts": INDEX_MAX_ATTEMPTS,
+                    }
+                    if attempt < INDEX_MAX_ATTEMPTS:
+                        time.sleep(INDEX_RETRY_BACKOFF_SECONDS * attempt)
+                    continue
 
-        process_status = _poll_processing(file_id)
-        if (process_status.get("status") or "").lower() == "failed":
-            return {"status": "failed", "step": "process", "file_id": file_id, "process": process_status}
+                add_result = _add_to_knowledge(knowledge_id=knowledge_id, file_id=file_id)
+                add_status = str(add_result.get("status") or "indexed")
 
-        add_result = _add_to_knowledge(knowledge_id=knowledge_id, file_id=file_id)
-        add_status = str(add_result.get("status") or "indexed")
-
-        conn.execute(
-            "INSERT OR REPLACE INTO uploads (source_id, sha256, file_id, knowledge_id, created_at) VALUES (?, ?, ?, ?, ?)",
-            (req.source_id, sha, file_id, knowledge_id, int(time.time())),
-        )
-        conn.commit()
-        if add_status != "skipped":
-            _knowledge_file_cache_add(knowledge_id, sha=sha, filename=filename)
-        return {
-            "status": "skipped" if add_status == "skipped" else "indexed",
-            "source_id": req.source_id,
-            "file_id": file_id,
-            "knowledge_id": knowledge_id,
-            "process": process_status,
-            "knowledge_add": add_result,
-        }
+                conn.execute(
+                    "INSERT OR REPLACE INTO uploads (source_id, sha256, file_id, knowledge_id, created_at) VALUES (?, ?, ?, ?, ?)",
+                    (req.source_id, sha, file_id, knowledge_id, int(time.time())),
+                )
+                conn.commit()
+                if add_status != "skipped":
+                    _knowledge_file_cache_add(knowledge_id, sha=sha, filename=filename)
+                return {
+                    "status": "skipped" if add_status == "skipped" else "indexed",
+                    "source_id": req.source_id,
+                    "file_id": file_id,
+                    "knowledge_id": knowledge_id,
+                    "process": process_status,
+                    "knowledge_add": add_result,
+                    "attempt": attempt,
+                    "attempts": INDEX_MAX_ATTEMPTS,
+                }
+            except Exception as exc:
+                last_failure = {
+                    "status": "failed",
+                    "step": "upload_or_add",
+                    "error": str(exc),
+                    "attempt": attempt,
+                    "attempts": INDEX_MAX_ATTEMPTS,
+                }
+                if attempt < INDEX_MAX_ATTEMPTS:
+                    time.sleep(INDEX_RETRY_BACKOFF_SECONDS * attempt)
+                continue
+        return last_failure or {"status": "failed", "step": "unknown"}
     finally:
         conn.close()
 
