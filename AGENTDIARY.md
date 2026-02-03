@@ -400,3 +400,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OpenClaw Reconfigure-Ergebnis mit finalen Pfaden dauerhaft dokumentiert.
 - Probleme/Bugs/Issues: Workspace-Pfad war zuvor auf Docker-Home (`/home/node/...`) und fuehrte zu EACCES.
 - Loesung: Host-native Pfade festgehalten (`~/.openclaw/openclaw.json`, `~/.openclaw/workspace`, `~/.openclaw/agents/main/sessions`) und in `openclaw/README.md` verankert.
+
+## 2026-02-03
+- Aufgabe: Offenen OpenClaw-Telegram Blocker fuer naechste Session explizit in TODO verankert.
+- Probleme/Bugs/Issues: Trotz laufendem Telegram-Channel trat weiterhin `disconnected (1008): pairing required` auf; Session musste unterbrochen werden.
+- Loesung: TODO-Eintrag mit aktuellem Status, bereits gesetzten Configs und konkretem naechsten Ablauf (pairing list/approve, Live-Logs, BotFather Privacy) ergaenzt; CHANGELOG aktualisiert.

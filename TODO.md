@@ -56,6 +56,19 @@
     - `scripts/install_codex_auth_dns_guard_cron.sh` (`@reboot` + alle 10 Minuten Check/Auto-Remediation).
   - Doku: `docs/runbook_codex_ssh_auth_dns_guard.md`.
 
+- [ ] **OpenClaw Telegram: Pairing-required Disconnect final loesen (Fortsetzung morgen)**
+  - Status: Channel `Telegram` ist `enabled/configured/running`, aber in Chat kommt `disconnected (1008): pairing required`.
+  - Bereits gemacht:
+    - `channels.telegram.groupPolicy=open`
+    - `channels.telegram.dmPolicy=open`
+    - `channels.telegram.allowFrom=[\"*\"]`
+    - `BOOTSTRAP.md` aus Workspace archiviert (Bootstrap-Status jetzt OK)
+  - Naechster Ablauf:
+    - Neue Nachricht in DM + Gruppe senden (mit Mention).
+    - Danach: `openclaw pairing list --channel telegram`.
+    - Falls Code erscheint: `openclaw pairing approve --channel telegram --code <CODE_OHNE_KLAMMERN>`.
+    - Falls weiter kein pending request: Live-Logs mit `openclaw logs --follow` + `openclaw channels logs --channel telegram --lines 200` pruefen und BotFather Privacy (`/setprivacy`) deaktivieren.
+
 - [x] **Open WebUI Knowledge: Auto-Create Governance (klarer User-Intent)**
   - Problem: LLM/RAG-Queries können neue Collections (z. B. `bitcoin`, `crypto`) auto-anlegen, wenn `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`.
   - Ziel: Auto-Create nur, wenn es explizit gewollt ist.
