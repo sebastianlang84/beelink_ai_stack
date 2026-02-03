@@ -430,3 +430,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI/RAG Ist-Setup im Prompt-Engineering Ziel-Dokument festgehalten.
 - Probleme/Bugs/Issues: Fuer Entscheidungen wie \"Zeit-Decay Reranking\" muss klar sein, ob unser aktueller Stack ueberhaupt ein Reranking-Backend nutzt/unterstuetzt.
 - Loesung: `_goals.md` um konkrete Setup-Details erweitert (OWUI in Docker, Persistenz `owui-data`, `webui.db` + `vector_db`, aktuelles Embedding-Modell `baai/bge-m3`, `top_k=30`, Reranker derzeit nicht konfiguriert).
+
+## 2026-02-03
+- Aufgabe: OWUI-Stack-Grenzen/ Hebel (Topic-Isolation, Recency-Routing, Reranker-Realitaet, Chunking) in `_goals.md` konkretisiert.
+- Probleme/Bugs/Issues: Ohne explizit aktives Reranking bzw. ohne eigenen Ranker ist echtes Time-Decay-Scoring nicht \"einfach so\" moeglich.
+- Loesung: `_goals.md` um eine Setup-spezifische Einordnung erweitert (was sofort wirkt vs. was Zusatzarbeit braucht).

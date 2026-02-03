@@ -20,7 +20,7 @@ Ich baue dieses Test-Folder-Setup, um Prompt-Iteration fuer OWUI/RAG schnell und
   - Persistenz: Docker Volume `owui-data` gemountet nach `/app/backend/data`
 - Storage in `owui-data` (relevant fuer RAG):
   - SQLite DB: `/app/backend/data/webui.db` (enthaelt u. a. globale OWUI-Konfiguration inkl. RAG-Settings)
-  - Vector Store: `/app/backend/data/vector_db/` (OWUI-internes Embedding/Vector-Storage fuer Knowledge/Documents)
+  - Vector Store: `/app/backend/data/vector_db/` (OWUI-internes Embedding/Vector-Storage fuer Knowledge/Documents; HNSW-artige Binaries pro Collection)
   - Uploads: `/app/backend/data/uploads/`
 - Content Extraction (Documents): Apache Tika laeuft als Container `tika` im selben Docker-Netz (`http://tika:9998/tika`).
 - RAG/Embedding (OWUI-Config aus `webui.db`):
@@ -29,6 +29,27 @@ Ich baue dieses Test-Folder-Setup, um Prompt-Iteration fuer OWUI/RAG schnell und
   - Retrieval: `top_k = 30`
   - Chunking: `chunk_size = 800`, `chunk_overlap = 120` (OWUI Text Splitter Defaults)
   - Reranker: `top_k_reranker = 3`, aber `reranking_engine`/`reranking_model` sind aktuell leer (kein expliziter Reranker konfiguriert).
+  - Hybrid Search: aktuell aus (`enable_hybrid_search = false`)
+
+## Grenzen & Hebel in unserem OWUI-Stack (wichtig fuer Design-Entscheidungen)
+Was gut passt (niedriger Aufwand, hoher Effekt):
+- Topic-Isolation ist der groesste Hebel:
+  - Pro Video topic-reine Dokumente (macro/stocks/crypto) erzeugen.
+  - Diese Dokumente in getrennte Knowledge-Collections indexieren (macro/stocks/crypto), damit Retrieval schon vor dem Embedding-Match nicht topic-fremd suchen kann.
+- Routing fuer Recency statt \"magisches\" Time-Decay:
+  - `*_recent` / `*_archive` Collections (oder Recency-Buckets) sind in unserem Setup der pragmatische Weg, weil OWUI kein garantiertes, eingebautes Zeit-Decay Scoring hat.
+
+Wo wir echte Grenzen haben (ohne extra Technik):
+- \"Time-decay\" im Scoring ist nicht automatisch Teil der Retrieval-Logik.
+- Reranking bringt nur dann etwas, wenn es auch wirklich aktiv konfiguriert ist (Engine/Model). Aktuell ist es **nicht** aktiv (Engine/Model leer).
+
+Wenn wir die Qualitaet weiter pushen wollen (mittlerer Aufwand):
+- Reranking sauber aktivieren (falls OWUI das in unserer Version/Config wirklich unterstuetzt):
+  - `reranking_engine` + `reranking_model` explizit setzen.
+  - `top_k` ggf. kleiner (weniger Noise), `top_k_reranker` etwas hoeher (mehr echte Relevanzfilterung).
+- Chunking/Formatierung fuer topic-reine Chunks:
+  - kleinere, klar getrennte Absaetze; keine Macro+Crypto im selben Absatz
+  - ggf. `chunk_size` reduzieren, wenn wir noch Mixed-Chunks sehen
 
 ## Recency/Alter: neuere Infos hoeher gewichten (ohne alte zu ignorieren)
 Problem:
