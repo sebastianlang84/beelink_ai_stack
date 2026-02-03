@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(prompt-engineering): Ziele fuer RAG-Prompt-Tuning als `_goals.md` zur Fixture hinzugefuegt
 - test(prompt-engineering): Fixture fuer 10 neueste Transcript/Summary-Paare erzeugt (`transcript-miner/tests/prompt-engineering/`)
 - docs: Prompt-Fixture-Workflow in `README.md` und `TODO.md` dokumentiert
 - fix(mcp-transcript-miner): Retry fuer OWUI-Indexing bei transienten Process-Fehlern (Upload/Process/Add mit Backoff)

@@ -415,3 +415,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Prompt-Engineering Testumgebung mit den 10 neuesten Transcript/Summary-Paaren aufgebaut.
 - Probleme/Bugs/Issues: Lokale Python-Umgebung war teilweise inkonsistent (gebrochener venv-Python Symlink), initiales Generator-Skript lief dadurch nicht.
 - Loesung: Fixture als robustes Bash-Skript umgesetzt (`transcript-miner/tests/prompt-engineering/_build_prompt_engineering_fixture.sh`), OpenRouter direkt per `curl` aufgerufen und je Video drei Vergleichsdateien erzeugt (`_transcript`, `_sumold`, `_sumnew`) plus `_promptold.md`/`_promptnew.md` und `_manifest.json`.
+
+## 2026-02-03
+- Aufgabe: Ziele fuer das Prompt-Engineering/RAG-Tuning als kurze, explizite Notiz abgelegt.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: `_goals.md` in `transcript-miner/tests/prompt-engineering/` hinzugefuegt und Living Docs an den neuen Fixture-Inhalt angepasst.
