@@ -420,3 +420,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Ziele fuer das Prompt-Engineering/RAG-Tuning als kurze, explizite Notiz abgelegt.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: `_goals.md` in `transcript-miner/tests/prompt-engineering/` hinzugefuegt und Living Docs an den neuen Fixture-Inhalt angepasst.
+
+## 2026-02-03
+- Aufgabe: Prompt-Engineering Ziele um Recency-Weighting und Long-term Company-Dossiers erweitert.
+- Probleme/Bugs/Issues: Prompt-/RAG-Problem: aeltere Summaries koennen bei Crypto/News-Topics obsolet sein und sollten weniger Gewicht bekommen; Fundamentals sollen separat langfristig gepflegt werden.
+- Loesung: In `_goals.md` konkrete Strategien dokumentiert (Zeit-Decay/Recency-Buckets, separate Collections recent/archive, Answer-Policy) sowie Ansatz fuer separaten Dossier-Agent mit eigener OWUI Knowledge-Collection (`company_dossiers`).
