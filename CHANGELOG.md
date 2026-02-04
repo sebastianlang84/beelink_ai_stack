@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+- feat(transcript-miner): investing/investing_test Summary-Prompts auf Topic-isolated Prompt V2 (`tests/prompt-engineering/_promptnew.md`) umgestellt
+- feat(transcript-miner): LLM Prompt-Formatter um Metadata-Placeholders erweitert (`topic`, `video_id`, `title`, `url`, `channel_namespace`, `published_at`, `fetched_at`, `transcript`)
+- fix(transcript-miner): Summary-Normalisierung versteht Prompt-V2 Wrapper (`<<<DOC_START>>>...<<<DOC_END>>>`) und mapped `Executive Summary`/`Key Points`/`Opportunities` auf kanonische Summary-Sections
+- ops(transcript-miner): Summaries fuer die 20 zuletzt heruntergeladenen Transcripts mit neuem Prompt regeneriert (20/20 erfolgreich)
 - ops(transcript-miner): Prompt-Nutzung geprueft; `_promptnew.md` ist noch nicht produktiv verdrahtet (aktive Summaries nutzen weiterhin Config-Prompts)
 - ops(docker): Container-Status geprueft; keine `dead`/`exited` Container vorhanden
 - ops(open-webui): OWUI-Erreichbarkeit repariert (Container war gestoppt; Service neu gestartet, localhost:3000 wieder erreichbar)

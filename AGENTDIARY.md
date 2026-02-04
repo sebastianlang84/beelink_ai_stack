@@ -455,3 +455,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Verifiziert, ob der neue Prompt (`tests/prompt-engineering/_promptnew.md`) bereits produktiv auf neue Transcripts angewandt wird, und Container-Status geprueft.
 - Probleme/Bugs/Issues: Erwartung war moeglicherweise, dass `_promptnew.md` bereits live verwendet wird; tatsaechlich nutzt die Pipeline weiterhin `analysis.llm.system_prompt`/`user_prompt_template` aus `transcript-miner/config/config_investing.yaml` bzw. `config_investing_test.yaml`.
 - Loesung: Laufende Summaries und aktuelle Configs gegengeprueft; aktuelle Summary-Struktur bestaetigt (`## Source`, `## Summary`, ...), keine `<<<DOC_START>>>` Wrapper aus `_promptnew.md`; Docker-Check zeigt keine `dead/exited` Container.
+
+## 2026-02-04
+- Aufgabe: Neuen Prompt (`transcript-miner/tests/prompt-engineering/_promptnew.md`) produktiv fuer zukuenftige Summaries aktiviert und auf die 20 zuletzt heruntergeladenen Transcripts angewandt.
+- Probleme/Bugs/Issues: Prompt V2 nutzt Wrapper/Sections (`<<<DOC_START>>>`, `Executive Summary`, `Opportunities`), die nicht 1:1 zur bisherigen Normalisierung (`Summary`, `Key Points & Insights`, `Chances`) passten; ausserdem erwartet der neue User-Prompt mehr Metadaten-Placeholders.
+- Loesung: `config_investing.yaml` und `config_investing_test.yaml` auf Prompt V2 umgestellt, `llm_runner.py` um zusaetzliche User-Prompt-Variablen erweitert und V2-Wrapper in der Normalisierung gemappt; danach 20 neueste Transcript-Dateien per `summarize_transcript_ref` neu generiert (20/20 erfolgreich).

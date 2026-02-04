@@ -44,13 +44,14 @@
 
 ## TODO
 
-- [ ] **Plan fuer morgen (2026-02-04): Prompt-Engineering + RAG Umsetzung (OWUI)**
+- [ ] **Prompt-Engineering + RAG Umsetzung (OWUI)**
   - Ziel: Topic-reine Retrieval-Treffer (macro/stocks/crypto), weniger Drift, stabile Antwortstruktur.
   - Ausgangslage: Prompt-Engineering Fixture liegt unter `transcript-miner/tests/prompt-engineering/`:
     - Ziele: `transcript-miner/tests/prompt-engineering/_goals.md`
     - Neuer Prompt: `transcript-miner/tests/prompt-engineering/_promptnew.md`
   - Tasks:
-    - Prompt V2 finalisieren (RAG topic-isolated): Format/Wrapper bestaetigen, Evidence-Regeln schaerfen, Assets/Keywords konsistent.
+    - [x] Prompt V2 finalisieren (RAG topic-isolated): Format/Wrapper bestaetigen, Evidence-Regeln schaerfen, Assets/Keywords konsistent. (2026-02-04: produktiv in `config_investing.yaml` + `config_investing_test.yaml`)
+    - [x] Backfill letzter 20 Downloads: Summaries fuer die 20 zuletzt heruntergeladenen Transcripts mit neuem Prompt regenerieren. (2026-02-04)
     - Integration planen/umsetzen: Wie landen die neuen topic-isolated Docs als einzelne Knowledge Items in OWUI (statt 1 gemischtes Summary)?
     - Goals umsetzen: Topic-Collections (macro/stocks/crypto) + optional Recency-Routing (`*_recent`/`*_archive`) + Dossier-Collection (`company_dossiers`).
     - OWUI Remote 500 (Tailscale): 500 tritt nur beim Chatten auf (`https://owui.tail027324.ts.net/`) -> Debug: Modellwahl/Streaming/RAG-Call; Logs + reproduzierbarer Fix.

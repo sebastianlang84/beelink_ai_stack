@@ -275,6 +275,53 @@ _REQUIRED_SECTIONS = [
     "Unknowns",
 ]
 
+
+def _extract_rag_wrapped_docs(markdown: str) -> list[dict[str, Any]]:
+    """Parse optional `<<<DOC_START>>>...<<<DOC_END>>>` wrappers from prompt v2 output."""
+    text = (markdown or "").replace("\r\n", "\n")
+    matches = re.findall(
+        r"<<<DOC_START>>>\s*(.*?)\s*<<<DOC_END>>>",
+        text,
+        flags=re.DOTALL,
+    )
+    docs: list[dict[str, Any]] = []
+    for raw in matches:
+        body = (raw or "").strip()
+        if not body:
+            continue
+        topic = "unknown"
+        m_topic = re.search(r"(?m)^topic:\s*([a-zA-Z0-9_-]+)\s*$", body)
+        if m_topic:
+            topic = m_topic.group(1).strip().lower()
+        docs.append(
+            {
+                "topic": topic,
+                "sections": _extract_level2_sections(body),
+            }
+        )
+    return docs
+
+
+def _pick_section(
+    sections: dict[str, str],
+    names: list[str],
+) -> str:
+    for name in names:
+        value = (sections.get(name) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def _coerce_to_bullets(text: str) -> str:
+    body = (text or "").strip()
+    if not body:
+        return ""
+    if re.search(r"(?m)^\s*-\s+\S", body):
+        return body
+    one_line = re.sub(r"\s+", " ", body).strip()
+    return f"- {one_line}" if one_line else ""
+
 def _extract_level2_sections(markdown: str) -> dict[str, str]:
     """Extract `## <name>` sections into a map of section_name -> raw body text."""
     text = markdown.replace("\r\n", "\n")
@@ -313,6 +360,7 @@ def _normalize_markdown_summary(
 ) -> str:
     """Build the canonical per-video Markdown summary (markdown-only pipeline)."""
     sections = _extract_level2_sections(llm_markdown or "")
+    wrapped_docs = _extract_rag_wrapped_docs(llm_markdown or "")
     src_from_llm = _parse_source_block(llm_markdown or "")
 
     density = (src_from_llm.get("info_density") or "").strip().lower()
@@ -336,7 +384,64 @@ def _normalize_markdown_summary(
     lines.append(f"- info_density: {density}")
     lines.append("")
 
-    summary_body = (sections.get("Summary") or "").strip()
+    if wrapped_docs:
+        summary_lines: list[str] = []
+        key_points_lines: list[str] = []
+        numbers_lines: list[str] = []
+        chances_lines: list[str] = []
+        risks_lines: list[str] = []
+        unknowns_lines: list[str] = []
+
+        for doc in wrapped_docs:
+            doc_topic = str(doc.get("topic") or "unknown")
+            doc_sections = doc.get("sections") or {}
+            if not isinstance(doc_sections, dict):
+                continue
+
+            s_exec = _pick_section(doc_sections, ["Summary", "Executive Summary"])
+            if s_exec:
+                as_bullets = _coerce_to_bullets(s_exec)
+                if as_bullets:
+                    for line in as_bullets.splitlines():
+                        clean = line.strip()
+                        if clean.startswith("- "):
+                            summary_lines.append(f"- [{doc_topic}] {clean[2:].strip()}")
+
+            s_key_points = _pick_section(doc_sections, ["Key Points & Insights", "Key Points"])
+            s_numbers = _pick_section(doc_sections, ["Numbers"])
+            s_chances = _pick_section(doc_sections, ["Chances", "Opportunities"])
+            s_risks = _pick_section(doc_sections, ["Risks"])
+            s_unknowns = _pick_section(doc_sections, ["Unknowns"])
+
+            for src, target in [
+                (s_key_points, key_points_lines),
+                (s_numbers, numbers_lines),
+                (s_chances, chances_lines),
+                (s_risks, risks_lines),
+                (s_unknowns, unknowns_lines),
+            ]:
+                as_bullets = _coerce_to_bullets(src)
+                if not as_bullets:
+                    continue
+                for line in as_bullets.splitlines():
+                    clean = line.strip()
+                    if clean.startswith("- "):
+                        target.append(f"- [{doc_topic}] {clean[2:].strip()}")
+
+        summary_body = "\n".join(summary_lines).strip()
+        key_points_body = "\n".join(key_points_lines).strip()
+        numbers_body = "\n".join(numbers_lines).strip()
+        chances_body = "\n".join(chances_lines).strip()
+        risks_body = "\n".join(risks_lines).strip()
+        unknowns_body = "\n".join(unknowns_lines).strip()
+    else:
+        summary_body = _pick_section(sections, ["Summary", "Executive Summary"]).strip()
+        key_points_body = _pick_section(sections, ["Key Points & Insights", "Key Points"]).strip()
+        numbers_body = _pick_section(sections, ["Numbers"]).strip()
+        chances_body = _pick_section(sections, ["Chances", "Opportunities"]).strip()
+        risks_body = _pick_section(sections, ["Risks"]).strip()
+        unknowns_body = _pick_section(sections, ["Unknowns"]).strip()
+
     if not summary_body:
         summary_body = "none"
     lines.append("## Summary")
@@ -344,23 +449,23 @@ def _normalize_markdown_summary(
     lines.append("")
 
     lines.append("## Key Points & Insights")
-    lines.append(_ensure_bullets_or_none(sections.get("Key Points & Insights", "")))
+    lines.append(_ensure_bullets_or_none(key_points_body))
     lines.append("")
 
     lines.append("## Numbers")
-    lines.append(_ensure_bullets_or_none(sections.get("Numbers", "")))
+    lines.append(_ensure_bullets_or_none(numbers_body))
     lines.append("")
 
     lines.append("## Chances")
-    lines.append(_ensure_bullets_or_none(sections.get("Chances", "")))
+    lines.append(_ensure_bullets_or_none(chances_body))
     lines.append("")
 
     lines.append("## Risks")
-    lines.append(_ensure_bullets_or_none(sections.get("Risks", "")))
+    lines.append(_ensure_bullets_or_none(risks_body))
     lines.append("")
 
     lines.append("## Unknowns")
-    lines.append(_ensure_bullets_or_none(sections.get("Unknowns", "")))
+    lines.append(_ensure_bullets_or_none(unknowns_body))
     lines.append("")
 
     return "\n".join(lines).rstrip() + "\n"
@@ -437,10 +542,30 @@ def summarize_transcript_ref(
 
     openrouter_headers = _build_openrouter_headers(cfg)
 
-    def _format_user_prompt(*, transcripts: str, transcript_count: int) -> str:
+    def _format_user_prompt(
+        *,
+        transcripts: str,
+        transcript_count: int,
+        transcript: str = "",
+        topic: str = "",
+        video_id: str = "",
+        url: str = "",
+        title: str = "",
+        channel_namespace: str = "",
+        published_at: str = "",
+        fetched_at: str = "",
+    ) -> str:
         return user_prompt_template.format(
             transcripts=transcripts,
             transcript_count=str(transcript_count),
+            transcript=transcript,
+            topic=topic,
+            video_id=video_id,
+            url=url,
+            title=title,
+            channel_namespace=channel_namespace,
+            published_at=published_at,
+            fetched_at=fetched_at,
         )
 
     def _call_llm(*, user_prompt_text: str) -> str | None:
@@ -540,6 +665,14 @@ def summarize_transcript_ref(
     per_user_prompt = _format_user_prompt(
         transcripts=transcripts_blob,
         transcript_count=1,
+        transcript=transcript_text,
+        topic=topic or ref.channel_namespace,
+        video_id=ref.video_id,
+        url=_youtube_url(ref.video_id),
+        title=str(video_title or "unknown"),
+        channel_namespace=str(ref.channel_namespace or "unknown"),
+        published_at=str(published_at or "unknown"),
+        fetched_at=_now_utc_hm(),
     )
 
     if max_input_tokens is not None:
@@ -997,10 +1130,30 @@ def run_llm_analysis(
     per_video_min_delay_s = max(0.0, llm_cfg.per_video_min_delay_s)
     per_video_jitter_s = max(0.0, llm_cfg.per_video_jitter_s)
 
-    def _format_user_prompt(*, transcripts: str, transcript_count: int) -> str:
+    def _format_user_prompt(
+        *,
+        transcripts: str,
+        transcript_count: int,
+        transcript: str = "",
+        topic: str = "",
+        video_id: str = "",
+        url: str = "",
+        title: str = "",
+        channel_namespace: str = "",
+        published_at: str = "",
+        fetched_at: str = "",
+    ) -> str:
         return user_prompt_template.format(
             transcripts=transcripts,
             transcript_count=str(transcript_count),
+            transcript=transcript,
+            topic=topic,
+            video_id=video_id,
+            url=url,
+            title=title,
+            channel_namespace=channel_namespace,
+            published_at=published_at,
+            fetched_at=fetched_at,
         )
 
     # API key resolution (LLM): standardize on OpenRouter.
@@ -1180,6 +1333,14 @@ def run_llm_analysis(
                 per_user_prompt = _format_user_prompt(
                     transcripts=block,
                     transcript_count=1,
+                    transcript=text,
+                    topic=cfg.output.get_topic() if cfg.output.is_global_layout() else ref.channel_namespace,
+                    video_id=ref.video_id,
+                    url=_youtube_url(ref.video_id),
+                    title=str(video_title or "unknown"),
+                    channel_namespace=str(ref.channel_namespace or "unknown"),
+                    published_at=str(published_at or "unknown"),
+                    fetched_at=_now_utc_hm(),
                 )
                 per_prompt_tokens = calculate_token_count(
                     system_prompt, model=model
@@ -1214,6 +1375,7 @@ def run_llm_analysis(
         user_prompt = _format_user_prompt(
             transcripts=transcripts_blob,
             transcript_count=len(selected_refs),
+            topic=cfg.output.get_topic() if cfg.output.is_global_layout() else "",
         )
         if max_input_tokens is not None:
             prompt_tokens = calculate_token_count(
