@@ -63,9 +63,20 @@
     - Hybrid Search: `enable_hybrid_search=false`, `hybrid_bm25_weight=0.5`
     - Chunking: `chunk_size=800`, `chunk_overlap=120`, `chunk_min_size_target=200`, `text_splitter=\"\"`
     - Reranker: `reranking_engine=\"\"`, `reranking_model=\"\"` (aktuell nicht aktiv)
+  - Empfehlung (aus Chat, fuer bessere Praezision/geringeren Drift):
+    - Hybrid Search: an
+    - Reranking: aktivieren (sonst ist `top_k_reranker` praktisch wirkungslos)
+      - `reranking_engine`: Default
+      - `reranking_model`: z. B. `BAAI/bge-reranker-v2-m3`
+      - `top_k`: eher kleiner (10–20 statt 30)
+      - `top_k_reranker`: 3–8
+    - Chunking/Text-Splitter:
+      - token-basierter Splitter (statt \"\"/Default), kleinere Chunks (ca. 500–1000 Tokens)
+      - fuer Topic-Reinheit oft besser: 350–650 Tokens (falls `chunk_size` Tokens repraesentiert)
+      - Overlap: 80–120
+      - Layout-Regeln im Content: kurze Absaetze, klare Zwischenueberschriften, keine \"Macro + Crypto\" in einem Absatz
   - Entscheidung fuer morgen:
-    - Ob wir `top_k`/Chunking anpassen.
-    - Ob wir Hybrid Search / Reranking wirklich aktivieren (Engine/Model setzen) oder erstmal ueber Collections/Routing loesen.
+    - Ob wir die Empfehlung 1:1 im OWUI-Admin-Panel umsetzen oder erst \"topic collections + routing\" fertig machen und Settings danach feinjustieren.
 
 - [x] **Apache Tika als Docker-Service installieren**
   - Ziel: Tika via Docker bereitstellen (fuer OWUI Documents/RAG).

@@ -440,3 +440,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: TODO fuer naechste Session vorbereitet (Prompt-Engineering + RAG Umsetzung).
 - Probleme/Bugs/Issues: OWUI Remote-Zugriff via Tailscale liefert beim Chatten teils HTTP 500; ausserdem muss der neue topic-isolated Prompt in den Indexing-Flow integriert werden.
 - Loesung: `TODO.md` um einen konkreten Plan fuer 2026-02-04 erweitert inkl. OWUI RAG Settings Snapshot (Embedder/Top-K/Chunking/Reranker-Status) und Integrationsaufgaben fuer `_promptnew.md` + `_goals.md`.
+
+## 2026-02-03
+- Aufgabe: TODO um konkrete OWUI RAG-Tuning-Empfehlungen aus der Chat-History erweitert.
+- Probleme/Bugs/Issues: Vorher stand nur der Ist-Stand aus `webui.db` im TODO; die empfohlenen Zielwerte (Hybrid Search/Reranking/Top-K/Chunking) fehlten.
+- Loesung: `TODO.md` um \"Empfehlung (aus Chat)\" erweitert: Hybrid Search an, Reranking Engine/Model setzen (z. B. `BAAI/bge-reranker-v2-m3`), `top_k` reduzieren (10–20), `top_k_reranker` 3–8 sowie Chunking (token-basiert, 350–650/500–1000 Tokens, Overlap 80–120) + Layout-Regeln.

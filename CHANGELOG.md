@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(todo): OWUI RAG Tuning-Empfehlungen aus Chat (Hybrid Search/Reranker/Top-K/Chunking) im TODO ergaenzt
 - docs: Prompt-Engineering/RAG Plan fuer 2026-02-04 (TODO) inkl. OWUI RAG Settings Snapshot ergaenzt
 - docs(prompt-engineering): OWUI-Stack-Grenzen & Hebel (Topic-Isolation/Recency-Routing/Reranker) in `_goals.md` ergaenzt
 - docs(prompt-engineering): OWUI/RAG Ist-Setup in `_goals.md` dokumentiert (DB/Vector Store/Embedder/Top-K)
