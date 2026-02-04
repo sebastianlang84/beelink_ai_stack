@@ -44,6 +44,29 @@
 
 ## TODO
 
+- [ ] **Plan fuer morgen (2026-02-04): Prompt-Engineering + RAG Umsetzung (OWUI)**
+  - Ziel: Topic-reine Retrieval-Treffer (macro/stocks/crypto), weniger Drift, stabile Antwortstruktur.
+  - Ausgangslage: Prompt-Engineering Fixture liegt unter `transcript-miner/tests/prompt-engineering/`:
+    - Ziele: `transcript-miner/tests/prompt-engineering/_goals.md`
+    - Neuer Prompt: `transcript-miner/tests/prompt-engineering/_promptnew.md`
+  - Tasks:
+    - Prompt V2 finalisieren (RAG topic-isolated): Format/Wrapper bestaetigen, Evidence-Regeln schaerfen, Assets/Keywords konsistent.
+    - Integration planen/umsetzen: Wie landen die neuen topic-isolated Docs als einzelne Knowledge Items in OWUI (statt 1 gemischtes Summary)?
+    - Goals umsetzen: Topic-Collections (macro/stocks/crypto) + optional Recency-Routing (`*_recent`/`*_archive`) + Dossier-Collection (`company_dossiers`).
+    - OWUI Remote 500 (Tailscale): 500 tritt nur beim Chatten auf (`https://owui.tail027324.ts.net/`) -> Debug: Modellwahl/Streaming/RAG-Call; Logs + reproduzierbarer Fix.
+
+- [ ] **OWUI RAG/Embedder Settings Snapshot (Ist-Stand, aus Chat/DB)**
+  - Quelle: `owui-data:/app/backend/data/webui.db` -> `config.data.rag`
+  - Aktuelle Werte:
+    - `embedding_engine=openai`, `embedding_model=baai/bge-m3`, `openai_api_base_url=https://openrouter.ai/api/v1`
+    - Retrieval: `top_k=30`, `top_k_reranker=3`, `relevance_threshold=0.0`
+    - Hybrid Search: `enable_hybrid_search=false`, `hybrid_bm25_weight=0.5`
+    - Chunking: `chunk_size=800`, `chunk_overlap=120`, `chunk_min_size_target=200`, `text_splitter=\"\"`
+    - Reranker: `reranking_engine=\"\"`, `reranking_model=\"\"` (aktuell nicht aktiv)
+  - Entscheidung fuer morgen:
+    - Ob wir `top_k`/Chunking anpassen.
+    - Ob wir Hybrid Search / Reranking wirklich aktivieren (Engine/Model setzen) oder erstmal ueber Collections/Routing loesen.
+
 - [x] **Apache Tika als Docker-Service installieren**
   - Ziel: Tika via Docker bereitstellen (fuer OWUI Documents/RAG).
   - Status: Service in `open-webui/docker-compose.yml` (intern-only).

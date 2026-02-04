@@ -435,3 +435,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI-Stack-Grenzen/ Hebel (Topic-Isolation, Recency-Routing, Reranker-Realitaet, Chunking) in `_goals.md` konkretisiert.
 - Probleme/Bugs/Issues: Ohne explizit aktives Reranking bzw. ohne eigenen Ranker ist echtes Time-Decay-Scoring nicht \"einfach so\" moeglich.
 - Loesung: `_goals.md` um eine Setup-spezifische Einordnung erweitert (was sofort wirkt vs. was Zusatzarbeit braucht).
+
+## 2026-02-03
+- Aufgabe: TODO fuer naechste Session vorbereitet (Prompt-Engineering + RAG Umsetzung).
+- Probleme/Bugs/Issues: OWUI Remote-Zugriff via Tailscale liefert beim Chatten teils HTTP 500; ausserdem muss der neue topic-isolated Prompt in den Indexing-Flow integriert werden.
+- Loesung: `TODO.md` um einen konkreten Plan fuer 2026-02-04 erweitert inkl. OWUI RAG Settings Snapshot (Embedder/Top-K/Chunking/Reranker-Status) und Integrationsaufgaben fuer `_promptnew.md` + `_goals.md`.

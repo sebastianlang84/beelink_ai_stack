@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs: Prompt-Engineering/RAG Plan fuer 2026-02-04 (TODO) inkl. OWUI RAG Settings Snapshot ergaenzt
 - docs(prompt-engineering): OWUI-Stack-Grenzen & Hebel (Topic-Isolation/Recency-Routing/Reranker) in `_goals.md` ergaenzt
 - docs(prompt-engineering): OWUI/RAG Ist-Setup in `_goals.md` dokumentiert (DB/Vector Store/Embedder/Top-K)
 - docs(prompt-engineering): Recency-Weighting und Long-term Dossier-Ziele in `_goals.md` ergaenzt
