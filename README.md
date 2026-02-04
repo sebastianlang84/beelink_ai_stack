@@ -49,6 +49,7 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
    - Generator: `transcript-miner/tests/prompt-engineering/_build_prompt_engineering_fixture.sh`  
    - Enthalten: `_goals.md`, `_promptold.md`, `_promptnew.md`, `_manifest.json` sowie `<video_id>_transcript.md`, `<video_id>_sumold.md`, `<video_id>_sumnew.md`.
    - Aktueller produktiver Summary-Prompt (investing + investing_test) ist auf `_promptnew.md` ausgerichtet.
+   - Wichtig: Persistierte Summaries unter `output/data/summaries/by_video_id/*.summary.md` werden absichtlich auf kanonische Sections normalisiert (`Source`, `Summary`, `Key Points & Insights`, `Numbers`, `Chances`, `Risks`, `Unknowns`), auch wenn der Prompt intern `<<<DOC_START>>>`/`Executive Summary`/`Opportunities` nutzt.
 
 ## Scheduled Runs (investing, alle 3h)
 Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):

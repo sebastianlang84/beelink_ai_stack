@@ -470,3 +470,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: HTTP 502 auf `owui.tail027324.ts.net` analysiert und Open WebUI wieder online gebracht.
 - Probleme/Bugs/Issues: `tailscale serve` war korrekt auf `http://127.0.0.1:3000` gemappt, aber der `owui` Container war gestoppt (`Exited (0)`), daher lieferte der Upstream nicht.
 - Loesung: Open-WebUI-Service via Compose neu gestartet (`up -d owui`), Healthcheck bis `healthy` verifiziert und lokalen Endpoint mit `curl http://127.0.0.1:3000` auf HTTP 200 bestaetigt.
+
+## 2026-02-04
+- Aufgabe: Root-Cause fuer haeufig gestopptes OWUI + scheinbar wirkungslosen Summary-Prompt untersucht.
+- Probleme/Bugs/Issues: `watchdog` stoppte `owui` mehrfach bei moderaten Temperaturen, weil `WATCHDOG_TEMP_STOP_*` im Compose nicht gesetzt waren und dadurch ungewollt Code-Defaults (`60C`, `2` Messungen) griffen; bei Prompt V2 wirkte Output "alt", weil Persistierung absichtlich auf kanonische Summary-Sections normalisiert.
+- Loesung: `watchdog/docker-compose.yml` um `WATCHDOG_TEMP_STOP_THRESHOLD_C`, `WATCHDOG_TEMP_STOP_CONSEC`, `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` ergaenzt (jetzt effektiv 95C/3/owui), Service neu erstellt; zudem README/TODO aktualisiert, um das Prompt-V2-Normalisierungsverhalten transparent zu machen.

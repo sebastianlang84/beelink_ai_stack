@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- fix(watchdog): Temp-Stop-Env in `watchdog/docker-compose.yml` verdrahtet (`WATCHDOG_TEMP_STOP_*`), damit nicht mehr der implizite Code-Default 60C/2 greift
+- docs(readme): Prompt-V2 Verhalten klargestellt (persistierte Summary-Dateien werden auf kanonische Sections normalisiert)
 - ops(open-webui): HTTP 502 auf `owui.tail027324.ts.net` behoben (Container `owui` war gestoppt; Service neu gestartet, localhost:3000 wieder HTTP 200)
 - docs(todo): neues Backlog-Item fuer MCP-Server zur zuverlaessigen SEC-Filings-Embedding-Pipeline ergaenzt
 - feat(transcript-miner): investing/investing_test Summary-Prompts auf Topic-isolated Prompt V2 (`tests/prompt-engineering/_promptnew.md`) umgestellt
