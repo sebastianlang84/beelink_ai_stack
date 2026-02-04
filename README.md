@@ -68,6 +68,7 @@ Diagnose-Scripts (Transcript Miner):
 
 ## Quickstart (Watchdog)
 Ziel: Lightweight Monitoring fuer CPU/Temperatur/Disk (Host) plus Docker-Hygiene.
+Status: **pausiert auf User-Wunsch seit 2026-02-04** (Container `watchdog` manuell gestoppt).
 1. Shared Secrets setzen: `.env.example` -> `.env` (nicht noetig fuer Watchdog, aber konsistent).
 2. Shared Config setzen (non-secret): `.config.env.example` -> `.config.env` (optional).
 3. Service-Config setzen (non-secret): `watchdog/.config.env.example` -> `watchdog/.config.env` (gitignored).

@@ -61,6 +61,10 @@
   - Ziel: Automatischer Check/Repair fuer `owui` (z. B. Watchdog-Check oder systemd Timer mit `docker compose up -d owui` bei Ausfall).
   - DoD: Bei gestopptem `owui` wird der Dienst ohne manuelles Eingreifen wieder gestartet; Runbook + Skript dokumentiert.
 
+- [ ] **Watchdog-Reaktivierung bewusst entscheiden (derzeit pausiert)**
+  - Status: `watchdog` wurde am 2026-02-04 auf User-Wunsch gestoppt.
+  - Entscheidung offen: komplett deaktiviert lassen oder nur read-only Monitoring ohne Container-Stop-Actions.
+
 - [ ] **Prompt-Engineering + RAG Umsetzung (OWUI)**
   - Ziel: Topic-reine Retrieval-Treffer (macro/stocks/crypto), weniger Drift, stabile Antwortstruktur.
   - Ausgangslage: Prompt-Engineering Fixture liegt unter `transcript-miner/tests/prompt-engineering/`:

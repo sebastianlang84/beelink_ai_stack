@@ -475,3 +475,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Root-Cause fuer haeufig gestopptes OWUI + scheinbar wirkungslosen Summary-Prompt untersucht.
 - Probleme/Bugs/Issues: `watchdog` stoppte `owui` mehrfach bei moderaten Temperaturen, weil `WATCHDOG_TEMP_STOP_*` im Compose nicht gesetzt waren und dadurch ungewollt Code-Defaults (`60C`, `2` Messungen) griffen; bei Prompt V2 wirkte Output "alt", weil Persistierung absichtlich auf kanonische Summary-Sections normalisiert.
 - Loesung: `watchdog/docker-compose.yml` um `WATCHDOG_TEMP_STOP_THRESHOLD_C`, `WATCHDOG_TEMP_STOP_CONSEC`, `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` ergaenzt (jetzt effektiv 95C/3/owui), Service neu erstellt; zudem README/TODO aktualisiert, um das Prompt-V2-Normalisierungsverhalten transparent zu machen.
+
+## 2026-02-04
+- Aufgabe: Watchdog auf User-Wunsch bis auf Weiteres gestoppt und Status dokumentiert; Prompt-Normalisierung in einfacher Sprache erklaert.
+- Probleme/Bugs/Issues: User wollte keine automatische Container-Abschaltung mehr; ausserdem war "Prompt wirkt nicht" auf missverstaendliches Output-Format zurueckzufuehren.
+- Loesung: `docker stop watchdog` ausgefuehrt (OWUI laeuft weiter healthy), Status in `README.md` + `watchdog/README.md` + `TODO.md` vermerkt und die Prompt-Normalisierung als simples "Uebersetzen ins Standardformat" beschrieben.

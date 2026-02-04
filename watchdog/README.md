@@ -3,6 +3,8 @@
 Leichter Host-Watchdog, der CPU-Last, Temperatur, Disk-Usage und Docker-Hygiene beobachtet.
 Ausloeser erzeugen Burst-Diagnosen (Top-Prozesse + Container-Stats).
 
+Status: **pausiert auf User-Wunsch seit 2026-02-04**.
+
 ## Setup
 1) Shared Secrets setzen: `.env.example` -> `.env` (nicht noetig fuer Watchdog).
 2) Shared Config setzen: `.config.env.example` -> `.config.env` (optional).
