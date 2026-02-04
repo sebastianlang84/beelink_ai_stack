@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(todo): neues Backlog-Item fuer MCP-Server zur zuverlaessigen SEC-Filings-Embedding-Pipeline ergaenzt
 - feat(transcript-miner): investing/investing_test Summary-Prompts auf Topic-isolated Prompt V2 (`tests/prompt-engineering/_promptnew.md`) umgestellt
 - feat(transcript-miner): LLM Prompt-Formatter um Metadata-Placeholders erweitert (`topic`, `video_id`, `title`, `url`, `channel_namespace`, `published_at`, `fetched_at`, `transcript`)
 - fix(transcript-miner): Summary-Normalisierung versteht Prompt-V2 Wrapper (`<<<DOC_START>>>...<<<DOC_END>>>`) und mapped `Executive Summary`/`Key Points`/`Opportunities` auf kanonische Summary-Sections

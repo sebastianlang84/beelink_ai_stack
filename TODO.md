@@ -44,6 +44,18 @@
 
 ## TODO
 
+- [ ] **Neuer MCP-Server: SEC Filings Embedding (zuverlaessig)**
+  - Ziel: Eigenen MCP-Server bauen, der SEC Filings robust einliest, chunked und stabil in den Vektor-Store indexiert.
+  - Muss-Kriterien:
+    - reproduzierbare Ingestion (10-K, 10-Q, 8-K, ggf. Attachments) mit idempotenten Upserts
+    - sauberes Fehler-/Retry-Handling (Rate-Limits, Partial-Failures, Resume)
+    - nachvollziehbare Metadaten pro Chunk (CIK, Ticker, Form-Type, Filing-Date, Section)
+    - Monitoring/Status-Endpoints fuer Batch-Lauf und Backfill
+  - DoD:
+    - Backfill fuer einen definierten Ticker-Korb laeuft ohne manuelle Eingriffe durch
+    - Re-Run erzeugt keine Duplikate
+    - Retrieval-Test in OWUI liefert relevante Treffer fuer Filing-basierte Fragen
+
 - [ ] **Prompt-Engineering + RAG Umsetzung (OWUI)**
   - Ziel: Topic-reine Retrieval-Treffer (macro/stocks/crypto), weniger Drift, stabile Antwortstruktur.
   - Ausgangslage: Prompt-Engineering Fixture liegt unter `transcript-miner/tests/prompt-engineering/`:

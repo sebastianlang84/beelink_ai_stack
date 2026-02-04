@@ -460,3 +460,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Neuen Prompt (`transcript-miner/tests/prompt-engineering/_promptnew.md`) produktiv fuer zukuenftige Summaries aktiviert und auf die 20 zuletzt heruntergeladenen Transcripts angewandt.
 - Probleme/Bugs/Issues: Prompt V2 nutzt Wrapper/Sections (`<<<DOC_START>>>`, `Executive Summary`, `Opportunities`), die nicht 1:1 zur bisherigen Normalisierung (`Summary`, `Key Points & Insights`, `Chances`) passten; ausserdem erwartet der neue User-Prompt mehr Metadaten-Placeholders.
 - Loesung: `config_investing.yaml` und `config_investing_test.yaml` auf Prompt V2 umgestellt, `llm_runner.py` um zusaetzliche User-Prompt-Variablen erweitert und V2-Wrapper in der Normalisierung gemappt; danach 20 neueste Transcript-Dateien per `summarize_transcript_ref` neu generiert (20/20 erfolgreich).
+
+## 2026-02-04
+- Aufgabe: TODO um neuen Wunsch erweitert: MCP-Server fuer zuverlaessiges Embedding von SEC Filings.
+- Probleme/Bugs/Issues: Wunsch war knapp formuliert; fuer Umsetzbarkeit mussten konkrete Muss-Kriterien und DoD in TODO ergaenzt werden.
+- Loesung: Neues priorisiertes TODO-Item mit Zielbild, Robustheitskriterien (idempotente Upserts, Retry/Resume, Metadaten, Monitoring) und klarer Definition of Done eingetragen; CHANGELOG dazu aktualisiert.
