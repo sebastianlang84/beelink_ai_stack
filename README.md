@@ -50,6 +50,7 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
    - Enthalten: `_goals.md`, `_promptold.md`, `_promptnew.md`, `_manifest.json` sowie `<video_id>_transcript.md`, `<video_id>_sumold.md`, `<video_id>_sumnew.md`.
    - Aktueller produktiver Summary-Prompt (investing + investing_test) ist auf `_promptnew.md` ausgerichtet.
    - Wichtig: Persistierte Summaries unter `output/data/summaries/by_video_id/*.summary.md` speichern jetzt den Prompt-Output direkt (z. B. `<<<DOC_START>>>...<<<DOC_END>>>`), ohne nachtraegliche Umschreibung.
+   - Zeitkontext: Der LLM-User-Prompt enthaelt jetzt immer aktuelle Referenzzeit (`utc_now`, `vienna_now`) plus Recency-Regel, damit die Antwort das Alter der Quellen explizit einordnen kann.
 
 ## Scheduled Runs (investing, alle 3h)
 Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):

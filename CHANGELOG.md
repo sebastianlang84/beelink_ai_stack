@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- feat(transcript-miner): LLM-Prompts erhalten immer aktuellen Zeitkontext (`utc_now`, `vienna_now`) inkl. Recency-Regel fuer Altersbewertung von Informationen
 - ops(open-webui): Topic `investing` manuell nachgesynct (`processed=149`, `indexed=149`, `errors=0`) und aktuelle Files verifiziert
 - ops(transcript-miner): letzte 10 Transcript-Summaries gezielt neu erzeugt (Prompt V2 Wrapped-Format, alte Files als `*.pre_v2_backup_*` gesichert)
 - feat(transcript-miner): Summary-Dateien speichern jetzt den echten Prompt-V2 Output (keine nachtraegliche Kanonisierung mehr)

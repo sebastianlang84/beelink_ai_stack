@@ -5,9 +5,10 @@ import logging
 import os
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
+from zoneinfo import ZoneInfo
 
 import yaml
 
@@ -534,7 +535,11 @@ def generate_reports(
     context_str = json.dumps(context, indent=2, ensure_ascii=False)
 
     run_id, run_timestamp = _load_run_metadata(run_dir)
-    generation_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    try:
+        now_vienna = datetime.now(ZoneInfo("Europe/Vienna")).strftime("%Y-%m-%d %H:%M:%S %Z")
+    except Exception:
+        now_vienna = "unknown"
 
     topic = "default"
     report_config = {}
@@ -644,8 +649,10 @@ def generate_reports(
                 "**Berichts-Metadaten**:\n"
                 f"- Run ID: {run_id}\n"
                 f"- Run Datum: {run_timestamp}\n"
-                f"- Bericht generiert: {generation_time}\n"
+                f"- Bericht generiert (UTC): {now_utc}\n"
+                f"- Bericht generiert (Europe/Vienna): {now_vienna}\n"
                 f"- Topic: {topic}\n\n"
+                "Recency-Regel: Neuere Evidenz hat hoehere Prioritaet; Alter der Quellen bei relevanten Aussagen explizit nennen.\n\n"
                 "Formatiere die Ausgabe als sauberes Markdown auf Deutsch."
             )
         else:
@@ -663,8 +670,10 @@ def generate_reports(
                 "**Report Metadata**:\n"
                 f"- Run ID: {run_id}\n"
                 f"- Run Date: {run_timestamp}\n"
-                f"- Report Generated: {generation_time}\n"
+                f"- Report Generated (UTC): {now_utc}\n"
+                f"- Report Generated (Europe/Vienna): {now_vienna}\n"
                 f"- Topic: {topic}\n\n"
+                "Recency rule: prioritize newer evidence and explicitly state source age for material claims.\n\n"
                 "Format the output as clean Markdown."
             )
 

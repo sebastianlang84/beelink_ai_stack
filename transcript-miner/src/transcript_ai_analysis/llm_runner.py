@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -230,6 +231,22 @@ def _now_utc_iso() -> str:
 
 def _now_utc_hm() -> str:
     return _format_utc_hm(datetime.now(timezone.utc))
+
+
+def _now_vienna_hm() -> str:
+    try:
+        return datetime.now(ZoneInfo("Europe/Vienna")).strftime("%Y-%m-%d %H:%M %Z")
+    except Exception:
+        return "unknown"
+
+
+def _build_time_awareness_block(*, current_utc: str, current_vienna: str) -> str:
+    return (
+        "Current reference time:\n"
+        f"- utc_now: {current_utc}\n"
+        f"- vienna_now: {current_vienna}\n"
+        "Recency rule: weigh newer information higher and call out when evidence is older.\n\n"
+    )
 
 def _format_utc_hm(dt: datetime) -> str:
     return dt.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -587,7 +604,9 @@ def summarize_transcript_ref(
         published_at: str = "",
         fetched_at: str = "",
     ) -> str:
-        return user_prompt_template.format(
+        current_utc = _now_utc_hm()
+        current_vienna = _now_vienna_hm()
+        body = user_prompt_template.format(
             transcripts=transcripts,
             transcript_count=str(transcript_count),
             transcript=transcript,
@@ -598,7 +617,16 @@ def summarize_transcript_ref(
             channel_namespace=channel_namespace,
             published_at=published_at,
             fetched_at=fetched_at,
+            current_utc=current_utc,
+            current_vienna=current_vienna,
+            now_utc=current_utc,
+            now_vienna=current_vienna,
+            current_date_utc=current_utc.split(" ")[0] if current_utc else "",
+            current_date_vienna=current_vienna.split(" ")[0] if current_vienna else "",
         )
+        return _build_time_awareness_block(
+            current_utc=current_utc, current_vienna=current_vienna
+        ) + body
 
     def _call_llm(*, user_prompt_text: str) -> str | None:
         try:
@@ -1194,7 +1222,9 @@ def run_llm_analysis(
         published_at: str = "",
         fetched_at: str = "",
     ) -> str:
-        return user_prompt_template.format(
+        current_utc = _now_utc_hm()
+        current_vienna = _now_vienna_hm()
+        body = user_prompt_template.format(
             transcripts=transcripts,
             transcript_count=str(transcript_count),
             transcript=transcript,
@@ -1205,7 +1235,16 @@ def run_llm_analysis(
             channel_namespace=channel_namespace,
             published_at=published_at,
             fetched_at=fetched_at,
+            current_utc=current_utc,
+            current_vienna=current_vienna,
+            now_utc=current_utc,
+            now_vienna=current_vienna,
+            current_date_utc=current_utc.split(" ")[0] if current_utc else "",
+            current_date_vienna=current_vienna.split(" ")[0] if current_vienna else "",
         )
+        return _build_time_awareness_block(
+            current_utc=current_utc, current_vienna=current_vienna
+        ) + body
 
     # API key resolution (LLM): standardize on OpenRouter.
     # Keys are expected to come from `.env` (loaded by the CLI entrypoints).

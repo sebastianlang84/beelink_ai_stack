@@ -495,3 +495,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI-Sync-Stand fuer `investing` verifiziert und manuell nachgezogen.
 - Probleme/Bugs/Issues: Nach lokaler V2-Regeneration war unklar, ob die neuesten Summaries bereits in OWUI angekommen sind.
 - Loesung: `POST /sync/topic/investing` im `tm`-Container ausgefuehrt (`processed=149`, `indexed=149`, `errors=0`) und OWUI-Dateiliste geprueft; die zuletzt regenerierten Video-IDs sind mit aktuellen `created_at/updated_at` vorhanden.
+
+## 2026-02-04
+- Aufgabe: LLM um permanente Zeit-/Recency-Awareness erweitert.
+- Probleme/Bugs/Issues: Wunsch war, dass das Modell bei jeder Auswertung das aktuelle Datum/Uhrzeit explizit kennt, um Alter/Frische der Quellen korrekt einzuordnen.
+- Loesung: In `llm_runner.py` wird jedem User-Prompt automatisch ein Zeitkontext-Block (`utc_now`, `vienna_now`, Recency-Regel) vorangestellt; zusaetzlich wurden Report-Prompts in `llm_report_generator.py` um UTC/Vienna Zeitstempel und Recency-Hinweis ergaenzt; `tm` Container neu gebaut/gestartet.
