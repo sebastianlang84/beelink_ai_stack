@@ -500,3 +500,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: LLM um permanente Zeit-/Recency-Awareness erweitert.
 - Probleme/Bugs/Issues: Wunsch war, dass das Modell bei jeder Auswertung das aktuelle Datum/Uhrzeit explizit kennt, um Alter/Frische der Quellen korrekt einzuordnen.
 - Loesung: In `llm_runner.py` wird jedem User-Prompt automatisch ein Zeitkontext-Block (`utc_now`, `vienna_now`, Recency-Regel) vorangestellt; zusaetzlich wurden Report-Prompts in `llm_report_generator.py` um UTC/Vienna Zeitstempel und Recency-Hinweis ergaenzt; `tm` Container neu gebaut/gestartet.
+
+## 2026-02-04
+- Aufgabe: Channel-Liste in `config_investing.yaml` alphabetisch geordnet.
+- Probleme/Bugs/Issues: Keine funktionalen Probleme; Ziel war bessere Wartbarkeit und schnellere visuelle Kontrolle.
+- Loesung: Eintraege unter `youtube.channels` in `transcript-miner/config/config_investing.yaml` alphabetisch sortiert und Aenderung im Changelog dokumentiert.

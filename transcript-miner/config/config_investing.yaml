@@ -6,22 +6,22 @@ api:
 # YouTube-Konfiguration
 youtube:
   channels:
-    - "@CouchInvestor"
-    - "@BrunoKreidler"
     - "@asymmetricinvesting"
-    - "@parkevtatevosiancfa9544"
-    - "@thepatientinvestorr"
     - "@BeatTheDenominator"
-    - "@TomNashTV"
-    - "@jeremylefebvremakesmoney7934"
-    - "@DataCatInvest"
     - "@bravosresearch"
     - "@bravosresearchcrypto"
-    - "@VirtualBacon"
     - "@brianstoffelyt"
-    - "@DividendTalks"
+    - "@BrunoKreidler"
     - "@BusinessWithBrian"
+    - "@CouchInvestor"
+    - "@DataCatInvest"
+    - "@DividendTalks"
+    - "@jeremylefebvremakesmoney7934"
     - "@maximinvestiert"
+    - "@parkevtatevosiancfa9544"
+    - "@thepatientinvestorr"
+    - "@TomNashTV"
+    - "@VirtualBacon"
 
 
   # Filteroptionen (Schema-konform)
