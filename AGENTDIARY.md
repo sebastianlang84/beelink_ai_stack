@@ -445,3 +445,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: TODO um konkrete OWUI RAG-Tuning-Empfehlungen aus der Chat-History erweitert.
 - Probleme/Bugs/Issues: Vorher stand nur der Ist-Stand aus `webui.db` im TODO; die empfohlenen Zielwerte (Hybrid Search/Reranking/Top-K/Chunking) fehlten.
 - Loesung: `TODO.md` um \"Empfehlung (aus Chat)\" erweitert: Hybrid Search an, Reranking Engine/Model setzen (z. B. `BAAI/bge-reranker-v2-m3`), `top_k` reduzieren (10–20), `top_k_reranker` 3–8 sowie Chunking (token-basiert, 350–650/500–1000 Tokens, Overlap 80–120) + Layout-Regeln.
+
+## 2026-02-04
+- Aufgabe: OWUI-Erreichbarkeit fuer `https://owui.tail027324.ts.net/` analysiert (warum Webpage nicht erreichbar).
+- Probleme/Bugs/Issues: `owui` Container lief nicht; `tailscale serve` zeigte zwar korrektes Root-Proxy auf `127.0.0.1:3000`, aber lokal war Port 3000 nicht erreichbar (`connection refused`).
+- Loesung: OWUI-Service mit Compose erneut gestartet (`docker compose ... -f open-webui/docker-compose.yml up -d owui`) und Laufzeit geprueft (`docker ps`, `curl http://127.0.0.1:3000` liefert wieder HTTP 200).
