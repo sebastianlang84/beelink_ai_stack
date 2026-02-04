@@ -3,7 +3,7 @@ set -euo pipefail
 
 TM_CONTAINER="tm"
 CONFIG_ID="config_investing_companies.yaml"
-TOPIC="investing_companies"
+TOPIC="company_dossiers"
 
 if ! docker ps --format '{{.Names}}' | grep -qx "$TM_CONTAINER"; then
   echo "ERROR: container not running: $TM_CONTAINER" >&2
@@ -17,7 +17,7 @@ import time
 import urllib.request
 
 CONFIG_ID = "config_investing_companies.yaml"
-TOPIC = "investing_companies"
+TOPIC = "company_dossiers"
 BASE = "http://127.0.0.1:8000"
 
 payload = {"config_id": CONFIG_ID}

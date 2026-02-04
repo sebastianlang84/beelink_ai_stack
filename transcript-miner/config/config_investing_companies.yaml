@@ -39,14 +39,14 @@ youtube:
 
 output:
   global: /home/wasti/ai_stack_data/transcript-miner/output
-  topic: investing_companies
+  topic: company_dossiers
   metadata: true
   write_timeout_report: true
 
 logging:
   level: INFO
-  file: ../logs/investing_companies.log
-  error_log_file: ../logs/investing_companies-error.log
+  file: ../logs/company_dossiers.log
+  error_log_file: ../logs/company_dossiers-error.log
   rotation_enabled: true
   rotation_when: D
   rotation_interval: 1

@@ -58,7 +58,7 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
 - Zweck: company-spezifische **Dossier-Deltas** (Business Model, Risks, Numbers, Evidence) aus den neuesten Videos extrahieren.
 - Laufgrenzen: aktuell `max_videos_per_channel=2`, `lookback_days=15`.
 - Start via MCP-Container: `./scripts/run-tm-investing-companies.sh`
-- Sync-Topic in OWUI: `investing_companies`
+- Sync-Topic in OWUI: `company_dossiers`
 
 ## Scheduled Runs (investing, alle 3h)
 Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):

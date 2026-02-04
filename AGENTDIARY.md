@@ -515,3 +515,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Separaten Agenten mit eigenem Prompt fuer Company-Dossiers vorbereitet.
 - Probleme/Bugs/Issues: Bisher gab es nur den per-video Summary-Agent; fuer langlebige Firmen-Steckbriefe fehlte ein eigener Prompt/Run-Pfad.
 - Loesung: Neue Config `transcript-miner/config/config_investing_companies.yaml` angelegt (Company-Dossier-Delta Prompt, 2 neueste Videos pro Channel, 15 Tage Lookback), Run-Skript `scripts/run-tm-investing-companies.sh` hinzugefuegt und Living Docs (`README.md`, `TODO.md`, `CHANGELOG.md`, `scripts/README.md`) entsprechend aktualisiert.
+
+## 2026-02-04
+- Aufgabe: Gewuenschte Collection-Namen final uebernommen (`investing_new`, `investing_archive`, `company_dossiers`).
+- Probleme/Bugs/Issues: Vorher waren Platzhalter/Arbeitsnamen verwendet (`investing_recent`, `investing_older`, `investing_companies`), was inkonsistent zur neuen Namensentscheidung war.
+- Loesung: Dokumentation und Skripte auf die finalen Namen angepasst; Company-Dossier-Topic in `config_investing_companies.yaml` und `run-tm-investing-companies.sh` auf `company_dossiers` umgestellt.

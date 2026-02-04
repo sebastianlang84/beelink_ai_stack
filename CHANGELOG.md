@@ -1,8 +1,10 @@
 # Changelog
 
 ## Unreleased
+- chore(naming): Collection-Namen auf `investing_new`, `investing_archive`, `company_dossiers` festgelegt
+- ops(transcript-miner): Company-Dossier-Topic von `investing_companies` auf `company_dossiers` umgestellt
 - feat(transcript-miner): neuer Company Dossier Agent via `config_investing_companies.yaml` (eigener Prompt fuer company_dossier_delta)
-- ops(scripts): `run-tm-investing-companies.sh` hinzugefuegt (startet Run + sync fuer Topic `investing_companies`)
+- ops(scripts): `run-tm-investing-companies.sh` hinzugefuegt (startet Run + sync fuer Topic `company_dossiers`)
 - docs: README/TODO/scripts-README um Company-Dossier-Agent und geplanten Collection-Split erweitert
 - ops(open-webui): RAG Retrieval fuer investing geschaerft (`relevance_threshold=0.4`, `top_k=15`, `top_k_reranker=5`)
 - ops(open-webui): Striktes Same-Day-Sufficiency-Gate im OWUI-RAG-Template aktiviert (heute/des Tages/latest)
