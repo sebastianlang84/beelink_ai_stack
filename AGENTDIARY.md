@@ -480,3 +480,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Watchdog auf User-Wunsch bis auf Weiteres gestoppt und Status dokumentiert; Prompt-Normalisierung in einfacher Sprache erklaert.
 - Probleme/Bugs/Issues: User wollte keine automatische Container-Abschaltung mehr; ausserdem war "Prompt wirkt nicht" auf missverstaendliches Output-Format zurueckzufuehren.
 - Loesung: `docker stop watchdog` ausgefuehrt (OWUI laeuft weiter healthy), Status in `README.md` + `watchdog/README.md` + `TODO.md` vermerkt und die Prompt-Normalisierung als simples "Uebersetzen ins Standardformat" beschrieben.
+
+## 2026-02-04
+- Aufgabe: Prompt-V2 technisch durchgezogen: keine nachtraegliche Umschreibung der Summary-Dateien mehr.
+- Probleme/Bugs/Issues: Bisher wurde der LLM-Output in kanonische Legacy-Sections umgeformt; dadurch sah das Ergebnis "alt" aus und war fuer Prompt-Arbeit nicht nachvollziehbar.
+- Loesung: `summarize_transcript_ref` speichert jetzt den Prompt-Output direkt; Summary-Validierung, Progress-Checks und Aggregation wurden auf Dual-Format (Legacy + Wrapped Docs) erweitert, damit der Rest der Pipeline weiter funktioniert.

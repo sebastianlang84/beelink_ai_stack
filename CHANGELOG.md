@@ -1,9 +1,11 @@
 # Changelog
 
 ## Unreleased
+- feat(transcript-miner): Summary-Dateien speichern jetzt den echten Prompt-V2 Output (keine nachtraegliche Kanonisierung mehr)
+- fix(transcript-miner): Summary-Validierung/Progress/Aggregation verstehen jetzt sowohl Legacy-Sections als auch Prompt-V2 Wrapped Docs
 - ops(watchdog): Service auf User-Wunsch bis auf Weiteres gestoppt (`docker stop watchdog`)
 - fix(watchdog): Temp-Stop-Env in `watchdog/docker-compose.yml` verdrahtet (`WATCHDOG_TEMP_STOP_*`), damit nicht mehr der implizite Code-Default 60C/2 greift
-- docs(readme): Prompt-V2 Verhalten klargestellt (persistierte Summary-Dateien werden auf kanonische Sections normalisiert)
+- docs(readme): Prompt-V2 Verhalten dokumentiert (aktuell: Summary-Dateien behalten den Prompt-Output)
 - ops(open-webui): HTTP 502 auf `owui.tail027324.ts.net` behoben (Container `owui` war gestoppt; Service neu gestartet, localhost:3000 wieder HTTP 200)
 - docs(todo): neues Backlog-Item fuer MCP-Server zur zuverlaessigen SEC-Filings-Embedding-Pipeline ergaenzt
 - feat(transcript-miner): investing/investing_test Summary-Prompts auf Topic-isolated Prompt V2 (`tests/prompt-engineering/_promptnew.md`) umgestellt

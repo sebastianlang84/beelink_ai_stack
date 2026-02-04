@@ -290,6 +290,38 @@ def run_aggregation(
                     items.append(item)
             return items
 
+        def _parse_wrapped_docs(text: str) -> list[dict[str, Any]]:
+            docs: list[dict[str, Any]] = []
+            matches = re.findall(
+                r"<<<DOC_START>>>\s*(.*?)\s*<<<DOC_END>>>",
+                text.replace("\r\n", "\n"),
+                flags=re.DOTALL,
+            )
+            for raw in matches:
+                body = (raw or "").strip()
+                if not body:
+                    continue
+                frontmatter: dict[str, str] = {}
+                m_frontmatter = re.match(
+                    r"^\s*---\s*\n(.*?)\n---\s*\n?",
+                    body,
+                    flags=re.DOTALL,
+                )
+                if m_frontmatter:
+                    raw_fm = m_frontmatter.group(1)
+                    for line in raw_fm.splitlines():
+                        m_kv = re.match(r"^\s*([a-zA-Z0-9_]+)\s*:\s*(.*?)\s*$", line)
+                        if not m_kv:
+                            continue
+                        key = m_kv.group(1).strip()
+                        value = m_kv.group(2).strip()
+                        if key:
+                            frontmatter[key] = value
+                sections = _parse_markdown_sections(body)
+                topic = (frontmatter.get("topic") or "unknown").strip().lower()
+                docs.append({"topic": topic, "frontmatter": frontmatter, "sections": sections})
+            return docs
+
         def _load_summary_payload(path: Path) -> dict[str, Any] | None:
             if path.name.endswith(".summary.json"):
                 with open(path, "r", encoding="utf-8") as f:
@@ -306,10 +338,19 @@ def run_aggregation(
                 sections = _parse_markdown_sections(text)
                 source_lines = sections.get("Source", [])
                 source_meta = _parse_source_block(source_lines)
-                if not source_meta:
+                wrapped_docs = _parse_wrapped_docs(text)
+
+                if not source_meta and not wrapped_docs:
                     return None
 
-                video_id = source_meta.get("video_id") or _summary_video_id(path)
+                if source_meta:
+                    video_id = source_meta.get("video_id") or _summary_video_id(path)
+                else:
+                    first_fm = wrapped_docs[0].get("frontmatter") or {}
+                    if not isinstance(first_fm, dict):
+                        first_fm = {}
+                    video_id = str(first_fm.get("video_id") or _summary_video_id(path))
+
                 out: dict[str, Any] = {
                     "task": "markdown_summary",
                     "source": {
@@ -329,30 +370,93 @@ def run_aggregation(
                 if source_meta.get("published_at"):
                     out["published_at"] = source_meta.get("published_at")
 
-                summary_lines = sections.get("Summary", [])
-                summary_text = "\n".join(l for l in summary_lines if l.strip()).strip()
-                if summary_text:
-                    out["summary"] = summary_text
+                if wrapped_docs and not source_meta:
+                    first_fm = wrapped_docs[0].get("frontmatter") or {}
+                    if not isinstance(first_fm, dict):
+                        first_fm = {}
+                    out["source"] = {
+                        "video_id": str(first_fm.get("video_id") or video_id),
+                        "channel_namespace": str(first_fm.get("channel_namespace") or ""),
+                        "url": str(first_fm.get("url") or ""),
+                        "title": str(first_fm.get("title") or ""),
+                        "published_at": str(first_fm.get("published_at") or ""),
+                        "fetched_at": str(first_fm.get("fetched_at") or ""),
+                        "info_density": "",
+                    }
 
-                key_points = _extract_bullets(sections.get("Key Points & Insights", []))
-                if key_points:
-                    out["knowledge_items"] = [{"text": item} for item in key_points]
+                    summary_bullets: list[str] = []
+                    key_points: list[str] = []
+                    numbers: list[str] = []
+                    chances: list[str] = []
+                    risks: list[str] = []
+                    unknowns: list[str] = []
+                    for doc in wrapped_docs:
+                        topic = str(doc.get("topic") or "unknown")
+                        doc_sections = doc.get("sections") or {}
+                        if not isinstance(doc_sections, dict):
+                            continue
+                        for raw_line in doc_sections.get("Executive Summary", []):
+                            line = raw_line.strip()
+                            if line.startswith("- "):
+                                summary_bullets.append(f"- [{topic}] {line[2:].strip()}")
+                        for raw_line in doc_sections.get("Key Points", []):
+                            line = raw_line.strip()
+                            if line.startswith("- "):
+                                key_points.append(f"[{topic}] {line[2:].strip()}")
+                        for raw_line in doc_sections.get("Numbers", []):
+                            line = raw_line.strip()
+                            if line.startswith("- "):
+                                numbers.append(f"[{topic}] {line[2:].strip()}")
+                        for raw_line in doc_sections.get("Opportunities", []):
+                            line = raw_line.strip()
+                            if line.startswith("- "):
+                                chances.append(f"[{topic}] {line[2:].strip()}")
+                        for raw_line in doc_sections.get("Risks", []):
+                            line = raw_line.strip()
+                            if line.startswith("- "):
+                                risks.append(f"[{topic}] {line[2:].strip()}")
+                        for raw_line in doc_sections.get("Unknowns", []):
+                            line = raw_line.strip()
+                            if line.startswith("- "):
+                                unknowns.append(f"[{topic}] {line[2:].strip()}")
 
-                numbers = _extract_bullets(sections.get("Numbers", []))
-                if numbers:
-                    out["numbers"] = numbers
+                    if summary_bullets:
+                        out["summary"] = "\n".join(summary_bullets)
+                    if key_points:
+                        out["knowledge_items"] = [{"text": item} for item in key_points]
+                    if numbers:
+                        out["numbers"] = numbers
+                    if chances:
+                        out["chances"] = chances
+                    if risks:
+                        out["risks"] = risks
+                    if unknowns:
+                        out["unknowns"] = unknowns
+                else:
+                    summary_lines = sections.get("Summary", [])
+                    summary_text = "\n".join(l for l in summary_lines if l.strip()).strip()
+                    if summary_text:
+                        out["summary"] = summary_text
 
-                chances = _extract_bullets(sections.get("Chances", []))
-                if chances:
-                    out["chances"] = chances
+                    key_points = _extract_bullets(sections.get("Key Points & Insights", []))
+                    if key_points:
+                        out["knowledge_items"] = [{"text": item} for item in key_points]
 
-                risks = _extract_bullets(sections.get("Risks", []))
-                if risks:
-                    out["risks"] = risks
+                    numbers = _extract_bullets(sections.get("Numbers", []))
+                    if numbers:
+                        out["numbers"] = numbers
 
-                unknowns = _extract_bullets(sections.get("Unknowns", []))
-                if unknowns:
-                    out["unknowns"] = unknowns
+                    chances = _extract_bullets(sections.get("Chances", []))
+                    if chances:
+                        out["chances"] = chances
+
+                    risks = _extract_bullets(sections.get("Risks", []))
+                    if risks:
+                        out["risks"] = risks
+
+                    unknowns = _extract_bullets(sections.get("Unknowns", []))
+                    if unknowns:
+                        out["unknowns"] = unknowns
 
                 return out
 

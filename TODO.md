@@ -73,7 +73,7 @@
   - Tasks:
     - [x] Prompt V2 finalisieren (RAG topic-isolated): Format/Wrapper bestaetigen, Evidence-Regeln schaerfen, Assets/Keywords konsistent. (2026-02-04: produktiv in `config_investing.yaml` + `config_investing_test.yaml`)
     - [x] Backfill letzter 20 Downloads: Summaries fuer die 20 zuletzt heruntergeladenen Transcripts mit neuem Prompt regenerieren. (2026-02-04)
-    - Sichtbarkeit Prompt V2 verbessern: Optional rohe Topic-Dokumente (`<<<DOC_START>>>`) zusaetzlich als Artefakte speichern (`by_video_id/<video_id>.<topic>.raw.md`), damit Prompt-Effekt direkt pruefbar ist.
+    - [x] Prompt-Ausgabe nicht mehr umschreiben: Summaries bleiben im echten V2-Format (`<<<DOC_START>>>...<<<DOC_END>>>`), Downstream-Parser akzeptieren Legacy + V2. (2026-02-04)
     - Integration planen/umsetzen: Wie landen die neuen topic-isolated Docs als einzelne Knowledge Items in OWUI (statt 1 gemischtes Summary)?
     - Goals umsetzen: Topic-Collections (macro/stocks/crypto) + optional Recency-Routing (`*_recent`/`*_archive`) + Dossier-Collection (`company_dossiers`).
     - OWUI Remote 500 (Tailscale): 500 tritt nur beim Chatten auf (`https://owui.tail027324.ts.net/`) -> Debug: Modellwahl/Streaming/RAG-Call; Logs + reproduzierbarer Fix.

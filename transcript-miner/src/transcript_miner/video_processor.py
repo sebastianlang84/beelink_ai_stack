@@ -132,19 +132,35 @@ def _has_summary(
         return True
 
     source_meta = _parse_source_block(text)
-    if not source_meta:
+    if source_meta:
+        if source_meta.get("video_id") != video_id:
+            _backup_corrupted_summary(summary_path, logger=logger)
+            logger.warning(
+                "Summary Source video_id mismatch; treating as missing (video_id=%s, found=%s)",
+                video_id,
+                source_meta.get("video_id"),
+            )
+            return False
+        return True
+
+    wrapped_meta = _parse_wrapped_doc_frontmatters(text)
+    if not wrapped_meta:
         _backup_corrupted_summary(summary_path, logger=logger)
         logger.warning(
-            "Summary missing Source block; treating as missing (video_id=%s)",
+            "Summary has neither Source block nor wrapped docs; treating as missing (video_id=%s)",
             video_id,
         )
         return False
-    if source_meta.get("video_id") != video_id:
+
+    if not any(meta.get("video_id") == video_id for meta in wrapped_meta):
         _backup_corrupted_summary(summary_path, logger=logger)
+        found_ids = sorted(
+            {meta.get("video_id", "") for meta in wrapped_meta if meta.get("video_id")}
+        )
         logger.warning(
-            "Summary Source video_id mismatch; treating as missing (video_id=%s, found=%s)",
+            "Summary wrapped-doc video_id mismatch; treating as missing (video_id=%s, found=%s)",
             video_id,
-            source_meta.get("video_id"),
+            ",".join(found_ids) if found_ids else "none",
         )
         return False
 
@@ -175,6 +191,34 @@ def _parse_source_block(text: str) -> dict[str, str]:
         if key:
             meta[key] = value
     return meta
+
+
+def _parse_wrapped_doc_frontmatters(text: str) -> list[dict[str, str]]:
+    matches = re.findall(
+        r"<<<DOC_START>>>\s*(.*?)\s*<<<DOC_END>>>",
+        text.replace("\r\n", "\n"),
+        flags=re.DOTALL,
+    )
+    metas: list[dict[str, str]] = []
+    for raw in matches:
+        body = (raw or "").strip()
+        if not body:
+            continue
+        m_frontmatter = re.match(r"^\s*---\s*\n(.*?)\n---\s*\n?", body, flags=re.DOTALL)
+        if not m_frontmatter:
+            continue
+        meta: dict[str, str] = {}
+        for line in m_frontmatter.group(1).splitlines():
+            m_kv = re.match(r"^\s*([a-zA-Z0-9_]+)\s*:\s*(.*?)\s*$", line)
+            if not m_kv:
+                continue
+            key = m_kv.group(1).strip()
+            value = m_kv.group(2).strip()
+            if key:
+                meta[key] = value
+        if meta:
+            metas.append(meta)
+    return metas
 
 
 def _backup_corrupted_summary(path: Path, *, logger: logging.Logger) -> None:

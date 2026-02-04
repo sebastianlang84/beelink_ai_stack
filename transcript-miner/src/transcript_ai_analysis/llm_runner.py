@@ -172,13 +172,30 @@ def _maybe_sync_summary_to_owui(
 
 
 def _summary_meta_from_markdown(text: str) -> dict[str, str]:
-    # Markdown-only summaries (no YAML frontmatter). We derive metadata from the
-    # required `## Source` section.
+    # Legacy canonical format: derive from `## Source`.
     src = _parse_source_block(text)
+    title = src.get("title", "").strip()
+    published_at = src.get("published_at", "").strip()
+    channel_namespace = src.get("channel_namespace", "").strip()
+    if title or published_at or channel_namespace:
+        return {
+            "title": title,
+            "published_at": published_at,
+            "channel_namespace": channel_namespace,
+        }
+
+    # Prompt V2 format: derive from first wrapped doc frontmatter.
+    wrapped = _extract_rag_wrapped_docs(text)
+    if not wrapped:
+        return {"title": "", "published_at": "", "channel_namespace": ""}
+
+    fm = wrapped[0].get("frontmatter") or {}
+    if not isinstance(fm, dict):
+        fm = {}
     return {
-        "title": src.get("title", "").strip(),
-        "published_at": src.get("published_at", "").strip(),
-        "channel_namespace": src.get("channel_namespace", "").strip(),
+        "title": str(fm.get("title") or "").strip(),
+        "published_at": str(fm.get("published_at") or "").strip(),
+        "channel_namespace": str(fm.get("channel_namespace") or "").strip(),
     }
 
 
@@ -289,13 +306,28 @@ def _extract_rag_wrapped_docs(markdown: str) -> list[dict[str, Any]]:
         body = (raw or "").strip()
         if not body:
             continue
-        topic = "unknown"
-        m_topic = re.search(r"(?m)^topic:\s*([a-zA-Z0-9_-]+)\s*$", body)
-        if m_topic:
-            topic = m_topic.group(1).strip().lower()
+        frontmatter: dict[str, str] = {}
+        m_frontmatter = re.match(r"^\s*---\s*\n(.*?)\n---\s*\n?", body, flags=re.DOTALL)
+        if m_frontmatter:
+            raw_fm = m_frontmatter.group(1)
+            for line in raw_fm.splitlines():
+                m_kv = re.match(r"^\s*([a-zA-Z0-9_]+)\s*:\s*(.*?)\s*$", line)
+                if not m_kv:
+                    continue
+                key = m_kv.group(1).strip()
+                value = m_kv.group(2).strip()
+                if key:
+                    frontmatter[key] = value
+
+        topic = str(frontmatter.get("topic") or "").strip().lower() or "unknown"
+        if topic == "unknown":
+            m_topic = re.search(r"(?m)^topic:\s*([a-zA-Z0-9_-]+)\s*$", body)
+            if m_topic:
+                topic = m_topic.group(1).strip().lower()
         docs.append(
             {
                 "topic": topic,
+                "frontmatter": frontmatter,
                 "sections": _extract_level2_sections(body),
             }
         )
@@ -721,14 +753,12 @@ def summarize_transcript_ref(
                 run_stats.inc("summaries_failed")
             return False
 
-    md = _normalize_markdown_summary(
-        topic=topic or ref.channel_namespace,
-        ref=ref,
-        title=str(video_title or "unknown"),
-        channel_namespace=str(ref.channel_namespace or "unknown"),
-        published_at_iso=str(published_at or "unknown"),
-        llm_markdown=str(out or ""),
-    )
+    # Keep the prompt output as the persisted summary (no post-normalization).
+    md = str(out or "").strip()
+    if md:
+        md += "\n"
+    else:
+        md = "# empty\n"
     _atomic_write_text(summary_path, md)
     legacy_json = summary_path.with_suffix(".json")
     if legacy_json.exists() and legacy_json.name.endswith(".summary.json"):
@@ -783,19 +813,40 @@ def _existing_summary_is_valid(
     except Exception as exc:
         return False, f"read_failed:{exc}"
 
-    sections = _extract_level2_sections(text)
-    for name in _REQUIRED_SECTIONS:
-        if name not in sections:
-            return False, f"missing_section:{name}"
-
+    # Accept either the legacy canonical summary format OR the prompt-v2 wrapped format.
     src = _parse_source_block(text)
-    for k in _REQUIRED_SOURCE_KEYS:
-        if not src.get(k):
-            return False, f"missing_source_key:{k}"
+    if src:
+        sections = _extract_level2_sections(text)
+        for name in _REQUIRED_SECTIONS:
+            if name not in sections:
+                return False, f"missing_section:{name}"
+        for k in _REQUIRED_SOURCE_KEYS:
+            if not src.get(k):
+                return False, f"missing_source_key:{k}"
+        if src.get("video_id") != ref.video_id:
+            return False, "video_id_mismatch"
+        if src.get("channel_namespace") != ref.channel_namespace:
+            return False, "channel_namespace_mismatch"
+        _ = raw_hash
+        _ = expected_topic
+        return True, "ok"
 
-    if src.get("video_id") != ref.video_id:
+    wrapped_docs = _extract_rag_wrapped_docs(text)
+    if not wrapped_docs:
+        return False, "missing_wrapped_docs"
+    has_video_id = False
+    has_channel_namespace = False
+    for doc in wrapped_docs:
+        fm = doc.get("frontmatter") or {}
+        if not isinstance(fm, dict):
+            continue
+        if str(fm.get("video_id") or "").strip() == ref.video_id:
+            has_video_id = True
+        if str(fm.get("channel_namespace") or "").strip() == ref.channel_namespace:
+            has_channel_namespace = True
+    if not has_video_id:
         return False, "video_id_mismatch"
-    if src.get("channel_namespace") != ref.channel_namespace:
+    if not has_channel_namespace:
         return False, "channel_namespace_mismatch"
     # We no longer bind summaries to a transcript content hash (markdown-only).
     _ = raw_hash
