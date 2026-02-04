@@ -465,3 +465,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: TODO um neuen Wunsch erweitert: MCP-Server fuer zuverlaessiges Embedding von SEC Filings.
 - Probleme/Bugs/Issues: Wunsch war knapp formuliert; fuer Umsetzbarkeit mussten konkrete Muss-Kriterien und DoD in TODO ergaenzt werden.
 - Loesung: Neues priorisiertes TODO-Item mit Zielbild, Robustheitskriterien (idempotente Upserts, Retry/Resume, Metadaten, Monitoring) und klarer Definition of Done eingetragen; CHANGELOG dazu aktualisiert.
+
+## 2026-02-04
+- Aufgabe: HTTP 502 auf `owui.tail027324.ts.net` analysiert und Open WebUI wieder online gebracht.
+- Probleme/Bugs/Issues: `tailscale serve` war korrekt auf `http://127.0.0.1:3000` gemappt, aber der `owui` Container war gestoppt (`Exited (0)`), daher lieferte der Upstream nicht.
+- Loesung: Open-WebUI-Service via Compose neu gestartet (`up -d owui`), Healthcheck bis `healthy` verifiziert und lokalen Endpoint mit `curl http://127.0.0.1:3000` auf HTTP 200 bestaetigt.

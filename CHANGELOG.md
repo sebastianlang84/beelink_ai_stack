@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- ops(open-webui): HTTP 502 auf `owui.tail027324.ts.net` behoben (Container `owui` war gestoppt; Service neu gestartet, localhost:3000 wieder HTTP 200)
 - docs(todo): neues Backlog-Item fuer MCP-Server zur zuverlaessigen SEC-Filings-Embedding-Pipeline ergaenzt
 - feat(transcript-miner): investing/investing_test Summary-Prompts auf Topic-isolated Prompt V2 (`tests/prompt-engineering/_promptnew.md`) umgestellt
 - feat(transcript-miner): LLM Prompt-Formatter um Metadata-Placeholders erweitert (`topic`, `video_id`, `title`, `url`, `channel_namespace`, `published_at`, `fetched_at`, `transcript`)

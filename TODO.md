@@ -56,6 +56,11 @@
     - Re-Run erzeugt keine Duplikate
     - Retrieval-Test in OWUI liefert relevante Treffer fuer Filing-basierte Fragen
 
+- [ ] **OWUI-Verfuegbarkeit gegen 502 haerten (Tailscale Serve Upstream)**
+  - Problem: Wenn `owui` gestoppt ist (`Exited`), liefert `https://owui.tail027324.ts.net` sofort HTTP 502 trotz korrekter Serve-Config.
+  - Ziel: Automatischer Check/Repair fuer `owui` (z. B. Watchdog-Check oder systemd Timer mit `docker compose up -d owui` bei Ausfall).
+  - DoD: Bei gestopptem `owui` wird der Dienst ohne manuelles Eingreifen wieder gestartet; Runbook + Skript dokumentiert.
+
 - [ ] **Prompt-Engineering + RAG Umsetzung (OWUI)**
   - Ziel: Topic-reine Retrieval-Treffer (macro/stocks/crypto), weniger Drift, stabile Antwortstruktur.
   - Ausgangslage: Prompt-Engineering Fixture liegt unter `transcript-miner/tests/prompt-engineering/`:
