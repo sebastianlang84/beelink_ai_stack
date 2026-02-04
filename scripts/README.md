@@ -41,6 +41,15 @@
   - `./scripts/smoke_test_ai_stack.sh --up --build`
   - Runbook: `docs/runbook_smoke_test.md:1`
 
+## Open WebUI RAG Guard (Investing)
+- Apply stricter day-sensitive retrieval defaults in OWUI config (`webui.db`) and restart `owui`:
+  - `./scripts/openwebui_apply_investing_rag_guard.sh`
+- Sets:
+  - `rag.relevance_threshold=0.4`
+  - `rag.top_k=15`
+  - `rag.top_k_reranker=5`
+  - Strict `Same-day sufficiency gate` in `rag.template` for "heute/des Tages/latest" queries.
+
 ## Transcript Miner Run Status
 - Check a specific TM run (status, log tail, cookie availability):
   - `./scripts/check_tm_run_status.sh <run_id>`

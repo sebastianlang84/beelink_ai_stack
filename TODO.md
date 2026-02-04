@@ -82,16 +82,16 @@
   - Quelle: `owui-data:/app/backend/data/webui.db` -> `config.data.rag`
   - Aktuelle Werte:
     - `embedding_engine=openai`, `embedding_model=baai/bge-m3`, `openai_api_base_url=https://openrouter.ai/api/v1`
-    - Retrieval: `top_k=30`, `top_k_reranker=3`, `relevance_threshold=0.0`
-    - Hybrid Search: `enable_hybrid_search=false`, `hybrid_bm25_weight=0.5`
+    - Retrieval: `top_k=15`, `top_k_reranker=5`, `relevance_threshold=0.4`
+    - Hybrid Search: `enable_hybrid_search=true`, `hybrid_bm25_weight=0.65`
     - Chunking: `chunk_size=800`, `chunk_overlap=120`, `chunk_min_size_target=200`, `text_splitter=\"\"`
-    - Reranker: `reranking_engine=\"\"`, `reranking_model=\"\"` (aktuell nicht aktiv)
+    - Reranker: `reranking_engine=\"\"`, `reranking_model=\"BAAI/bge-reranker-v2-m3\"`
+    - RAG Template: striktes `Same-day sufficiency gate` aktiv fuer Queries wie "heute/des Tages/latest/current"
   - Empfehlung (aus Chat, fuer bessere Praezision/geringeren Drift):
-    - Hybrid Search: an
-    - Reranking: aktivieren (sonst ist `top_k_reranker` praktisch wirkungslos)
+    - Reranking Engine final aktivieren (sonst ist `top_k_reranker` nur eingeschraenkt wirksam)
       - `reranking_engine`: Default
       - `reranking_model`: z. B. `BAAI/bge-reranker-v2-m3`
-      - `top_k`: eher kleiner (10–20 statt 30)
+      - `top_k`: eher kleiner (10–20)
       - `top_k_reranker`: 3–8
     - Chunking/Text-Splitter:
       - token-basierter Splitter (statt \"\"/Default), kleinere Chunks (ca. 500–1000 Tokens)

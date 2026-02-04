@@ -505,3 +505,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Channel-Liste in `config_investing.yaml` alphabetisch geordnet.
 - Probleme/Bugs/Issues: Keine funktionalen Probleme; Ziel war bessere Wartbarkeit und schnellere visuelle Kontrolle.
 - Loesung: Eintraege unter `youtube.channels` in `transcript-miner/config/config_investing.yaml` alphabetisch sortiert und Aenderung im Changelog dokumentiert.
+
+## 2026-02-04
+- Aufgabe: OWUI-Retrieval fuer "heute/des Tages" direkt gehaertet und per debug-proxy verifiziert.
+- Probleme/Bugs/Issues: "Hot stocks des Tages" zog teils alte/unklare Quellen; Recency-Regel im Prompt war nicht strikt genug, und die Relevanzschwelle war zu permissiv.
+- Loesung: OWUI `config.data.rag` live angepasst (`relevance_threshold=0.4`, `top_k=15`, `top_k_reranker=5`), ein striktes Same-Day-Sufficiency-Gate ins RAG-Template eingefuegt, `owui` neu gestartet, Kontroll-Query via `skills/owui-prompt-api-loop/scripts/owui_prompt_api_loop.sh` ausgefuehrt und als reproduzierbaren Betriebsschritt `scripts/openwebui_apply_investing_rag_guard.sh` + Doku-Updates (`README.md`, `TODO.md`, `CHANGELOG.md`, `scripts/README.md`) angelegt.

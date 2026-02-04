@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- ops(open-webui): RAG Retrieval fuer investing geschaerft (`relevance_threshold=0.4`, `top_k=15`, `top_k_reranker=5`)
+- ops(open-webui): Striktes Same-Day-Sufficiency-Gate im OWUI-RAG-Template aktiviert (heute/des Tages/latest)
+- chore(scripts): `openwebui_apply_investing_rag_guard.sh` hinzugefuegt (setzt RAG-Guard reproduzierbar + restart `owui`)
 - chore(transcript-miner): YouTube Channel-Liste in `config_investing.yaml` alphabetisch sortiert
 - feat(transcript-miner): LLM-Prompts erhalten immer aktuellen Zeitkontext (`utc_now`, `vienna_now`) inkl. Recency-Regel fuer Altersbewertung von Informationen
 - ops(open-webui): Topic `investing` manuell nachgesynct (`processed=149`, `indexed=149`, `errors=0`) und aktuelle Files verifiziert
