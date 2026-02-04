@@ -485,3 +485,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Prompt-V2 technisch durchgezogen: keine nachtraegliche Umschreibung der Summary-Dateien mehr.
 - Probleme/Bugs/Issues: Bisher wurde der LLM-Output in kanonische Legacy-Sections umgeformt; dadurch sah das Ergebnis "alt" aus und war fuer Prompt-Arbeit nicht nachvollziehbar.
 - Loesung: `summarize_transcript_ref` speichert jetzt den Prompt-Output direkt; Summary-Validierung, Progress-Checks und Aggregation wurden auf Dual-Format (Legacy + Wrapped Docs) erweitert, damit der Rest der Pipeline weiter funktioniert.
+
+## 2026-02-04
+- Aufgabe: Die 10 zuletzt geladenen Transcripts auf das neue Summary-Schema (Prompt V2 Wrapped Docs) umgestellt.
+- Probleme/Bugs/Issues: Initiale Regeneration zeigte weiter altes Format, weil bestehende Summary-Dateien als gueltig erkannt und daher uebersprungen wurden (kein Re-Write bei vorhandenen validen Files).
+- Loesung: Die 10 betroffenen `*.summary.md` Dateien wurden zuerst in `*.summary.pre_v2_backup_<ts>.md` umbenannt und danach gezielt per `summarize_transcript_ref` neu erzeugt; Verifikation via `rg '<<<DOC_START>>>'` ergab 10/10 im neuen Schema.
