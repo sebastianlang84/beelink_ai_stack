@@ -450,3 +450,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI-Erreichbarkeit fuer `https://owui.tail027324.ts.net/` analysiert (warum Webpage nicht erreichbar).
 - Probleme/Bugs/Issues: `owui` Container lief nicht; `tailscale serve` zeigte zwar korrektes Root-Proxy auf `127.0.0.1:3000`, aber lokal war Port 3000 nicht erreichbar (`connection refused`).
 - Loesung: OWUI-Service mit Compose erneut gestartet (`docker compose ... -f open-webui/docker-compose.yml up -d owui`) und Laufzeit geprueft (`docker ps`, `curl http://127.0.0.1:3000` liefert wieder HTTP 200).
+
+## 2026-02-04
+- Aufgabe: Verifiziert, ob der neue Prompt (`tests/prompt-engineering/_promptnew.md`) bereits produktiv auf neue Transcripts angewandt wird, und Container-Status geprueft.
+- Probleme/Bugs/Issues: Erwartung war moeglicherweise, dass `_promptnew.md` bereits live verwendet wird; tatsaechlich nutzt die Pipeline weiterhin `analysis.llm.system_prompt`/`user_prompt_template` aus `transcript-miner/config/config_investing.yaml` bzw. `config_investing_test.yaml`.
+- Loesung: Laufende Summaries und aktuelle Configs gegengeprueft; aktuelle Summary-Struktur bestaetigt (`## Source`, `## Summary`, ...), keine `<<<DOC_START>>>` Wrapper aus `_promptnew.md`; Docker-Check zeigt keine `dead/exited` Container.

@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- ops(transcript-miner): Prompt-Nutzung geprueft; `_promptnew.md` ist noch nicht produktiv verdrahtet (aktive Summaries nutzen weiterhin Config-Prompts)
+- ops(docker): Container-Status geprueft; keine `dead`/`exited` Container vorhanden
 - ops(open-webui): OWUI-Erreichbarkeit repariert (Container war gestoppt; Service neu gestartet, localhost:3000 wieder erreichbar)
 - docs(todo): OWUI RAG Tuning-Empfehlungen aus Chat (Hybrid Search/Reranker/Top-K/Chunking) im TODO ergaenzt
 - docs: Prompt-Engineering/RAG Plan fuer 2026-02-04 (TODO) inkl. OWUI RAG Settings Snapshot ergaenzt
