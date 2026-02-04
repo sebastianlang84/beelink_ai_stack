@@ -490,3 +490,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Die 10 zuletzt geladenen Transcripts auf das neue Summary-Schema (Prompt V2 Wrapped Docs) umgestellt.
 - Probleme/Bugs/Issues: Initiale Regeneration zeigte weiter altes Format, weil bestehende Summary-Dateien als gueltig erkannt und daher uebersprungen wurden (kein Re-Write bei vorhandenen validen Files).
 - Loesung: Die 10 betroffenen `*.summary.md` Dateien wurden zuerst in `*.summary.pre_v2_backup_<ts>.md` umbenannt und danach gezielt per `summarize_transcript_ref` neu erzeugt; Verifikation via `rg '<<<DOC_START>>>'` ergab 10/10 im neuen Schema.
+
+## 2026-02-04
+- Aufgabe: OWUI-Sync-Stand fuer `investing` verifiziert und manuell nachgezogen.
+- Probleme/Bugs/Issues: Nach lokaler V2-Regeneration war unklar, ob die neuesten Summaries bereits in OWUI angekommen sind.
+- Loesung: `POST /sync/topic/investing` im `tm`-Container ausgefuehrt (`processed=149`, `indexed=149`, `errors=0`) und OWUI-Dateiliste geprueft; die zuletzt regenerierten Video-IDs sind mit aktuellen `created_at/updated_at` vorhanden.
