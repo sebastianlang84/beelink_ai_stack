@@ -79,6 +79,9 @@
 - One-shot run (investing):
   - `./scripts/run-tm-investing.sh`
 - The run script waits for completion and triggers a `sync.topic` for `investing` (Knowledge auto-sync).
+- One-shot run (Company Dossier Agent):
+  - `./scripts/run-tm-investing-companies.sh`
+- The company script uses `config_investing_companies.yaml` and syncs topic `investing_companies`.
 - systemd templates (every 3h):
   - `scripts/systemd/ai-stack-tm-investing.service`
   - `scripts/systemd/ai-stack-tm-investing.timer`

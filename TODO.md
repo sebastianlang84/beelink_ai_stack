@@ -78,6 +78,19 @@
     - Goals umsetzen: Topic-Collections (macro/stocks/crypto) + optional Recency-Routing (`*_recent`/`*_archive`) + Dossier-Collection (`company_dossiers`).
     - OWUI Remote 500 (Tailscale): 500 tritt nur beim Chatten auf (`https://owui.tail027324.ts.net/`) -> Debug: Modellwahl/Streaming/RAG-Call; Logs + reproduzierbarer Fix.
 
+- [ ] **Collection-Split + Rollierende Retention (investing_recent / investing_older / company_dossiers)**
+  - Ziel:
+    - `investing_recent`: pro YouTube-Channel exakt die 2 neuesten Videos.
+    - `investing_older`: nur Zwischenablage bis max. 15 Tage Alter.
+    - `company_dossiers`: langlebige, fortlaufend aktualisierte Firmen-Steckbriefe.
+  - Bereits vorbereitet:
+    - Neuer Company-Dossier-Agent mit eigener Config: `transcript-miner/config/config_investing_companies.yaml`
+    - Runner-Skript: `scripts/run-tm-investing-companies.sh` (sync topic: `investing_companies`)
+  - Offen:
+    - Rotation/Move-Logik recent -> older (statt nur Re-Index).
+    - TTL-Job fuer `investing_older` (harte 15 Tage).
+    - Upsert-Mechanik fuer echte `company_dossiers`-Dateien (nicht nur Dossier-Deltas pro Video).
+
 - [ ] **OWUI RAG/Embedder Settings Snapshot (Ist-Stand, aus Chat/DB)**
   - Quelle: `owui-data:/app/backend/data/webui.db` -> `config.data.rag`
   - Aktuelle Werte:

@@ -510,3 +510,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: OWUI-Retrieval fuer "heute/des Tages" direkt gehaertet und per debug-proxy verifiziert.
 - Probleme/Bugs/Issues: "Hot stocks des Tages" zog teils alte/unklare Quellen; Recency-Regel im Prompt war nicht strikt genug, und die Relevanzschwelle war zu permissiv.
 - Loesung: OWUI `config.data.rag` live angepasst (`relevance_threshold=0.4`, `top_k=15`, `top_k_reranker=5`), ein striktes Same-Day-Sufficiency-Gate ins RAG-Template eingefuegt, `owui` neu gestartet, Kontroll-Query via `skills/owui-prompt-api-loop/scripts/owui_prompt_api_loop.sh` ausgefuehrt und als reproduzierbaren Betriebsschritt `scripts/openwebui_apply_investing_rag_guard.sh` + Doku-Updates (`README.md`, `TODO.md`, `CHANGELOG.md`, `scripts/README.md`) angelegt.
+
+## 2026-02-04
+- Aufgabe: Separaten Agenten mit eigenem Prompt fuer Company-Dossiers vorbereitet.
+- Probleme/Bugs/Issues: Bisher gab es nur den per-video Summary-Agent; fuer langlebige Firmen-Steckbriefe fehlte ein eigener Prompt/Run-Pfad.
+- Loesung: Neue Config `transcript-miner/config/config_investing_companies.yaml` angelegt (Company-Dossier-Delta Prompt, 2 neueste Videos pro Channel, 15 Tage Lookback), Run-Skript `scripts/run-tm-investing-companies.sh` hinzugefuegt und Living Docs (`README.md`, `TODO.md`, `CHANGELOG.md`, `scripts/README.md`) entsprechend aktualisiert.

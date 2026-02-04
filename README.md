@@ -53,6 +53,13 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
    - Wichtig: Persistierte Summaries unter `output/data/summaries/by_video_id/*.summary.md` speichern jetzt den Prompt-Output direkt (z. B. `<<<DOC_START>>>...<<<DOC_END>>>`), ohne nachtraegliche Umschreibung.
    - Zeitkontext: Der LLM-User-Prompt enthaelt jetzt immer aktuelle Referenzzeit (`utc_now`, `vienna_now`) plus Recency-Regel, damit die Antwort das Alter der Quellen explizit einordnen kann.
 
+## Company Dossier Agent (neu)
+- Eigene Config: `transcript-miner/config/config_investing_companies.yaml`
+- Zweck: company-spezifische **Dossier-Deltas** (Business Model, Risks, Numbers, Evidence) aus den neuesten Videos extrahieren.
+- Laufgrenzen: aktuell `max_videos_per_channel=2`, `lookback_days=15`.
+- Start via MCP-Container: `./scripts/run-tm-investing-companies.sh`
+- Sync-Topic in OWUI: `investing_companies`
+
 ## Scheduled Runs (investing, alle 3h)
 Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):
 1. Sicherstellen: `OPEN_WEBUI_AUTO_SYNC_AFTER_RUN=true` in `mcp-transcript-miner/.config.env`.

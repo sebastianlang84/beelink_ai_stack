@@ -1,0 +1,145 @@
+api:
+  youtube_api_key: ${YOUTUBE_API_KEY}
+  openrouter_api_key: ${OPENROUTER_API_KEY}
+  youtube_cookies: null
+
+youtube:
+  channels:
+    - "@asymmetricinvesting"
+    - "@BeatTheDenominator"
+    - "@bravosresearch"
+    - "@bravosresearchcrypto"
+    - "@brianstoffelyt"
+    - "@BrunoKreidler"
+    - "@BusinessWithBrian"
+    - "@CouchInvestor"
+    - "@DataCatInvest"
+    - "@DividendTalks"
+    - "@jeremylefebvremakesmoney7934"
+    - "@maximinvestiert"
+    - "@parkevtatevosiancfa9544"
+    - "@thepatientinvestorr"
+    - "@TomNashTV"
+    - "@VirtualBacon"
+
+  # Dossier-Agent: pro Channel nur die 2 neuesten Videos.
+  num_videos: 2
+  lookback_days: 15
+  max_videos_per_channel: 2
+  keywords: []
+  preferred_languages: ["en", "de"]
+  min_delay_s: 3.0
+  jitter_s: 2.0
+  max_retries: 3
+  backoff_base_s: 2.0
+  backoff_cap_s: 60.0
+  proxy:
+    mode: none
+    filter_ip_locations: []
+
+output:
+  global: /home/wasti/ai_stack_data/transcript-miner/output
+  topic: investing_companies
+  metadata: true
+  write_timeout_report: true
+
+logging:
+  level: INFO
+  file: ../logs/investing_companies.log
+  error_log_file: ../logs/investing_companies-error.log
+  rotation_enabled: true
+  rotation_when: D
+  rotation_interval: 1
+  rotation_backup_count: 3
+
+analysis:
+  llm:
+    enabled: true
+    mode: per_video
+    model: google/gemini-3-flash-preview
+    max_transcripts: 200
+    max_input_tokens: 320000
+    max_output_tokens: 80000
+    per_video_concurrency: 1
+    per_video_min_delay_s: 1.0
+    per_video_jitter_s: 0.5
+    reasoning_effort: high
+    stream_summaries: true
+    stream_worker_concurrency: 1
+    stream_queue_size: 100
+    system_prompt: |
+      You are the Company Dossier Agent for investing transcripts.
+
+      TASK
+      From EXACTLY ONE video transcript, extract only company-specific, durable knowledge.
+      Output 0..N documents (one document per company with meaningful evidence).
+      Skip macro-only or crypto-only content that has no company-level substance.
+
+      HARD RULES
+      - Output ONLY Markdown.
+      - No JSON, no code fences, no intro text.
+      - Use ONLY transcript content (no external facts).
+      - Same language as transcript.
+      - Prefer durable facts (business model, moat, unit economics, recurring risks) over short-lived market noise.
+      - If evidence is weak: do not create a company document.
+
+      OUTPUT FORMAT (repeat for each company)
+      <<<DOC_START>>>
+      ---
+      doc_type: company_dossier_delta
+      topic: companies
+      company_key: <UPPER_TICKER_OR_CANONICAL_NAME>
+      company_name: <display name>
+      tickers: [<ticker1>, <ticker2>]
+      video_id: <video_id>
+      title: <title>
+      channel_namespace: <channel_namespace>
+      url: <url>
+      published_at: <YYYY-MM-DD HH:MM UTC or unknown>
+      fetched_at: <YYYY-MM-DD HH:MM UTC or unknown>
+      keywords: [<k1>, <k2>, <k3>]
+      ---
+      # Company Dossier Delta: <company_name>
+
+      ## What Changed (This Video)
+      - 2-6 bullets with only new or reinforced company-level facts.
+
+      ## Business Model / Revenue Drivers
+      - Concrete mechanism bullets.
+      - If none: - none
+
+      ## Unit Economics / Margins / Cashflow
+      - Evidence-driven bullets.
+      - If none: - none
+
+      ## Risks / Failure Modes
+      - Company-specific downside bullets.
+      - If none: - none
+
+      ## Numbers
+      - metric: <name> | value: <value> | unit: <unit> | context: <short context>
+      - If none: - none
+
+      ## Evidence Quotes
+      - 1-6 short verbatim quotes (max 180 chars each) from transcript.
+      - If none: - none
+
+      ## Unknowns
+      - Missing but important points explicitly marked.
+      - If none: - none
+      <<<DOC_END>>>
+
+    user_prompt_template: |
+      Create company dossier delta documents from this one transcript.
+
+      Video metadata:
+      - topic: {topic}
+      - video_id: {video_id}
+      - url: {url}
+      - title: {title}
+      - channel_namespace: {channel_namespace}
+      - published_at: {published_at}
+      - fetched_at: {fetched_at}
+
+      Transcript:
+      {transcript}
