@@ -1256,8 +1256,8 @@ def _sync_topic_lifecycle(*, topic: str, req: SyncTopicRequest) -> SyncTopicResp
             if not isinstance(published_dt, datetime):
                 continue
             if cfg.new_max_age_days > 0:
-                age_days = (now_utc - published_dt).days
-                if age_days > cfg.new_max_age_days:
+                age_s = (now_utc - published_dt).total_seconds()
+                if age_s > (cfg.new_max_age_days * 86400):
                     continue
             eligible.append(it)
 
@@ -1282,8 +1282,8 @@ def _sync_topic_lifecycle(*, topic: str, req: SyncTopicRequest) -> SyncTopicResp
         published_dt = entry.get("published_dt")
         if not isinstance(published_dt, datetime):
             continue
-        age_days = (now_utc - published_dt).days
-        if age_days <= cfg.archive_max_age_days:
+        age_s = (now_utc - published_dt).total_seconds()
+        if age_s <= (cfg.archive_max_age_days * 86400):
             keep_archive.append(entry)
         else:
             drop_old.append(entry)

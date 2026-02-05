@@ -41,7 +41,7 @@ owui_collections:
   # Optional: limit what counts as "new" by published age; 0 = no limit.
   # This prevents very old videos from ending up in <topic>_new just because
   # a channel hasn't published recently.
-  new_max_age_days: 3
+  new_max_age_days: 2
   archive_max_age_days: 15
   excluded_topics:
     - company_dossiers

@@ -4,6 +4,7 @@
 - feat(mcp-transcript-miner): Globales Lifecycle-Routing: `sync/topic/<topic>` synced nach `<topic>_new` + `<topic>_archive` (Regeln aus `config_global.yaml`), Excluded Topics syncen direkt
 - feat(mcp-transcript-miner): Lifecycle-Sync verschiebt Summaries außerhalb des Archive-Fensters automatisch nach `output/data/summaries/cold/by_video_id`
 - fix(mcp-transcript-miner): `*_new` kann optional via `owui_collections.new_max_age_days` auf wirklich frische Videos begrenzt werden (verhindert "stale channel" Videos in `_new`)
+- fix(mcp-transcript-miner): `new_max_age_days`/`archive_max_age_days` werden strikt als 24h*days ausgewertet (nicht per `.days` floor)
 - feat(mcp-transcript-miner): Lifecycle-Sync für `investing_new`/`investing_archive` implementiert (max 2 neueste pro Channel + Archive bis 15 Tage)
 - fix(mcp-transcript-miner): `sync/topic/<topic>_new`/`sync/topic/<topic>_archive` wird explizit abgelehnt (verwende Base-Topic ohne Suffix)
 - ops(scripts): `sync-investing-lifecycle.sh` hinzugefügt
