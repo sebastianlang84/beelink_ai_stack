@@ -82,6 +82,7 @@ class OwuiCollectionsConfig:
     new_suffix: str
     archive_suffix: str
     newest_per_channel: int
+    new_max_age_days: int
     archive_max_age_days: int
     cold_enabled: bool
     cold_dir: str
@@ -101,6 +102,7 @@ def _load_owui_collections_config() -> OwuiCollectionsConfig:
     new_suffix = "_new"
     archive_suffix = "_archive"
     newest_per_channel = 2
+    new_max_age_days = 0
     archive_max_age_days = 15
     excluded_topics: set[str] = {"company_dossiers"}
     cold_enabled = True
@@ -125,6 +127,11 @@ def _load_owui_collections_config() -> OwuiCollectionsConfig:
                         archive_suffix = str(section["archive_suffix"]).strip()
                     try:
                         newest_per_channel = max(1, int(section.get("newest_per_channel", newest_per_channel)))
+                    except Exception:
+                        pass
+                    try:
+                        # 0 = no limit (allow old videos into _new if channel is stale)
+                        new_max_age_days = max(0, int(section.get("new_max_age_days", new_max_age_days)))
                     except Exception:
                         pass
                     try:
@@ -158,6 +165,7 @@ def _load_owui_collections_config() -> OwuiCollectionsConfig:
         new_suffix=new_suffix,
         archive_suffix=archive_suffix,
         newest_per_channel=newest_per_channel,
+        new_max_age_days=new_max_age_days,
         archive_max_age_days=archive_max_age_days,
         cold_enabled=cold_enabled,
         cold_dir=cold_dir,
@@ -1239,9 +1247,22 @@ def _sync_topic_lifecycle(*, topic: str, req: SyncTopicRequest) -> SyncTopicResp
         by_channel.setdefault(str(entry.get("channel") or "unknown"), []).append(entry)
 
     keep_new: list[dict[str, Any]] = []
+    now_utc = datetime.now(timezone.utc)
     for _, items in by_channel.items():
+        # "new" means "recent enough" + newest per channel.
+        eligible: list[dict[str, Any]] = []
+        for it in items:
+            published_dt = it.get("published_dt")
+            if not isinstance(published_dt, datetime):
+                continue
+            if cfg.new_max_age_days > 0:
+                age_days = (now_utc - published_dt).days
+                if age_days > cfg.new_max_age_days:
+                    continue
+            eligible.append(it)
+
         items_sorted = sorted(
-            items,
+            eligible,
             key=lambda x: (
                 x.get("published_dt") is not None,
                 x.get("published_dt") or datetime(1970, 1, 1, tzinfo=timezone.utc),
@@ -1252,7 +1273,6 @@ def _sync_topic_lifecycle(*, topic: str, req: SyncTopicRequest) -> SyncTopicResp
         keep_new.extend(items_sorted[: cfg.newest_per_channel])
 
     keep_new_ids = {str(x.get("video_id")) for x in keep_new}
-    now_utc = datetime.now(timezone.utc)
     keep_archive: list[dict[str, Any]] = []
     drop_old: list[dict[str, Any]] = []
     for entry in entries:

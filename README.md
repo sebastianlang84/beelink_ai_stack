@@ -62,7 +62,7 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
 
 ## Investing Collections Lifecycle
 - Ziel-Collections (Investing): `investing_new`, `investing_archive`
-- Rotation: `investing_new` hält pro Channel max. 2 neueste Videos; Rest (bis 15 Tage alt) liegt in `investing_archive`.
+- Rotation: `investing_new` hält pro Channel max. 2 neueste Videos (zusätzlich optional begrenzt über `owui_collections.new_max_age_days`); Rest (bis 15 Tage alt) liegt in `investing_archive`.
 - Älter als Archive-Fenster: Summary-Dateien werden automatisch nach `output/data/summaries/cold/by_video_id/` verschoben (leicht rückverschiebbar per `mv`).
 - Trigger: `./scripts/sync-investing-lifecycle.sh` (baut beide Collections aus Source-Topic `investing` neu auf).
 

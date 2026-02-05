@@ -78,7 +78,7 @@ Wenn `TRANSCRIPT_MINER_OUTPUT_DIR` gemountet ist:
 ### Indexing (Open WebUI Knowledge)
 - `POST /index/transcript` — upload/poll/add (idempotent via SQLite, keyed by `source_id`)
 - `POST /sync/topic/{topic}` — indexiert per-video Summaries für ein Topic via globaler Lifecycle-Routing-Logik:
-  - Targets: `<topic>_new` (pro Channel max. `newest_per_channel`) und `<topic>_archive` (Rest bis `archive_max_age_days`)
+  - Targets: `<topic>_new` (pro Channel max. `newest_per_channel`, optional nur bis `new_max_age_days`) und `<topic>_archive` (Rest bis `archive_max_age_days`)
   - Regeln kommen aus `transcript-miner/config/config_global.yaml` (`owui_collections.*`)
   - Excluded Topics (z.B. `company_dossiers`) werden **nicht** geroutet und behalten Direct-Sync nach `<topic>`.
   - Missing Summaries: optionaler LLM‑Healing‑Run (nur LLM) für das passende Config‑Topic, dann Sync

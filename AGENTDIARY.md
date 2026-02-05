@@ -535,3 +535,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Globales Lifecycle-Routing fuer OWUI Knowledge Collections eingefuehrt (ohne Sync nach Base-Topic).
 - Probleme/Bugs/Issues: `sync/topic/<topic>` schrieb vorher direkt in die OWUI Collection `<topic>` (z.B. `investing`) und verursachte unerwuenschte Dauer-Indexing-Last sowie Verwirrung bzgl. `*_new`/`*_archive`.
 - Loesung: `sync/topic/<topic>` routed jetzt standardmaessig nach `<topic>_new` und `<topic>_archive` mit globalen Regeln aus `transcript-miner/config/config_global.yaml` (`owui_collections.*`); `company_dossiers` ist vorerst ausgenommen. Cold-Summaries zaehlen nun auch im TranscriptMiner als "vorhanden", damit alte Videos nicht erneut per LLM bearbeitet werden.
+
+## 2026-02-05
+- Aufgabe: `*_new` nur noch fuer wirklich frische Videos (max age) statt "stale channel" Videos.
+- Probleme/Bugs/Issues: `investing_new` konnte sehr alte Videos enthalten, wenn ein Kanal lange nichts Neues gepostet hat (weil Auswahl bisher nur "N neueste pro Kanal" war).
+- Loesung: Neue globale Option `owui_collections.new_max_age_days` (default 0=unbegrenzt) eingefuehrt und in `transcript-miner/config/config_global.yaml` auf `3` gesetzt; Lifecycle-Sync filtert damit `_new` auf recency, alte Videos landen in `*_archive` oder werden nach Cold verschoben.
