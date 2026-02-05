@@ -1,6 +1,12 @@
 # Changelog
 
 ## Unreleased
+- feat(mcp-transcript-miner): Globales Lifecycle-Routing: `sync/topic/<topic>` synced nach `<topic>_new` + `<topic>_archive` (Regeln aus `config_global.yaml`), Excluded Topics syncen direkt
+- feat(mcp-transcript-miner): Lifecycle-Sync verschiebt Summaries außerhalb des Archive-Fensters automatisch nach `output/data/summaries/cold/by_video_id`
+- feat(mcp-transcript-miner): Lifecycle-Sync für `investing_new`/`investing_archive` implementiert (max 2 neueste pro Channel + Archive bis 15 Tage)
+- feat(mcp-transcript-miner): `sync/topic/investing_new` routed jetzt auf den Lifecycle-Flow
+- ops(scripts): `sync-investing-lifecycle.sh` hinzugefügt
+- docs: Lifecycle-Flow in `README.md`, `scripts/README.md`, `mcp-transcript-miner/README.md` dokumentiert
 - chore(naming): Collection-Namen auf `investing_new`, `investing_archive`, `company_dossiers` festgelegt
 - ops(transcript-miner): Company-Dossier-Topic von `investing_companies` auf `company_dossiers` umgestellt
 - feat(transcript-miner): neuer Company Dossier Agent via `config_investing_companies.yaml` (eigener Prompt fuer company_dossier_delta)

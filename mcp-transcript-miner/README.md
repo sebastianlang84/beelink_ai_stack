@@ -77,15 +77,20 @@ Wenn `TRANSCRIPT_MINER_OUTPUT_DIR` gemountet ist:
 
 ### Indexing (Open WebUI Knowledge)
 - `POST /index/transcript` — upload/poll/add (idempotent via SQLite, keyed by `source_id`)
-- `POST /sync/topic/{topic}` — indexiert per-video Summaries für ein Topic (Knowledge-Name = Topic; optionales Mapping via `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)
-  - Standard: fehlende Summaries → LLM‑Healing‑Run (nur LLM) für das passende Config‑Topic, dann Sync
+- `POST /sync/topic/{topic}` — indexiert per-video Summaries für ein Topic via globaler Lifecycle-Routing-Logik:
+  - Targets: `<topic>_new` (pro Channel max. `newest_per_channel`) und `<topic>_archive` (Rest bis `archive_max_age_days`)
+  - Regeln kommen aus `transcript-miner/config/config_global.yaml` (`owui_collections.*`)
+  - Excluded Topics (z.B. `company_dossiers`) werden **nicht** geroutet und behalten Direct-Sync nach `<topic>`.
+  - Missing Summaries: optionaler LLM‑Healing‑Run (nur LLM) für das passende Config‑Topic, dann Sync
   - Optional im Request: `heal_missing_summaries` (default `true`), `heal_timeout_s` (default `900`), `heal_poll_s` (default `5`)
   - Hinweis: OWUI‑Duplicate‑Content wird als `skipped` behandelt (kein harter Fehler)
+- `POST /sync/lifecycle/{topic}` — expliziter Lifecycle Sync (gleiche Logik wie `sync.topic`)
+  - Backwards-compatible alias: `POST /sync/investing/lifecycle`
 
 No-Fuss Workflow:
-1. Knowledge Collection in Open WebUI anlegen, **Name = Topic** (z. B. `investing`).
-2. `sync.topic` aufrufen (kein Mapping nötig).
-3. Nur wenn der Name abweicht: Mapping setzen.
+1. Run starten (`POST /runs/start`) für ein Config-Topic (z.B. `investing`).
+2. `sync.topic` aufrufen: `POST /sync/topic/investing`
+3. Ergebnis ist immer `<topic>_new` + `<topic>_archive` (ausser Excluded Topics wie `company_dossiers`).
 
 Optional:
 - Auto-Create ist nur aktiv, wenn **beides** gesetzt ist:
@@ -96,6 +101,9 @@ Optional:
 - Optional: Pre-Check gegen OWUI (Hash/Dateiname) vor Upload:
   - `OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true`
   - Cache: `OPEN_WEBUI_KNOWLEDGE_DEDUP_CACHE_TTL_SECONDS=900`
+- Lifecycle-Parameter:
+  - Source: `transcript-miner/config/config_global.yaml` -> `owui_collections.*`
+  - Optional Override: `OPEN_WEBUI_COLLECTIONS_CONFIG_PATH=/transcript_miner_config/config_global.yaml`
 
 ## Betrieb
 - Standalone (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)

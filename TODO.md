@@ -86,9 +86,10 @@
   - Bereits vorbereitet:
     - Neuer Company-Dossier-Agent mit eigener Config: `transcript-miner/config/config_investing_companies.yaml`
     - Runner-Skript: `scripts/run-tm-investing-companies.sh` (sync topic: `company_dossiers`)
+    - Lifecycle-Routing global: `POST /sync/topic/<topic>` synced nach `<topic>_new` + `<topic>_archive` (Regeln aus `transcript-miner/config/config_global.yaml`)
+    - Host-Skript: `scripts/sync-investing-lifecycle.sh` (Investing)
+    - Cold-Storage aktiv: Summaries >15 Tage werden beim Lifecycle-Sync automatisch nach `output/data/summaries/cold/by_video_id/` verschoben
   - Offen:
-    - Rotation/Move-Logik `investing_new` -> `investing_archive` (statt nur Re-Index).
-    - TTL-Job fuer `investing_archive` (harte 15 Tage).
     - Upsert-Mechanik fuer echte `company_dossiers`-Dateien (nicht nur Dossier-Deltas pro Video).
 
 - [ ] **OWUI RAG/Embedder Settings Snapshot (Ist-Stand, aus Chat/DB)**

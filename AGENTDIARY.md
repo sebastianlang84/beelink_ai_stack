@@ -520,3 +520,18 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Gewuenschte Collection-Namen final uebernommen (`investing_new`, `investing_archive`, `company_dossiers`).
 - Probleme/Bugs/Issues: Vorher waren Platzhalter/Arbeitsnamen verwendet (`investing_recent`, `investing_older`, `investing_companies`), was inkonsistent zur neuen Namensentscheidung war.
 - Loesung: Dokumentation und Skripte auf die finalen Namen angepasst; Company-Dossier-Topic in `config_investing_companies.yaml` und `run-tm-investing-companies.sh` auf `company_dossiers` umgestellt.
+
+## 2026-02-04
+- Aufgabe: Lifecycle-Rotation fuer `investing_new` und `investing_archive` umgesetzt.
+- Probleme/Bugs/Issues: Bisher gab es nur reines Topic-Sync ohne "max 2 pro Channel" und ohne 15-Tage-Archivfenster; dadurch konnte `investing_new` veralten.
+- Loesung: In `mcp-transcript-miner/app/main.py` einen Lifecycle-Flow implementiert (`POST /sync/investing/lifecycle`; `sync/topic/investing_new` routed ebenfalls dorthin), der aus Source-Topic `investing` pro Channel die 2 neuesten Videos nach `investing_new` legt und restliche Videos bis 15 Tage nach `investing_archive`; beide Ziel-Collections werden pro Lauf neu aufgebaut. Dazu Env-Parameter in `.config.env.example` erweitert und Host-Skript `scripts/sync-investing-lifecycle.sh` + Doku-Updates ergänzt.
+
+## 2026-02-05
+- Aufgabe: Automatische Cold-Storage-Logik fuer zu alte Investing-Summaries umgesetzt.
+- Probleme/Bugs/Issues: Summaries, die aelter als das `investing_archive`-Fenster sind, blieben im aktiven `by_video_id`-Ordner und konnten spaeter unnoetig erneut verarbeitet/indexiert werden.
+- Loesung: Im Lifecycle-Sync (`mcp-transcript-miner/app/main.py`) wird fuer Eintraege ausserhalb des Archive-Fensters jetzt automatisch nach `output/data/summaries/cold/by_video_id/` verschoben (default aktiv, per Env steuerbar); neue Env-Parameter dokumentiert (`mcp-transcript-miner/.config.env.example`) und Living Docs (`README.md`, `mcp-transcript-miner/README.md`, `TODO.md`, `CHANGELOG.md`) aktualisiert.
+
+## 2026-02-05
+- Aufgabe: Globales Lifecycle-Routing fuer OWUI Knowledge Collections eingefuehrt (ohne Sync nach Base-Topic).
+- Probleme/Bugs/Issues: `sync/topic/<topic>` schrieb vorher direkt in die OWUI Collection `<topic>` (z.B. `investing`) und verursachte unerwuenschte Dauer-Indexing-Last sowie Verwirrung bzgl. `*_new`/`*_archive`.
+- Loesung: `sync/topic/<topic>` routed jetzt standardmaessig nach `<topic>_new` und `<topic>_archive` mit globalen Regeln aus `transcript-miner/config/config_global.yaml` (`owui_collections.*`); `company_dossiers` ist vorerst ausgenommen. Cold-Summaries zaehlen nun auch im TranscriptMiner als "vorhanden", damit alte Videos nicht erneut per LLM bearbeitet werden.

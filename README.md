@@ -60,9 +60,15 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
 - Start via MCP-Container: `./scripts/run-tm-investing-companies.sh`
 - Sync-Topic in OWUI: `company_dossiers`
 
+## Investing Collections Lifecycle
+- Ziel-Collections (Investing): `investing_new`, `investing_archive`
+- Rotation: `investing_new` hält pro Channel max. 2 neueste Videos; Rest (bis 15 Tage alt) liegt in `investing_archive`.
+- Älter als Archive-Fenster: Summary-Dateien werden automatisch nach `output/data/summaries/cold/by_video_id/` verschoben (leicht rückverschiebbar per `mv`).
+- Trigger: `./scripts/sync-investing-lifecycle.sh` (baut beide Collections aus Source-Topic `investing` neu auf).
+
 ## Scheduled Runs (investing, alle 3h)
-Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):
-1. Sicherstellen: `OPEN_WEBUI_AUTO_SYNC_AFTER_RUN=true` in `mcp-transcript-miner/.config.env`.
+Systemd Timer für automatische Runs inkl. Sync (Lifecycle-Routing):
+1. `scripts/run-tm-investing.sh` startet den Run und ruft danach `POST /sync/topic/investing` (-> `investing_new` + `investing_archive`).
 2. Install:
    - `sudo cp /home/wasti/ai_stack/scripts/systemd/ai-stack-tm-investing.service /etc/systemd/system/`
    - `sudo cp /home/wasti/ai_stack/scripts/systemd/ai-stack-tm-investing.timer /etc/systemd/system/`
@@ -73,7 +79,7 @@ Systemd Timer für automatische Runs inkl. Auto-Sync (Knowledge):
 Diagnose-Scripts (Transcript Miner):
 - Cookie-Load + Transcript-Request: `transcript-miner/tools/repro_cookie_load.py`
 - IP-Block-Repro: `transcript-miner/tools/repro_ip_block.py`
-- Falls Auto-Sync `partial/failed` ist: `docker exec tm python -c "import requests; print(requests.post('http://127.0.0.1:8000/sync/topic/investing', json={}, timeout=900).text)"` (holt fehlende OWUI-Indexe nach)
+- Manueller Re-Sync (Lifecycle): `docker exec tm python -c "import requests; print(requests.post('http://127.0.0.1:8000/sync/topic/investing', json={}, timeout=900).text)"`
 
 ## Quickstart (Watchdog)
 Ziel: Lightweight Monitoring fuer CPU/Temperatur/Disk (Host) plus Docker-Hygiene.

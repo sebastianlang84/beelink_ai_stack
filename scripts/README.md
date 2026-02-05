@@ -55,6 +55,10 @@
   - `./scripts/check_tm_run_status.sh <run_id>`
   - Optional env: `TM_CONTAINER=tm`
 
+## Investing Lifecycle Sync
+- Rebuild `investing_new` + `investing_archive` from source topic (`investing`) with recency rules:
+  - `./scripts/sync-investing-lifecycle.sh`
+
 ## Provision / Migration (Naming SSOT)
 - Provision shared Docker objects (network + named volumes):
   - `./scripts/provision_ai_stack_docker_objects.sh`
@@ -78,7 +82,7 @@
 ## Transcript Miner Scheduling (systemd)
 - One-shot run (investing):
   - `./scripts/run-tm-investing.sh`
-- The run script waits for completion and triggers a `sync.topic` for `investing` (Knowledge auto-sync).
+- The run script waits for completion and triggers `sync.topic` for `investing` (global lifecycle routing -> `investing_new` + `investing_archive`).
 - One-shot run (Company Dossier Agent):
   - `./scripts/run-tm-investing-companies.sh`
 - The company script uses `config_investing_companies.yaml` and syncs topic `company_dossiers`.

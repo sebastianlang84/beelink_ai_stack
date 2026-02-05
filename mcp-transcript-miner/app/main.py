@@ -6,6 +6,7 @@ import requests
 import re
 import sqlite3
 import threading
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 import subprocess
@@ -24,6 +25,8 @@ from youtube_transcript_api._errors import (
     TranscriptsDisabled,
     VideoUnavailable,
 )
+
+import yaml
 
 
 def _split_languages(value: str) -> list[str]:
@@ -72,6 +75,96 @@ KNOWLEDGE_DEDUP_PRECHECK = os.getenv("OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK", "").
 }
 KNOWLEDGE_DEDUP_CACHE_TTL = int(os.getenv("OPEN_WEBUI_KNOWLEDGE_DEDUP_CACHE_TTL_SECONDS", "900"))
 
+
+@dataclass(frozen=True)
+class OwuiCollectionsConfig:
+    enabled: bool
+    new_suffix: str
+    archive_suffix: str
+    newest_per_channel: int
+    archive_max_age_days: int
+    cold_enabled: bool
+    cold_dir: str
+    excluded_topics: set[str]
+
+
+_OWUI_COLLECTIONS_CFG: OwuiCollectionsConfig | None = None
+
+
+def _load_owui_collections_config() -> OwuiCollectionsConfig:
+    global _OWUI_COLLECTIONS_CFG
+    if _OWUI_COLLECTIONS_CFG is not None:
+        return _OWUI_COLLECTIONS_CFG
+
+    # Defaults (must be safe even if YAML is missing/invalid).
+    enabled = True
+    new_suffix = "_new"
+    archive_suffix = "_archive"
+    newest_per_channel = 2
+    archive_max_age_days = 15
+    excluded_topics: set[str] = {"company_dossiers"}
+    cold_enabled = True
+    cold_dir = os.path.join(OUTPUT_DIR, "data", "summaries", "cold", "by_video_id")
+
+    # Source of truth: transcript-miner/config/config_global.yaml (mounted into tm container).
+    cfg_path = os.getenv(
+        "OPEN_WEBUI_COLLECTIONS_CONFIG_PATH",
+        os.path.join(CONFIG_DIR, "config_global.yaml"),
+    ).strip()
+    if cfg_path:
+        try:
+            raw = Path(cfg_path).read_text(encoding="utf-8")
+            obj = yaml.safe_load(raw) or {}
+            if isinstance(obj, dict):
+                section = obj.get("owui_collections") or {}
+                if isinstance(section, dict):
+                    enabled = bool(section.get("enabled", enabled))
+                    if isinstance(section.get("new_suffix"), str) and section["new_suffix"]:
+                        new_suffix = str(section["new_suffix"]).strip()
+                    if isinstance(section.get("archive_suffix"), str) and section["archive_suffix"]:
+                        archive_suffix = str(section["archive_suffix"]).strip()
+                    try:
+                        newest_per_channel = max(1, int(section.get("newest_per_channel", newest_per_channel)))
+                    except Exception:
+                        pass
+                    try:
+                        archive_max_age_days = max(1, int(section.get("archive_max_age_days", archive_max_age_days)))
+                    except Exception:
+                        pass
+                    excl = section.get("excluded_topics")
+                    if isinstance(excl, list):
+                        excluded_topics = {str(x).strip().lower() for x in excl if str(x).strip()}
+                    cold = section.get("cold") or {}
+                    if isinstance(cold, dict):
+                        cold_enabled = bool(cold.get("enabled", cold_enabled))
+                        cdir = cold.get("dir")
+                        if isinstance(cdir, str) and cdir.strip():
+                            cdir_s = cdir.strip()
+                            cold_dir = cdir_s if os.path.isabs(cdir_s) else os.path.join(OUTPUT_DIR, cdir_s)
+        except Exception:
+            # Fail closed to defaults; do not crash the tool server.
+            pass
+
+    # Normalize suffixes (no spaces).
+    new_suffix = new_suffix.strip()
+    archive_suffix = archive_suffix.strip()
+    if not new_suffix.startswith("_"):
+        new_suffix = "_" + new_suffix
+    if not archive_suffix.startswith("_"):
+        archive_suffix = "_" + archive_suffix
+
+    _OWUI_COLLECTIONS_CFG = OwuiCollectionsConfig(
+        enabled=enabled,
+        new_suffix=new_suffix,
+        archive_suffix=archive_suffix,
+        newest_per_channel=newest_per_channel,
+        archive_max_age_days=archive_max_age_days,
+        cold_enabled=cold_enabled,
+        cold_dir=cold_dir,
+        excluded_topics=excluded_topics,
+    )
+    return _OWUI_COLLECTIONS_CFG
+
 _KNOWLEDGE_FILE_CACHE: dict[str, dict[str, Any]] = {}
 
 CAPABILITIES_MARKDOWN = """\
@@ -99,6 +192,13 @@ Run + sync:
 - `POST /runs/start` — starts TranscriptMiner for a given config (async) and returns `run_id`
 - `GET /runs/{run_id}` — returns status + log tail
 - `POST /sync/topic/{topic}` — indexes summaries for a topic into Open WebUI Knowledge (same service)
+  - Default: lifecycle routing to derived collections:
+    - targets: `<topic>_new` (per channel max N newest) and `<topic>_archive` (rest up to max age)
+    - rules come from `transcript-miner/config/config_global.yaml` (`owui_collections.*`)
+    - excluded topics (e.g. `company_dossiers`) keep direct sync to `<topic>` (no suffix routing).
+    Summaries older than archive window are moved to `output/data/summaries/cold/by_video_id`.
+- `POST /sync/lifecycle/{topic}` — explicit lifecycle sync endpoint (same behavior as above)
+  - Backwards compatible alias: `POST /sync/investing/lifecycle`
 
 Outputs (global layout; requires output root mounted):
 - `GET /outputs/topics` — list available topics (based on `output/data/indexes/<topic>/current/manifest.json`)
@@ -882,6 +982,370 @@ def _load_metadata(path: str) -> dict[str, Any]:
         return {}
 
 
+def _parse_datetime_utc(value: Any) -> datetime | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    if raw.endswith("Z"):
+        raw = raw[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(raw)
+    except Exception:
+        dt = None
+    if dt is None:
+        for fmt in ("%Y-%m-%d %H:%M UTC", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+            try:
+                dt = datetime.strptime(raw, fmt)
+                break
+            except Exception:
+                continue
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+def _allow_create_knowledge(*, topic: str, create_flag: bool) -> bool:
+    if not create_flag:
+        return False
+    if not AUTO_CREATE_KNOWLEDGE:
+        return False
+    return (not AUTO_CREATE_KNOWLEDGE_ALLOWLIST) or (topic.lower() in AUTO_CREATE_KNOWLEDGE_ALLOWLIST)
+
+
+def _resolve_or_create_knowledge_id(*, topic: str, create_flag: bool) -> tuple[str | None, str | None]:
+    try:
+        knowledge_id = _resolve_knowledge_id_for_topic(topic)
+    except Exception as exc:
+        return None, str(exc)
+    if knowledge_id:
+        return knowledge_id, None
+    if _allow_create_knowledge(topic=topic, create_flag=create_flag):
+        try:
+            _create_knowledge(topic)
+            knowledge_id = _resolve_knowledge_id_for_topic(topic)
+        except Exception as exc:
+            return None, str(exc)
+    if not knowledge_id:
+        return None, "knowledge not found"
+    return knowledge_id, None
+
+
+def _active_summary_path(video_id: str) -> str:
+    return os.path.join(OUTPUT_DIR, "data", "summaries", "by_video_id", f"{video_id}.summary.md")
+
+
+def _cold_summary_path(video_id: str) -> str:
+    cfg = _load_owui_collections_config()
+    return os.path.join(cfg.cold_dir, f"{video_id}.summary.md")
+
+
+def _move_old_summaries_to_cold(
+    *,
+    entries: list[dict[str, Any]],
+    dry_run: bool,
+) -> dict[str, Any]:
+    cfg = _load_owui_collections_config()
+    info: dict[str, Any] = {
+        "cold_enabled": cfg.cold_enabled,
+        "cold_dir": cfg.cold_dir,
+        "old_candidates": 0,
+        "cold_moved": 0,
+        "cold_move_errors": 0,
+    }
+    if not cfg.cold_enabled:
+        return info
+
+    video_ids = {str(entry.get("video_id") or "").strip() for entry in entries if str(entry.get("video_id") or "").strip()}
+    info["old_candidates"] = len(video_ids)
+    if not video_ids:
+        return info
+
+    if not dry_run:
+        try:
+            os.makedirs(cfg.cold_dir, exist_ok=True)
+        except Exception:
+            info["cold_move_errors"] = len(video_ids)
+            return info
+
+    for video_id in sorted(video_ids):
+        src = _active_summary_path(video_id)
+        if not os.path.isfile(src):
+            continue
+        dst = _cold_summary_path(video_id)
+        try:
+            if not dry_run:
+                os.replace(src, dst)
+            info["cold_moved"] += 1
+        except Exception:
+            info["cold_move_errors"] += 1
+    return info
+
+
+def _delete_knowledge_collection(knowledge_id: str) -> None:
+    url = f"{OPEN_WEBUI_BASE_URL}/api/v1/knowledge/{knowledge_id}/delete"
+    resp = requests.delete(url, headers=_auth_headers(), timeout=60)
+    if resp.status_code == 404:
+        return
+    if resp.status_code >= 400:
+        raise RuntimeError(f"knowledge delete failed: {resp.status_code} {resp.text}")
+    _KNOWLEDGE_FILE_CACHE.pop(knowledge_id, None)
+
+
+def _collect_sync_entries(topic: str) -> list[dict[str, Any]]:
+    index_dir = os.path.join(_indexes_root(), topic, "current")
+    transcripts_jsonl = os.path.join(index_dir, "transcripts.jsonl")
+    if not os.path.isfile(transcripts_jsonl):
+        return []
+
+    out: list[dict[str, Any]] = []
+    with open(transcripts_jsonl, "r", encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                ref = json.loads(line)
+            except Exception:
+                continue
+            if not isinstance(ref, dict):
+                continue
+            video_id = str(ref.get("video_id") or "").strip()
+            if not video_id:
+                continue
+            summary_path = _active_summary_path(video_id)
+            if not os.path.isfile(summary_path):
+                continue
+            summary_text = open(summary_path, "r", encoding="utf-8", errors="replace").read()
+            body = _strip_frontmatter(summary_text).strip()
+            if not body:
+                continue
+
+            meta = {}
+            meta_path = str(ref.get("metadata_path") or "")
+            if meta_path:
+                meta = _load_metadata(meta_path)
+
+            channel = (
+                str(meta.get("channel_name") or "").strip()
+                or str(meta.get("channel_handle") or "").strip()
+                or str(ref.get("channel_namespace") or "").strip()
+                or "unknown"
+            )
+            published_raw = (
+                meta.get("published_at")
+                or ref.get("published_date")
+                or ref.get("published_at")
+            )
+            published_dt = _parse_datetime_utc(published_raw)
+            out.append(
+                {
+                    "video_id": video_id,
+                    "source_id": f"youtube:{video_id}",
+                    "text": body,
+                    "url": f"https://www.youtube.com/watch?v={video_id}",
+                    "title": meta.get("video_title"),
+                    "channel": channel,
+                    "published_at": str(published_raw or "").strip() or None,
+                    "published_dt": published_dt,
+                }
+            )
+
+    dedup: dict[str, dict[str, Any]] = {}
+    for entry in out:
+        vid = entry["video_id"]
+        prev = dedup.get(vid)
+        if prev is None:
+            dedup[vid] = entry
+            continue
+        prev_dt = prev.get("published_dt")
+        cur_dt = entry.get("published_dt")
+        if cur_dt and (not prev_dt or cur_dt > prev_dt):
+            dedup[vid] = entry
+    return list(dedup.values())
+
+
+def _index_entries_to_knowledge(
+    *,
+    entries: list[dict[str, Any]],
+    knowledge_id: str,
+    dry_run: bool,
+    max_videos: int,
+) -> tuple[int, int, int, int, str | None]:
+    processed = indexed = skipped = errors = 0
+    last_error: str | None = None
+    for entry in entries:
+        if max_videos and processed >= max_videos:
+            break
+        processed += 1
+        if dry_run:
+            indexed += 1
+            continue
+        try:
+            res = _index_markdown(
+                IndexTranscriptRequest(
+                    source_id=str(entry["source_id"]),
+                    text=str(entry["text"]),
+                    url=entry.get("url"),
+                    title=entry.get("title"),
+                    channel=entry.get("channel"),
+                    published_at=entry.get("published_at"),
+                    knowledge_id=knowledge_id,
+                )
+            )
+            status = str(res.get("status") or "")
+            if status in {"indexed", "skipped"}:
+                indexed += 1
+            else:
+                errors += 1
+                last_error = json.dumps(res, ensure_ascii=False)[:5000]
+        except Exception as exc:
+            errors += 1
+            last_error = str(exc)[:5000]
+    return processed, indexed, skipped, errors, last_error
+
+
+def _sync_topic_lifecycle(*, topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
+    cfg = _load_owui_collections_config()
+    try:
+        source_topic = _safe_id(topic, label="topic")
+    except ValueError:
+        return SyncTopicResponse(status="error", topic=topic, last_error="invalid topic", run_id=req.run_id)
+
+    # Guard: lifecycle expects base topics, not already-suffixed derived targets.
+    if source_topic.endswith(cfg.new_suffix) or source_topic.endswith(cfg.archive_suffix):
+        return SyncTopicResponse(
+            status="error",
+            topic=source_topic,
+            last_error=f"refusing to lifecycle-sync derived topic; use base topic without suffix (suffixes: {cfg.new_suffix},{cfg.archive_suffix})",
+            run_id=req.run_id,
+        )
+
+    new_topic = _safe_id(f"{source_topic}{cfg.new_suffix}", label="topic")
+    archive_topic = _safe_id(f"{source_topic}{cfg.archive_suffix}", label="topic")
+
+    entries = _collect_sync_entries(source_topic)
+    if not entries:
+        return SyncTopicResponse(
+            status="not_found",
+            topic=source_topic,
+            last_error=f"missing or empty source topic index: {source_topic}",
+            run_id=req.run_id,
+        )
+
+    by_channel: dict[str, list[dict[str, Any]]] = {}
+    for entry in entries:
+        by_channel.setdefault(str(entry.get("channel") or "unknown"), []).append(entry)
+
+    keep_new: list[dict[str, Any]] = []
+    for _, items in by_channel.items():
+        items_sorted = sorted(
+            items,
+            key=lambda x: (
+                x.get("published_dt") is not None,
+                x.get("published_dt") or datetime(1970, 1, 1, tzinfo=timezone.utc),
+                x.get("video_id") or "",
+            ),
+            reverse=True,
+        )
+        keep_new.extend(items_sorted[: cfg.newest_per_channel])
+
+    keep_new_ids = {str(x.get("video_id")) for x in keep_new}
+    now_utc = datetime.now(timezone.utc)
+    keep_archive: list[dict[str, Any]] = []
+    drop_old: list[dict[str, Any]] = []
+    for entry in entries:
+        vid = str(entry.get("video_id") or "")
+        if not vid or vid in keep_new_ids:
+            continue
+        published_dt = entry.get("published_dt")
+        if not isinstance(published_dt, datetime):
+            continue
+        age_days = (now_utc - published_dt).days
+        if age_days <= cfg.archive_max_age_days:
+            keep_archive.append(entry)
+        else:
+            drop_old.append(entry)
+
+    new_id, err_new = _resolve_or_create_knowledge_id(topic=new_topic, create_flag=req.create_knowledge_if_missing)
+    if not new_id:
+        hint = " (auto-create requires OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true and allowlist match)"
+        return SyncTopicResponse(status="error", topic=new_topic, last_error=f"{err_new or 'knowledge not found'}{hint}", run_id=req.run_id)
+    archive_id, err_archive = _resolve_or_create_knowledge_id(topic=archive_topic, create_flag=req.create_knowledge_if_missing)
+    if not archive_id:
+        hint = " (auto-create requires OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true and allowlist match)"
+        return SyncTopicResponse(status="error", topic=new_topic, last_error=f"{err_archive or 'archive knowledge not found'}{hint}", run_id=req.run_id)
+
+    if not req.dry_run:
+        try:
+            _delete_knowledge_collection(new_id)
+        except Exception as exc:
+            return SyncTopicResponse(status="error", topic=new_topic, last_error=str(exc), run_id=req.run_id)
+        try:
+            _create_knowledge(new_topic)
+            new_id = _resolve_knowledge_id_for_topic(new_topic) or ""
+        except Exception as exc:
+            return SyncTopicResponse(status="error", topic=new_topic, last_error=str(exc), run_id=req.run_id)
+        if not new_id:
+            return SyncTopicResponse(status="error", topic=new_topic, last_error="failed to recreate investing_new knowledge", run_id=req.run_id)
+
+        try:
+            _delete_knowledge_collection(archive_id)
+        except Exception as exc:
+            return SyncTopicResponse(status="error", topic=new_topic, last_error=str(exc), run_id=req.run_id)
+        try:
+            _create_knowledge(archive_topic)
+            archive_id = _resolve_knowledge_id_for_topic(archive_topic) or ""
+        except Exception as exc:
+            return SyncTopicResponse(status="error", topic=new_topic, last_error=str(exc), run_id=req.run_id)
+        if not archive_id:
+            return SyncTopicResponse(status="error", topic=new_topic, last_error="failed to recreate investing_archive knowledge", run_id=req.run_id)
+
+    p1, i1, s1, e1, le1 = _index_entries_to_knowledge(
+        entries=keep_new,
+        knowledge_id=new_id,
+        dry_run=req.dry_run,
+        max_videos=req.max_videos,
+    )
+    p2, i2, s2, e2, le2 = _index_entries_to_knowledge(
+        entries=keep_archive,
+        knowledge_id=archive_id,
+        dry_run=req.dry_run,
+        max_videos=req.max_videos,
+    )
+
+    status = "success" if (e1 + e2) == 0 else "partial"
+    cold_info = _move_old_summaries_to_cold(entries=drop_old, dry_run=req.dry_run)
+    if int(cold_info.get("cold_move_errors") or 0) > 0 and status == "success":
+        status = "partial"
+    lifecycle_info = {
+        "source_topic": source_topic,
+        "new_topic": new_topic,
+        "archive_topic": archive_topic,
+        "new_kept": len(keep_new),
+        "archive_kept": len(keep_archive),
+        "new_knowledge_id": new_id,
+        "archive_knowledge_id": archive_id,
+        **cold_info,
+    }
+    last_error = le1 or le2
+    if status == "success":
+        last_error = json.dumps(lifecycle_info, ensure_ascii=False)
+
+    return SyncTopicResponse(
+        status=status,
+        topic=source_topic,
+        knowledge_id=None,
+        processed=p1 + p2,
+        indexed=i1 + i2,
+        skipped=s1 + s2,
+        errors=e1 + e2,
+        last_error=last_error,
+        run_id=req.run_id,
+    )
+
+
 def _read_text_file(path: str, *, max_chars: int) -> tuple[bool, str]:
     with open(path, "r", encoding="utf-8", errors="replace") as fh:
         text = fh.read()
@@ -1108,7 +1572,7 @@ def _list_missing_summaries(transcripts_jsonl: str) -> list[str]:
                 summary_path = os.path.join(
                     OUTPUT_DIR, "data", "summaries", "by_video_id", f"{video_id}.summary.md"
                 )
-                if not os.path.isfile(summary_path):
+                if (not os.path.isfile(summary_path)) and (not os.path.isfile(_cold_summary_path(video_id))):
                     missing.append(video_id)
     except Exception:
         return missing
@@ -1569,25 +2033,44 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
     except ValueError:
         return SyncTopicResponse(status="error", topic=topic, last_error="invalid topic", run_id=req.run_id)
 
-    try:
-        knowledge_id = _resolve_knowledge_id_for_topic(safe_topic)
-    except Exception as exc:
-        return SyncTopicResponse(status="error", topic=safe_topic, last_error=str(exc), run_id=req.run_id)
+    cfg = _load_owui_collections_config()
+    if cfg.enabled and safe_topic.lower() not in cfg.excluded_topics:
+        # Lifecycle routing: base topic -> <topic>_new + <topic>_archive
+        # (No legacy "sync into <topic>" for lifecycle-enabled topics.)
+        # Note: healing is still allowed but treats cold summaries as present.
+        index_dir = os.path.join(_indexes_root(), safe_topic, "current")
+        transcripts_jsonl = os.path.join(index_dir, "transcripts.jsonl")
+        if not os.path.isfile(transcripts_jsonl):
+            return SyncTopicResponse(status="not_found", topic=safe_topic, last_error="missing transcripts.jsonl", run_id=req.run_id)
+        if not req.dry_run and req.heal_missing_summaries:
+            missing = _list_missing_summaries(transcripts_jsonl)
+            if missing:
+                ok, err = _heal_missing_summaries(
+                    topic=safe_topic,
+                    timeout_s=req.heal_timeout_s,
+                    poll_s=req.heal_poll_s,
+                )
+                if not ok:
+                    return SyncTopicResponse(
+                        status="error",
+                        topic=safe_topic,
+                        last_error=f"healing failed: {err}",
+                        run_id=req.run_id,
+                    )
+        return _sync_topic_lifecycle(topic=safe_topic, req=req)
+
+    knowledge_id, resolve_error = _resolve_or_create_knowledge_id(
+        topic=safe_topic,
+        create_flag=req.create_knowledge_if_missing,
+    )
     if not knowledge_id:
-        allowlist_ok = not AUTO_CREATE_KNOWLEDGE_ALLOWLIST or safe_topic.lower() in AUTO_CREATE_KNOWLEDGE_ALLOWLIST
-        if AUTO_CREATE_KNOWLEDGE and req.create_knowledge_if_missing and allowlist_ok:
-            try:
-                _create_knowledge(safe_topic)
-                knowledge_id = _resolve_knowledge_id_for_topic(safe_topic)
-            except Exception as exc:
-                return SyncTopicResponse(status="error", topic=safe_topic, last_error=str(exc), run_id=req.run_id)
-        if not knowledge_id:
-            return SyncTopicResponse(
-                status="error",
-                topic=safe_topic,
-                last_error="knowledge not found (expected Knowledge name = topic, or set OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON; auto-create requires create_knowledge_if_missing=true and allowlist match)",
-                run_id=req.run_id,
-            )
+        detail = resolve_error or "knowledge not found"
+        return SyncTopicResponse(
+            status="error",
+            topic=safe_topic,
+            last_error=f"{detail} (expected Knowledge name = topic, or set OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON; auto-create requires OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true and allowlist match)",
+            run_id=req.run_id,
+        )
 
     index_dir = os.path.join(_indexes_root(), safe_topic, "current")
     transcripts_jsonl = os.path.join(index_dir, "transcripts.jsonl")
@@ -1697,6 +2180,37 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
         last_error=last_error,
         run_id=req.run_id,
     )
+
+
+@app.post(
+    "/sync/investing/lifecycle",
+    summary="Rebuild investing_new/investing_archive from source topic with recency rules",
+    operation_id="sync_investing_lifecycle",
+)
+def sync_investing_lifecycle(req: SyncTopicRequest) -> SyncTopicResponse:
+    # Backwards-compatible alias; prefer /sync/lifecycle/{topic}.
+    return _sync_topic_lifecycle(topic="investing", req=req)
+
+
+@app.post(
+    "/sync/lifecycle/{topic}",
+    summary="Rebuild <topic>_new/<topic>_archive from source topic with global lifecycle rules",
+    operation_id="sync_lifecycle",
+)
+def sync_lifecycle(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
+    try:
+        safe_topic = _safe_id(topic, label="topic")
+    except ValueError:
+        return SyncTopicResponse(status="error", topic=topic, last_error="invalid topic", run_id=req.run_id)
+    cfg = _load_owui_collections_config()
+    if safe_topic.lower() in cfg.excluded_topics:
+        return SyncTopicResponse(
+            status="error",
+            topic=safe_topic,
+            last_error=f"topic excluded from lifecycle routing: {safe_topic}",
+            run_id=req.run_id,
+        )
+    return _sync_topic_lifecycle(topic=safe_topic, req=req)
 
 
 @app.post("/index/transcript", summary="Upload Markdown and add to Knowledge Collection", operation_id="knowledge_index")

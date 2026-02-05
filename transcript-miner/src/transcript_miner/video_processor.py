@@ -85,7 +85,18 @@ def _has_summary(
         video_id, channel_handle=channel_handle
     )
     if not summary_path.exists():
-        return False
+        # Cold storage: summaries moved out of the active folder must still count as "present"
+        # so we don't re-run LLM analysis on old videos.
+        cold = (
+            config.output.get_data_root()
+            / "summaries"
+            / "cold"
+            / "by_video_id"
+            / f"{video_id}.summary.md"
+        )
+        if not cold.exists():
+            return False
+        summary_path = cold
 
     try:
         text = summary_path.read_text(encoding="utf-8")

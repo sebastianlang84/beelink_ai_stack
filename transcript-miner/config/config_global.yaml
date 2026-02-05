@@ -27,3 +27,21 @@ report:
 
 output:
   global: /home/wasti/ai_stack_data/transcript-miner/output
+
+# Open WebUI Knowledge sync routing (used by mcp-transcript-miner).
+# Policy:
+# - Base topic stays unchanged in topic configs (e.g. investing).
+# - Sync routes into derived OWUI collections: <topic>_new and <topic>_archive.
+# - Cold storage holds summaries outside the archive window and must not be reprocessed.
+owui_collections:
+  enabled: true
+  new_suffix: "_new"
+  archive_suffix: "_archive"
+  newest_per_channel: 2
+  archive_max_age_days: 15
+  excluded_topics:
+    - company_dossiers
+  cold:
+    enabled: true
+    # Relative to output.global root (i.e. <output>/data/...):
+    dir: "data/summaries/cold/by_video_id"
