@@ -540,3 +540,8 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: `*_new` nur noch fuer wirklich frische Videos (max age) statt "stale channel" Videos.
 - Probleme/Bugs/Issues: `investing_new` konnte sehr alte Videos enthalten, wenn ein Kanal lange nichts Neues gepostet hat (weil Auswahl bisher nur "N neueste pro Kanal" war).
 - Loesung: Neue globale Option `owui_collections.new_max_age_days` (default 0=unbegrenzt) eingefuehrt und in `transcript-miner/config/config_global.yaml` auf `3` gesetzt; Lifecycle-Sync filtert damit `_new` auf recency, alte Videos landen in `*_archive` oder werden nach Cold verschoben.
+
+## 2026-02-05
+- Aufgabe: Sync-API gegen falsche Topic-Calls abgesichert (derived topics).
+- Probleme/Bugs/Issues: `POST /sync/topic/<topic>_new` lieferte verwirrend `missing transcripts.jsonl`, weil es nur Indizes fuer Base-Topics gibt.
+- Loesung: `mcp-transcript-miner` lehnt `*_new`/`*_archive` in `sync/topic/{topic}` jetzt explizit ab und verweist auf das Base-Topic ohne Suffix; Changelog/README angepasst.

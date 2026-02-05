@@ -2054,6 +2054,15 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
         return SyncTopicResponse(status="error", topic=topic, last_error="invalid topic", run_id=req.run_id)
 
     cfg = _load_owui_collections_config()
+    # Guard: lifecycle expects base topics, not already-suffixed derived targets.
+    # Without this, callers get a confusing "missing transcripts.jsonl" (because indexes exist only for base topics).
+    if safe_topic.endswith(cfg.new_suffix) or safe_topic.endswith(cfg.archive_suffix):
+        return SyncTopicResponse(
+            status="error",
+            topic=safe_topic,
+            last_error=f"refusing to sync derived topic; use base topic without suffix (suffixes: {cfg.new_suffix},{cfg.archive_suffix})",
+            run_id=req.run_id,
+        )
     if cfg.enabled and safe_topic.lower() not in cfg.excluded_topics:
         # Lifecycle routing: base topic -> <topic>_new + <topic>_archive
         # (No legacy "sync into <topic>" for lifecycle-enabled topics.)

@@ -92,6 +92,9 @@ No-Fuss Workflow:
 2. `sync.topic` aufrufen: `POST /sync/topic/investing`
 3. Ergebnis ist immer `<topic>_new` + `<topic>_archive` (ausser Excluded Topics wie `company_dossiers`).
 
+Hinweis:
+- `POST /sync/topic/<topic>_new` oder `POST /sync/topic/<topic>_archive` ist **nicht** erlaubt; verwende immer das Base-Topic ohne Suffix.
+
 Optional:
 - Auto-Create ist nur aktiv, wenn **beides** gesetzt ist:
   - Env: `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`
