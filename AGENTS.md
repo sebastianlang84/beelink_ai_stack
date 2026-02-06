@@ -17,6 +17,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 ## 0.1) Living Docs (müssen immer aktuell sein)
 - `README.md`, `TODO.md`, `CHANGELOG.md` sind **lebende Dokumente** und müssen **perfekt** zum aktuellen Projektzustand passen.
 - Keine Doku darf dem Projekt hinterherhinken: Wenn Code/Compose/Prozesse geändert werden, müssen diese Dateien im gleichen Zug aktualisiert werden (oder die Änderung wird als „unvollständig“ behandelt).
+- Wenn bei einem Task **keine** Living-Docs-Aenderung noetig ist: das im Tagebuch kurz festhalten (z. B. "README/TODO/CHANGELOG geprueft: keine Aenderungen noetig").
 
 ## 1) Agent Rules (global, verbindlich)
 
@@ -49,6 +50,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - **No-Fluff**: direkt mit Ergebnis/Schritten/Code starten, kurze Bulletpoints.
 - Änderungen als **kleine, nachvollziehbare Diffs**; keine unnötigen Refactors.
 - **Stetige Verbesserung**: bei jedem Task prüfen, ob ein wiederholbarer/komplexer Workflow als Skill abgebildet werden sollte; Skills bei komplexen Workflows bevorzugt nutzen/erstellen.
+- **Stop & Ask bei Dirty Worktree**: Wenn im Git-Status unerwartete/unrelated Aenderungen auftauchen, die nicht Teil des aktuellen Tasks sind, erst kurz nachfragen, bevor irgendetwas davon committed/reverted wird.
 
 ### Sicherheit & Betrieb
 - **Keine Secrets committen** (Tokens, Passwörter, Private Keys).
@@ -76,7 +78,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - `open-webui/` — Open WebUI Service (Docker Compose)
 - `mcp-transcript-miner/` — **Transcript Miner** MCP Server (Streamable HTTP; OpenAPI optional/legacy; Configs/Runs/Outputs + Knowledge Indexing)
 - `transcript-miner/` — TranscriptMiner Pipeline-Engine (Python; Transcripts + Summaries)
-- `mcp-owui-roo-connector/` — MCP Connector (Open WebUI / Roo)
+- `mcp-owui-connector/` — MCP Connector (Open WebUI / Roo)
 - `qdrant/` — Qdrant Service (optional)
 
 ## 3) Service-Zielbild

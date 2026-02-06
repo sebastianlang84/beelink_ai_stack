@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(agent): AGENTS-Regeln geschaerft (Dirty-Worktree Stop&Ask, Living-Docs Check) und Connector-Pfad in Doku korrigiert
 - feat(mcp-transcript-miner): Globales Lifecycle-Routing: `sync/topic/<topic>` synced nach `<topic>_new` + `<topic>_archive` (Regeln aus `config_global.yaml`), Excluded Topics syncen direkt
 - feat(mcp-transcript-miner): Lifecycle-Sync verschiebt Summaries außerhalb des Archive-Fensters automatisch nach `output/data/summaries/cold/by_video_id`
 - fix(mcp-transcript-miner): `*_new` kann optional via `owui_collections.new_max_age_days` auf wirklich frische Videos begrenzt werden (verhindert "stale channel" Videos in `_new`)

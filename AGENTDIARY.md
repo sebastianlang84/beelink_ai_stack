@@ -545,3 +545,13 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Sync-API gegen falsche Topic-Calls abgesichert (derived topics).
 - Probleme/Bugs/Issues: `POST /sync/topic/<topic>_new` lieferte verwirrend `missing transcripts.jsonl`, weil es nur Indizes fuer Base-Topics gibt.
 - Loesung: `mcp-transcript-miner` lehnt `*_new`/`*_archive` in `sync/topic/{topic}` jetzt explizit ab und verweist auf das Base-Topic ohne Suffix; Changelog/README angepasst.
+
+## 2026-02-06
+- Aufgabe: Kurztest der Agent-Interaktion ("test").
+- Probleme/Bugs/Issues: Keine.
+- Loesung: Keine Aenderungen erforderlich; nur Tagebuch-Update.
+
+## 2026-02-06
+- Aufgabe: Agent-Regeln in `AGENTS.md` geschaerft (Dirty-Worktree Stop&Ask, Living-Docs Check explizit gemacht) und Repo-Struktur-Pfad fuer OWUI Connector korrigiert (auch in `README.md`).
+- Probleme/Bugs/Issues: Repo hatte bereits unrelated lokale Aenderung in `transcript-miner/config/config_investing.yaml` (nicht Teil des Tasks).
+- Loesung: Commit nur fuer die Agent/Doku-Files vorbereitet; `README.md`, `TODO.md`, `CHANGELOG.md` geprueft (TODO ohne Aenderung), Changelog ergaenzt.
