@@ -19,7 +19,7 @@ In der Praxis ist der Text dadurch in vielen Editoren schwer lesbar, weil Zeilen
   - [`system_prompt.txt`](../../src/transcript_ai_analysis/llm_runner.py:384), [`user_prompt.txt`](../../src/transcript_ai_analysis/llm_runner.py:385)
   (siehe Writer/Callsite: derived + metadata werden nach `report.json` erzeugt via [`_write_derived_report_and_metadata()`](../../src/transcript_ai_analysis/llm_runner.py:73)).
 - Hinweis: Ein separater Offline-Validator fuer das Artefakt-Bundle wurde entfernt (kein `validate_llm_report_artefacts()` mehr im aktuellen Code).
-- Das Repo hat explizite Artefakt-/Audit-Prinzipien („keine stillen Overwrites ohne klare Policy“, Outputs sind auditierbare Artefakte) (siehe Policy in [`AGENTS.md`](../../AGENTS.md:138)).
+- Das Repo hat explizite Artefakt-/Audit-Prinzipien („keine stillen Overwrites ohne klare Policy“, Outputs sind auditierbare Artefakte) (siehe Policy in [`AGENTS.md`](../../../AGENTS.md:138)).
 
 ## Entscheidungskriterien
 

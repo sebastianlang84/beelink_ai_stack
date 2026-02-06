@@ -57,7 +57,7 @@ Optionen (Auswahl):
 
 ### Smoke-Checks (offline)
 
-Siehe auch die UV-first Smoke-Checks in [`AGENTS.md`](AGENTS.md:176).
+Siehe auch die UV-first Smoke-Checks in [`AGENTS.md`](../AGENTS.md:176).
 
 ```bash
 uv run python -m transcript_miner --help

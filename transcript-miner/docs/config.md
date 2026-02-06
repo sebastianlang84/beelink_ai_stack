@@ -215,7 +215,7 @@ Motivation: schützt gegen implizite Semantik und stille Änderungen an Analyse-
 
 ### Deterministische Run-Identität / Namespaces (normativ; Implementierung: proposed)
 
-Ziel: Multi-Config Runs müssen eine stabile Identität haben, um Kollisionen/Overwrites zu vermeiden (Policy: „keine stillen Overwrites“ in [`AGENTS.md`](../AGENTS.md:140)).
+Ziel: Multi-Config Runs müssen eine stabile Identität haben, um Kollisionen/Overwrites zu vermeiden (Policy: „keine stillen Overwrites“ in [`AGENTS.md`](../../AGENTS.md:140)).
 
 #### 1) `config_set_id` (normativ)
 

@@ -4,7 +4,7 @@ Scope: tracked Markdown files in this repository.
 
 ## Core
 - [`../README.md`](../README.md)
-- [`../AGENTS.md`](../AGENTS.md)
+- [`../../AGENTS.md`](../../AGENTS.md)
 - [`../CHANGELOG.md`](../CHANGELOG.md)
 - [`../../TODO.md`](../../TODO.md)
 

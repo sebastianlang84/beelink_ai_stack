@@ -17,8 +17,8 @@ Wir wollen mehrere YAML-Configs kombinieren (z.B. Topic-spezifische Sets) und da
 Dabei müssen wir:
 
 - deterministische Konfliktregeln (Tie-Breaking) dokumentieren,
-- Run-Identität/Namespaces sauber definieren (keine stillen Overwrites; Policy: [`AGENTS.md`](../../AGENTS.md:140)),
-- die bestehende Prioritätshierarchie **unverändert** lassen: CLI > Config > Env > Defaults (siehe [`docs/config.md`](../config.md:11) und Pattern [`AGENTS.md`](../../AGENTS.md:166)),
+- Run-Identität/Namespaces sauber definieren (keine stillen Overwrites; Policy: [`AGENTS.md`](../../../AGENTS.md:140)),
+- die bestehende Prioritätshierarchie **unverändert** lassen: CLI > Config > Env > Defaults (siehe [`docs/config.md`](../config.md:11) und Pattern [`AGENTS.md`](../../../AGENTS.md:166)),
 - und das CLI nur als **Entwurf** beschreiben (keine erfundenen Ist-Flags).
 
 ## Kontext / Evidenz (Ist-Zustand)
@@ -202,7 +202,7 @@ Motivation:
 ### Ziel
 
 - Ein Multi-Config Run braucht eine stabile, deterministische Identität, die aus den ConfigFiles ableitbar ist.
-- Re-Runs dürfen keine stillen Overwrites erzeugen (Policy: [`AGENTS.md`](../../AGENTS.md:140)).
+- Re-Runs dürfen keine stillen Overwrites erzeugen (Policy: [`AGENTS.md`](../../../AGENTS.md:140)).
 
 ### ConfigSet-ID (Spezifikation)
 

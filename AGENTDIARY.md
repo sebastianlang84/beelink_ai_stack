@@ -555,3 +555,14 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Agent-Regeln in `AGENTS.md` geschaerft (Dirty-Worktree Stop&Ask, Living-Docs Check explizit gemacht) und Repo-Struktur-Pfad fuer OWUI Connector korrigiert (auch in `README.md`).
 - Probleme/Bugs/Issues: Repo hatte bereits unrelated lokale Aenderung in `transcript-miner/config/config_investing.yaml` (nicht Teil des Tasks).
 - Loesung: Commit nur fuer die Agent/Doku-Files vorbereitet; `README.md`, `TODO.md`, `CHANGELOG.md` geprueft (TODO ohne Aenderung), Changelog ergaenzt.
+
+## 2026-02-06
+- Aufgabe: Repo-Audit (Compose-Config, Tests, Doc-Link-Audit) und Fixes fuer reproduzierbare Checks umgesetzt.
+- Probleme/Bugs/Issues:
+  - `emb-bench/docker-compose.yml` scheiterte bei `docker compose config`, weil `DOCKER_UID/DOCKER_GID` im `emb-bench/.config.env.example` leer waren.
+  - `transcript-miner` Docs hatten kaputte Links (`logs/README.md` fehlte; Links auf `AGENTS.md` waren relativ falsch).
+  - Lokale root-owned Artefakte in `transcript-miner/` (`.venv`, `*.egg-info`, `output/`, `.pytest_cache`) verhinderten `uv run pytest` bzw. Run-Root-Creation im Test.
+- Loesung:
+  - `emb-bench/.config.env.example` mit Beispielwerten befuellt (und Hinweis `id -u`/`id -g`).
+  - `transcript-miner/logs/README.md` als Doku-Stub angelegt; alle `AGENTS.md` Links auf Repo-Root korrigiert.
+  - Lokale Permissions via Docker-`chown` fuer die root-owned Artefakte korrigiert; danach `transcript-miner` Tests (85) gruen.

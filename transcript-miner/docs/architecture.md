@@ -178,7 +178,7 @@ Diese Sektion definiert den **Artefakt-Vertrag** für die Aggregation (Extraktio
 
 1. **Idempotenz:** Ein Re-Run mit identischem Input (gleiche Transkript-Dateien + gleiche Index-Artefakte) soll deterministische Artefakte erzeugen (vgl. Index Determinismus-Konzept mit `run_fingerprint` in [`_compute_run_fingerprint()`](../src/transcript_miner/transcript_index/runner.py:27)).
 2. **Auditierbarkeit:** Jede aggregierte Aussage muss bis zu mindestens `{video_id, channel_namespace, transcript_path}` zurückverfolgbar sein (Index liefert diese Referenzen in `transcripts.jsonl`, siehe Doku in [`README.md`](../README.md:372)).
-3. **Keine stillen Overwrites ohne Policy:** Overwrite-Verhalten muss klar spezifiziert sein (Repo-Regel: [`AGENTS.md`](../AGENTS.md:138)).
+3. **Keine stillen Overwrites ohne Policy:** Overwrite-Verhalten muss klar spezifiziert sein (Repo-Regel: [`AGENTS.md`](../../AGENTS.md:138)).
 
 #### 4.3.2 Verzeichnisstruktur (Aggregation) unterhalb von GLOBAL_ROOT (Zielbild)
 
