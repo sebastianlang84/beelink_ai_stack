@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- ops(tavily): Host-Helper `scripts/tavily_search.sh` hinzugefuegt + Runbook-Hinweis: `.env` wird fuer Host-Prozesse nicht automatisch exportiert
 - ops(openclaw): Gateway Supervision ohne sudo: `scripts/openclaw_gateway_supervise.sh` + Cron-Installer `scripts/install_openclaw_gateway_cron.sh`
 - ops(openclaw): Cron-Uninstall: `scripts/uninstall_openclaw_gateway_cron.sh`
 - docs(openclaw): README/TODO/scripts-README/docs-Index + OpenClaw Operations aktualisiert

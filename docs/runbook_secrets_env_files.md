@@ -97,6 +97,18 @@ docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-
 
 ---
 
+## 5.1) Hinweis: `.env` ist nicht automatisch im Shell-Environment
+
+`docker compose --env-file ...` liest Env-Files explizit ein, aber **Host-Prozesse** (z. B. MCP Server, lokale Scripts) bekommen Variablen aus `.env` **nicht automatisch**, wenn du sie nicht exportierst.
+
+Optionen:
+- Für einzelne Commands: `set -a; source /home/wasti/ai_stack/.env; set +a`
+- Für Tavily Doc Fetching ohne Export: `./scripts/tavily_search.sh "dein query"`
+
+Wichtig: Secrets nie in Repo-Configs (z. B. `.codex/config.toml`) hardcoden.
+
+---
+
 ## 6) API Keys (wohin damit?)
 
 API Keys gehören nur dann in Container-Env, wenn der jeweilige Service sie zur Laufzeit benötigt.

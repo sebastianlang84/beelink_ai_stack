@@ -49,6 +49,10 @@
 - Redact secrets from command output (safe sharing):
   - `./scripts/redact_secrets_output.sh`
 
+## Tavily (Host)
+- Run a Tavily web search using `TAVILY_API_KEY` from the environment or repo-local `.env` (gitignored):
+  - `./scripts/tavily_search.sh "openclaw gateway trustedProxies"`
+
 ## Smoke Test (P0)
 - Run an end-to-end-ish health/auth smoke test for Open WebUI + Transcript Miner tool:
   - `./scripts/smoke_test_ai_stack.sh --up --build`

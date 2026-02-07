@@ -578,3 +578,10 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Persistenter user-level Betrieb ohne sudo via `scripts/openclaw_gateway_supervise.sh` + `scripts/install_openclaw_gateway_cron.sh` dokumentiert.
   - Ordnung/Overview: `openclaw/OPERATIONS.md` (Start/Stop/Logs/Cron/Pairing) angelegt und Doku-Index (`docs/README.md`) + Root-README aktualisiert.
   - Tailscale Serve/Proxy Fix: `gateway.trustedProxies` um `127.0.0.1`/`::1` erweitert, damit das Dashboard hinter Proxy nicht in `pairing required` haengt.
+- Aufgabe: Tavily API Key Verwirrung sauber verifiziert und Doc-Fetching reproduzierbar gemacht.
+- Probleme/Bugs/Issues:
+  - Tavily MCP Tool meldete `Invalid API key`, obwohl der Key in repo-local `.env` gesetzt war.
+  - Ursache: Host-Prozesse (MCP) bekommen `.env` nicht automatisch als Environment-Variable.
+- Loesung:
+  - Key per direktem Tavily API Call verifiziert (HTTP 200) ohne Secret-Ausgabe.
+  - `scripts/tavily_search.sh` hinzugefuegt (liest `TAVILY_API_KEY` aus Env oder `.env`) + Runbook-Hinweis in `docs/runbook_secrets_env_files.md`.
