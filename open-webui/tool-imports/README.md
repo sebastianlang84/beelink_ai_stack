@@ -6,6 +6,7 @@ Ziel: Alle Import-JSON Templates für **Open WebUI → External Tools** liegen z
 - `open-webui/tool-imports/tool_import_context7.json` — Context7 (MCP Streamable HTTP)
 - `open-webui/tool-imports/tool_import_transcript_miner_mcp.json` — Transcript Miner (MCP Streamable HTTP)
 - `open-webui/tool-imports/tool_import_context6.json` — context6 (MCP Streamable HTTP)
+- `open-webui/tool-imports/tool_import_sec_edgar_mcp.json` — SEC EDGAR (MCP Streamable HTTP)
 
 ## Hinweise
 - Die URLs sind Templates und müssen ggf. auf deine tatsächlichen Host-/Tailnet-URLs angepasst werden.

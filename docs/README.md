@@ -42,6 +42,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 - `open-webui/tool-imports/tool_import_context7.json` — Context7 (MCP)
 - `open-webui/tool-imports/tool_import_transcript_miner_mcp.json` — Transcript Miner (MCP)
 - `open-webui/tool-imports/tool_import_context6.json` — context6 (MCP)
+- `open-webui/tool-imports/tool_import_sec_edgar_mcp.json` — SEC EDGAR (MCP)
 - Optional: Tool Imports automatisch per Admin API setzen: `scripts/openwebui_apply_tool_imports.sh`
 
 ## Workflows (Zielbilder)

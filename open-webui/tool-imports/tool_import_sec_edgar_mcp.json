@@ -1,0 +1,17 @@
+[
+  {
+    "type": "mcp",
+    "url": "http://sec-edgar:9870/mcp",
+    "spec_type": "url",
+    "spec": "",
+    "path": "",
+    "auth_type": "none",
+    "key": "",
+    "config": {},
+    "info": {
+      "id": "sec-edgar-mcp",
+      "name": "SEC EDGAR (MCP)",
+      "description": "SEC EDGAR filings and financials via MCP Streamable HTTP (self-hosted)."
+    }
+  }
+]
