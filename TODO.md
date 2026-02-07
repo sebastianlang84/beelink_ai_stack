@@ -144,6 +144,16 @@
     - Wenn Bot in Gruppen gar nichts sieht: BotFather Privacy (`/setprivacy`) deaktivieren und Bot ggf. re-add.
     - Wenn Commands in Gruppen nicht greifen: Sender-Authorize via `channels.telegram.groupAllowFrom` (besser: konkrete User-ID allowlisten).
 
+- [ ] **OpenClaw: Zugriff auf Summaries + OWUI RAG (Connector-Entscheidung)**
+  - Status: OpenClaw kann die Transcript-Miner Outputs auf OS-Level lesen, aber nutzt sie nicht automatisch als RAG.
+  - Facts:
+    - Summaries/Reports liegen unter `/home/wasti/ai_stack_data/transcript-miner/output/data/summaries` und `/home/wasti/ai_stack_data/transcript-miner/output/reports/...`
+    - OpenClaw ist aktuell nur mit eingebauten Web-Tools konfiguriert (`tools.web.search`, `tools.web.fetch`), kein OWUI/MCP Connector.
+    - `mcp-owui-connector/` ist derzeit leer (kein laufender Connector).
+  - Offene Frage (bitte entscheiden):
+    - A) OpenClaw eigenes Memory-RAG: Summaries/Reports als Markdown nach `~/.openclaw/workspace/memory/` spiegeln + `openclaw memory index`.
+    - B) OWUI Knowledge API: OpenClaw Tool/Skill baut Queries gegen Open WebUI Knowledge (braucht OWUI API Key) und injiziert Treffertext.
+
 - [x] **Open WebUI Knowledge: Auto-Create Governance (klarer User-Intent)**
   - Problem: LLM/RAG-Queries können neue Collections (z. B. `bitcoin`, `crypto`) auto-anlegen, wenn `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`.
   - Ziel: Auto-Create nur, wenn es explizit gewollt ist.

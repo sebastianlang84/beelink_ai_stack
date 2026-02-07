@@ -605,3 +605,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Default-Model via `openclaw models set openrouter/google/gemini-3-flash-preview` auf gueltigen OpenRouter Model-Key gesetzt (Agent-Run wieder OK).
   - Telegram Group Sender-Allowlist via `channels.telegram.groupAllowFrom` gesetzt (lokale Config).
   - `scripts/openclaw_gateway_supervise.sh` Start-Check auf Wait-Loop erweitert + Log-Tail bei Failure; `openclaw/OPERATIONS.md` um Runbook fuer `openrouter/auto` erweitert.
+
+## 2026-02-07
+- Aufgabe: OpenClaw RAG-Status geklaert (Summaries/Reports vs OWUI) und offene Architekturfrage im TODO dokumentiert.
+- Probleme/Bugs/Issues:
+  - Unklarheit, ob OpenClaw automatisch Zugriff auf Transcript-Miner Summaries hat und ob ein OWUI/MCP Connector fuer RAG existiert.
+- Loesung:
+  - Festgehalten: Summaries/Reports liegen unter `/home/wasti/ai_stack_data/transcript-miner/output/...`; OpenClaw hat OS-level Zugriff, aber kein automatisches RAG.
+  - Festgehalten: aktuell kein OWUI/MCP Connector in OpenClaw konfiguriert; Entscheidung A (OpenClaw memory) vs B (OWUI Knowledge API) als offene Frage in `TODO.md`.
