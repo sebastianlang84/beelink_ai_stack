@@ -638,3 +638,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - Import-Template `open-webui/tool-imports/tool_import_sec_edgar_mcp.json` angelegt (URL: `http://sec-edgar:9870/mcp`) und in `open-webui/tool-imports/README.md` sowie `docs/README.md` verlinkt.
   - Container-Status verifiziert: `sec-edgar` läuft und ist `healthy`.
+
+## 2026-02-07
+- Aufgabe: SEC EDGAR MCP Tool-Import robuster gemacht (Accept Header).
+- Probleme/Bugs/Issues:
+  - OWUI-Connect-Check kann 406 anzeigen, wenn der Client nur `Accept: application/json` sendet.
+- Loesung:
+  - `open-webui/tool-imports/tool_import_sec_edgar_mcp.json` um Custom Header erweitert: `Accept: application/json, text/event-stream`.
+  - Doku-Hinweis in `open-webui/tool-imports/README.md` und `mcp-sec-edgar/README.md` ergaenzt.

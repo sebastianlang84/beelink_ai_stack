@@ -12,6 +12,7 @@ Ziel: Alle Import-JSON Templates für **Open WebUI → External Tools** liegen z
 - Die URLs sind Templates und müssen ggf. auf deine tatsächlichen Host-/Tailnet-URLs angepasst werden.
 - Bevorzugt: MCP Tools statt OpenAPI (bessere Tool-Ergonomie/Discovery).
 - Für Open WebUI 0.7.x muss pro Eintrag `config` vorhanden sein (mindestens `{}`), sonst kann `/api/v1/configs/tool_servers` mit `500` (Response Validation Error) fehlschlagen.
+- Hinweis: `mcp/sec-edgar` (Streamable HTTP) erwartet `Accept: application/json, text/event-stream`. Das Import-Template setzt das als Custom Header, falls OWUI den Default nicht korrekt sendet.
 
 ### context6 URL Varianten
 - Docker-zu-Docker (empfohlen): `http://context6:8816/mcp` (Open WebUI und context6 im selben `ai-stack` Netzwerk)

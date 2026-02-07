@@ -6,12 +6,15 @@
     "spec": "",
     "path": "",
     "auth_type": "none",
+    "headers": {
+      "Accept": "application/json, text/event-stream"
+    },
     "key": "",
     "config": {},
     "info": {
       "id": "sec-edgar-mcp",
       "name": "SEC EDGAR (MCP)",
-      "description": "SEC EDGAR filings and financials via MCP Streamable HTTP (self-hosted)."
+      "description": "SEC EDGAR filings and financials via MCP Streamable HTTP (self-hosted). Requires Accept: application/json, text/event-stream."
     }
   }
 ]

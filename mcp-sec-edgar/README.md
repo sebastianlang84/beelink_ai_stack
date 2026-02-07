@@ -17,3 +17,4 @@ docker compose --env-file .env --env-file .config.env --env-file mcp-sec-edgar/.
 
 ## Notes
 - No host ports are exposed by default; access is internal to the Docker network.
+- If OWUI shows intermittent connect errors: this server expects `Accept: application/json, text/event-stream` for Streamable HTTP. The repo import template `open-webui/tool-imports/tool_import_sec_edgar_mcp.json` sets it explicitly.
