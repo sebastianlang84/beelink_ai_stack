@@ -630,3 +630,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - `mcp-sec-edgar/docker-compose.yml` angelegt (kein Host-Port; URL intern: `http://sec-edgar:9870/mcp`).
   - `mcp-sec-edgar/.config.env.example` + `mcp-sec-edgar/README.md` erstellt und Root-Doku (`README.md`, `docs/README.md`, `CHANGELOG.md`) aktualisiert.
+
+## 2026-02-07
+- Aufgabe: Open WebUI Tool-Import JSON fuer SEC EDGAR MCP abgelegt und Laufzeit verifiziert.
+- Probleme/Bugs/Issues:
+  - MCP Streamable HTTP erfordert `Accept: application/json, text/event-stream`; naive Probes mit nur `application/json` liefern HTTP 406.
+- Loesung:
+  - Import-Template `open-webui/tool-imports/tool_import_sec_edgar_mcp.json` angelegt (URL: `http://sec-edgar:9870/mcp`) und in `open-webui/tool-imports/README.md` sowie `docs/README.md` verlinkt.
+  - Container-Status verifiziert: `sec-edgar` läuft und ist `healthy`.
