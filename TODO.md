@@ -127,8 +127,8 @@
     - `scripts/install_codex_auth_dns_guard_cron.sh` (`@reboot` + alle 10 Minuten Check/Auto-Remediation).
   - Doku: `docs/runbook_codex_ssh_auth_dns_guard.md`.
 
-- [ ] **OpenClaw Telegram: Pairing-required Disconnect final loesen (Fortsetzung morgen)**
-  - Status: Telegram-Channel ist konfiguriert, aber es fehlte/fehlt das Pairing (Sender nicht approved). Zusaetzlich war das Gateway zeitweise nicht erreichbar.
+- [ ] **OpenClaw Telegram: Bot antwortet nicht (DM/Group)**
+  - Status: Gateway laeuft wieder; Dashboard-Disconnect `disconnected (1008): pairing required` war **Device-Pairing** (Control UI) und ist gefixt. Telegram ist konfiguriert, aber es kommen/greifen noch keine Antworten in Telegram.
   - Bereits gemacht:
     - `channels.telegram.groupPolicy=open`
     - `channels.telegram.dmPolicy=open`
@@ -137,10 +137,10 @@
     - Gateway laeuft wieder lokal auf `127.0.0.1:18789` (Supervisor + Probe OK)
     - Persistenz ohne sudo: `./scripts/install_openclaw_gateway_cron.sh`
   - Naechster Ablauf:
-    - Neue Nachricht in DM + Gruppe senden (mit Mention).
-    - Danach: `openclaw pairing list --channel telegram`.
-    - Falls Code erscheint: `openclaw pairing approve --channel telegram --code <CODE_OHNE_KLAMMERN>`.
-    - Falls weiter kein pending request: Live-Logs mit `openclaw logs --follow` + `openclaw channels logs --channel telegram --lines 200` pruefen und BotFather Privacy (`/setprivacy`) deaktivieren.
+    - Test: in **DM** `/status` senden; in **Gruppe** den Bot mentionen (`@botname`) oder `/status`.
+    - Live-Logs: `openclaw logs --follow` + `openclaw channels logs --channel telegram --lines 200`.
+    - Wenn Bot in Gruppen gar nichts sieht: BotFather Privacy (`/setprivacy`) deaktivieren und Bot ggf. re-add.
+    - Wenn Commands in Gruppen nicht greifen: Sender-Authorize via `channels.telegram.groupAllowFrom` (besser: konkrete User-ID allowlisten).
 
 - [x] **Open WebUI Knowledge: Auto-Create Governance (klarer User-Intent)**
   - Problem: LLM/RAG-Queries können neue Collections (z. B. `bitcoin`, `crypto`) auto-anlegen, wenn `OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true`.

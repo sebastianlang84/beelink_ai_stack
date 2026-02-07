@@ -42,7 +42,17 @@ require_openclaw() {
 }
 
 is_listening() {
-  ss -ltn 2>/dev/null | rg -q ":${PORT}\\b"
+  # Prefer ss (fast), but fall back to a real TCP connect check.
+  # In some environments `ss` output can be incomplete/restricted even though the port is reachable.
+  if ss -ltn 2>/dev/null | rg -q ":${PORT}\\b"; then
+    return 0
+  fi
+
+  # Fallback: attempt a TCP handshake to loopback. Works without proc/net introspection.
+  # shellcheck disable=SC2091
+  (exec 3<>"/dev/tcp/127.0.0.1/${PORT}") >/dev/null 2>&1 && { exec 3<&- 3>&-; return 0; }
+
+  return 1
 }
 
 listen_pid() {

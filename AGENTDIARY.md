@@ -585,3 +585,13 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - Key per direktem Tavily API Call verifiziert (HTTP 200) ohne Secret-Ausgabe.
   - `scripts/tavily_search.sh` hinzugefuegt (liest `TAVILY_API_KEY` aus Env oder `.env`) + Runbook-Hinweis in `docs/runbook_secrets_env_files.md`.
+
+## 2026-02-07
+- Aufgabe: OpenClaw Ops weiter stabilisiert (Supervisor-Status + Pairing-Doku) und Telegram-Diagnose aktualisiert.
+- Probleme/Bugs/Issues:
+  - `scripts/openclaw_gateway_supervise.sh status` meldete teils "stopped", obwohl der Gateway erreichbar war (Port-Check via `ss` war unzuverlaessig).
+  - Verwirrung: `disconnected (1008): pairing required` betrifft die Control UI (Device Pairing), nicht Telegram.
+- Loesung:
+  - Supervisor-Portcheck mit `/dev/tcp` Fallback stabil gemacht.
+  - `openclaw/OPERATIONS.md` so umgebaut, dass Control-UI Device-Pairing und Telegram DM Access (Pairing/Allowlist) klar getrennt sind.
+  - Living docs geprueft: `CHANGELOG.md` und `TODO.md` angepasst; `README.md` geprueft (keine Aenderung noetig).

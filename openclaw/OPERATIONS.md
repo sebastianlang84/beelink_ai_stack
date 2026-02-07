@@ -57,11 +57,37 @@ openclaw config set gateway.trustedProxies '["127.0.0.1","::1","172.21.0.1","100
 ./scripts/openclaw_gateway_supervise.sh start
 ```
 
-## Telegram Pairing (typischer Blocker)
+## Control UI Pairing (Device, typischer Blocker)
 
-Symptom in Chat: `disconnected (1008): pairing required`
+Symptom im Dashboard/Control UI: `disconnected (1008): pairing required`
 
-1. In Telegram dem Bot eine DM schicken und/oder in der Gruppe den Bot mentionen.
+Das ist **Device Pairing** fuer die Control UI (Browser/Device), nicht Telegram.
+
+1. Pending device(s) anzeigen:
+
+```bash
+openclaw devices list
+```
+
+2. Pending Request approven (falls vorhanden):
+
+```bash
+openclaw devices approve <requestId>
+```
+
+3. Danach Dashboard neu laden.
+
+Debug:
+
+```bash
+openclaw logs --follow
+```
+
+## Telegram DM Access (Pairing/Allowlist)
+
+Wenn Telegram so konfiguriert ist, dass DMs per `dmPolicy: "pairing"` abgesichert sind:
+
+1. In Telegram dem Bot eine DM schicken.
 2. Dann auf dem Server:
 
 ```bash
@@ -80,6 +106,10 @@ Debug:
 openclaw channels logs --channel telegram --lines 200
 openclaw logs --follow
 ```
+
+Hinweis Gruppen:
+- Default ist mention-gated in Gruppen. Wenn du im Group-Chat testest: bot mit `@wasticlaw1_bot` mentionen.
+- Wenn der Bot in Gruppen gar nichts sieht: @BotFather → "Group Privacy" auf OFF (und Bot ggf. re-add).
 
 ## Backup / Restore (was sichern)
 
