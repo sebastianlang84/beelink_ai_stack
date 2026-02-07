@@ -111,6 +111,29 @@ Hinweis Gruppen:
 - Default ist mention-gated in Gruppen. Wenn du im Group-Chat testest: bot mit `@wasticlaw1_bot` mentionen.
 - Wenn der Bot in Gruppen gar nichts sieht: @BotFather → "Group Privacy" auf OFF (und Bot ggf. re-add).
 
+## Agent Error: "Unknown model: openrouter/auto"
+
+Symptom: In der Control UI / Logs steht:
+- `Agent failed before reply: Unknown model: openrouter/auto`
+
+Ursache: `openrouter/auto` ist **kein** gueltiger Model-Key im aktuellen OpenClaw Model-Katalog. OpenClaw erwartet
+ein explizites `openrouter/<vendor>/<model>` (oder einen Alias).
+
+Fix:
+
+```bash
+# Kandidaten finden (OpenRouter Katalog)
+openclaw models list --all --provider openrouter --plain | head -n 50
+
+# Default setzen
+openclaw models set openrouter/google/gemini-3-flash-preview
+
+# Gateway neu starten (wenn noetig)
+./scripts/openclaw_gateway_supervise.sh ensure
+```
+
+Optional (Security, Gruppen): Sender-Allowlist setzen, damit nicht jeder im Group-Chat Commands triggern kann.
+
 ## Backup / Restore (was sichern)
 
 Wichtig fuer Wiederherstellung:

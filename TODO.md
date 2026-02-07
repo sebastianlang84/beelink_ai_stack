@@ -128,11 +128,13 @@
   - Doku: `docs/runbook_codex_ssh_auth_dns_guard.md`.
 
 - [ ] **OpenClaw Telegram: Bot antwortet nicht (DM/Group)**
-  - Status: Gateway laeuft wieder; Dashboard-Disconnect `disconnected (1008): pairing required` war **Device-Pairing** (Control UI) und ist gefixt. Telegram ist konfiguriert, aber es kommen/greifen noch keine Antworten in Telegram.
+  - Status: Root-Cause gefixt: Default-Model war `openrouter/auto` (ungueltig) → Agent ist jetzt wieder lauffaehig. Telegram ist konfiguriert; in Gruppen ist es default "mention-gated" (BotFather Privacy) und braucht `@botname` oder `/command`.
   - Bereits gemacht:
     - `channels.telegram.groupPolicy=open`
     - `channels.telegram.dmPolicy=open`
     - `channels.telegram.allowFrom=[\"*\"]`
+    - `agents.defaults.model.primary=openrouter/google/gemini-3-flash-preview` (fix fuer `Unknown model: openrouter/auto`)
+    - `channels.telegram.groupAllowFrom` auf eigene User-ID gesetzt (lokale Config; nicht im Repo)
     - `BOOTSTRAP.md` aus Workspace archiviert (Bootstrap-Status jetzt OK)
     - Gateway laeuft wieder lokal auf `127.0.0.1:18789` (Supervisor + Probe OK)
     - Persistenz ohne sudo: `./scripts/install_openclaw_gateway_cron.sh`

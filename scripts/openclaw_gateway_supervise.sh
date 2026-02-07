@@ -139,14 +139,31 @@ cmd_start() {
 
   # The CLI may exec/spawn into the real gateway process; record the actual listener PID when possible.
   echo "$!" >"${PID_FILE}"
-  sleep 0.6
+  # Startup time can vary (Node warmup, loading plugins/channels). Wait a bit before declaring failure.
+  local tries=0
+  local max_tries=12
+  while (( tries < max_tries )); do
+    if is_listening; then
+      break
+    fi
+    tries=$((tries + 1))
+    sleep 0.25
+  done
+
   local pid
   pid="$(listen_pid)"
   if [[ -n "${pid}" ]]; then
     echo "${pid}" >"${PID_FILE}"
   fi
 
-  cmd_status || true
+  if ! is_listening; then
+    echo "openclaw-gateway: failed to start (bind=${BIND} port=${PORT})" >&2
+    echo "log_file=${LOG_FILE}" >&2
+    tail -n 80 "${LOG_FILE}" >&2 || true
+    return 51
+  fi
+
+  cmd_status
   echo "log_file=${LOG_FILE}"
 }
 

@@ -595,3 +595,13 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Supervisor-Portcheck mit `/dev/tcp` Fallback stabil gemacht.
   - `openclaw/OPERATIONS.md` so umgebaut, dass Control-UI Device-Pairing und Telegram DM Access (Pairing/Allowlist) klar getrennt sind.
   - Living docs geprueft: `CHANGELOG.md` und `TODO.md` angepasst; `README.md` geprueft (keine Aenderung noetig).
+
+## 2026-02-07
+- Aufgabe: OpenClaw Agent-Fehler `Unknown model: openrouter/auto` behoben und Telegram-Group Commands abgesichert.
+- Probleme/Bugs/Issues:
+  - Agent konnte nicht antworten, weil `agents.defaults.model.primary=openrouter/auto` kein gueltiger Model-Key mehr ist.
+  - Supervisor-Start war racey: Gateway startete, aber `start` meldete zu frueh "stopped" (zu kurze Startup-Wartezeit).
+- Loesung:
+  - Default-Model via `openclaw models set openrouter/google/gemini-3-flash-preview` auf gueltigen OpenRouter Model-Key gesetzt (Agent-Run wieder OK).
+  - Telegram Group Sender-Allowlist via `channels.telegram.groupAllowFrom` gesetzt (lokale Config).
+  - `scripts/openclaw_gateway_supervise.sh` Start-Check auf Wait-Loop erweitert + Log-Tail bei Failure; `openclaw/OPERATIONS.md` um Runbook fuer `openrouter/auto` erweitert.

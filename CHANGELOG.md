@@ -5,7 +5,9 @@
 - ops(openclaw): Gateway Supervision ohne sudo: `scripts/openclaw_gateway_supervise.sh` + Cron-Installer `scripts/install_openclaw_gateway_cron.sh`
 - ops(openclaw): Cron-Uninstall: `scripts/uninstall_openclaw_gateway_cron.sh`
 - fix(openclaw): Gateway-Supervisor erkennt laufenden Gateway jetzt auch ohne `ss` (Fallback via `/dev/tcp`), damit `status/ensure` stabil sind
+- fix(openclaw): Gateway-Supervisor wartet beim Start aktiv auf Listener-Port und gibt bei Failure Log-Tail aus
 - docs(openclaw): `1008 pairing required` sauber als Control-UI Device-Pairing dokumentiert; Telegram-DM-Pairing separat erklaert
+- docs(openclaw): Runbook fuer `Unknown model: openrouter/auto` (Default-Model auf gueltigen OpenRouter Model-Key setzen)
 - docs(openclaw): README/TODO/scripts-README/docs-Index + OpenClaw Operations aktualisiert
 - fix(openclaw): Hinweis/Fix fuer Dashboard hinter Tailscale Serve: `gateway.trustedProxies` um loopback erweitern
 - fix(docs): Transcript-Miner Doku-Links repariert (AGENTS/logs) und emb-bench `.config.env.example` fuer Compose-Checks vervollstaendigt (DOCKER_UID/GID)
