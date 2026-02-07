@@ -20,6 +20,19 @@
 - Default log file:
   - `${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/codex-auth-dns-guard.log`
 
+## OpenClaw Gateway (Host-native)
+- Ensure the gateway is running (idempotent):
+  - `./scripts/openclaw_gateway_supervise.sh ensure`
+- Check status:
+  - `./scripts/openclaw_gateway_supervise.sh status`
+- Install persistent user-cron (`@reboot` + periodic ensure every 5 min):
+  - `./scripts/install_openclaw_gateway_cron.sh`
+- Uninstall the user-cron block (marked section only):
+  - `./scripts/uninstall_openclaw_gateway_cron.sh`
+- Default logs:
+  - `${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/openclaw/openclaw-gateway.log`
+  - `${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/openclaw/openclaw-gateway-cron.log`
+
 ## Docker Networking
 - Provision shared network + volumes (SSOT naming, one-time):
   - `./scripts/provision_ai_stack_docker_objects.sh`

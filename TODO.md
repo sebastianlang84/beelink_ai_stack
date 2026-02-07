@@ -128,12 +128,14 @@
   - Doku: `docs/runbook_codex_ssh_auth_dns_guard.md`.
 
 - [ ] **OpenClaw Telegram: Pairing-required Disconnect final loesen (Fortsetzung morgen)**
-  - Status: Channel `Telegram` ist `enabled/configured/running`, aber in Chat kommt `disconnected (1008): pairing required`.
+  - Status: Telegram-Channel ist konfiguriert, aber es fehlte/fehlt das Pairing (Sender nicht approved). Zusaetzlich war das Gateway zeitweise nicht erreichbar.
   - Bereits gemacht:
     - `channels.telegram.groupPolicy=open`
     - `channels.telegram.dmPolicy=open`
     - `channels.telegram.allowFrom=[\"*\"]`
     - `BOOTSTRAP.md` aus Workspace archiviert (Bootstrap-Status jetzt OK)
+    - Gateway laeuft wieder lokal auf `127.0.0.1:18789` (Supervisor + Probe OK)
+    - Persistenz ohne sudo: `./scripts/install_openclaw_gateway_cron.sh`
   - Naechster Ablauf:
     - Neue Nachricht in DM + Gruppe senden (mit Mention).
     - Danach: `openclaw pairing list --channel telegram`.

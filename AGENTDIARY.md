@@ -566,3 +566,14 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - `emb-bench/.config.env.example` mit Beispielwerten befuellt (und Hinweis `id -u`/`id -g`).
   - `transcript-miner/logs/README.md` als Doku-Stub angelegt; alle `AGENTS.md` Links auf Repo-Root korrigiert.
   - Lokale Permissions via Docker-`chown` fuer die root-owned Artefakte korrigiert; danach `transcript-miner` Tests (85) gruen.
+
+## 2026-02-07
+- Aufgabe: OpenClaw Gateway wieder erreichbar machen und Telegram-Pairing-Blocker vorbereiten.
+- Probleme/Bugs/Issues:
+  - Gateway war nicht erreichbar (`ECONNREFUSED 127.0.0.1:18789`), dadurch konnte Telegram nicht sauber interagieren.
+  - `systemd --user` ist in dieser Umgebung nicht verfuegbar (kein User-Bus), und `sudo` ist nicht non-interaktiv verfuegbar.
+  - Hinweis: Beim Debug wurde einmal ein Telegram Bot Token in der Shell ausgegeben (Secret-Leak in Terminal-Ausgabe; nicht im Repo).
+- Loesung:
+  - Gateway wieder gestartet (loopback `127.0.0.1:18789`), `openclaw gateway probe` ist wieder OK, Telegram Provider startet.
+  - Persistenter user-level Betrieb ohne sudo via `scripts/openclaw_gateway_supervise.sh` + `scripts/install_openclaw_gateway_cron.sh` dokumentiert.
+  - Ordnung/Overview: `openclaw/OPERATIONS.md` (Start/Stop/Logs/Cron/Pairing) angelegt und Doku-Index (`docs/README.md`) + Root-README aktualisiert.

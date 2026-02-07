@@ -90,6 +90,13 @@ Status: **pausiert auf User-Wunsch seit 2026-02-04** (Container `watchdog` manue
    - Hinweis: Auto-Stop bei hoher Temperatur ist aktiv, wenn `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` gesetzt ist. Deaktivieren: leer setzen.
 4. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file watchdog/.config.env -f watchdog/docker-compose.yml up -d --build`
 
+## Quickstart (OpenClaw)
+Ziel: OpenClaw Gateway host-native betreiben (Telegram Channel) und stabil halten, ohne `sudo`/`systemd --user`.
+- Einstieg: `openclaw/README.md:1`
+- Ops/Recovery: `openclaw/OPERATIONS.md:1`
+- Health: `openclaw gateway probe`
+- Persistenz (Cron): `./scripts/install_openclaw_gateway_cron.sh`
+
 ## Smoke Test (P0)
 - Runbook: `docs/runbook_smoke_test.md:1`
 - Script: `./scripts/smoke_test_ai_stack.sh --up --build`

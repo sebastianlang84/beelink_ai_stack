@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- ops(openclaw): Gateway Supervision ohne sudo: `scripts/openclaw_gateway_supervise.sh` + Cron-Installer `scripts/install_openclaw_gateway_cron.sh`
+- ops(openclaw): Cron-Uninstall: `scripts/uninstall_openclaw_gateway_cron.sh`
+- docs(openclaw): README/TODO/scripts-README/docs-Index + OpenClaw Operations aktualisiert
 - fix(docs): Transcript-Miner Doku-Links repariert (AGENTS/logs) und emb-bench `.config.env.example` fuer Compose-Checks vervollstaendigt (DOCKER_UID/GID)
 - docs(agent): AGENTS-Regeln geschaerft (Dirty-Worktree Stop&Ask, Living-Docs Check) und Connector-Pfad in Doku korrigiert
 - feat(mcp-transcript-miner): Globales Lifecycle-Routing: `sync/topic/<topic>` synced nach `<topic>_new` + `<topic>_archive` (Regeln aus `config_global.yaml`), Excluded Topics syncen direkt

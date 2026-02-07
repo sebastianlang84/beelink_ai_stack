@@ -2,6 +2,8 @@
 
 Ziel: OpenClaw laeuft nativ auf dem Host.
 
+Operations/Recovery: `openclaw/OPERATIONS.md`
+
 ## Ist-Zustand (dieses Setup)
 - CLI: `/home/wasti/.local/bin/openclaw`
 - Config: `~/.openclaw/openclaw.json`
@@ -45,6 +47,23 @@ Foreground-Start (falls noetig):
 
 ```bash
 openclaw gateway run --bind loopback --port 18789
+```
+
+## Persistenter Start (ohne sudo/systemd)
+Auf diesem Host ist `systemd --user` oft nicht verfuegbar (kein User-Bus in non-login shells). Deshalb nutzen wir einen
+kleinen user-level Supervisor + Cron (idempotent).
+
+Gateway sicher starten/halten:
+
+```bash
+./scripts/openclaw_gateway_supervise.sh ensure
+./scripts/openclaw_gateway_supervise.sh status
+```
+
+Cron installieren (`@reboot` + alle 5 Minuten `ensure`):
+
+```bash
+./scripts/install_openclaw_gateway_cron.sh
 ```
 
 ## Tailscale Zugriff (VPN-only)
