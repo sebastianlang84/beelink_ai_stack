@@ -15,6 +15,7 @@ OPENCLAW_BIN="${OPENCLAW_BIN:-$(command -v openclaw || true)}"
 PORT="${OPENCLAW_HOST_PORT:-${PORT_DEFAULT}}"
 BIND="${OPENCLAW_BIND_MODE:-${BIND_DEFAULT}}"
 RUN_USER="${RUN_USER:-$(id -un)}"
+FORCE_KILL_LISTENER="${OPENCLAW_GATEWAY_FORCE:-0}"
 
 usage() {
   cat <<'USAGE'
@@ -40,34 +41,69 @@ require_openclaw() {
   fi
 }
 
+is_listening() {
+  ss -ltn 2>/dev/null | rg -q ":${PORT}\\b"
+}
+
+listen_pid() {
+  # Best-effort PID lookup. Not all environments expose process info without sudo.
+  local pid
+  pid="$(
+    ss -ltnp 2>/dev/null \
+      | rg ":${PORT}\\b" \
+      | perl -ne 'if(/pid=(\\d+)/){print "$1\\n"; exit 0}'
+  )"
+  if [[ -n "${pid}" ]]; then
+    echo "${pid}"
+    return 0
+  fi
+
+  pgrep -u "${RUN_USER}" -f 'openclaw-gateway' 2>/dev/null | head -n 1 || true
+}
+
 gateway_pid() {
   # Prefer PID file, fall back to process lookup.
   if [[ -f "${PID_FILE}" ]]; then
     local pid
     pid="$(cat "${PID_FILE}" 2>/dev/null || true)"
     if [[ -n "${pid}" ]] && ps -p "${pid}" >/dev/null 2>&1; then
-      echo "${pid}"
-      return 0
+      # Ensure the PID file points at the actual gateway process (not a short-lived wrapper).
+      local args
+      args="$(ps -p "${pid}" -o args= 2>/dev/null || true)"
+      if [[ "${args}" =~ ^openclaw-gateway([[:space:]]|$) ]]; then
+        echo "${pid}"
+        return 0
+      fi
+      if [[ "${args}" =~ ^.*openclaw-gateway([[:space:]]|$) ]]; then
+        echo "${pid}"
+        return 0
+      fi
+      # Stale/incorrect PID file: ignore and fall back to process search.
     fi
   fi
 
   # Debian's proc comm name is capped to 15 chars; "openclaw-gateway" is longer and won't match with pgrep -x.
   # Use -f to match the full command line instead.
-  pgrep -u "${RUN_USER}" -f '^openclaw-gateway(\\s|$)' 2>/dev/null | head -n 1 || true
+  pgrep -u "${RUN_USER}" -f 'openclaw-gateway' 2>/dev/null | head -n 1 || true
 }
 
 is_running() {
-  [[ -n "$(gateway_pid)" ]]
+  is_listening
 }
 
 cmd_status() {
-  local pid
-  pid="$(gateway_pid)"
-  if [[ -z "${pid}" ]]; then
+  if ! is_listening; then
     echo "openclaw-gateway: stopped"
     return 3
   fi
-  echo "openclaw-gateway: running pid=${pid} bind=${BIND} port=${PORT}"
+
+  local pid
+  pid="$(listen_pid)"
+  if [[ -n "${pid}" ]]; then
+    echo "openclaw-gateway: running pid=${pid} bind=${BIND} port=${PORT}"
+  else
+    echo "openclaw-gateway: running pid=? bind=${BIND} port=${PORT}"
+  fi
 }
 
 cmd_start() {
@@ -79,16 +115,26 @@ cmd_start() {
     return 0
   fi
 
-  # Use --force so restarts after crashes don’t get stuck on stale listeners.
+  local force_flag=()
+  if [[ "${FORCE_KILL_LISTENER}" == "1" ]]; then
+    force_flag+=(--force)
+  fi
+
   nohup "${OPENCLAW_BIN}" gateway run \
     --bind "${BIND}" \
     --port "${PORT}" \
-    --force \
     --compact \
+    "${force_flag[@]}" \
     >>"${LOG_FILE}" 2>&1 &
 
+  # The CLI may exec/spawn into the real gateway process; record the actual listener PID when possible.
   echo "$!" >"${PID_FILE}"
-  sleep 0.3
+  sleep 0.6
+  local pid
+  pid="$(listen_pid)"
+  if [[ -n "${pid}" ]]; then
+    echo "${pid}" >"${PID_FILE}"
+  fi
 
   cmd_status || true
   echo "log_file=${LOG_FILE}"
@@ -96,7 +142,7 @@ cmd_start() {
 
 cmd_stop() {
   local pid
-  pid="$(gateway_pid)"
+  pid="$(listen_pid)"
   if [[ -z "${pid}" ]]; then
     echo "openclaw-gateway: already stopped"
     return 0

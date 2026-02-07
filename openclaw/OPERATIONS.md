@@ -43,6 +43,20 @@ Uninstall (entfernt nur den markierten Block):
 crontab -l | tail -n 50
 ```
 
+## Dashboard Hinter Proxy (Tailscale Serve)
+
+Wenn du das Dashboard ueber `https://openclaw.tail...` (Tailscale Serve) oeffnest und im Gateway-Log steht:
+`Proxy headers detected from untrusted address ... gateway.trustedProxies`, dann wird der Client nicht als "local"
+behandelt und du landest oft in `pairing required` bzw. die UI zeigt falsche `Configured/Running` Werte.
+
+Fix (trust the local proxy hop) und Gateway neu starten:
+
+```bash
+openclaw config set gateway.trustedProxies '["127.0.0.1","::1","172.21.0.1","100.100.0.0/16"]'
+./scripts/openclaw_gateway_supervise.sh stop
+./scripts/openclaw_gateway_supervise.sh start
+```
+
 ## Telegram Pairing (typischer Blocker)
 
 Symptom in Chat: `disconnected (1008): pairing required`
@@ -79,4 +93,3 @@ Wichtig fuer Wiederherstellung:
 Aktuell ist Telegram sehr offen konfigurierbar (DM/Groups). Fuer sicheren Betrieb:
 - `dmPolicy`/`groupPolicy` bevorzugt auf Allowlist/Pairs begrenzen.
 - DMs pro Sender isolieren (OpenClaw gibt dafuer Hinweise in `openclaw status` / `openclaw doctor`).
-

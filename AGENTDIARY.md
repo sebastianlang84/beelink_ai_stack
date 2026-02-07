@@ -577,3 +577,4 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Gateway wieder gestartet (loopback `127.0.0.1:18789`), `openclaw gateway probe` ist wieder OK, Telegram Provider startet.
   - Persistenter user-level Betrieb ohne sudo via `scripts/openclaw_gateway_supervise.sh` + `scripts/install_openclaw_gateway_cron.sh` dokumentiert.
   - Ordnung/Overview: `openclaw/OPERATIONS.md` (Start/Stop/Logs/Cron/Pairing) angelegt und Doku-Index (`docs/README.md`) + Root-README aktualisiert.
+  - Tailscale Serve/Proxy Fix: `gateway.trustedProxies` um `127.0.0.1`/`::1` erweitert, damit das Dashboard hinter Proxy nicht in `pairing required` haengt.
