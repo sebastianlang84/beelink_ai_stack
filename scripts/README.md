@@ -73,7 +73,7 @@
   - Optional env: `TM_CONTAINER=tm`
 
 ## Investing Lifecycle Sync
-- Rebuild `investing_new` + `investing_archive` from source topic (`investing`) with recency rules:
+- Reconcile `investing_new` + `investing_archive` from source topic (`investing`) with recency rules (add/move/remove, Knowledge-IDs bleiben stabil):
   - `./scripts/sync-investing-lifecycle.sh`
 
 ## Provision / Migration (Naming SSOT)

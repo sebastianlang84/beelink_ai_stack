@@ -768,6 +768,17 @@ def _add_to_knowledge(knowledge_id: str, file_id: str) -> dict[str, Any]:
     return resp.json() if resp.content else {"status": "ok"}
 
 
+def _remove_from_knowledge(knowledge_id: str, file_id: str) -> dict[str, Any]:
+    import requests
+
+    url = f"{OPEN_WEBUI_BASE_URL}/api/v1/knowledge/{knowledge_id}/file/remove"
+    headers = _auth_headers() | {"Content-Type": "application/json"}
+    resp = requests.post(url, headers=headers, json={"file_id": file_id}, timeout=60)
+    if resp.status_code >= 400:
+        raise RuntimeError(f"knowledge remove failed: {resp.status_code} {resp.text}")
+    return resp.json() if resp.content else {"status": "ok"}
+
+
 def _create_knowledge(name: str) -> dict[str, Any]:
     url = f"{OPEN_WEBUI_BASE_URL}/api/v1/knowledge/create"
     headers = _auth_headers() | {"Content-Type": "application/json"}
@@ -807,6 +818,39 @@ def _fetch_knowledge_files(knowledge_id: str) -> list[dict[str, Any]]:
             break
         page += 1
     return files
+
+
+def _extract_source_id_from_knowledge_file(item: dict[str, Any]) -> str | None:
+    # OWUI returns processed content including our YAML frontmatter; prefer that over parsing filename.
+    data = item.get("data") or {}
+    content = data.get("content") if isinstance(data, dict) else None
+    if isinstance(content, str) and content:
+        head = content[:3000]
+        m = re.search(r'(?m)^source_id:\\s*"?([^"\\n]+)"?\\s*$', head)
+        if m:
+            src = str(m.group(1)).strip()
+            return src or None
+    return None
+
+
+def _uploads_move_knowledge(*, source_id: str, knowledge_id: str, file_id: str | None = None) -> None:
+    # Keep local indexer DB consistent so future syncs don't re-upload moved files.
+    conn = _db()
+    try:
+        row = conn.execute(
+            "SELECT sha256, file_id FROM uploads WHERE source_id = ?",
+            (source_id,),
+        ).fetchone()
+        if not row:
+            return
+        sha, fid = row[0], row[1]
+        conn.execute(
+            "INSERT OR REPLACE INTO uploads (source_id, sha256, file_id, knowledge_id, created_at) VALUES (?, ?, ?, ?, ?)",
+            (source_id, sha, (file_id or fid), knowledge_id, int(time.time())),
+        )
+        conn.commit()
+    finally:
+        conn.close()
 
 
 def _knowledge_file_cache_get(knowledge_id: str) -> dict[str, Any] | None:
@@ -1297,30 +1341,110 @@ def _sync_topic_lifecycle(*, topic: str, req: SyncTopicRequest) -> SyncTopicResp
         hint = " (auto-create requires OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING=true and allowlist match)"
         return SyncTopicResponse(status="error", topic=new_topic, last_error=f"{err_archive or 'archive knowledge not found'}{hint}", run_id=req.run_id)
 
-    if not req.dry_run:
-        try:
-            _delete_knowledge_collection(new_id)
-        except Exception as exc:
-            return SyncTopicResponse(status="error", topic=new_topic, last_error=str(exc), run_id=req.run_id)
-        try:
-            _create_knowledge(new_topic)
-            new_id = _resolve_knowledge_id_for_topic(new_topic) or ""
-        except Exception as exc:
-            return SyncTopicResponse(status="error", topic=new_topic, last_error=str(exc), run_id=req.run_id)
-        if not new_id:
-            return SyncTopicResponse(status="error", topic=new_topic, last_error="failed to recreate investing_new knowledge", run_id=req.run_id)
+    desired_new_source_ids = {f"youtube:{str(x.get('video_id') or '').strip()}" for x in keep_new if str(x.get("video_id") or "").strip()}
+    desired_archive_source_ids = {f"youtube:{str(x.get('video_id') or '').strip()}" for x in keep_archive if str(x.get("video_id") or "").strip()}
 
-        try:
-            _delete_knowledge_collection(archive_id)
-        except Exception as exc:
-            return SyncTopicResponse(status="error", topic=new_topic, last_error=str(exc), run_id=req.run_id)
-        try:
-            _create_knowledge(archive_topic)
-            archive_id = _resolve_knowledge_id_for_topic(archive_topic) or ""
-        except Exception as exc:
-            return SyncTopicResponse(status="error", topic=new_topic, last_error=str(exc), run_id=req.run_id)
-        if not archive_id:
-            return SyncTopicResponse(status="error", topic=new_topic, last_error="failed to recreate investing_archive knowledge", run_id=req.run_id)
+    moved_to_new = 0
+    moved_to_archive = 0
+    removed_from_new = 0
+    removed_from_archive = 0
+    unknown_new = 0
+    unknown_archive = 0
+
+    # Reconcile in-place to keep Knowledge IDs stable (Folder bindings stay intact in OWUI).
+    # Strategy:
+    # 1) Move files between knowledges if already uploaded elsewhere.
+    # 2) Remove files not in desired sets.
+    # 3) Upload missing files.
+    try:
+        files_new = _fetch_knowledge_files(new_id)
+        files_archive = _fetch_knowledge_files(archive_id)
+    except Exception as exc:
+        return SyncTopicResponse(status="error", topic=source_topic, last_error=str(exc), run_id=req.run_id)
+
+    cur_new: dict[str, dict[str, Any]] = {}
+    for it in files_new:
+        sid = _extract_source_id_from_knowledge_file(it)
+        if not sid:
+            unknown_new += 1
+            continue
+        cur_new[sid] = it
+    cur_archive: dict[str, dict[str, Any]] = {}
+    for it in files_archive:
+        sid = _extract_source_id_from_knowledge_file(it)
+        if not sid:
+            unknown_archive += 1
+            continue
+        cur_archive[sid] = it
+
+    def _file_id(item: dict[str, Any]) -> str:
+        fid = item.get("id") or item.get("file_id")
+        return str(fid or "").strip()
+
+    if not req.dry_run:
+        # Move: archive -> new
+        for sid in sorted(desired_new_source_ids.intersection(cur_archive.keys())):
+            item = cur_archive.get(sid) or {}
+            fid = _file_id(item)
+            if not fid:
+                continue
+            try:
+                _add_to_knowledge(new_id, fid)
+                _remove_from_knowledge(archive_id, fid)
+                moved_to_new += 1
+                _uploads_move_knowledge(source_id=sid, knowledge_id=new_id, file_id=fid)
+            except Exception as exc:
+                return SyncTopicResponse(status="error", topic=source_topic, last_error=str(exc), run_id=req.run_id)
+
+        # Move: new -> archive
+        for sid in sorted(desired_archive_source_ids.intersection(cur_new.keys())):
+            item = cur_new.get(sid) or {}
+            fid = _file_id(item)
+            if not fid:
+                continue
+            try:
+                _add_to_knowledge(archive_id, fid)
+                _remove_from_knowledge(new_id, fid)
+                moved_to_archive += 1
+                _uploads_move_knowledge(source_id=sid, knowledge_id=archive_id, file_id=fid)
+            except Exception as exc:
+                return SyncTopicResponse(status="error", topic=source_topic, last_error=str(exc), run_id=req.run_id)
+
+        # Invalidate cache because we mutated membership.
+        _KNOWLEDGE_FILE_CACHE.pop(new_id, None)
+        _KNOWLEDGE_FILE_CACHE.pop(archive_id, None)
+
+        # Remove: anything not desired anymore (including items that aged out of archive window).
+        for sid, item in cur_new.items():
+            if sid in desired_new_source_ids:
+                continue
+            if sid in desired_archive_source_ids:
+                continue
+            fid = _file_id(item)
+            if not fid:
+                continue
+            try:
+                _remove_from_knowledge(new_id, fid)
+                removed_from_new += 1
+            except Exception as exc:
+                return SyncTopicResponse(status="error", topic=source_topic, last_error=str(exc), run_id=req.run_id)
+
+        for sid, item in cur_archive.items():
+            if sid in desired_archive_source_ids:
+                continue
+            if sid in desired_new_source_ids:
+                continue
+            fid = _file_id(item)
+            if not fid:
+                continue
+            try:
+                _remove_from_knowledge(archive_id, fid)
+                removed_from_archive += 1
+            except Exception as exc:
+                return SyncTopicResponse(status="error", topic=source_topic, last_error=str(exc), run_id=req.run_id)
+
+        _KNOWLEDGE_FILE_CACHE.pop(new_id, None)
+        _KNOWLEDGE_FILE_CACHE.pop(archive_id, None)
 
     p1, i1, s1, e1, le1 = _index_entries_to_knowledge(
         entries=keep_new,
@@ -1345,6 +1469,12 @@ def _sync_topic_lifecycle(*, topic: str, req: SyncTopicRequest) -> SyncTopicResp
         "archive_topic": archive_topic,
         "new_kept": len(keep_new),
         "archive_kept": len(keep_archive),
+        "moved_to_new": moved_to_new,
+        "moved_to_archive": moved_to_archive,
+        "removed_from_new": removed_from_new,
+        "removed_from_archive": removed_from_archive,
+        "unknown_files_new": unknown_new,
+        "unknown_files_archive": unknown_archive,
         "new_knowledge_id": new_id,
         "archive_knowledge_id": archive_id,
         **cold_info,

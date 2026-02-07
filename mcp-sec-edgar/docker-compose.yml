@@ -1,0 +1,31 @@
+name: sec-edgar
+services:
+  sec-edgar:
+    container_name: sec-edgar
+    image: mcp/sec-edgar:${MCP_SEC_EDGAR_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      # Required by SEC EDGAR (contact info in user agent string).
+      SEC_EDGAR_USER_AGENT: ${SEC_EDGAR_USER_AGENT:?set SEC_EDGAR_USER_AGENT in mcp-sec-edgar/.config.env}
+    command:
+      - python
+      - sec_edgar_mcp/server.py
+      - --transport
+      - streamable-http
+      - --host
+      - 0.0.0.0
+      - --port
+      - "9870"
+    networks:
+      - ai-stack
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import socket; s=socket.create_connection(('127.0.0.1', 9870), 3); s.close(); print('ok')\" "]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  ai-stack:
+    external: true
+    name: ai-stack

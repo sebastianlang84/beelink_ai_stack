@@ -39,6 +39,15 @@ Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen
 4. Service-Config setzen (non-secret): `mcp-transcript-miner/.config.env.example` → `mcp-transcript-miner/.config.env` (nicht committen).
 5. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)
 
+## Quickstart (SEC EDGAR MCP)
+Ziel: MCP Tool fuer SEC EDGAR Filings als **MCP Streamable HTTP** im Docker-Netzwerk (keine Host-Ports).
+1. Shared Secrets setzen: `.env.example` → `.env` (nicht committen).
+2. Shared Config setzen (non-secret): `.config.env.example` → `.config.env` (nicht committen).
+3. Service-Config setzen (non-secret): `mcp-sec-edgar/.config.env.example` → `mcp-sec-edgar/.config.env` (nicht committen).
+   - Pflicht: `SEC_EDGAR_USER_AGENT` (SEC Policy: User-Agent mit Contact Info).
+4. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-sec-edgar/.config.env -f mcp-sec-edgar/docker-compose.yml up -d`
+5. In Open WebUI als External Tool (MCP Streamable HTTP) eintragen: `http://sec-edgar:9870/mcp`
+
 ## Investing-Test Workflow (Alpha)
 Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Datenmenge.
 
@@ -64,7 +73,7 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
 - Ziel-Collections (Investing): `investing_new`, `investing_archive`
 - Rotation: `investing_new` hält pro Channel max. 2 neueste Videos (zusätzlich optional begrenzt über `owui_collections.new_max_age_days`); Rest (bis 15 Tage alt) liegt in `investing_archive`.
 - Älter als Archive-Fenster: Summary-Dateien werden automatisch nach `output/data/summaries/cold/by_video_id/` verschoben (leicht rückverschiebbar per `mv`).
-- Trigger: `./scripts/sync-investing-lifecycle.sh` (baut beide Collections aus Source-Topic `investing` neu auf).
+- Trigger: `./scripts/sync-investing-lifecycle.sh` (reconciled beide Collections aus Source-Topic `investing`: add/move/remove ohne Delete+Recreate, damit Knowledge-IDs und OWUI-Folder-Bindings stabil bleiben).
 
 ## Scheduled Runs (investing, alle 3h)
 Systemd Timer für automatische Runs inkl. Sync (Lifecycle-Routing):

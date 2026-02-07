@@ -613,3 +613,20 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - Festgehalten: Summaries/Reports liegen unter `/home/wasti/ai_stack_data/transcript-miner/output/...`; OpenClaw hat OS-level Zugriff, aber kein automatisches RAG.
   - Festgehalten: aktuell kein OWUI/MCP Connector in OpenClaw konfiguriert; Entscheidung A (OpenClaw memory) vs B (OWUI Knowledge API) als offene Frage in `TODO.md`.
+
+## 2026-02-07
+- Aufgabe: OWUI Knowledge Collection `investing_new` flog regelmaessig aus dem OWUI-Folder; Lifecycle-Sync auf stable IDs umgestellt.
+- Probleme/Bugs/Issues:
+  - Lifecycle-Sync loeschte `investing_new`/`investing_archive` in OWUI und legte sie neu an; dadurch wechselten Knowledge-IDs und Folder-Bindings gingen verloren.
+- Loesung:
+  - In `mcp-transcript-miner/app/main.py` Lifecycle-Sync auf reconcile (add/move/remove) umgestellt, damit Knowledge-IDs stabil bleiben.
+  - OWUI Remove-API genutzt (`POST /api/v1/knowledge/<id>/file/remove`) und Indexer-DB beim Move aktualisiert, um Re-Uploads zu vermeiden.
+  - `tm` neu gebaut und neu gestartet.
+
+## 2026-02-07
+- Aufgabe: MCP Server `mcp/sec-edgar` als Service `mcp-sec-edgar/` hinzugefuegt (Streamable HTTP) fuer Open WebUI External Tools.
+- Probleme/Bugs/Issues:
+  - Image erfordert zwingend `SEC_EDGAR_USER_AGENT`, sonst startet selbst `--help` nicht.
+- Loesung:
+  - `mcp-sec-edgar/docker-compose.yml` angelegt (kein Host-Port; URL intern: `http://sec-edgar:9870/mcp`).
+  - `mcp-sec-edgar/.config.env.example` + `mcp-sec-edgar/README.md` erstellt und Root-Doku (`README.md`, `docs/README.md`, `CHANGELOG.md`) aktualisiert.
