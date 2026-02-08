@@ -11,6 +11,11 @@ Hinweis: Backups enthalten die Rohdaten (inkl. Tokens/DBs/Uploads). Behandle Bac
 - Docker Volume: `owui-data`
 - Enthält u. a. App-Daten unter `/app/backend/data`
 
+### 1.1) Open WebUI Connector (MCP) Daten
+
+- Docker Volume: `owui-connector-data`
+- Enthält Backups der External Tools Config (Admin API) unter `/data`
+
 ### 2) Transcript Miner Tool State
 
 - Docker Volume: `tm-data`
@@ -47,6 +52,7 @@ sudo chmod 700 /srv/ai-stack/backups
 
 ```bash
 ./scripts/backup_docker_volume.sh owui-data /srv/ai-stack/backups
+./scripts/backup_docker_volume.sh owui-connector-data /srv/ai-stack/backups
 ./scripts/backup_docker_volume.sh tm-data /srv/ai-stack/backups
 ```
 
@@ -95,18 +101,21 @@ Empfohlenes Vorgehen:
 Stop:
 ```bash
 cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml down
+cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file mcp-owui-connector/.config.env -f mcp-owui-connector/docker-compose.yml down
 cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml down
 ```
 
 Restore Volume (Beispiel):
 ```bash
 ./scripts/restore_docker_volume.sh owui-data /srv/ai-stack/backups/owui-data__<timestamp>.tar.gz --force
+./scripts/restore_docker_volume.sh owui-connector-data /srv/ai-stack/backups/owui-connector-data__<timestamp>.tar.gz --force
 ./scripts/restore_docker_volume.sh tm-data /srv/ai-stack/backups/tm-data__<timestamp>.tar.gz --force
 ```
 
 Start:
 ```bash
 cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file open-webui/.config.env -f open-webui/docker-compose.yml up -d
+cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file mcp-owui-connector/.config.env -f mcp-owui-connector/docker-compose.yml up -d --build
 cd /home/wasti/ai_stack && docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build
 ```
 

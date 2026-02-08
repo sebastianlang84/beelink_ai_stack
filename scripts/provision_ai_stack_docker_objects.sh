@@ -9,6 +9,7 @@ Creates (idempotent):
   - external network: ai-stack
   - named volumes:
       owui-data
+      owui-connector-data
       tm-data
       context6-data
       context6-cache
@@ -56,6 +57,7 @@ ensure_network ai-stack
 
 echo "==> Volumes"
 ensure_volume owui-data
+ensure_volume owui-connector-data
 ensure_volume tm-data
 ensure_volume context6-data
 ensure_volume context6-cache

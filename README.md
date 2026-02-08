@@ -144,7 +144,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `skills/owui-prompt-api-loop/` — Prompt-Test via Open WebUI API + Flow-Report (debug-proxy)
 - `emb-bench/` — Embedding Benchmark Suite (MRL + Local vs OpenRouter)
 - `mcp-context6/` — context6 MCP Server (Doku-Fetch/Index/Search)
-- `mcp-owui-connector/` — MCP Connector (Open WebUI)
+- `mcp-owui-connector/` — Open WebUI Connector (MCP Tools fuer Knowledge/Admin APIs; fuer Roo/OpenClaw)
 - `openclaw/` — OpenClaw Gateway (host-native Betrieb)
 - `open-webui/` — Open WebUI (Compose, Secrets, README)
 - `mcp-transcript-miner/` — **Transcript Miner** MCP Server (Configs/Runs/Outputs + Knowledge Indexing)

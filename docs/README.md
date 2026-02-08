@@ -31,6 +31,8 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 - `mcp-transcript-miner/README.md` — **Transcript Miner** MCP Server (Configs/Runs/Outputs + Knowledge Indexing)
 - `mcp-transcript-miner/PRD.md` — Produkt-/Scope-Definition (YouTube Transcript HTTP Tool)
 - `mcp-sec-edgar/README.md` — SEC EDGAR MCP Server (Streamable HTTP)
+- `mcp-owui-connector/README.md` — Open WebUI Connector MCP Server (Knowledge/Admin API Tools)
+- `mcp-owui-connector/PRD.md` — PRD v0: Scope fuer OWUI Connector
 - `open-webui/README.md` — Open WebUI (LLM UI) Betrieb
 - `openclaw/README.md` — OpenClaw Gateway (host-native Betrieb)
 - `openclaw/OPERATIONS.md` — OpenClaw Operations/Recovery (Supervisor/Cron + Telegram Pairing)

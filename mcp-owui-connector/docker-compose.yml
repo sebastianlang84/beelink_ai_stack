@@ -1,0 +1,44 @@
+name: owui-connector
+services:
+  owui-connector:
+    container_name: owui-connector
+    image: owui-connector:latest
+    build:
+      context: .
+    restart: unless-stopped
+    environment:
+      OPEN_WEBUI_BASE_URL: ${OPEN_WEBUI_BASE_URL:-http://owui:8080}
+      OPEN_WEBUI_API_KEY: ${OPEN_WEBUI_API_KEY:-}
+      OWUI_API_KEY: ${OWUI_API_KEY:-}
+      OWUI_CONNECTOR_ALLOW_KNOWLEDGE_WRITE: ${OWUI_CONNECTOR_ALLOW_KNOWLEDGE_WRITE:-false}
+      OWUI_CONNECTOR_ALLOW_ADMIN_WRITE: ${OWUI_CONNECTOR_ALLOW_ADMIN_WRITE:-false}
+      OWUI_CONNECTOR_IMPORTS_DIR: ${OWUI_CONNECTOR_IMPORTS_DIR:-/imports}
+      OWUI_CONNECTOR_REQUEST_TIMEOUT_SECONDS: ${OWUI_CONNECTOR_REQUEST_TIMEOUT_SECONDS:-60}
+      OWUI_CONNECTOR_PROCESS_POLL_INTERVAL_SECONDS: ${OWUI_CONNECTOR_PROCESS_POLL_INTERVAL_SECONDS:-3}
+      OWUI_CONNECTOR_PROCESS_TIMEOUT_SECONDS: ${OWUI_CONNECTOR_PROCESS_TIMEOUT_SECONDS:-900}
+      OWUI_CONNECTOR_MAX_TOOL_TEXT_CHARS: ${OWUI_CONNECTOR_MAX_TOOL_TEXT_CHARS:-12000}
+    volumes:
+      - owui-connector-data:/data
+      # Optional convenience: allow applying Open WebUI External Tool templates via Admin API.
+      - ../open-webui/tool-imports:/imports:ro
+    ports:
+      - "${OWUI_CONNECTOR_BIND_ADDRESS:-127.0.0.1}:${OWUI_CONNECTOR_HOST_PORT:-8877}:8877"
+    networks:
+      - ai-stack
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8877/healthz').read(); print('ok')\""]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  ai-stack:
+    external: true
+    name: ai-stack
+
+volumes:
+  owui-connector-data:
+    external: true
+    name: owui-connector-data
+

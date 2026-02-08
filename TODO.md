@@ -149,7 +149,7 @@
   - Facts:
     - Summaries/Reports liegen unter `/home/wasti/ai_stack_data/transcript-miner/output/data/summaries` und `/home/wasti/ai_stack_data/transcript-miner/output/reports/...`
     - OpenClaw ist aktuell nur mit eingebauten Web-Tools konfiguriert (`tools.web.search`, `tools.web.fetch`), kein OWUI/MCP Connector.
-    - `mcp-owui-connector/` ist derzeit leer (kein laufender Connector).
+    - `mcp-owui-connector/` ist implementiert (MCP Tools fuer OWUI Knowledge/Admin APIs). Endpoint (default): `http://127.0.0.1:8877/mcp`
   - Offene Frage (bitte entscheiden):
     - A) OpenClaw eigenes Memory-RAG: Summaries/Reports als Markdown nach `~/.openclaw/workspace/memory/` spiegeln + `openclaw memory index`.
     - B) OWUI Knowledge API: OpenClaw Tool/Skill baut Queries gegen Open WebUI Knowledge (braucht OWUI API Key) und injiziert Treffertext.

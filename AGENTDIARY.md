@@ -646,3 +646,13 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - `open-webui/tool-imports/tool_import_sec_edgar_mcp.json` um Custom Header erweitert: `Accept: application/json, text/event-stream`.
   - Doku-Hinweis in `open-webui/tool-imports/README.md` und `mcp-sec-edgar/README.md` ergaenzt.
+
+## 2026-02-08
+- Aufgabe: `mcp-owui-connector/` implementiert (MCP Streamable HTTP) als Connector zu Open WebUI Knowledge/Admin APIs.
+- Probleme/Bugs/Issues:
+  - Worktree war bereits dirty (unrelated Change: `transcript-miner/config/config_investing.yaml`); nicht angefasst/committed.
+  - Lokales `python` Binary nicht vorhanden (stattdessen `python3` verwendet) und Service-`.config.env` ist gitignored (Compose-Validation gegen `.config.env.example`).
+- Loesung:
+  - Neues Service `mcp-owui-connector/` angelegt inkl. Docker Compose, gated Write-Tools per Env, sowie `PRD.md`, `README.md`, `SECRETS.md`.
+  - Shared Docker-Provisioning um Volume `owui-connector-data` erweitert und Backup/Restore Runbook aktualisiert.
+  - Living Docs aktualisiert (`README.md`, `TODO.md`, `CHANGELOG.md`, `docs/README.md`).

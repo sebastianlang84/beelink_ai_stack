@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- feat(mcp-owui-connector): MCP Server fuer Open WebUI Knowledge/Admin APIs hinzugefuegt (Write-Tools default off, gated via Env)
+- ops(scripts): `scripts/provision_ai_stack_docker_objects.sh` erstellt jetzt auch Volume `owui-connector-data`
 - docs(todo): OpenClaw RAG Status + offene Entscheidung (Memory-RAG vs OWUI Knowledge API) dokumentiert
 - ops(tavily): Host-Helper `scripts/tavily_search.sh` hinzugefuegt + Runbook-Hinweis: `.env` wird fuer Host-Prozesse nicht automatisch exportiert
 - ops(openclaw): Gateway Supervision ohne sudo: `scripts/openclaw_gateway_supervise.sh` + Cron-Installer `scripts/install_openclaw_gateway_cron.sh`
