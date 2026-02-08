@@ -689,3 +689,14 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - Neues MCP Tool `owui.knowledge.search` implementiert (scoped per `knowledge_id` oder global via Open WebUI Endpoints `/api/v1/knowledge/{id}/files?query=...` bzw. `/api/v1/knowledge/search/files?query=...`).
   - Output geslimmt, damit keine grossen `data.content` Payloads in Tool-Responses landen.
+
+## 2026-02-08
+- Aufgabe: OpenClaw Gateway haengte; Prozesse/Ports/Logs geprueft, "harter" Restart (kill + neu starten).
+- Probleme/Bugs/Issues:
+  - Gateway war zeitweise "hung"/High-CPU bei CLI-Calls (`openclaw gateway call ...`), danach wiederholt instabil (Gateway stoppt nach kurzer Zeit oder bekommt SIGTERM).
+  - Systemd User Services nicht verfuegbar in dieser Shell (fehlendes `DBUS_SESSION_BUS_ADDRESS`/`XDG_RUNTIME_DIR`), daher kein `openclaw gateway start/restart` ueber systemd moeglich.
+  - Logs deuten auf fehlende Provider-Keys hin (google/anthropic/openai) sowie Telegram `getUpdates conflict (409)` (wahrscheinlich zweiter Bot-Prozess).
+- Loesung:
+  - Laufende OpenClaw-Prozesse identifiziert/gekilled und Gateway per Repo-Supervisor gestartet: `scripts/openclaw_gateway_supervise.sh start` (bind loopback, port 18789).
+  - Healthcheck ueber `curl http://127.0.0.1:18789/healthz` und Portcheck via `ss` verifiziert, dass Listener wieder da ist (sofern nicht erneut abgestuerzt).
+  - Living Docs geprueft: keine Aenderungen erforderlich (operational-only Task; keine Repo-Konfig geaendert).
