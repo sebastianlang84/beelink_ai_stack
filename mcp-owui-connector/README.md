@@ -54,16 +54,20 @@ curl -sS http://127.0.0.1:8877/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```
 
-## Roo Code (VS Code) Integration
+## VS Code (OpenAI Codex Extension) Integration
 
-In VS Code (Remote auf dem Server):
-1) Roo Code -> **MCP servers** -> **Add server**
-2) Name: `owui-connector`
-3) Type: `streamable-http`
-4) URL: `http://127.0.0.1:8877/mcp`
+Die OpenAI Codex VS Code Extension liest MCP Server aus `config.toml`:
+- projekt-spezifisch: `./.codex/config.toml` (nur wenn Projekt trusted ist)
+- global: `~/.codex/config.toml`
 
-Wenn du per Datei konfigurieren willst (Host-spezifischer Pfad):
-- `~/.vscode-server/data/User/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json`
+Eintrag (ai_stack, localhost-only):
+```toml
+[mcp_servers.owui-connector]
+type = "streamable-http"
+url = "http://127.0.0.1:8877/mcp"
+```
+
+Danach in VS Code: **Developer: Reload Window** oder im MCP Settings Screen **Restart extension**.
 
 ## Storage / Backup
 - Volume: `owui-connector-data` (Backups der Tool-Server Config)

@@ -664,3 +664,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - `~/.vscode-server/data/User/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json` um `owui-connector` ergänzt (URL: `http://127.0.0.1:8877/mcp`).
   - Doku ergänzt in `mcp-owui-connector/README.md`.
+
+## 2026-02-08
+- Aufgabe: Codex VS Code Extension MCP Settings korrekt integriert (owui-connector in Codex MCP Liste sichtbar machen).
+- Probleme/Bugs/Issues:
+  - Verwechslung der UI-Quelle: Codex Extension verwaltet MCP Server ueber TOML (`.codex/config.toml` / `~/.codex/config.toml`), nicht ueber Roo Code JSON.
+- Loesung:
+  - `./.codex/config.toml` um `[mcp_servers.owui-connector]` ergaenzt (`url=http://127.0.0.1:8877/mcp`).
+  - Roo Code MCP Settings wieder bereinigt (owui-connector entfernt), um Verwirrung zu vermeiden.
+  - Doku/Changelog entsprechend korrigiert.
