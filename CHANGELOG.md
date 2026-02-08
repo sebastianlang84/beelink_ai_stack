@@ -218,6 +218,7 @@
 - Secrets: Redaction helper ergänzt (`scripts/redact_secrets_output.sh`) + Doku/Skill ergänzt „kein ungefiltertes `docker compose ... config` teilen“
 - context6: Qdrant/OpenRouter Embeddings entfernt; Indexing erfolgt via Upload in Open WebUI Knowledge (Open WebUI übernimmt Processing/Embeddings)
 - Projekt-Skills ergänzt: `skills/` (Codex Workflows für Compose-Validation, Secrets-Policy, Tool-Imports, Backup/Restore, etc.)
+- skills: `codex-mcp-self-config` ergänzt (Codex MCP Server in `.codex/config.toml` upserten + Projekt-Trust in `~/.codex/config.toml`)
 - Open WebUI Stack ergänzt: Compose + Doku, Image-Tag gepinnt (0.7.2), localhost-only Port `127.0.0.1:3000`
 - Open WebUI: Tailscale Serve Pfad-Setup für `/owui` inkl. Asset/API-Pfade dokumentiert
 - Open WebUI External Tools: Import-JSON für Context7 MCP ergänzt (`open-webui/tool-imports/tool_import_context7.json`)

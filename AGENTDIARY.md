@@ -673,3 +673,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - `./.codex/config.toml` um `[mcp_servers.owui-connector]` ergaenzt (`url=http://127.0.0.1:8877/mcp`).
   - Roo Code MCP Settings wieder bereinigt (owui-connector entfernt), um Verwirrung zu vermeiden.
   - Doku/Changelog entsprechend korrigiert.
+
+## 2026-02-08
+- Aufgabe: Skill `skills/codex-mcp-self-config/` erstellt, damit Codex sich MCP Server schnell und reproduzierbar selbst konfigurieren kann.
+- Probleme/Bugs/Issues:
+  - Upsert-Script erzeugte doppelte TOML-Sections (Header-Matching kaputt), wodurch `.codex/config.toml` und `~/.codex/config.toml` nicht mehr parsebar waren (TOMLDecodeError "Cannot declare ... twice").
+- Loesung:
+  - `skills/codex-mcp-self-config/scripts/upsert_codex_mcp_server.py` repariert (Section-Header Scan + Duplicate-Removal) und TOML-Validation fuer `~/.codex/config.toml` hinzugefuegt.
+  - Lokale Codex-Configs bereinigt: `/home/wasti/ai_stack/.codex/config.toml` und `/home/wasti/.codex/config.toml` sind wieder gueltig; `mcp_servers.owui-connector` ist `enabled = true`.

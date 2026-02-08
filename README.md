@@ -140,6 +140,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `docs/` — Doku-Index (Link-Netzwerk)
 - `AGENTDIARY.md` — Agent-Tagebuch (Pflicht-Log)
 - `skills/` — Projekt-spezifische Codex Skills (Workflows/Checks)
+- `skills/codex-mcp-self-config/` — Codex MCP Server (self) in `.codex/config.toml` upserten + Projekt-Trust in `~/.codex/config.toml`
 - `skills/owui-prompt-debug-loop/` — Prompt-Debug/PDCA fuer Open WebUI (Model/Folder/RAG) via debug-proxy + webui.db
 - `skills/owui-prompt-api-loop/` — Prompt-Test via Open WebUI API + Flow-Report (debug-proxy)
 - `emb-bench/` — Embedding Benchmark Suite (MRL + Local vs OpenRouter)
