@@ -41,6 +41,7 @@ Wenn du Write-Tools aktivieren willst: in `mcp-owui-connector/.config.env` auf `
 - `capabilities.get`
 - `owui.knowledge.list`
 - `owui.knowledge.files.list`
+- `owui.knowledge.search`
 - `owui.files.process.status`
 - `owui.tool_servers.get`
 - `owui.tool_servers.apply_from_repo` (nur wenn `OWUI_CONNECTOR_ALLOW_ADMIN_WRITE=true`)

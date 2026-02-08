@@ -224,6 +224,7 @@
 - Open WebUI External Tools: Import-JSON für Context7 MCP ergänzt (`open-webui/tool-imports/tool_import_context7.json`)
 - Open WebUI Indexer in **Transcript Miner** integriert (ein Tool in Open WebUI): `mcp-transcript-miner/` (`POST /index/transcript`, `POST /sync/topic/{topic}`)
 - TranscriptMiner Summaries vereinheitlicht: pro Video `*.summary.md` (kein `*.summary.json` mehr)
+- mcp-owui-connector: Knowledge-Search Tool ergänzt (`owui.knowledge.search`)
 - Cleanup: redundante Stacks entfernt (kein separates `tool-owui-sync/`, kein `n8n/` im Repo)
 - Workflow-Zielbild dokumentiert: Open WebUI Tool „hole die neuesten videos“ → TranscriptMiner → Knowledge (`docs/workflow_openwebui_hole_neueste_videos.md`)
 - PRD v0 ergänzt: TranscriptMiner Sync Tool für Open WebUI (`docs/prd-tool-owui-transcript-miner-sync.md`)

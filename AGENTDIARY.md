@@ -681,3 +681,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - `skills/codex-mcp-self-config/scripts/upsert_codex_mcp_server.py` repariert (Section-Header Scan + Duplicate-Removal) und TOML-Validation fuer `~/.codex/config.toml` hinzugefuegt.
   - Lokale Codex-Configs bereinigt: `/home/wasti/ai_stack/.codex/config.toml` und `/home/wasti/.codex/config.toml` sind wieder gueltig; `mcp_servers.owui-connector` ist `enabled = true`.
+
+## 2026-02-08
+- Aufgabe: `mcp-owui-connector` um Knowledge-Search Tool ergaenzt (OpenClaw braucht `search_knowledge`-Aequivalent).
+- Probleme/Bugs/Issues:
+  - Initial fehlte ein Search-Tool; nur Knowledge-List und Files-List vorhanden.
+- Loesung:
+  - Neues MCP Tool `owui.knowledge.search` implementiert (scoped per `knowledge_id` oder global via Open WebUI Endpoints `/api/v1/knowledge/{id}/files?query=...` bzw. `/api/v1/knowledge/search/files?query=...`).
+  - Output geslimmt, damit keine grossen `data.content` Payloads in Tool-Responses landen.

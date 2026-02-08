@@ -71,6 +71,7 @@ class OwuiConnectorService:
             "- `owui.knowledge.list`",
             "- `owui.knowledge.create` (gated)",
             "- `owui.knowledge.files.list`",
+            "- `owui.knowledge.search`",
             "- `owui.files.process.status`",
             "- `owui.tool_servers.get`",
             "- `owui.tool_servers.apply_from_repo` (gated)",
@@ -214,6 +215,64 @@ class OwuiConnectorService:
                 break
             page += 1
         return files
+
+    def owui_knowledge_search(
+        self,
+        *,
+        query: str,
+        knowledge_id: str | None,
+        limit: int,
+        page: int,
+        order_by: str | None,
+        direction: str | None,
+        view_option: str | None,
+    ) -> dict[str, Any]:
+        q = (query or "").strip()
+        if not q:
+            raise RuntimeError("query is required")
+        page = max(1, int(page))
+        limit = max(1, int(limit))
+
+        params: dict[str, Any] = {"query": q, "page": page}
+        if view_option:
+            params["view_option"] = str(view_option).strip()
+        if order_by:
+            params["order_by"] = str(order_by).strip()
+        if direction:
+            params["direction"] = str(direction).strip()
+
+        if knowledge_id and str(knowledge_id).strip():
+            kid = str(knowledge_id).strip()
+            url = f"{self.cfg.open_webui_base_url}/api/v1/knowledge/{kid}/files"
+        else:
+            kid = None
+            url = f"{self.cfg.open_webui_base_url}/api/v1/knowledge/search/files"
+
+        resp = requests.get(url, headers=self._auth_headers(), params=params, timeout=self.cfg.request_timeout_seconds)
+        if resp.status_code >= 400:
+            raise RuntimeError(f"knowledge search failed: {resp.status_code} {resp.text}")
+        data = resp.json()
+        if not isinstance(data, dict):
+            raise RuntimeError(f"knowledge search unexpected response: {type(data).__name__}")
+
+        raw_items = data.get("items") or []
+        items: list[dict[str, Any]] = []
+        for it in raw_items:
+            if isinstance(it, dict):
+                items.append(self._slim_knowledge_file_item(it))
+            if len(items) >= limit:
+                break
+
+        out: dict[str, Any] = {
+            "query": q,
+            "page": page,
+            "count": len(items),
+            "total": data.get("total"),
+            "items": items,
+        }
+        if kid:
+            out["knowledge_id"] = kid
+        return out
 
     def owui_files_process_status(self, *, file_id: str) -> dict[str, Any]:
         fid = (file_id or "").strip()
@@ -363,6 +422,34 @@ class OwuiConnectorService:
             items = [self._slim_knowledge_file_item(x) for x in raw_items if isinstance(x, dict)]
             return {"knowledge_id": kid, "count": len(items), "items": items}
 
+        if name == "owui.knowledge.search":
+            q = str((args or {}).get("query") or "").strip()
+            kid = str((args or {}).get("knowledge_id") or "").strip() or None
+            limit_raw = (args or {}).get("limit")
+            page_raw = (args or {}).get("page")
+            order_by = str((args or {}).get("order_by") or "").strip() or None
+            direction = str((args or {}).get("direction") or "").strip() or None
+            view_option = str((args or {}).get("view_option") or "").strip() or None
+            try:
+                limit = int(limit_raw) if limit_raw is not None else 20
+            except Exception:
+                limit = 20
+            try:
+                page = int(page_raw) if page_raw is not None else 1
+            except Exception:
+                page = 1
+            return self._truncate_payload(
+                self.owui_knowledge_search(
+                    query=q,
+                    knowledge_id=kid,
+                    limit=limit,
+                    page=page,
+                    order_by=order_by,
+                    direction=direction,
+                    view_option=view_option,
+                )
+            )
+
         if name == "owui.files.process.status":
             fid = str((args or {}).get("file_id") or "").strip()
             return self.owui_files_process_status(file_id=fid)
@@ -409,4 +496,10 @@ class OwuiConnectorService:
             for key in ("source", "source_id", "url", "content_type"):
                 if key in data and data[key] is not None:
                     out.setdefault("data", {})[key] = data[key]
+        if "collection" in item and isinstance(item["collection"], dict):
+            c = item["collection"]
+            cid = c.get("id") or c.get("knowledge_id")
+            name = c.get("name")
+            if cid or name:
+                out["collection"] = {"id": str(cid) if cid else None, "name": str(name) if name else None}
         return out

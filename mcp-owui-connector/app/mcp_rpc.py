@@ -51,6 +51,22 @@ TOOLS: list[ToolDef] = [
         ),
     ),
     ToolDef(
+        name="owui.knowledge.search",
+        description="Search Knowledge files (optionally within a specific Knowledge Collection)",
+        input_schema=_simple_schema(
+            props={
+                "query": {"type": "string", "description": "Search query"},
+                "knowledge_id": {"type": "string", "description": "Optional Knowledge Collection ID to scope the search"},
+                "limit": {"type": "integer", "description": "Max items returned (default: 20)"},
+                "page": {"type": "integer", "description": "1-based page number (default: 1)"},
+                "order_by": {"type": "string", "description": "Optional server-side ordering (e.g. name|created_at|updated_at)"},
+                "direction": {"type": "string", "description": "Optional server-side direction (asc|desc)"},
+                "view_option": {"type": "string", "description": "Optional server-side filter (e.g. created|shared)"},
+            },
+            required=["query"],
+        ),
+    ),
+    ToolDef(
         name="owui.files.process.status",
         description="Get processing status for a file_id",
         input_schema=_simple_schema(props={"file_id": {"type": "string"}}, required=["file_id"]),
