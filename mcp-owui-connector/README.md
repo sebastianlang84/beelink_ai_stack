@@ -54,8 +54,18 @@ curl -sS http://127.0.0.1:8877/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```
 
+## Roo Code (VS Code) Integration
+
+In VS Code (Remote auf dem Server):
+1) Roo Code -> **MCP servers** -> **Add server**
+2) Name: `owui-connector`
+3) Type: `streamable-http`
+4) URL: `http://127.0.0.1:8877/mcp`
+
+Wenn du per Datei konfigurieren willst (Host-spezifischer Pfad):
+- `~/.vscode-server/data/User/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json`
+
 ## Storage / Backup
 - Volume: `owui-connector-data` (Backups der Tool-Server Config)
 
 Runbook: `docs/runbook_backup_restore.md:1`
-

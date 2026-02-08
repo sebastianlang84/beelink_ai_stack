@@ -656,3 +656,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Neues Service `mcp-owui-connector/` angelegt inkl. Docker Compose, gated Write-Tools per Env, sowie `PRD.md`, `README.md`, `SECRETS.md`.
   - Shared Docker-Provisioning um Volume `owui-connector-data` erweitert und Backup/Restore Runbook aktualisiert.
   - Living Docs aktualisiert (`README.md`, `TODO.md`, `CHANGELOG.md`, `docs/README.md`).
+
+## 2026-02-08
+- Aufgabe: Roo Code MCP-Server-Liste um `owui-connector` erweitert, damit der Connector in der IDE auswählbar ist.
+- Probleme/Bugs/Issues:
+  - Roo Code speichert MCP Server Settings in VS Code Remote Storage (nicht im Repo).
+- Loesung:
+  - `~/.vscode-server/data/User/globalStorage/rooveterinaryinc.roo-cline/settings/mcp_settings.json` um `owui-connector` ergänzt (URL: `http://127.0.0.1:8877/mcp`).
+  - Doku ergänzt in `mcp-owui-connector/README.md`.
