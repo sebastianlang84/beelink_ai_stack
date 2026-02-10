@@ -85,6 +85,16 @@ Systemd Timer für automatische Runs inkl. Sync (Lifecycle-Routing):
    - `sudo systemctl enable --now ai-stack-tm-investing.timer`
 3. Status: `systemctl status ai-stack-tm-investing.timer`
 
+## Scheduled Runs (company dossiers, taeglich)
+Systemd Timer fuer den Company Dossier Agent (Run + Sync Topic `company_dossiers`):
+1. `scripts/run-tm-investing-companies.sh` startet den Run (Config `config_investing_companies.yaml`) und ruft danach `POST /sync/topic/company_dossiers`.
+2. Install:
+   - `sudo cp /home/wasti/ai_stack/scripts/systemd/ai-stack-tm-company-dossiers.service /etc/systemd/system/`
+   - `sudo cp /home/wasti/ai_stack/scripts/systemd/ai-stack-tm-company-dossiers.timer /etc/systemd/system/`
+   - `sudo systemctl daemon-reload`
+   - `sudo systemctl enable --now ai-stack-tm-company-dossiers.timer`
+3. Status: `systemctl status ai-stack-tm-company-dossiers.timer`
+
 Diagnose-Scripts (Transcript Miner):
 - Cookie-Load + Transcript-Request: `transcript-miner/tools/repro_cookie_load.py`
 - IP-Block-Repro: `transcript-miner/tools/repro_ip_block.py`

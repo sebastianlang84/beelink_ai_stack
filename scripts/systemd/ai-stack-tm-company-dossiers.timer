@@ -1,0 +1,13 @@
+[Unit]
+Description=Run Transcript Miner company dossiers daily
+
+[Timer]
+# Schedule: daily at 01:00 local time.
+# Rationale: backup timer runs around midnight (+ randomized delay) and investing runs at 00:00/03:00/...
+# A 01:00 start gives the dossier run a ~2h window before the 03:00 investing run.
+OnCalendar=*-*-* 01:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+

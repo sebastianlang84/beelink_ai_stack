@@ -700,3 +700,10 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Laufende OpenClaw-Prozesse identifiziert/gekilled und Gateway per Repo-Supervisor gestartet: `scripts/openclaw_gateway_supervise.sh start` (bind loopback, port 18789).
   - Healthcheck ueber `curl http://127.0.0.1:18789/healthz` und Portcheck via `ss` verifiziert, dass Listener wieder da ist (sofern nicht erneut abgestuerzt).
   - Living Docs geprueft: keine Aenderungen erforderlich (operational-only Task; keine Repo-Konfig geaendert).
+
+## 2026-02-10
+- Aufgabe: Company Dossiers (`company_dossiers`) als taeglichen Run via systemd Timer einplanen.
+- Probleme/Bugs/Issues:
+  - Es gab nur ein systemd Schedule fuer `investing` (alle 3h); Company Dossier Run war nur manuell via Script vorhanden.
+- Loesung:
+  - systemd Templates hinzugefuegt: `scripts/systemd/ai-stack-tm-company-dossiers.service` + `.timer` (taeglich 01:00 local time) und Doku/Living Docs aktualisiert.
