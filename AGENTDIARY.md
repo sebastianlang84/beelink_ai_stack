@@ -716,3 +716,10 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - Cron: OpenClaw Block entfernt (`scripts/uninstall_openclaw_gateway_cron.sh`), Codex DNS Guard Block aus `crontab` entfernt.
   - Kill-Switch implementiert: Wenn `${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/schedulers.disabled` existiert, beenden `scripts/run-tm-investing.sh`, `scripts/run-tm-investing-companies.sh` und `scripts/backup_all.sh` sofort (keine Runs/Synchronisation/Backups).
+
+## 2026-02-10
+- Aufgabe: TODO um Kosten-Strategie ergaenzen (Abos statt API).
+- Probleme/Bugs/Issues:
+  - API-Kosten steigen stark bei regelmaessigen Summary-Runs.
+- Loesung:
+  - In `TODO.md` vermerkt: User hat OpenAI/Google Abos; evaluieren, ob Summaries via Gemini CLI (Abo, z.B. Gemini 3 Flash) per Script erzeugt werden koennen.

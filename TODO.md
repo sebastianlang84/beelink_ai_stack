@@ -65,6 +65,11 @@
   - Status: `watchdog` wurde am 2026-02-04 auf User-Wunsch gestoppt.
   - Entscheidung offen: komplett deaktiviert lassen oder nur read-only Monitoring ohne Container-Stop-Actions.
 
+- [ ] **Kosten: Summaries ggf. ueber OpenAI/Google Abos statt API (Gemini CLI?)**
+  Kontext: User hat OpenAI- und Google-Abos.
+  Idee: pruefen, ob wir Summaries mit einem guenstigen Modell wie Gemini 3 Flash ueber Abo (statt API) erstellen koennen, z.B. via Gemini CLI + Scripting.
+  DoD: POC-Skript laeuft headless auf dem Server und erzeugt Summary-Markdown im bestehenden Wrapper-Format (kompatibel zu OWUI Indexing).
+
 - [ ] **Prompt-Engineering + RAG Umsetzung (OWUI)**
   - Ziel: Topic-reine Retrieval-Treffer (macro/stocks/crypto), weniger Drift, stabile Antwortstruktur.
   - Ausgangslage: Prompt-Engineering Fixture liegt unter `transcript-miner/tests/prompt-engineering/`:
