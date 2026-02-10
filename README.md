@@ -95,6 +95,19 @@ Systemd Timer fuer den Company Dossier Agent (Run + Sync Topic `company_dossiers
    - `sudo systemctl enable --now ai-stack-tm-company-dossiers.timer`
 3. Status: `systemctl status ai-stack-tm-company-dossiers.timer`
 
+## Cost Control: Schedules pausieren (ohne sudo)
+Wenn API-Kosten explodieren: Kill-Switch setzen. Dann laufen Timer zwar weiter, aber die ai_stack Run-/Backup-Skripte beenden sofort (keine Runs, kein Sync, keine API-Calls).
+
+Disable:
+- `mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack"`
+- `touch "${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/schedulers.disabled"`
+
+Enable wieder:
+- `rm -f "${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/schedulers.disabled"`
+
+Optional (mit sudo): Timer wirklich deaktivieren:
+- `sudo systemctl disable --now ai-stack-tm-investing.timer ai-stack-tm-company-dossiers.timer ai_stack_backup.timer`
+
 Diagnose-Scripts (Transcript Miner):
 - Cookie-Load + Transcript-Request: `transcript-miner/tools/repro_cookie_load.py`
 - IP-Block-Repro: `transcript-miner/tools/repro_ip_block.py`

@@ -4,6 +4,13 @@ set -euo pipefail
 # Backup all persistent ai_stack data to a target directory.
 # Does not print secret values, but backups contain raw data -> treat as secrets.
 
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack"
+KILL_SWITCH_FILE="${STATE_DIR}/schedulers.disabled"
+if [[ -f "$KILL_SWITCH_FILE" ]]; then
+  echo "ai_stack: schedulers disabled via ${KILL_SWITCH_FILE}; skipping backup"
+  exit 0
+fi
+
 BACKUP_DIR="${BACKUP_DIR:-/srv/ai-stack/backups}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-/home/wasti/ai_stack_data/transcript-miner/output}"
 RETENTION_DAYS="${RETENTION_DAYS:-14}"

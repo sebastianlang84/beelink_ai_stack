@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack"
+KILL_SWITCH_FILE="${STATE_DIR}/schedulers.disabled"
+if [[ -f "$KILL_SWITCH_FILE" ]]; then
+  echo "ai_stack: schedulers disabled via ${KILL_SWITCH_FILE}; skipping company_dossiers run"
+  exit 0
+fi
+
 TM_CONTAINER="tm"
 CONFIG_ID="config_investing_companies.yaml"
 TOPIC="company_dossiers"

@@ -707,3 +707,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Es gab nur ein systemd Schedule fuer `investing` (alle 3h); Company Dossier Run war nur manuell via Script vorhanden.
 - Loesung:
   - systemd Templates hinzugefuegt: `scripts/systemd/ai-stack-tm-company-dossiers.service` + `.timer` (taeglich 01:00 local time) und Doku/Living Docs aktualisiert.
+
+## 2026-02-10
+- Aufgabe: Alle ai_stack Scheduler kurzfristig abschalten (API-Kostenexplosion).
+- Probleme/Bugs/Issues:
+  - `systemctl disable --now ...` war ohne sudo nicht erlaubt (Access denied), Timer liefen also weiter.
+  - User-Cron Jobs waren aktiv (Codex DNS Guard + OpenClaw Gateway Ensure).
+- Loesung:
+  - Cron: OpenClaw Block entfernt (`scripts/uninstall_openclaw_gateway_cron.sh`), Codex DNS Guard Block aus `crontab` entfernt.
+  - Kill-Switch implementiert: Wenn `${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/schedulers.disabled` existiert, beenden `scripts/run-tm-investing.sh`, `scripts/run-tm-investing-companies.sh` und `scripts/backup_all.sh` sofort (keine Runs/Synchronisation/Backups).

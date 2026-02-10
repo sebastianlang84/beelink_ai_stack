@@ -103,6 +103,9 @@
 - One-shot run (Company Dossier Agent):
   - `./scripts/run-tm-investing-companies.sh`
 - The company script uses `config_investing_companies.yaml` and syncs topic `company_dossiers`.
+- Cost control kill-switch (no sudo; makes scheduled scripts exit immediately):
+  - Disable: `touch "${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/schedulers.disabled"`
+  - Enable: `rm -f "${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack/schedulers.disabled"`
 - systemd templates (investing every 3h):
   - `scripts/systemd/ai-stack-tm-investing.service`
   - `scripts/systemd/ai-stack-tm-investing.timer`

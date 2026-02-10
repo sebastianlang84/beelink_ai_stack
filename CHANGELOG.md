@@ -2,6 +2,7 @@
 
 ## Unreleased
 - ops(scripts): systemd Timer/Service Templates fuer `company_dossiers` taeglich hinzugefuegt
+- fix(scripts): Kill-Switch Datei (`$XDG_STATE_HOME/.../ai_stack/schedulers.disabled`) um Schedules ohne sudo sofort zu pausieren
 - feat(mcp-owui-connector): MCP Server fuer Open WebUI Knowledge/Admin APIs hinzugefuegt (Write-Tools default off, gated via Env)
 - docs(mcp-owui-connector): VS Code (OpenAI Codex Extension) MCP Server Setup dokumentiert
 - ops(scripts): `scripts/provision_ai_stack_docker_objects.sh` erstellt jetzt auch Volume `owui-connector-data`

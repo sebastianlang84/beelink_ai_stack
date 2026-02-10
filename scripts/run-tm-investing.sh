@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack"
+KILL_SWITCH_FILE="${STATE_DIR}/schedulers.disabled"
+if [[ -f "$KILL_SWITCH_FILE" ]]; then
+  echo "ai_stack: schedulers disabled via ${KILL_SWITCH_FILE}; skipping investing run"
+  exit 0
+fi
+
 TM_CONTAINER="tm"
 CONFIG_ID="config_investing.yaml"
 RUNS_URL="http://127.0.0.1:8000/runs/start"
