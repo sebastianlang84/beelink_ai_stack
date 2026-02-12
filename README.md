@@ -134,6 +134,7 @@ Optional (mit sudo): Timer wirklich deaktivieren:
 - Runbook: `docs/runbook-gemini-cli-summary-poc.md:1`
 - Modell-Policy: Gemini-3-Flash als `gemini-3-flash-preview` (kein Pro-Modell; Thinking deaktiviert per Prompt-Policy).
 - Hinweis: bevorzugt Gemini-Account-Auth via `~/.gemini/settings.json`; fuer `gemini-3-flash-preview` muss dort `preview=true` gesetzt sein (`GEMINI_API_KEY` nur Fallback).
+- Verbrauchskontrolle: Pro Lauf wird eine `*.usage.json` mit Token-/API-Stats geschrieben (`tokens.input`, `tokens.total`, `tokens.thoughts`).
 
 Diagnose-Scripts (Transcript Miner):
 - Cookie-Load + Transcript-Request: `transcript-miner/tools/repro_cookie_load.py`

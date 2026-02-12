@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- feat(scripts): Gemini-CLI POC schreibt jetzt pro Lauf `*.usage.json` mit Token-/API-Stats (inkl. `tokens.input/total/thoughts`) zur Verbrauchskontrolle
 - docs(gemini-cli): Preview-Mode Requirement dokumentiert (`~/.gemini/settings.json` mit `preview=true` fuer `gemini-3-flash-preview`)
 - fix(scripts): Gemini-CLI POC auf `gemini-3-flash-preview` festgelegt (laufender Gemini-3-Flash Modellname im CLI); Pro-Modelle geblockt und no-thinking Policy im Prompt verankert
 - feat(scripts): Gemini-CLI Summary POC hinzugefuegt (`run-gemini-cli-summary-poc.sh`) inkl. Runbook fuer headless Test

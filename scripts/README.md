@@ -74,6 +74,9 @@
 ## Gemini CLI Summary POC (headless)
 - Quick test (default fixture prompt + transcript):
   - `./scripts/run-gemini-cli-summary-poc.sh`
+- Output:
+  - Summary Markdown: `.../_out_gemini_cli_poc/<video_id>.gemini_cli.<timestamp>.summary.md`
+  - Usage Stats JSON: `.../_out_gemini_cli_poc/<video_id>.gemini_cli.<timestamp>.usage.json`
 - With custom input:
   - `./scripts/run-gemini-cli-summary-poc.sh --transcript-file <path> --model gemini-3-flash-preview`
 - Model policy:

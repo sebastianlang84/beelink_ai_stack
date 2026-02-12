@@ -104,11 +104,14 @@ fi
 mkdir -p "${OUTPUT_DIR}"
 ts="$(date -u +'%Y%m%d_%H%M%SZ')"
 output_file="${OUTPUT_DIR}/${VIDEO_ID}.gemini_cli.${ts}.summary.md"
+usage_file="${OUTPUT_DIR}/${VIDEO_ID}.gemini_cli.${ts}.usage.json"
 
 tmp_prompt="$(mktemp)"
 tmp_err="$(mktemp)"
+tmp_json="$(mktemp)"
 tmp_out="$(mktemp)"
-trap 'rm -f "${tmp_prompt}" "${tmp_err}" "${tmp_out}"' EXIT
+tmp_usage="$(mktemp)"
+trap 'rm -f "${tmp_prompt}" "${tmp_err}" "${tmp_json}" "${tmp_out}" "${tmp_usage}"' EXIT
 
 cat >"${tmp_prompt}" <<EOF
 You are generating transcript summaries for Open WebUI RAG indexing.
@@ -134,8 +137,8 @@ $(cat "${TRANSCRIPT_FILE}")
 EOF
 
 log "gemini-poc.start model=${MODEL} video_id=${VIDEO_ID}"
-if ! gemini --model "${MODEL}" -o text --approval-mode yolo -p "Use the full prompt from stdin." \
-  <"${tmp_prompt}" >"${tmp_out}" 2>"${tmp_err}"; then
+if ! gemini --model "${MODEL}" -o json --approval-mode yolo -p "Use the full prompt from stdin." \
+  <"${tmp_prompt}" >"${tmp_json}" 2>"${tmp_err}"; then
   log "gemini-poc.error command failed"
   cat "${tmp_err}" >&2
   if rg -q "Please set an Auth method|GEMINI_API_KEY|GOOGLE_GENAI_USE_VERTEXAI|GOOGLE_GENAI_USE_GCA" "${tmp_err}"; then
@@ -149,8 +152,96 @@ HINT
   exit 41
 fi
 
+if ! parse_kv="$(
+  python3 - "${tmp_json}" "${tmp_out}" "${tmp_usage}" "${MODEL}" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+json_path = Path(sys.argv[1])
+out_path = Path(sys.argv[2])
+usage_path = Path(sys.argv[3])
+model_requested = sys.argv[4]
+
+raw = json_path.read_text(encoding="utf-8")
+raw_stripped = raw.lstrip()
+decoder = json.JSONDecoder()
+obj, _ = decoder.raw_decode(raw_stripped)
+
+response = obj.get("response", "")
+if not isinstance(response, str):
+    response = str(response)
+out_path.write_text(response, encoding="utf-8")
+
+stats = obj.get("stats", {})
+models = stats.get("models", {}) if isinstance(stats, dict) else {}
+model_effective = model_requested
+model_stats = {}
+if isinstance(models, dict):
+    if model_requested in models:
+        model_stats = models.get(model_requested, {}) or {}
+        model_effective = model_requested
+    elif models:
+        model_effective = next(iter(models))
+        model_stats = models.get(model_effective, {}) or {}
+
+api = model_stats.get("api", {}) if isinstance(model_stats, dict) else {}
+tokens = model_stats.get("tokens", {}) if isinstance(model_stats, dict) else {}
+
+usage_payload = {
+    "session_id": obj.get("session_id"),
+    "model_requested": model_requested,
+    "model_effective": model_effective,
+    "api": {
+        "total_requests": api.get("totalRequests", 0),
+        "total_errors": api.get("totalErrors", 0),
+        "total_latency_ms": api.get("totalLatencyMs", 0),
+    },
+    "tokens": {
+        "input": tokens.get("input", 0),
+        "prompt": tokens.get("prompt", 0),
+        "candidates": tokens.get("candidates", 0),
+        "total": tokens.get("total", 0),
+        "cached": tokens.get("cached", 0),
+        "thoughts": tokens.get("thoughts", 0),
+        "tool": tokens.get("tool", 0),
+    },
+}
+usage_path.write_text(json.dumps(usage_payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+print(f"model_effective={model_effective}")
+print(f"tokens_input={usage_payload['tokens']['input']}")
+print(f"tokens_total={usage_payload['tokens']['total']}")
+print(f"tokens_thoughts={usage_payload['tokens']['thoughts']}")
+print(f"tokens_cached={usage_payload['tokens']['cached']}")
+print(f"latency_ms={usage_payload['api']['total_latency_ms']}")
+PY
+)"; then
+  log "ERROR failed to parse Gemini JSON output"
+  cat "${tmp_err}" >&2
+  exit 42
+fi
+
+model_effective="unknown"
+tokens_input="0"
+tokens_total="0"
+tokens_thoughts="0"
+tokens_cached="0"
+latency_ms="0"
+while IFS='=' read -r k v; do
+  case "${k}" in
+    model_effective) model_effective="${v}" ;;
+    tokens_input) tokens_input="${v}" ;;
+    tokens_total) tokens_total="${v}" ;;
+    tokens_thoughts) tokens_thoughts="${v}" ;;
+    tokens_cached) tokens_cached="${v}" ;;
+    latency_ms) latency_ms="${v}" ;;
+  esac
+done <<< "${parse_kv}"
+
 mv "${tmp_out}" "${output_file}"
+mv "${tmp_usage}" "${usage_file}"
 doc_count="$(rg -o '<<<DOC_START>>>' "${output_file}" | wc -l | tr -d ' ')"
 size_bytes="$(wc -c <"${output_file}" | tr -d ' ')"
-log "gemini-poc.done output=${output_file} bytes=${size_bytes} wrapped_docs=${doc_count}"
+log "gemini-poc.done output=${output_file} usage=${usage_file} bytes=${size_bytes} wrapped_docs=${doc_count} model_effective=${model_effective} tokens_input=${tokens_input} tokens_total=${tokens_total} tokens_thoughts=${tokens_thoughts} tokens_cached=${tokens_cached} latency_ms=${latency_ms}"
 echo "${output_file}"

@@ -794,3 +794,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - Doku ergaenzt in `docs/runbook-gemini-cli-summary-poc.md`, `README.md`, `scripts/README.md` (Account-Auth first, `preview=true` Pflicht fuer Preview-Modell; API-Key nur Fallback).
   - Headless Test erneut ausgefuehrt (`gemini --model gemini-3-flash-preview ...` + `scripts/run-gemini-cli-summary-poc.sh`) mit erfolgreichem Exit-Code.
+
+## 2026-02-12
+- Aufgabe: Gemini-CLI Token-Verbrauch pro Lauf sichtbar machen (dauerhafte Verbrauchskontrolle).
+- Probleme/Bugs/Issues:
+  - Bisher schrieb der POC nur Summary-Markdown; Token-/API-Usage war nicht als Artefakt persistiert.
+- Loesung:
+  - `scripts/run-gemini-cli-summary-poc.sh` auf `-o json` umgestellt, `response` in `*.summary.md` extrahiert und neue Sidecar-Datei `*.usage.json` mit Model/API/Token-Stats eingefuehrt.
+  - Done-Log erweitert (`tokens_input`, `tokens_total`, `tokens_thoughts`, `latency_ms`).
+  - Living Docs aktualisiert: `docs/runbook-gemini-cli-summary-poc.md`, `scripts/README.md`, `README.md`, `TODO.md`, `CHANGELOG.md`.

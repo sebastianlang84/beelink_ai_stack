@@ -90,6 +90,7 @@
   Idee: pruefen, ob wir Summaries mit einem guenstigen Modell wie Gemini 3 Flash ueber Abo (statt API) erstellen koennen, z.B. via Gemini CLI + Scripting.
   Zwischenstand (2026-02-12): Headless POC-Runner vorhanden: `scripts/run-gemini-cli-summary-poc.sh` (Runbook: `docs/runbook-gemini-cli-summary-poc.md`).
   Policy (2026-02-12): POC-Default auf `gemini-3-flash-preview` (Gemini-3-Flash Familie), Pro-Modelle im Script geblockt, Thinking per Prompt-Policy deaktiviert.
+  Monitoring (2026-02-12): Pro Lauf wird `*.usage.json` mit Token-/API-Stats geschrieben, um Verbrauch laufend zu beobachten.
   DoD: POC-Skript laeuft headless auf dem Server und erzeugt Summary-Markdown im bestehenden Wrapper-Format (kompatibel zu OWUI Indexing).
 
 - [ ] **Prompt-Engineering + RAG Umsetzung (OWUI)**

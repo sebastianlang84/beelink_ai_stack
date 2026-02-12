@@ -28,6 +28,7 @@ Default-Input:
 
 Output:
 - `transcript-miner/tests/prompt-engineering/_out_gemini_cli_poc/<video_id>.gemini_cli.<timestamp>.summary.md`
+- `transcript-miner/tests/prompt-engineering/_out_gemini_cli_poc/<video_id>.gemini_cli.<timestamp>.usage.json`
 
 ## 3) Mit eigenen Parametern
 
@@ -48,9 +49,17 @@ Wichtig:
 
 - Script endet mit Exit-Code `0`.
 - Output-Datei existiert.
+- Usage-Datei existiert und enthaelt Token-Stats (`tokens.input`, `tokens.total`, `tokens.thoughts`).
 - Ausgabe enthaelt idealerweise Wrapper-Dokumente:
   - `<<<DOC_START>>>`
   - `<<<DOC_END>>>`
+
+Token-Usage schnell lesen:
+
+```bash
+latest_usage="$(ls -1t transcript-miner/tests/prompt-engineering/_out_gemini_cli_poc/*.usage.json | head -n1)"
+jq '.model_effective, .tokens' "${latest_usage}"
+```
 
 Typischer Fehler vor Auth-Setup:
 - Exit-Code `41` mit Hinweis auf fehlende Auth (`GEMINI_API_KEY` oder `~/.gemini/settings.json`).
