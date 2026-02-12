@@ -1,6 +1,7 @@
 # Runbook — Gemini CLI Summary POC (statt OpenRouter API)
 
 Ziel: Schnell testen, ob Summary-Generierung per Gemini CLI headless stabil funktioniert.
+Modell-Policy: `gemini-3-flash`, keine Pro-Modelle, kein Thinking.
 
 Scope:
 - Kein produktiver Pipeline-Umbau.
@@ -33,10 +34,14 @@ Output:
 ./scripts/run-gemini-cli-summary-poc.sh \
   --prompt-file transcript-miner/tests/prompt-engineering/_promptnew.md \
   --transcript-file transcript-miner/tests/prompt-engineering/JkQn9MoFlHk_transcript.md \
-  --model gemini-2.5-flash \
+  --model gemini-3-flash \
   --topic investing_test \
   --channel poc_channel
 ```
+
+Wichtig:
+- Pro-Modelle sind im Script geblockt (`--model ...pro...` -> Exit-Code `5`).
+- Thinking wird per Prompt-Policy deaktiviert (CLI bietet aktuell keinen separaten Thinking-Flag).
 
 ## 4) Erfolgskriterium
 

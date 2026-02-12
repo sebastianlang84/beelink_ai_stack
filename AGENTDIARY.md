@@ -767,3 +767,13 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Neues POC-Script: `scripts/run-gemini-cli-summary-poc.sh` (fixture-basiert, headless, Wrapper-Doc-Count, klare Auth-Fehlermeldung).
   - Runbook erstellt: `docs/runbook-gemini-cli-summary-poc.md`.
   - Living Docs aktualisiert: `README.md`, `scripts/README.md`, `docs/README.md`, `TODO.md`, `CHANGELOG.md`.
+
+## 2026-02-12
+- Aufgabe: Gemini-CLI POC-Policy auf User-Vorgabe gehaertet (`gemini-3-flash`, kein Pro, kein Thinking).
+- Probleme/Bugs/Issues:
+  - Default stand noch auf `gemini-2.5-flash`.
+  - Es gab keine harte Sperre gegen Pro-Modelle.
+  - Gemini CLI bietet keinen separaten Thinking-Flag in `--help`; no-thinking musste als Prompt-Policy umgesetzt werden.
+- Loesung:
+  - `scripts/run-gemini-cli-summary-poc.sh`: Default-Modell auf `gemini-3-flash`, Block fuer `*pro*`-Modelle (Exit `5`), no-thinking Instruktion im Prompt.
+  - Doku/Living Docs nachgezogen: `docs/runbook-gemini-cli-summary-poc.md`, `scripts/README.md`, `README.md`, `TODO.md`, `CHANGELOG.md`.

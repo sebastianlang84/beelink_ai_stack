@@ -11,7 +11,7 @@ OUTPUT_DIR_DEFAULT="${REPO_ROOT}/transcript-miner/tests/prompt-engineering/_out_
 PROMPT_FILE="${PROMPT_FILE:-${PROMPT_FILE_DEFAULT}}"
 TRANSCRIPT_FILE="${TRANSCRIPT_FILE:-${TRANSCRIPT_FILE_DEFAULT}}"
 OUTPUT_DIR="${OUTPUT_DIR:-${OUTPUT_DIR_DEFAULT}}"
-MODEL="${GEMINI_MODEL:-gemini-2.5-flash}"
+MODEL="${GEMINI_MODEL:-gemini-3-flash}"
 
 VIDEO_ID="${VIDEO_ID:-}"
 TOPIC="${TOPIC:-investing_test}"
@@ -31,7 +31,7 @@ Options:
   --prompt-file <path>      Default: transcript-miner/tests/prompt-engineering/_promptnew.md
   --transcript-file <path>  Default: transcript-miner/tests/prompt-engineering/1TD3WHTg3gQ_transcript.md
   --output-dir <path>       Default: transcript-miner/tests/prompt-engineering/_out_gemini_cli_poc
-  --model <name>            Default: gemini-2.5-flash
+  --model <name>            Default: gemini-3-flash (pro models blocked)
   --video-id <id>           Optional; default derived from transcript filename prefix
   --topic <topic>           Default: investing_test
   --title <text>            Default: "POC Gemini CLI Summary"
@@ -95,6 +95,12 @@ if [[ -z "${VIDEO_ID}" ]]; then
   fi
 fi
 
+model_lc="$(printf '%s' "${MODEL}" | tr '[:upper:]' '[:lower:]')"
+if [[ "${model_lc}" == *pro* ]]; then
+  log "ERROR model '${MODEL}' is blocked by policy (no pro models). Use gemini-3-flash."
+  exit 5
+fi
+
 mkdir -p "${OUTPUT_DIR}"
 ts="$(date -u +'%Y%m%d_%H%M%SZ')"
 output_file="${OUTPUT_DIR}/${VIDEO_ID}.gemini_cli.${ts}.summary.md"
@@ -108,6 +114,7 @@ cat >"${tmp_prompt}" <<EOF
 You are generating transcript summaries for Open WebUI RAG indexing.
 Follow ALL instructions from the prompt specification below.
 Output must be Markdown only.
+Do not use thinking/reasoning mode. Return only the final answer.
 
 ===== BEGIN SYSTEM/FORMAT INSTRUCTIONS =====
 $(cat "${PROMPT_FILE}")
