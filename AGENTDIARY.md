@@ -757,3 +757,13 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Neue systemd Templates: `scripts/systemd/ai-stack-tm-investing-maintenance.service` + `.timer` (taeglicher Maintenance-Sweep ohne Downloads).
   - Runbook erstellt: `docs/runbook-tm-lifecycle-maintenance.md`.
   - Living Docs aktualisiert: `README.md`, `scripts/README.md`, `docs/README.md`, `TODO.md`, `CHANGELOG.md`.
+
+## 2026-02-12
+- Aufgabe: Gemini CLI POC fuer Summary-Erzeugung vorbereitet (headless, ohne Produktiv-Umbau).
+- Probleme/Bugs/Issues:
+  - `gemini` CLI war vorhanden, aber Auth fehlte (`GEMINI_API_KEY`/Gemini-Settings nicht gesetzt), daher kein echter Modell-Call moeglich.
+  - Worktree blieb unrelated dirty (`transcript-miner/config/config_investing.yaml`, `wasticlaw-coms/`), nicht angefasst.
+- Loesung:
+  - Neues POC-Script: `scripts/run-gemini-cli-summary-poc.sh` (fixture-basiert, headless, Wrapper-Doc-Count, klare Auth-Fehlermeldung).
+  - Runbook erstellt: `docs/runbook-gemini-cli-summary-poc.md`.
+  - Living Docs aktualisiert: `README.md`, `scripts/README.md`, `docs/README.md`, `TODO.md`, `CHANGELOG.md`.

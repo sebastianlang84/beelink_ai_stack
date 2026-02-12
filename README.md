@@ -128,6 +128,12 @@ Enable wieder:
 Optional (mit sudo): Timer wirklich deaktivieren:
 - `sudo systemctl disable --now ai-stack-tm-investing.timer ai-stack-tm-company-dossiers.timer ai_stack_backup.timer`
 
+## Gemini CLI Summary POC (statt OpenRouter API)
+- Ziel: Headless Test, ob Summary-Erzeugung ueber Gemini CLI stabil laeuft, bevor die produktive Pipeline umgebaut wird.
+- Script: `./scripts/run-gemini-cli-summary-poc.sh`
+- Runbook: `docs/runbook-gemini-cli-summary-poc.md:1`
+- Hinweis: benötigt Gemini CLI Auth (`GEMINI_API_KEY` oder `~/.gemini/settings.json`).
+
 Diagnose-Scripts (Transcript Miner):
 - Cookie-Load + Transcript-Request: `transcript-miner/tools/repro_cookie_load.py`
 - IP-Block-Repro: `transcript-miner/tools/repro_ip_block.py`

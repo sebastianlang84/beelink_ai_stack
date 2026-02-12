@@ -88,6 +88,7 @@
 - [ ] **Kosten: Summaries ggf. ueber OpenAI/Google Abos statt API (Gemini CLI?)**
   Kontext: User hat OpenAI- und Google-Abos.
   Idee: pruefen, ob wir Summaries mit einem guenstigen Modell wie Gemini 3 Flash ueber Abo (statt API) erstellen koennen, z.B. via Gemini CLI + Scripting.
+  Zwischenstand (2026-02-12): Headless POC-Runner vorhanden: `scripts/run-gemini-cli-summary-poc.sh` (Runbook: `docs/runbook-gemini-cli-summary-poc.md`).
   DoD: POC-Skript laeuft headless auf dem Server und erzeugt Summary-Markdown im bestehenden Wrapper-Format (kompatibel zu OWUI Indexing).
 
 - [ ] **Prompt-Engineering + RAG Umsetzung (OWUI)**

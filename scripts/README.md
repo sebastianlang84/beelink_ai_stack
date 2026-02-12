@@ -71,6 +71,16 @@
 - Runbook:
   - `docs/runbook-owui-502-autorecover.md:1`
 
+## Gemini CLI Summary POC (headless)
+- Quick test (default fixture prompt + transcript):
+  - `./scripts/run-gemini-cli-summary-poc.sh`
+- With custom input:
+  - `./scripts/run-gemini-cli-summary-poc.sh --transcript-file <path> --model gemini-2.5-flash`
+- Auth requirement:
+  - `GEMINI_API_KEY` or Gemini auth in `~/.gemini/settings.json`
+- Runbook:
+  - `docs/runbook-gemini-cli-summary-poc.md:1`
+
 ## Open WebUI RAG Guard (Investing)
 - Apply stricter day-sensitive retrieval defaults in OWUI config (`webui.db`) and restart `owui`:
   - `./scripts/openwebui_apply_investing_rag_guard.sh`

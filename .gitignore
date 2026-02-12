@@ -36,6 +36,7 @@ emb-bench/.cache_out/
 emb-bench/runs/
 emb-bench/runs_out/
 open-webui/tool-imports/backup_*.json
+transcript-miner/tests/prompt-engineering/_out_gemini_cli_poc/
 
 # Convenience symlinks into /home/wasti/ai_stack_data (never commit)
 debug-proxy/flows.jsonl
