@@ -786,3 +786,11 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - `scripts/run-gemini-cli-summary-poc.sh`: Default auf `gemini-3-flash-preview` gestellt (Pro-Block + no-thinking Policy bleiben aktiv).
   - Living Docs aktualisiert: `docs/runbook-gemini-cli-summary-poc.md`, `scripts/README.md`, `README.md`, `TODO.md`, `CHANGELOG.md`.
+
+## 2026-02-12
+- Aufgabe: Preview-Mode Requirement fuer Gemini-3-Flash-Preview explizit dokumentiert und Lauf erneut verifiziert.
+- Probleme/Bugs/Issues:
+  - User-Hinweis: `gemini-3-flash-preview` lief erst mit `preview=true` in `~/.gemini/settings.json`.
+- Loesung:
+  - Doku ergaenzt in `docs/runbook-gemini-cli-summary-poc.md`, `README.md`, `scripts/README.md` (Account-Auth first, `preview=true` Pflicht fuer Preview-Modell; API-Key nur Fallback).
+  - Headless Test erneut ausgefuehrt (`gemini --model gemini-3-flash-preview ...` + `scripts/run-gemini-cli-summary-poc.sh`) mit erfolgreichem Exit-Code.

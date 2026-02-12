@@ -11,8 +11,9 @@ Scope:
 
 - `gemini` CLI ist installiert.
 - Auth fuer Gemini CLI ist gesetzt:
-  - entweder `GEMINI_API_KEY`
-  - oder Auth in `~/.gemini/settings.json`
+  - bevorzugt Account-Auth in `~/.gemini/settings.json`
+  - fuer `gemini-3-flash-preview` muss in den Settings `preview=true` gesetzt sein
+  - alternativ (Fallback) via `GEMINI_API_KEY`
 
 ## 2) Default POC ausfuehren
 

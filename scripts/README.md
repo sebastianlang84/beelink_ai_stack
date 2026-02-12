@@ -80,7 +80,8 @@
   - Pro-Modelle sind im Script geblockt (`--model ...pro...` wird abgewiesen).
   - Thinking wird per Prompt-Policy deaktiviert (kein separater CLI-Flag).
 - Auth requirement:
-  - `GEMINI_API_KEY` or Gemini auth in `~/.gemini/settings.json`
+  - bevorzugt Gemini auth in `~/.gemini/settings.json` mit `preview=true` fuer `gemini-3-flash-preview`
+  - `GEMINI_API_KEY` nur als Fallback
 - Runbook:
   - `docs/runbook-gemini-cli-summary-poc.md:1`
 

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(gemini-cli): Preview-Mode Requirement dokumentiert (`~/.gemini/settings.json` mit `preview=true` fuer `gemini-3-flash-preview`)
 - fix(scripts): Gemini-CLI POC auf `gemini-3-flash-preview` festgelegt (laufender Gemini-3-Flash Modellname im CLI); Pro-Modelle geblockt und no-thinking Policy im Prompt verankert
 - feat(scripts): Gemini-CLI Summary POC hinzugefuegt (`run-gemini-cli-summary-poc.sh`) inkl. Runbook fuer headless Test
 - ops(transcript-miner): Download-unabhaengige Investing-Lifecycle-Maintenance hinzugefuegt (`maintain-investing-lifecycle.sh` + `check-hot-summaries-freshness.sh` + systemd Timer/Service)
