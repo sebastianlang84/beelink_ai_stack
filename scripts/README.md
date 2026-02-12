@@ -75,7 +75,7 @@
 - Quick test (default fixture prompt + transcript):
   - `./scripts/run-gemini-cli-summary-poc.sh`
 - With custom input:
-  - `./scripts/run-gemini-cli-summary-poc.sh --transcript-file <path> --model gemini-3-flash`
+  - `./scripts/run-gemini-cli-summary-poc.sh --transcript-file <path> --model gemini-3-flash-preview`
 - Model policy:
   - Pro-Modelle sind im Script geblockt (`--model ...pro...` wird abgewiesen).
   - Thinking wird per Prompt-Policy deaktiviert (kein separater CLI-Flag).

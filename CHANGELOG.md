@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unreleased
-- fix(scripts): Gemini-CLI POC auf `gemini-3-flash` festgelegt; Pro-Modelle geblockt und no-thinking Policy im Prompt verankert
+- fix(scripts): Gemini-CLI POC auf `gemini-3-flash-preview` festgelegt (laufender Gemini-3-Flash Modellname im CLI); Pro-Modelle geblockt und no-thinking Policy im Prompt verankert
 - feat(scripts): Gemini-CLI Summary POC hinzugefuegt (`run-gemini-cli-summary-poc.sh`) inkl. Runbook fuer headless Test
 - ops(transcript-miner): Download-unabhaengige Investing-Lifecycle-Maintenance hinzugefuegt (`maintain-investing-lifecycle.sh` + `check-hot-summaries-freshness.sh` + systemd Timer/Service)
 - fix(open-webui): 502-Auto-Recovery fuer Tailscale Serve Upstream hinzugefuegt (`scripts/ensure-owui-up.sh` + systemd Timer/Service + Runbook)

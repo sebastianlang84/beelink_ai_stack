@@ -777,3 +777,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Loesung:
   - `scripts/run-gemini-cli-summary-poc.sh`: Default-Modell auf `gemini-3-flash`, Block fuer `*pro*`-Modelle (Exit `5`), no-thinking Instruktion im Prompt.
   - Doku/Living Docs nachgezogen: `docs/runbook-gemini-cli-summary-poc.md`, `scripts/README.md`, `README.md`, `TODO.md`, `CHANGELOG.md`.
+
+## 2026-02-12
+- Aufgabe: Gemini-CLI POC auf lauffaehigen Gemini-3-Flash Modellnamen justiert.
+- Probleme/Bugs/Issues:
+  - Headless Test mit `gemini-3-flash` schlug trotz gueltiger Account-Auth mit `ModelNotFoundError (404)` fehl.
+  - `gemini-2.5-flash` und `gemini-3-flash-preview` liefen erfolgreich, daher war der Modellname im aktuellen CLI-Backend der eigentliche Blocker.
+- Loesung:
+  - `scripts/run-gemini-cli-summary-poc.sh`: Default auf `gemini-3-flash-preview` gestellt (Pro-Block + no-thinking Policy bleiben aktiv).
+  - Living Docs aktualisiert: `docs/runbook-gemini-cli-summary-poc.md`, `scripts/README.md`, `README.md`, `TODO.md`, `CHANGELOG.md`.

@@ -132,7 +132,7 @@ Optional (mit sudo): Timer wirklich deaktivieren:
 - Ziel: Headless Test, ob Summary-Erzeugung ueber Gemini CLI stabil laeuft, bevor die produktive Pipeline umgebaut wird.
 - Script: `./scripts/run-gemini-cli-summary-poc.sh`
 - Runbook: `docs/runbook-gemini-cli-summary-poc.md:1`
-- Modell-Policy: `gemini-3-flash` (kein Pro-Modell; Thinking deaktiviert per Prompt-Policy).
+- Modell-Policy: Gemini-3-Flash als `gemini-3-flash-preview` (kein Pro-Modell; Thinking deaktiviert per Prompt-Policy).
 - Hinweis: benötigt Gemini CLI Auth (`GEMINI_API_KEY` oder `~/.gemini/settings.json`).
 
 Diagnose-Scripts (Transcript Miner):
