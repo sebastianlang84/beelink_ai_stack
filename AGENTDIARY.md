@@ -723,3 +723,13 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - API-Kosten steigen stark bei regelmaessigen Summary-Runs.
 - Loesung:
   - In `TODO.md` vermerkt: User hat OpenAI/Google Abos; evaluieren, ob Summaries via Gemini CLI (Abo, z.B. Gemini 3 Flash) per Script erzeugt werden koennen.
+
+## 2026-02-12
+- Aufgabe: `TODO.md` aufgeraeumt und offene Punkte in eine klare operative Reihenfolge gebracht.
+- Probleme/Bugs/Issues:
+  - Mehrere Parent-Tasks waren noch offen, obwohl alle Subtasks bereits erledigt waren.
+  - Worktree war bereits vor Task-Start dirty (`transcript-miner/config/config_investing.yaml`, `wasticlaw-coms/`), daher nicht angefasst.
+- Loesung:
+  - In `TODO.md` eine neue Sektion `Operative Priorisierung (Stand: 2026-02-12)` mit P0/P1/P2-Reihenfolge eingefuegt.
+  - Parent-Tasks mit vollstaendig erledigten Subtasks auf erledigt gesetzt: Tailnet-HTTPS, Smoke-Test Runbook, Backup-Ziel (Volumes).
+  - Living Docs geprueft/aktualisiert: `TODO.md` und `CHANGELOG.md` aktualisiert; `README.md` geprueft, keine Aenderung noetig.

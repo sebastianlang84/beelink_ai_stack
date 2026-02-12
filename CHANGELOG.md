@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(todo): TODO aufgeraeumt (operative Priorisierung P0->P2 ergaenzt; erledigte Parent-Tasks fuer Tailnet-HTTPS, Smoke-Test und Backup auf `x` gesetzt)
 - ops(scripts): systemd Timer/Service Templates fuer `company_dossiers` taeglich hinzugefuegt
 - fix(scripts): Kill-Switch Datei (`$XDG_STATE_HOME/.../ai_stack/schedulers.disabled`) um Schedules ohne sudo sofort zu pausieren
 - docs(todo): Notiz: User hat OpenAI/Google Abos; POC fuer Summaries via Gemini CLI (Abo) statt API evaluieren

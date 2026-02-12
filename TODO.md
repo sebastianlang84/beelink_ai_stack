@@ -44,6 +44,23 @@
 
 ## TODO
 
+### Operative Priorisierung (Stand: 2026-02-12)
+
+- `P0 (Stabilitaet zuerst)`
+  - `OWUI-Verfuegbarkeit gegen 502 haerten (Tailscale Serve Upstream)`
+  - `Prompt-Engineering + RAG Umsetzung (OWUI)`
+  - `Collection-Split + Rollierende Retention (investing_new / investing_archive / company_dossiers)` mit Fokus auf echte `company_dossiers` Upserts
+  - `OWUI RAG/Embedder Settings Snapshot` final entscheiden und sauber umsetzen (Reranker/Text-Splitter)
+- `P1 (Produktivbetrieb + Entscheidungen)`
+  - `OpenClaw Telegram: Bot antwortet nicht (DM/Group)` final mit E2E-DM/Group-Tests abschliessen
+  - `OpenClaw: Zugriff auf Summaries + OWUI RAG (Connector-Entscheidung)` (A/B Entscheidung fixieren)
+  - `Open WebUI Knowledge: Unerwuenschte Collections aufraeumen` (nach User-Bestaetigung)
+  - `Markdown Linter integrieren (Repo-wide)`
+- `P2 (Erweiterungen mit Nutzen/Kosten-Abwaegung)`
+  - `Neuer MCP-Server: SEC Filings Embedding (zuverlaessig)`
+  - `Transcript Miner: Influencer-Trackrecord fuer Investment-Calls`
+  - `Kosten: Summaries ggf. ueber OpenAI/Google Abos statt API (Gemini CLI?)` als separater Kosten-POC
+
 - [ ] **Neuer MCP-Server: SEC Filings Embedding (zuverlaessig)**
   - Ziel: Eigenen MCP-Server bauen, der SEC Filings robust einliest, chunked und stabil in den Vektor-Store indexiert.
   - Muss-Kriterien:
@@ -1002,7 +1019,7 @@ SSOT (Projektzielbild): `docs/prd-tool-owui-transcript-miner-sync.md:1` und `doc
     - Repo-Audit: `rg` findet keine verbotenen Namen mehr (z. B. `_` in Docker-Objekt-Namen, `*_default` Networks, doppelte Token)
     - Host-Audit: `docker volume ls`/`docker network ls`/`docker images` zeigen nur noch Schema-konforme Namen
     - Smoke-Test läuft grün: `./scripts/smoke_test_ai_stack.sh --up --build`
-- [ ] Tailnet-HTTPS aktivieren + Open WebUI via Tailscale Serve bereitstellen:
+- [x] Tailnet-HTTPS aktivieren + Open WebUI via Tailscale Serve bereitstellen:
   - [x] Tailnet hat Serve aktiviert (Admin-Konsole)
   - [x] `sudo tailscale serve --bg --https=443 http://127.0.0.1:3000`
   - [x] URL prüfen: `sudo tailscale serve status`
@@ -1032,7 +1049,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
 - [x] YouTube Transcript Block (HTTP 429) entschärfen: stabile Fetch-Strategie (IP/Proxy/Cookies), Runbook + Tests
   - [x] Runbook + Tests dokumentiert (`docs/runbook_youtube_429_mitigation.md`)
   - [x] Webshare‑Proxy getestet (OK)
-- [ ] Smoke-Test Runbook:
+- [x] Smoke-Test Runbook:
   - [x] Repo: Runbook + Script vorhanden (`docs/runbook_smoke_test.md:1`, `scripts/smoke_test_ai_stack.sh:1`)
   - [x] Services laufen (Compose `ps` zeigt `healthy`)
   - [x] Host: `curl http://127.0.0.1:3000/` → `200`
@@ -1046,7 +1063,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
 - [x] Geplante Runs: investing alle 3h via systemd Timer (Auto-Sync aktiviert)
 - [x] Geplante Runs: company_dossiers taeglich via systemd Timer (Run + Sync Topic `company_dossiers`)
 - [ ] OpenWebUI + OpenRouter + Tavily + Jupyter Code Interpreter (Tool-Loop) Setup/Plan
-- [ ] Backup-Ziel definieren (Volumes):
+- [x] Backup-Ziel definieren (Volumes):
   - [x] Repo: Runbook + Scripts für Backup/Restore vorhanden (`docs/runbook_backup_restore.md:1`, `scripts/README.md:1`)
   - [x] Repo: systemd Timer Templates vorhanden (`scripts/systemd/ai_stack_backup.timer`, `scripts/systemd/ai_stack_backup.service`)
   - [x] Host: Backup-Verzeichnis festlegen (z. B. `/srv/ai-stack/backups`, chmod `700`) + systemd Timer installieren/aktivieren
