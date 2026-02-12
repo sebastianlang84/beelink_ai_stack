@@ -85,13 +85,19 @@
   - Status: `watchdog` wurde am 2026-02-04 auf User-Wunsch gestoppt.
   - Entscheidung offen: komplett deaktiviert lassen oder nur read-only Monitoring ohne Container-Stop-Actions.
 
-- [ ] **Kosten: Summaries ggf. ueber OpenAI/Google Abos statt API (Gemini CLI?)**
+- [x] **Kosten: Summaries ueber Gemini CLI statt OpenRouter API**
   Kontext: User hat OpenAI- und Google-Abos.
-  Idee: pruefen, ob wir Summaries mit einem guenstigen Modell wie Gemini 3 Flash ueber Abo (statt API) erstellen koennen, z.B. via Gemini CLI + Scripting.
-  Zwischenstand (2026-02-12): Headless POC-Runner vorhanden: `scripts/run-gemini-cli-summary-poc.sh` (Runbook: `docs/runbook-gemini-cli-summary-poc.md`).
-  Policy (2026-02-12): POC-Default auf `gemini-3-flash-preview` (Gemini-3-Flash Familie), Pro-Modelle im Script geblockt, Thinking per Prompt-Policy deaktiviert.
-  Monitoring (2026-02-12): Pro Lauf wird `*.usage.json` mit Token-/API-Stats geschrieben, um Verbrauch laufend zu beobachten.
-  DoD: POC-Skript laeuft headless auf dem Server und erzeugt Summary-Markdown im bestehenden Wrapper-Format (kompatibel zu OWUI Indexing).
+  Umsetzung (2026-02-12):
+  - `TM_LLM_BACKEND=gemini_cli` im TM-Compose/Env eingefuehrt.
+  - Runner-Unterstuetzung in `transcript-miner/src/transcript_ai_analysis/llm_runner.py` fuer Gemini CLI (Model-Policy: `gemini-3-flash-preview`, Pro-Block, no-thinking Prompt-Policy).
+  - Scheduler (`run-tm-investing*.sh`) startet Runs mit `skip_report=true`, damit keine OpenRouter-Report-Calls entstehen.
+  - End-to-End verifiziert: Run via Gemini CLI + `sync/topic/investing` erfolgreich (Indexing in OWUI Collections).
+  Monitoring:
+  - POC-Script `scripts/run-gemini-cli-summary-poc.sh` schreibt weiterhin `*.usage.json` mit Token-/API-Stats.
+
+- [ ] **Transcript Miner Reports auf Gemini CLI umstellen (derzeit `skip_report=true`)**
+  - Status: Summaries + Sync laufen auf Gemini CLI; Report-Generierung ist noch OpenRouter-basiert und wird im Scheduler deshalb bewusst uebersprungen.
+  - Ziel: Report-Pfad backend-neutral machen (Gemini CLI oder eigener Report-Switch), damit `skip_report` optional wieder deaktivierbar wird.
 
 - [ ] **Prompt-Engineering + RAG Umsetzung (OWUI)**
   - Ziel: Topic-reine Retrieval-Treffer (macro/stocks/crypto), weniger Drift, stabile Antwortstruktur.

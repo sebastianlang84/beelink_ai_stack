@@ -7,8 +7,12 @@ services:
       context: .
     restart: unless-stopped
     environment:
+      HOME: /data
       TRANSCRIPT_MINER_DEFAULT_LANGUAGES: ${TRANSCRIPT_MINER_DEFAULT_LANGUAGES:-de,en}
       TRANSCRIPT_MINER_LOG_LEVEL: ${TRANSCRIPT_MINER_LOG_LEVEL:-info}
+      TM_LLM_BACKEND: ${TM_LLM_BACKEND:-gemini_cli}
+      TM_GEMINI_CLI_MODEL: ${TM_GEMINI_CLI_MODEL:-}
+      TM_GEMINI_CLI_TIMEOUT_SECONDS: ${TM_GEMINI_CLI_TIMEOUT_SECONDS:-900}
       TRANSCRIPT_MINER_CONFIG_DIR: /transcript_miner_config
       TRANSCRIPT_MINER_OUTPUT_DIR: /transcript_miner_output
       YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}

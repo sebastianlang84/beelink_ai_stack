@@ -44,6 +44,7 @@ Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen
 3. Shared Config setzen (non-secret): `.config.env.example` → `.config.env` (nicht committen).
 4. Service-Config setzen (non-secret): `mcp-transcript-miner/.config.env.example` → `mcp-transcript-miner/.config.env` (nicht committen).
 5. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)
+6. Einmalige Gemini-Auth im Container (wenn `TM_LLM_BACKEND=gemini_cli`): `docker exec -it tm gemini` (bei `gemini-3-flash-preview` muss in `~/.gemini/settings.json` `preview=true` gesetzt sein)
 
 ## Quickstart (SEC EDGAR MCP)
 Ziel: MCP Tool fuer SEC EDGAR Filings als **MCP Streamable HTTP** im Docker-Netzwerk (keine Host-Ports).
@@ -128,13 +129,12 @@ Enable wieder:
 Optional (mit sudo): Timer wirklich deaktivieren:
 - `sudo systemctl disable --now ai-stack-tm-investing.timer ai-stack-tm-company-dossiers.timer ai_stack_backup.timer`
 
-## Gemini CLI Summary POC (statt OpenRouter API)
-- Ziel: Headless Test, ob Summary-Erzeugung ueber Gemini CLI stabil laeuft, bevor die produktive Pipeline umgebaut wird.
-- Script: `./scripts/run-gemini-cli-summary-poc.sh`
-- Runbook: `docs/runbook-gemini-cli-summary-poc.md:1`
-- Modell-Policy: Gemini-3-Flash als `gemini-3-flash-preview` (kein Pro-Modell; Thinking deaktiviert per Prompt-Policy).
-- Hinweis: bevorzugt Gemini-Account-Auth via `~/.gemini/settings.json`; fuer `gemini-3-flash-preview` muss dort `preview=true` gesetzt sein (`GEMINI_API_KEY` nur Fallback).
-- Verbrauchskontrolle: Pro Lauf wird eine `*.usage.json` mit Token-/API-Stats geschrieben (`tokens.input`, `tokens.total`, `tokens.thoughts`).
+## Gemini CLI Backend (Summaries)
+- Status: produktiv fuer Summary-Generierung in Transcript Miner (`TM_LLM_BACKEND=gemini_cli`).
+- Modell-Policy: `google/gemini-3-flash-preview` (normalisiert auf `gemini-3-flash-preview`), Pro-Modelle im Runner geblockt, no-thinking per Prompt-Policy.
+- Auth: bevorzugt Gemini-Account-Auth via `~/.gemini/settings.json`; fuer `gemini-3-flash-preview` muss `preview=true` gesetzt sein (`GEMINI_API_KEY` nur Fallback).
+- Scheduler-Default: `scripts/run-tm-investing.sh` und `scripts/run-tm-investing-companies.sh` setzen `skip_report=true` (Report-Pfad bleibt vorerst OpenRouter-basiert).
+- POC-Utility bleibt fuer Schnelltests verfuegbar: `./scripts/run-gemini-cli-summary-poc.sh` (schreibt `*.usage.json` mit Token-/API-Stats).
 
 Diagnose-Scripts (Transcript Miner):
 - Cookie-Load + Transcript-Request: `transcript-miner/tools/repro_cookie_load.py`

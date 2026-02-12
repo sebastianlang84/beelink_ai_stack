@@ -1,6 +1,10 @@
 # Changelog
 
 ## Unreleased
+- feat(transcript-miner): Summary-LLM Backend auf Gemini CLI erweiterbar gemacht (`TM_LLM_BACKEND=gemini_cli`) inkl. `gemini-3-flash-preview` Policy, Pro-Block und Usage-Logs im Runner
+- ops(mcp-transcript-miner): TM-Container installiert jetzt `@google/gemini-cli`; Compose setzt `TM_LLM_BACKEND=gemini_cli` + Timeout/Model-Overrides
+- ops(scripts): Scheduler-Runs (`run-tm-investing*.sh`) nutzen `skip_report=true` und brechen bei Run-Fehlern vor dem Sync hart ab
+- docs: README/TODO/scripts-README/mcp-transcript-miner-README auf produktiven Gemini-CLI-Summary-Flow aktualisiert
 - feat(scripts): Gemini-CLI POC schreibt jetzt pro Lauf `*.usage.json` mit Token-/API-Stats (inkl. `tokens.input/total/thoughts`) zur Verbrauchskontrolle
 - docs(gemini-cli): Preview-Mode Requirement dokumentiert (`~/.gemini/settings.json` mit `preview=true` fuer `gemini-3-flash-preview`)
 - fix(scripts): Gemini-CLI POC auf `gemini-3-flash-preview` festgelegt (laufender Gemini-3-Flash Modellname im CLI); Pro-Modelle geblockt und no-thinking Policy im Prompt verankert

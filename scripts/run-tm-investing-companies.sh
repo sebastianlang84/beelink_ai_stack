@@ -28,6 +28,9 @@ TOPIC = "company_dossiers"
 BASE = "http://127.0.0.1:8000"
 
 payload = {"config_id": CONFIG_ID}
+# Report generation currently uses OpenRouter API. For Gemini-CLI migration we
+# keep report disabled in scheduled runs.
+payload["skip_report"] = True
 req = urllib.request.Request(
     f"{BASE}/runs/start",
     data=json.dumps(payload).encode("utf-8"),
@@ -50,6 +53,9 @@ while True:
         status = json.loads(resp.read().decode("utf-8"))
     state = status.get("state")
     if state in ("finished", "failed"):
+        exit_code = status.get("exit_code")
+        if state == "failed" or (isinstance(exit_code, int) and exit_code != 0):
+            raise SystemExit(f"Run failed: state={state} exit_code={exit_code}")
         break
     time.sleep(15)
 

@@ -803,3 +803,19 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - `scripts/run-gemini-cli-summary-poc.sh` auf `-o json` umgestellt, `response` in `*.summary.md` extrahiert und neue Sidecar-Datei `*.usage.json` mit Model/API/Token-Stats eingefuehrt.
   - Done-Log erweitert (`tokens_input`, `tokens_total`, `tokens_thoughts`, `latency_ms`).
   - Living Docs aktualisiert: `docs/runbook-gemini-cli-summary-poc.md`, `scripts/README.md`, `README.md`, `TODO.md`, `CHANGELOG.md`.
+
+## 2026-02-12
+- Aufgabe: Produktiven Summary-Flow von OpenRouter auf Gemini CLI umgestellt und End-to-End verifiziert.
+- Probleme/Bugs/Issues:
+  - `tm` Container hatte zunaechst keine Gemini-CLI Runtime (Node/npm + `@google/gemini-cli` fehlten).
+  - `investing_test` Sync lief nach erfolgreichem Run in ein bewusstes Governance-Gate (`knowledge not found`, Auto-Create disabled/allowlist).
+  - Dirty Worktree mit bestehenden User-Aenderungen (`transcript-miner/config/config_investing*.yaml`, `wasticlaw-coms/`) blieb bestehen und wurde nicht bereinigt.
+- Loesung:
+  - `mcp-transcript-miner/Dockerfile` erweitert (Node/npm + globale Gemini CLI Installation), Compose um `TM_LLM_BACKEND`, `TM_GEMINI_CLI_MODEL`, `TM_GEMINI_CLI_TIMEOUT_SECONDS` + `HOME=/data` ergaenzt.
+  - `transcript-miner/src/transcript_ai_analysis/llm_runner.py` um Backend-Switch (`openrouter|gemini_cli|auto`) und Gemini-CLI Call-Path erweitert (Model-Normalisierung, Pro-Block, no-thinking Prompt-Policy, Usage-Logging).
+  - Scheduler-Skripte (`scripts/run-tm-investing.sh`, `scripts/run-tm-investing-companies.sh`) auf `skip_report=true` gesetzt und Fail-Fast vor Sync bei `failed`/`exit_code!=0` gehaertet.
+  - Verifikation:
+    - E2E-Run `config_investing_test.yaml` erfolgreich (`run_id=03a88e66c48a4462b7491e7794469283`, `state=finished`, `exit_code=0`).
+    - Logbeleg fuer Gemini CLI: wiederholte `gemini-cli usage ... model_effective=gemini-3-flash-preview ... tokens_thoughts=0`.
+    - OWUI-Indexing-Kette verifiziert via `sync/topic/investing` (`processed=5`, `indexed=5`, `errors=0`) und OWUI API zeigt `investing_new`/`investing_archive` jeweils `status=completed` fuer alle Files.
+  - Living Docs aktualisiert: `README.md`, `scripts/README.md`, `mcp-transcript-miner/README.md`, `TODO.md`, `CHANGELOG.md`.

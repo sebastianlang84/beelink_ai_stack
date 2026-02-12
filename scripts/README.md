@@ -71,7 +71,7 @@
 - Runbook:
   - `docs/runbook-owui-502-autorecover.md:1`
 
-## Gemini CLI Summary POC (headless)
+## Gemini CLI Summary POC (headless helper)
 - Quick test (default fixture prompt + transcript):
   - `./scripts/run-gemini-cli-summary-poc.sh`
 - Output:
@@ -87,6 +87,14 @@
   - `GEMINI_API_KEY` nur als Fallback
 - Runbook:
   - `docs/runbook-gemini-cli-summary-poc.md:1`
+
+## Transcript Miner LLM Backend (Gemini CLI)
+- Produktiv-Backend fuer Summaries: `TM_LLM_BACKEND=gemini_cli` (in `mcp-transcript-miner/.config.env`).
+- Einmalige Auth im Container:
+  - `docker exec -it tm gemini`
+- Modell-Policy:
+  - `google/gemini-3-flash-preview` in den TM-Configs (normalisiert auf `gemini-3-flash-preview`)
+  - Pro-Modelle sind geblockt, Thinking per Prompt-Policy deaktiviert.
 
 ## Open WebUI RAG Guard (Investing)
 - Apply stricter day-sensitive retrieval defaults in OWUI config (`webui.db`) and restart `owui`:
@@ -148,6 +156,7 @@
 - One-shot run (investing):
   - `./scripts/run-tm-investing.sh`
 - The run script waits for completion and triggers `sync.topic` for `investing` (global lifecycle routing -> `investing_new` + `investing_archive`).
+- Gemini migration detail: scheduler sends `skip_report=true` (Summary/Sync ja, Report nein), weil Report-Generierung aktuell noch OpenRouter nutzt.
 - One-shot run (Company Dossier Agent):
   - `./scripts/run-tm-investing-companies.sh`
 - The company script uses `config_investing_companies.yaml` and syncs topic `company_dossiers`.

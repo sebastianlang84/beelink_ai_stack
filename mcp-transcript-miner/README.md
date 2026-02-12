@@ -113,6 +113,21 @@ Optional:
 
 Persistenz/Backup: `docs/runbook_backup_restore.md:1`
 
+## LLM Backend (Gemini CLI)
+- Der TM-Container unterstuetzt jetzt zwei LLM-Backends fuer Summary-Generierung:
+  - `TM_LLM_BACKEND=openrouter` (bisherig, mit `OPENROUTER_API_KEY`)
+  - `TM_LLM_BACKEND=gemini_cli` (neu, ohne OpenRouter API-Calls)
+- Einmalige Auth fuer `gemini_cli` im Container:
+  - `docker exec -it tm gemini`
+- Modell-Policy:
+  - nutze `google/gemini-3-flash-preview` in der Config (wird intern auf `gemini-3-flash-preview` normalisiert)
+  - Pro-Modelle sind im Runner geblockt.
+- Optional:
+  - `TM_GEMINI_CLI_MODEL` ueberschreibt das Modell aus der Config
+  - `TM_GEMINI_CLI_TIMEOUT_SECONDS` setzt das CLI-Timeout (Default `900`)
+- Betriebsdetail Scheduler:
+  - `scripts/run-tm-investing.sh` und `scripts/run-tm-investing-companies.sh` starten aktuell mit `skip_report=true`, da der Report-Pfad noch OpenRouter-basiert ist.
+
 ## Troubleshooting
 
 ### Sync teilweise fehlgeschlagen (`status=partial`, `step=process`)

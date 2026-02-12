@@ -220,7 +220,9 @@ Indexing (Knowledge Collections):
 Notes:
 - If a tool call fails, reduce output size using `max_chars` and retry.
 - If tools are not enabled in the current chat, the model cannot call them.
-- `POST /runs/start` requires `YOUTUBE_API_KEY` and (if LLM analysis enabled) `OPENROUTER_API_KEY` in the tool container environment.
+- `POST /runs/start` requires `YOUTUBE_API_KEY` and, with LLM enabled, backend-specific auth:
+  - `TM_LLM_BACKEND=openrouter`: `OPENROUTER_API_KEY`
+  - `TM_LLM_BACKEND=gemini_cli`: one-time `gemini` login inside the `tm` container (`docker exec -it tm gemini`)
   - Example: start a run: `POST /runs/start` with `{"config_id":"config_investing.yaml"}`
   - Then poll: `GET /runs/{run_id}`
   - Then index: `POST /sync/topic/investing` (Knowledge-Name = Topic; optional mapping via `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON`)

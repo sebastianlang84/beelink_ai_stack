@@ -6,6 +6,8 @@ import logging
 import os
 import random
 import re
+import shutil
+import subprocess
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -561,6 +563,138 @@ def _build_openrouter_headers(cfg: Any) -> dict[str, str]:
     return headers
 
 
+def _resolve_llm_backend(*, model: str) -> str:
+    raw = (os.environ.get("TM_LLM_BACKEND") or "openrouter").strip().lower()
+    if raw in {"gemini_cli", "gemini-cli"}:
+        return "gemini_cli"
+    if raw in {"openrouter", "openai"}:
+        return "openrouter"
+    if raw == "auto":
+        if "gemini" in (model or "").strip().lower() and shutil.which("gemini"):
+            return "gemini_cli"
+        return "openrouter"
+    logger.warning("Unknown TM_LLM_BACKEND=%r; falling back to openrouter", raw)
+    return "openrouter"
+
+
+def _normalize_gemini_cli_model(model: str) -> str:
+    override = (os.environ.get("TM_GEMINI_CLI_MODEL") or "").strip()
+    if override:
+        return override
+    normalized = (model or "").strip()
+    if "/" in normalized:
+        provider, suffix = normalized.split("/", 1)
+        if provider.strip().lower() in {"google", "gemini"}:
+            normalized = suffix.strip()
+    return normalized or "gemini-3-flash-preview"
+
+
+def _call_gemini_cli(
+    *,
+    model: str,
+    system_prompt: str,
+    user_prompt_text: str,
+) -> str | None:
+    gemini_bin = shutil.which("gemini")
+    if not gemini_bin:
+        logger.error("Gemini CLI backend selected but 'gemini' command is not available.")
+        return None
+
+    model_cli = _normalize_gemini_cli_model(model)
+    if "pro" in model_cli.lower():
+        logger.error("Gemini CLI model blocked by policy (no pro models): %s", model_cli)
+        return None
+
+    combined_prompt = (
+        "Follow the SYSTEM PROMPT exactly.\n"
+        "Use the USER PROMPT as task input.\n"
+        "Return only the final answer content.\n"
+        "Do not use thinking/reasoning mode.\n\n"
+        "===== SYSTEM PROMPT =====\n"
+        f"{system_prompt}\n\n"
+        "===== USER PROMPT =====\n"
+        f"{user_prompt_text}\n"
+    )
+    timeout_s = max(30, int(os.environ.get("TM_GEMINI_CLI_TIMEOUT_SECONDS", "900")))
+    cmd = [
+        gemini_bin,
+        "--model",
+        model_cli,
+        "-o",
+        "json",
+        "--approval-mode",
+        "yolo",
+        "-p",
+        "Use the full prompt from stdin.",
+    ]
+    try:
+        proc = subprocess.run(
+            cmd,
+            input=combined_prompt,
+            text=True,
+            capture_output=True,
+            timeout=timeout_s,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        logger.error("Gemini CLI call timed out after %ss (model=%s)", timeout_s, model_cli)
+        return None
+    except Exception as exc:
+        logger.error("Gemini CLI invocation failed: %s", exc)
+        return None
+
+    if proc.returncode != 0:
+        err = (proc.stderr or "").strip()
+        if len(err) > 2000:
+            err = err[:2000] + "..."
+        logger.error("Gemini CLI call failed (exit=%s): %s", proc.returncode, err)
+        return None
+
+    raw = (proc.stdout or "").lstrip()
+    try:
+        payload, _ = json.JSONDecoder().raw_decode(raw)
+    except Exception as exc:
+        logger.error("Gemini CLI JSON parse failed: %s", exc)
+        return None
+
+    response = payload.get("response") if isinstance(payload, dict) else None
+    if not isinstance(response, str):
+        logger.error("Gemini CLI response missing 'response' text field.")
+        return None
+
+    try:
+        stats = payload.get("stats") or {}
+        models = stats.get("models") if isinstance(stats, dict) else {}
+        model_stats = {}
+        model_effective = model_cli
+        if isinstance(models, dict):
+            if model_cli in models and isinstance(models.get(model_cli), dict):
+                model_stats = models[model_cli]
+            elif models:
+                model_effective = str(next(iter(models)))
+                first = models.get(model_effective)
+                if isinstance(first, dict):
+                    model_stats = first
+        api = model_stats.get("api") if isinstance(model_stats, dict) else {}
+        tokens = model_stats.get("tokens") if isinstance(model_stats, dict) else {}
+        logger.info(
+            "gemini-cli usage model_requested=%s model_effective=%s requests=%s errors=%s latency_ms=%s tokens_input=%s tokens_total=%s tokens_thoughts=%s tokens_cached=%s",
+            model_cli,
+            model_effective,
+            (api.get("totalRequests") if isinstance(api, dict) else 0),
+            (api.get("totalErrors") if isinstance(api, dict) else 0),
+            (api.get("totalLatencyMs") if isinstance(api, dict) else 0),
+            (tokens.get("input") if isinstance(tokens, dict) else 0),
+            (tokens.get("total") if isinstance(tokens, dict) else 0),
+            (tokens.get("thoughts") if isinstance(tokens, dict) else 0),
+            (tokens.get("cached") if isinstance(tokens, dict) else 0),
+        )
+    except Exception:
+        pass
+
+    return response
+
+
 def summarize_transcript_ref(
     *,
     cfg: Any,
@@ -582,14 +716,17 @@ def summarize_transcript_ref(
     max_input_tokens = llm_cfg.max_input_tokens
     max_output_tokens = llm_cfg.max_output_tokens
 
-    openrouter_api_key = _resolve_openrouter_api_key(cfg)
-    if not openrouter_api_key:
-        logger.error("LLM API key missing (set OPENROUTER_API_KEY).")
-        if run_stats is not None:
-            run_stats.inc("summaries_failed")
-        return False
-
-    openrouter_headers = _build_openrouter_headers(cfg)
+    llm_backend = _resolve_llm_backend(model=model)
+    openrouter_api_key: str | None = None
+    openrouter_headers: dict[str, str] = {}
+    if llm_backend == "openrouter":
+        openrouter_api_key = _resolve_openrouter_api_key(cfg)
+        if not openrouter_api_key:
+            logger.error("LLM API key missing (set OPENROUTER_API_KEY).")
+            if run_stats is not None:
+                run_stats.inc("summaries_failed")
+            return False
+        openrouter_headers = _build_openrouter_headers(cfg)
 
     def _format_user_prompt(
         *,
@@ -629,6 +766,13 @@ def summarize_transcript_ref(
         ) + body
 
     def _call_llm(*, user_prompt_text: str) -> str | None:
+        if llm_backend == "gemini_cli":
+            return _call_gemini_cli(
+                model=model,
+                system_prompt=system_prompt,
+                user_prompt_text=user_prompt_text,
+            )
+
         try:
             req_kwargs: dict[str, Any] = {
                 "model": model,
@@ -1246,40 +1390,43 @@ def run_llm_analysis(
             current_utc=current_utc, current_vienna=current_vienna
         ) + body
 
-    # API key resolution (LLM): standardize on OpenRouter.
-    # Keys are expected to come from `.env` (loaded by the CLI entrypoints).
-    openrouter_api_key = (
-        cfg.api.openrouter_api_key
-        or os.environ.get("OPENROUTER_API_KEY")
-        # Legacy env var used in existing local `.env`:
-        or os.environ.get("openrouter_key")
-        # Backward compatibility with older docs/tests:
-        or cfg.api.openai_api_key
-        or os.environ.get("OPENAI_API_KEY")
-    )
-    if not openrouter_api_key:
-        _fail(
-            "analysis_missing_openai_api_key",
-            "LLM API key missing (set OPENROUTER_API_KEY in environment/.env)",
-            {},
-        )
-        # Fallback audit write
-        try:
-            _atomic_write_text(
-                reports_root / "audit_no_key.jsonl",
-                "\n".join(audit_lines) + "\n",
-            )
-        except Exception:
-            pass
-        return 1
-
+    llm_backend = _resolve_llm_backend(model=model)
+    openrouter_api_key: str | None = None
     openrouter_headers: dict[str, str] = {}
-    title_value = (cfg.api.openrouter_app_title or "TranscriptMiner").strip()
-    if title_value:
-        openrouter_headers["X-Title"] = title_value
-    referer_value = (cfg.api.openrouter_http_referer or "").strip()
-    if referer_value:
-        openrouter_headers["HTTP-Referer"] = referer_value
+    if llm_backend == "openrouter":
+        # API key resolution (LLM): standardize on OpenRouter.
+        # Keys are expected to come from `.env` (loaded by the CLI entrypoints).
+        openrouter_api_key = (
+            cfg.api.openrouter_api_key
+            or os.environ.get("OPENROUTER_API_KEY")
+            # Legacy env var used in existing local `.env`:
+            or os.environ.get("openrouter_key")
+            # Backward compatibility with older docs/tests:
+            or cfg.api.openai_api_key
+            or os.environ.get("OPENAI_API_KEY")
+        )
+        if not openrouter_api_key:
+            _fail(
+                "analysis_missing_openai_api_key",
+                "LLM API key missing (set OPENROUTER_API_KEY in environment/.env)",
+                {},
+            )
+            # Fallback audit write
+            try:
+                _atomic_write_text(
+                    reports_root / "audit_no_key.jsonl",
+                    "\n".join(audit_lines) + "\n",
+                )
+            except Exception:
+                pass
+            return 1
+
+        title_value = (cfg.api.openrouter_app_title or "TranscriptMiner").strip()
+        if title_value:
+            openrouter_headers["X-Title"] = title_value
+        referer_value = (cfg.api.openrouter_http_referer or "").strip()
+        if referer_value:
+            openrouter_headers["HTTP-Referer"] = referer_value
 
     index_manifest = json.loads(index_manifest_path.read_text(encoding="utf-8"))
     source_index_schema_version = int(index_manifest.get("schema_version", 0))
@@ -1582,6 +1729,20 @@ def run_llm_analysis(
     _atomic_write_text(llm_dir / "system_prompt.txt", system_prompt)
 
     def _call_llm(*, user_prompt_text: str) -> str | None:
+        if llm_backend == "gemini_cli":
+            content = _call_gemini_cli(
+                model=model,
+                system_prompt=system_prompt,
+                user_prompt_text=user_prompt_text,
+            )
+            if content is None:
+                _fail(
+                    "analysis_llm_call_failed",
+                    "Gemini CLI call failed",
+                    {"model": model},
+                )
+            return content
+
         response: Any
         try:
             req_kwargs: dict[str, Any] = {
