@@ -80,6 +80,9 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
 - Rotation: `investing_new` hält pro Channel max. 2 neueste Videos (zusätzlich optional begrenzt über `owui_collections.new_max_age_days`); Rest (bis 15 Tage alt) liegt in `investing_archive`.
 - Älter als Archive-Fenster: Summary-Dateien werden automatisch nach `output/data/summaries/cold/by_video_id/` verschoben (leicht rückverschiebbar per `mv`).
 - Trigger: `./scripts/sync-investing-lifecycle.sh` (reconciled beide Collections aus Source-Topic `investing`: add/move/remove ohne Delete+Recreate, damit Knowledge-IDs und OWUI-Folder-Bindings stabil bleiben).
+- Download-unabhaengige Maintenance (neu): `./scripts/maintain-investing-lifecycle.sh ensure` (Lifecycle-Sweep + Freshness-Guard).
+- `ensure` beinhaltet zudem einen Orphan-Prune (stale hot summaries ohne aktuellen investing-Index-Eintrag -> `cold`).
+- Runbook: `docs/runbook-tm-lifecycle-maintenance.md:1`
 
 ## Scheduled Runs (investing, alle 3h)
 Systemd Timer für automatische Runs inkl. Sync (Lifecycle-Routing):
@@ -101,8 +104,19 @@ Systemd Timer fuer den Company Dossier Agent (Run + Sync Topic `company_dossiers
    - `sudo systemctl enable --now ai-stack-tm-company-dossiers.timer`
 3. Status: `systemctl status ai-stack-tm-company-dossiers.timer`
 
+## Scheduled Maintenance (investing lifecycle, taeglich)
+Systemd Timer fuer Cleanup/Rotation ohne neue Downloads:
+1. `scripts/maintain-investing-lifecycle.sh ensure` fuehrt Lifecycle-Sync und danach den Freshness-Guard aus.
+2. Install:
+   - `sudo cp /home/wasti/ai_stack/scripts/systemd/ai-stack-tm-investing-maintenance.service /etc/systemd/system/`
+   - `sudo cp /home/wasti/ai_stack/scripts/systemd/ai-stack-tm-investing-maintenance.timer /etc/systemd/system/`
+   - `sudo systemctl daemon-reload`
+   - `sudo systemctl enable --now ai-stack-tm-investing-maintenance.timer`
+3. Status: `systemctl status ai-stack-tm-investing-maintenance.timer`
+
 ## Cost Control: Schedules pausieren (ohne sudo)
 Wenn API-Kosten explodieren: Kill-Switch setzen. Dann laufen Timer zwar weiter, aber die ai_stack Run-/Backup-Skripte beenden sofort (keine Runs, kein Sync, keine API-Calls).
+Hinweis: Der separate Lifecycle-Maintenance-Job (`maintain-investing-lifecycle.sh`) bleibt davon absichtlich unberuehrt.
 
 Disable:
 - `mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}/ai_stack"`

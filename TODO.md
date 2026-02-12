@@ -113,6 +113,7 @@
     - Runner-Skript: `scripts/run-tm-investing-companies.sh` (sync topic: `company_dossiers`)
     - Lifecycle-Routing global: `POST /sync/topic/<topic>` synced nach `<topic>_new` + `<topic>_archive` (Regeln aus `transcript-miner/config/config_global.yaml`)
     - Host-Skript: `scripts/sync-investing-lifecycle.sh` (Investing)
+    - Download-unabhaengige Maintenance: `scripts/maintain-investing-lifecycle.sh` + Freshness-Guard `scripts/check-hot-summaries-freshness.sh` + systemd Timer `ai-stack-tm-investing-maintenance.timer` (2026-02-12)
     - Cold-Storage aktiv: Summaries >15 Tage werden beim Lifecycle-Sync automatisch nach `output/data/summaries/cold/by_video_id/` verschoben
   - Offen:
     - Upsert-Mechanik fuer echte `company_dossiers`-Dateien (nicht nur Dossier-Deltas pro Video).

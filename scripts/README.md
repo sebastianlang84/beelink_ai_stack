@@ -89,6 +89,24 @@
 - Reconcile `investing_new` + `investing_archive` from source topic (`investing`) with recency rules (add/move/remove, Knowledge-IDs bleiben stabil):
   - `./scripts/sync-investing-lifecycle.sh`
 
+## Investing Lifecycle Maintenance (ohne Downloads)
+- Run cleanup/rotation + guard check (default):
+  - `./scripts/maintain-investing-lifecycle.sh ensure`
+- `ensure` fuehrt zusaetzlich einen lokalen Orphan-Prune aus (stale hot summaries ohne aktuellen Index-Eintrag -> `cold/`).
+- Nur lifecycle sync:
+  - `./scripts/maintain-investing-lifecycle.sh sync`
+- Nur guard check:
+  - `./scripts/maintain-investing-lifecycle.sh check`
+- Dry-run (no mutations) + guard:
+  - `./scripts/maintain-investing-lifecycle.sh dry-run`
+- Guard direkt:
+  - `./scripts/check-hot-summaries-freshness.sh`
+- systemd templates:
+  - `scripts/systemd/ai-stack-tm-investing-maintenance.service`
+  - `scripts/systemd/ai-stack-tm-investing-maintenance.timer`
+- Runbook:
+  - `docs/runbook-tm-lifecycle-maintenance.md:1`
+
 ## Provision / Migration (Naming SSOT)
 - Provision shared Docker objects (network + named volumes):
   - `./scripts/provision_ai_stack_docker_objects.sh`
@@ -125,6 +143,9 @@
 - systemd templates (company dossiers daily):
   - `scripts/systemd/ai-stack-tm-company-dossiers.service`
   - `scripts/systemd/ai-stack-tm-company-dossiers.timer`
+- systemd templates (investing maintenance daily, download-unabhaengig):
+  - `scripts/systemd/ai-stack-tm-investing-maintenance.service`
+  - `scripts/systemd/ai-stack-tm-investing-maintenance.timer`
 
 ## Maintenance / Cleanup
 - Purge a test topic (transcripts, summaries, reports, history + Open WebUI Knowledge):

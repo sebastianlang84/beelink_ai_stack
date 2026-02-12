@@ -17,6 +17,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 - `docs/runbook_backup_restore.md` — Backups/Restore für Volumes + Output Root
 - `docs/runbook_smoke_test.md` — Smoke Test (P0): Open WebUI + Transcript Miner Tool + Tool→OWUI Auth
 - `docs/runbook-owui-502-autorecover.md` — OWUI 502 Auto-Recovery (Tailscale Serve Upstream, Script + systemd Timer)
+- `docs/runbook-tm-lifecycle-maintenance.md` — Lifecycle Maintenance (cleanup/rotation ohne Downloads) + Freshness Guard
 - `docs/runbook_openwebui_reindex_knowledge.md` — Reindex nach Embedding‑Model‑Wechsel (Knowledge Collections Recovery)
 - `docs/runbook_youtube_429_mitigation.md` — Runbook für YouTube Transcript 429 (Tests + Mitigation)
 - `docs/runbook_codex_ssh_auth_dns_guard.md` — Codex VS Code Remote-SSH Auth-Guard (Tailscale DNS Override verhindern)

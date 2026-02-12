@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Transcript Miner investing lifecycle maintenance daily
+
+[Timer]
+# Daily maintenance sweep independent from download schedules.
+OnCalendar=*-*-* 02:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

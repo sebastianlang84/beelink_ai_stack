@@ -744,3 +744,16 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - systemd Templates hinzugefuegt: `scripts/systemd/ai-stack-owui-ensure.service` + `scripts/systemd/ai-stack-owui-ensure.timer` (2-Minuten-Intervall).
   - Runbook erstellt: `docs/runbook-owui-502-autorecover.md` inkl. Install/Verifikation/Troubleshooting.
   - Living Docs aktualisiert: `TODO.md` (Task auf erledigt, Umsetzung dokumentiert), `README.md`, `open-webui/README.md`, `scripts/README.md`, `docs/README.md`, `CHANGELOG.md`.
+
+## 2026-02-12
+- Aufgabe: Download und Lifecycle-Cleanup entkoppelt (separater Maintenance-Flow fuer investing).
+- Probleme/Bugs/Issues:
+  - `hot`-Summaries wurden ohne laufende Sync-Maintenance nicht regelmaessig gegen Altersregeln bereinigt.
+  - Bestehender Kill-Switch (`schedulers.disabled`) sollte nicht auch den reinen Cleanup-Flow blockieren.
+  - Erste Prune-Implementierung auf Host schlug mit `PermissionError` fehl (Dateien aus Container-Workflow).
+- Loesung:
+  - Neue Scripts: `scripts/maintain-investing-lifecycle.sh` (sync/check/ensure/dry-run) und `scripts/check-hot-summaries-freshness.sh` (Guard auf stale hot summaries).
+  - Orphan-Prune in `ensure`: stale hot summaries ohne aktuellen `indexes/investing/current/transcripts.jsonl`-Eintrag werden innerhalb des `tm`-Containers nach `cold` verschoben (rechte-sicher).
+  - Neue systemd Templates: `scripts/systemd/ai-stack-tm-investing-maintenance.service` + `.timer` (taeglicher Maintenance-Sweep ohne Downloads).
+  - Runbook erstellt: `docs/runbook-tm-lifecycle-maintenance.md`.
+  - Living Docs aktualisiert: `README.md`, `scripts/README.md`, `docs/README.md`, `TODO.md`, `CHANGELOG.md`.
