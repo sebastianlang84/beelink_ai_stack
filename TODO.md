@@ -47,7 +47,6 @@
 ### Operative Priorisierung (Stand: 2026-02-12)
 
 - `P0 (Stabilitaet zuerst)`
-  - `OWUI-Verfuegbarkeit gegen 502 haerten (Tailscale Serve Upstream)`
   - `Prompt-Engineering + RAG Umsetzung (OWUI)`
   - `Collection-Split + Rollierende Retention (investing_new / investing_archive / company_dossiers)` mit Fokus auf echte `company_dossiers` Upserts
   - `OWUI RAG/Embedder Settings Snapshot` final entscheiden und sauber umsetzen (Reranker/Text-Splitter)
@@ -73,9 +72,13 @@
     - Re-Run erzeugt keine Duplikate
     - Retrieval-Test in OWUI liefert relevante Treffer fuer Filing-basierte Fragen
 
-- [ ] **OWUI-Verfuegbarkeit gegen 502 haerten (Tailscale Serve Upstream)**
+- [x] **OWUI-Verfuegbarkeit gegen 502 haerten (Tailscale Serve Upstream)**
   - Problem: Wenn `owui` gestoppt ist (`Exited`), liefert `https://owui.tail027324.ts.net` sofort HTTP 502 trotz korrekter Serve-Config.
   - Ziel: Automatischer Check/Repair fuer `owui` (z. B. Watchdog-Check oder systemd Timer mit `docker compose up -d owui` bei Ausfall).
+  - Umsetzung (2026-02-12):
+    - Script: `scripts/ensure-owui-up.sh` (`status|ensure|recover`)
+    - systemd Templates: `scripts/systemd/ai-stack-owui-ensure.service` + `scripts/systemd/ai-stack-owui-ensure.timer`
+    - Runbook: `docs/runbook-owui-502-autorecover.md`
   - DoD: Bei gestopptem `owui` wird der Dienst ohne manuelles Eingreifen wieder gestartet; Runbook + Skript dokumentiert.
 
 - [ ] **Watchdog-Reaktivierung bewusst entscheiden (derzeit pausiert)**

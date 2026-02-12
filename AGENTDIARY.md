@@ -733,3 +733,14 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - In `TODO.md` eine neue Sektion `Operative Priorisierung (Stand: 2026-02-12)` mit P0/P1/P2-Reihenfolge eingefuegt.
   - Parent-Tasks mit vollstaendig erledigten Subtasks auf erledigt gesetzt: Tailnet-HTTPS, Smoke-Test Runbook, Backup-Ziel (Volumes).
   - Living Docs geprueft/aktualisiert: `TODO.md` und `CHANGELOG.md` aktualisiert; `README.md` geprueft, keine Aenderung noetig.
+
+## 2026-02-12
+- Aufgabe: P0-Task umgesetzt: OWUI-Verfuegbarkeit gegen Tailscale-Serve-502 haerten (Auto-Check/Auto-Recovery).
+- Probleme/Bugs/Issues:
+  - Ausfallbild: wenn Container `owui` stoppt, liefert die externe `ts.net` URL sofort 502.
+  - Worktree war weiterhin dirty mit unrelated Aenderungen (`transcript-miner/config/config_investing.yaml`, `wasticlaw-coms/`), daher nicht angefasst.
+- Loesung:
+  - Neues Ops-Script implementiert: `scripts/ensure-owui-up.sh` mit `status|ensure|recover` (Healthcheck `http://127.0.0.1:3000/`, Recovery via `docker compose up -d owui`).
+  - systemd Templates hinzugefuegt: `scripts/systemd/ai-stack-owui-ensure.service` + `scripts/systemd/ai-stack-owui-ensure.timer` (2-Minuten-Intervall).
+  - Runbook erstellt: `docs/runbook-owui-502-autorecover.md` inkl. Install/Verifikation/Troubleshooting.
+  - Living Docs aktualisiert: `TODO.md` (Task auf erledigt, Umsetzung dokumentiert), `README.md`, `open-webui/README.md`, `scripts/README.md`, `docs/README.md`, `CHANGELOG.md`.

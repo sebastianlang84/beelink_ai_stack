@@ -31,6 +31,19 @@ Wichtig: OWUI redirectet nach Login auf `/`. Ein reines `/owui`-Setup ist daher 
 
 Option C (spater): Reverse Proxy (Traefik/Caddy) im Docker-Netz.
 
+## 502 Auto-Recovery (Tailscale Serve Upstream)
+Wenn `owui` gestoppt ist, liefert die `ts.net` URL typischerweise sofort `502`.
+
+Ops-Commands:
+- Status: `./scripts/ensure-owui-up.sh status`
+- Auto-Recover: `./scripts/ensure-owui-up.sh ensure`
+
+Persistenter Guard (systemd timer):
+- `scripts/systemd/ai-stack-owui-ensure.service`
+- `scripts/systemd/ai-stack-owui-ensure.timer`
+
+Runbook: `docs/runbook-owui-502-autorecover.md:1`
+
 ## Persistenz / Backup
 - Volume: `owui-data` (Pfad im Container: `/app/backend/data`)
 

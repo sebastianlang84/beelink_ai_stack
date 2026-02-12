@@ -31,6 +31,12 @@ RAG Retrieval (aktueller Stand, 2026-02-04): `top_k=15`, `top_k_reranker=5`, `re
 Day-sensitive Guard (heute/des Tages/latest): Striktes Same-Day-Sufficiency-Gate im OWUI-RAG-Template aktiv; Update reproduzierbar via `./scripts/openwebui_apply_investing_rag_guard.sh`.
 API Keys (aktueller Stand): Default User Permissions erlauben `features.api_keys=true` (siehe `open-webui/README.md:1`).
 
+## Open WebUI 502 Auto-Recovery (Tailscale Serve)
+Wenn `owui` stoppt und die `ts.net` URL `502` liefert:
+- Script: `./scripts/ensure-owui-up.sh ensure`
+- Runbook: `docs/runbook-owui-502-autorecover.md:1`
+- Optional persistent: systemd Timer via `scripts/systemd/ai-stack-owui-ensure.{service,timer}`
+
 ## Quickstart (Transcript Miner Tool)
 Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen, Runs starten, Summaries indexieren).
 1. Shared Docker-Objekte provisionieren (Network + Volumes, einmalig): `./scripts/provision_ai_stack_docker_objects.sh`

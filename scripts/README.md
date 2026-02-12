@@ -58,6 +58,19 @@
   - `./scripts/smoke_test_ai_stack.sh --up --build`
   - Runbook: `docs/runbook_smoke_test.md:1`
 
+## Open WebUI 502 Auto-Recovery (Tailscale Serve Upstream)
+- Status only (no changes):
+  - `./scripts/ensure-owui-up.sh status`
+- Idempotent check + auto-recover (`docker compose up -d owui` when degraded):
+  - `./scripts/ensure-owui-up.sh ensure`
+- Force recovery:
+  - `./scripts/ensure-owui-up.sh recover`
+- systemd templates:
+  - `scripts/systemd/ai-stack-owui-ensure.service`
+  - `scripts/systemd/ai-stack-owui-ensure.timer`
+- Runbook:
+  - `docs/runbook-owui-502-autorecover.md:1`
+
 ## Open WebUI RAG Guard (Investing)
 - Apply stricter day-sensitive retrieval defaults in OWUI config (`webui.db`) and restart `owui`:
   - `./scripts/openwebui_apply_investing_rag_guard.sh`

@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Open WebUI every 2 minutes and auto-recover when degraded
+
+[Timer]
+OnBootSec=2m
+OnUnitActiveSec=2m
+Persistent=true
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

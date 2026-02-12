@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- fix(open-webui): 502-Auto-Recovery fuer Tailscale Serve Upstream hinzugefuegt (`scripts/ensure-owui-up.sh` + systemd Timer/Service + Runbook)
 - docs(todo): TODO aufgeraeumt (operative Priorisierung P0->P2 ergaenzt; erledigte Parent-Tasks fuer Tailnet-HTTPS, Smoke-Test und Backup auf `x` gesetzt)
 - ops(scripts): systemd Timer/Service Templates fuer `company_dossiers` taeglich hinzugefuegt
 - fix(scripts): Kill-Switch Datei (`$XDG_STATE_HOME/.../ai_stack/schedulers.disabled`) um Schedules ohne sudo sofort zu pausieren
