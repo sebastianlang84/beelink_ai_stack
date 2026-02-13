@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Changed
+- **Config-Timeouts wirksam verdrahtet:** `youtube.api_timeout_s` steuert YouTube-Data-API Calls, `analysis.llm.timeout_s` steuert Summary-LLM-Calls (OpenRouter + Gemini CLI), und `report.llm.timeout_s` steuert Report-LLM-Calls.
+- **Strikte Config-Validierung:** Unbekannte Keys werden jetzt abgewiesen (`extra=forbid`), um nicht verdrahtete oder falsch geschriebene Felder frueh sichtbar zu machen.
 - **Markdown-only Summaries:** Per-video Summaries werden jetzt als Strict Markdown (fixe Sections + Source-Block) erzeugt; JSON-Extract-Validatoren und task-spezifische Schema-Validatoren wurden entfernt.
 - **IP-Block Reporting:** Run-Summary zeigt YouTube-IP-Blocks separat; Block-Events werden als Alert im Run-Status sichtbar.
 - **Block-Klassifikation:** `Subtitles disabled`/`No transcript` wird nicht mehr als IP-Block behandelt; echte Rate-Limits bleiben Block.

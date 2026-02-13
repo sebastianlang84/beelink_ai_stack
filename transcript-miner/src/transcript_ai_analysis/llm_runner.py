@@ -594,6 +594,7 @@ def _call_gemini_cli(
     model: str,
     system_prompt: str,
     user_prompt_text: str,
+    timeout_s: int | None = None,
 ) -> str | None:
     gemini_bin = shutil.which("gemini")
     if not gemini_bin:
@@ -615,7 +616,11 @@ def _call_gemini_cli(
         "===== USER PROMPT =====\n"
         f"{user_prompt_text}\n"
     )
-    timeout_s = max(30, int(os.environ.get("TM_GEMINI_CLI_TIMEOUT_SECONDS", "900")))
+    timeout_from_cfg = max(30, int(timeout_s or 900))
+    timeout_s = max(
+        30,
+        int(os.environ.get("TM_GEMINI_CLI_TIMEOUT_SECONDS", str(timeout_from_cfg))),
+    )
     cmd = [
         gemini_bin,
         "--model",
@@ -715,6 +720,7 @@ def summarize_transcript_ref(
     user_prompt_template = llm_cfg.user_prompt_template or ""
     max_input_tokens = llm_cfg.max_input_tokens
     max_output_tokens = llm_cfg.max_output_tokens
+    llm_timeout_s = max(30, int(getattr(llm_cfg, "timeout_s", 600)))
 
     llm_backend = _resolve_llm_backend(model=model)
     openrouter_api_key: str | None = None
@@ -771,6 +777,7 @@ def summarize_transcript_ref(
                 model=model,
                 system_prompt=system_prompt,
                 user_prompt_text=user_prompt_text,
+                timeout_s=llm_timeout_s,
             )
 
         try:
@@ -791,7 +798,11 @@ def summarize_transcript_ref(
 
             from openai import OpenAI  # type: ignore
 
-            client = OpenAI(api_key=openrouter_api_key, base_url=_OPENROUTER_BASE_URL)
+            client = OpenAI(
+                api_key=openrouter_api_key,
+                base_url=_OPENROUTER_BASE_URL,
+                timeout=llm_timeout_s,
+            )
             response = call_openai_with_retry(
                 client.chat.completions.create,
                 **req_kwargs,
@@ -1352,6 +1363,7 @@ def run_llm_analysis(
     per_video_concurrency = max(1, llm_cfg.per_video_concurrency)
     per_video_min_delay_s = max(0.0, llm_cfg.per_video_min_delay_s)
     per_video_jitter_s = max(0.0, llm_cfg.per_video_jitter_s)
+    llm_timeout_s = max(30, int(getattr(llm_cfg, "timeout_s", 600)))
 
     def _format_user_prompt(
         *,
@@ -1734,6 +1746,7 @@ def run_llm_analysis(
                 model=model,
                 system_prompt=system_prompt,
                 user_prompt_text=user_prompt_text,
+                timeout_s=llm_timeout_s,
             )
             if content is None:
                 _fail(
@@ -1766,7 +1779,9 @@ def run_llm_analysis(
                 from openai import OpenAI  # type: ignore
 
                 client = OpenAI(
-                    api_key=openrouter_api_key, base_url=_OPENROUTER_BASE_URL
+                    api_key=openrouter_api_key,
+                    base_url=_OPENROUTER_BASE_URL,
+                    timeout=llm_timeout_s,
                 )
                 response = call_openai_with_retry(
                     client.chat.completions.create,

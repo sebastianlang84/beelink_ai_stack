@@ -2,6 +2,14 @@
 
 This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 
+## 2026-02-13
+- Aufgabe: `api_timeout_s`/`timeout_s` in Transcript Miner wirksam verdrahten und weitere nicht wirksame Config-Pfade beheben.
+- Probleme/Bugs/Issues: `youtube.api_timeout_s` war im YAML vorhanden, aber nicht im Laufzeitpfad genutzt; `analysis.llm.timeout_s` und `report.llm.timeout_s` waren nicht durchgaengig verdrahtet; unbekannte Config-Keys konnten still durchrutschen.
+- Loesung: `youtube.api_timeout_s` in `youtube_client`/`run_miner` verdrahtet, `analysis.llm.timeout_s` fuer OpenRouter + Gemini-CLI verdrahtet, `report.llm.timeout_s` im Report-Generator verdrahtet, Config-Modelle auf strikt (`extra=forbid`) umgestellt und `owui_collections` als erlaubten Global-Block aufgenommen.
+- Aufgabe: Verifikation + Living Docs.
+- Probleme/Bugs/Issues: Host-Python hatte keine `yaml`/`pytest` Dependencies fuer lokale Testausfuehrung.
+- Loesung: Laufzeit-Checks im `tm`-Container ausgefuehrt (Config-Load erfolgreich, Unknown-Keys schlagen mit `ValidationError` fehl); Living Docs aktualisiert (`README.md`, `CHANGELOG.md`). `TODO.md` geprueft: keine inhaltliche Aenderung fuer diesen Task noetig.
+
 ## 2026-01-29
 - Task: Add mandatory agent diary requirement and commit rules.
 - Issues/Bugs: No agent diary existed and no explicit agent-level policy about diary + commit steps.

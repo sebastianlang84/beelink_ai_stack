@@ -45,6 +45,7 @@ Ziel: Ein **einziges** Open WebUI Tool „Transcript Miner“ (Transcripts holen
 4. Service-Config setzen (non-secret): `mcp-transcript-miner/.config.env.example` → `mcp-transcript-miner/.config.env` (nicht committen).
 5. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)
 6. Einmalige Gemini-Auth im Container (wenn `TM_LLM_BACKEND=gemini_cli`): `docker exec -it tm gemini` (bei `gemini-3-flash-preview` muss in `~/.gemini/settings.json` `preview=true` gesetzt sein)
+7. Timeout-Knobs (global): `transcript-miner/config/config_global.yaml` nutzt `youtube.api_timeout_s`, `analysis.llm.timeout_s` und `report.llm.timeout_s` jetzt wirksam im Laufzeitpfad.
 
 ## Quickstart (SEC EDGAR MCP)
 Ziel: MCP Tool fuer SEC EDGAR Filings als **MCP Streamable HTTP** im Docker-Netzwerk (keine Host-Ports).

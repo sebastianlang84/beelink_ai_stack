@@ -550,6 +550,7 @@ def generate_reports(
     logger.info("Using topic: %s", topic)
 
     model = report_config.get("model", "openai/gpt-5.2")
+    timeout_s = max(30, int(report_config.get("timeout_s", 600)))
     config_prompts = report_config.get("system_prompt", {})
 
     api_key = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
@@ -574,7 +575,7 @@ def generate_reports(
         logger.error("openai package not installed: %s", exc)
         return []
 
-    client = OpenAI(api_key=api_key, base_url=_OPENROUTER_BASE_URL)
+    client = OpenAI(api_key=api_key, base_url=_OPENROUTER_BASE_URL, timeout=timeout_s)
 
     if report_lang not in {"de", "en", "both"}:
         logger.error("Invalid report_lang=%r (expected: de|en|both)", report_lang)

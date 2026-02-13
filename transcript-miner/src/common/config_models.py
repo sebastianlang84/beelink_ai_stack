@@ -3,7 +3,7 @@ Pydantic models for configuration validation.
 """
 
 from pathlib import Path
-from typing import List, Literal, Optional, Union
+from typing import Any, List, Literal, Optional, Union
 
 from pydantic import AliasChoices, BaseModel, Field, field_validator, model_validator
 import re
@@ -11,7 +11,13 @@ import re
 from .path_utils import substitute_env_vars
 
 
-class ProxyConfig(BaseModel):
+class StrictBaseModel(BaseModel):
+    """Base model with strict unknown-key validation."""
+
+    model_config = {"extra": "forbid"}
+
+
+class ProxyConfig(StrictBaseModel):
     """Konfiguration für Proxies."""
 
     mode: Literal["none", "generic", "webshare"] = Field(
@@ -67,7 +73,7 @@ class ProxyConfig(BaseModel):
         return []
 
 
-class YoutubeConfig(BaseModel):
+class YoutubeConfig(StrictBaseModel):
     """YouTube-spezifische Konfiguration (Kanäle und Filteroptionen)."""
 
     channels: List[str] = Field(
@@ -96,6 +102,12 @@ class YoutubeConfig(BaseModel):
             "Maximale Anzahl Videos pro Kanal innerhalb des Zeitfensters. "
             "Fallback: num_videos."
         ),
+    )
+    api_timeout_s: int = Field(
+        30,
+        ge=5,
+        le=300,
+        description="Timeout pro YouTube Data API Request (Sekunden).",
     )
     keywords: List[str] = Field(
         default_factory=list, description="Suchbegriffe für Titel/Transkript-Filterung"
@@ -135,10 +147,10 @@ class YoutubeConfig(BaseModel):
     proxy: ProxyConfig = Field(default_factory=ProxyConfig)
 
 
-class OutputConfig(BaseModel):
+class OutputConfig(StrictBaseModel):
     """Konfiguration für Ausgabepfade."""
 
-    model_config = {"populate_by_name": True}
+    model_config = {"populate_by_name": True, "extra": "forbid"}
 
     global_root: Optional[Union[str, Path]] = Field(
         None,
@@ -400,7 +412,7 @@ class OutputConfig(BaseModel):
         return path_obj
 
 
-class LoggingConfig(BaseModel):
+class LoggingConfig(StrictBaseModel):
     """Logging-Konfiguration."""
 
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
@@ -447,7 +459,7 @@ class LoggingConfig(BaseModel):
         return str(path_obj)
 
 
-class ApiConfig(BaseModel):
+class ApiConfig(StrictBaseModel):
     """Konfiguration für externe APIs."""
 
     youtube_api_key: Optional[str] = Field(None, description="YouTube Data API v3 Key")
@@ -560,7 +572,7 @@ class ApiConfig(BaseModel):
         return resolved
 
 
-class LlmAnalysisConfig(BaseModel):
+class LlmAnalysisConfig(StrictBaseModel):
     """Konfiguration für LLM-gestützte Analyse (ein Job pro Run)."""
 
     enabled: bool = Field(False, description="Wenn true, wird LLM-Analyse ausgeführt")
@@ -574,6 +586,12 @@ class LlmAnalysisConfig(BaseModel):
     model: Optional[str] = Field(
         None,
         description="Model-Name (z.B. gpt-5.2). Muss gesetzt sein, wenn enabled=true.",
+    )
+    timeout_s: int = Field(
+        600,
+        ge=30,
+        le=3600,
+        description="Timeout pro LLM-Call (Sekunden).",
     )
     system_prompt: Optional[str] = Field(
         None,
@@ -676,13 +694,30 @@ class LlmAnalysisConfig(BaseModel):
         return self
 
 
-class AnalysisConfig(BaseModel):
+class AnalysisConfig(StrictBaseModel):
     """Konfiguration für Analyse-Module (offline + optional LLM)."""
 
     llm: LlmAnalysisConfig = Field(default_factory=LlmAnalysisConfig)
 
 
-class Config(BaseModel):
+class LlmReportConfig(StrictBaseModel):
+    """Konfiguration für LLM-Report-Generierung."""
+
+    model: str = Field("openai/gpt-5.2", description="Model-Name für Report-Generierung.")
+    timeout_s: int = Field(600, ge=30, le=3600, description="Timeout pro Report-LLM-Call (Sekunden).")
+    system_prompt: dict[str, str] = Field(
+        default_factory=dict,
+        description="Optionale System-Prompts pro Sprache (z.B. de/en).",
+    )
+
+
+class ReportConfig(StrictBaseModel):
+    """Konfiguration für Report-Generierung."""
+
+    llm: LlmReportConfig = Field(default_factory=LlmReportConfig)
+
+
+class Config(StrictBaseModel):
     """Haupt-Konfigurationsmodell."""
 
     api: ApiConfig = Field(default_factory=ApiConfig)
@@ -690,5 +725,12 @@ class Config(BaseModel):
     output: OutputConfig = Field(default_factory=OutputConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
     analysis: AnalysisConfig = Field(default_factory=AnalysisConfig)
+    report: ReportConfig = Field(default_factory=ReportConfig)
+    # Service-spezifischer Block für mcp-transcript-miner (wird von transcript-miner ignoriert).
+    owui_collections: Optional[dict[str, Any]] = None
 
-    model_config = {"arbitrary_types_allowed": True, "json_encoders": {Path: str}}
+    model_config = {
+        "arbitrary_types_allowed": True,
+        "json_encoders": {Path: str},
+        "extra": "forbid",
+    }

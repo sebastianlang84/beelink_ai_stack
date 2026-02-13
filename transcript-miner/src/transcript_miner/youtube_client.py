@@ -27,6 +27,22 @@ DEFAULT_YOUTUBE_API_NUM_RETRIES = 4
 DEFAULT_YOUTUBE_API_TIMEOUT_SEC = 30
 DEFAULT_YOUTUBE_API_BACKOFF_BASE_SEC = 1.0
 DEFAULT_YOUTUBE_API_BACKOFF_MAX_SEC = 30.0
+_YOUTUBE_API_TIMEOUT_SEC = DEFAULT_YOUTUBE_API_TIMEOUT_SEC
+
+
+def configure_youtube_api_timeout_sec(timeout_sec: int | None) -> None:
+    """Configure per-request timeout for YouTube Data API calls."""
+
+    global _YOUTUBE_API_TIMEOUT_SEC
+    if timeout_sec is None:
+        _YOUTUBE_API_TIMEOUT_SEC = DEFAULT_YOUTUBE_API_TIMEOUT_SEC
+        return
+    try:
+        parsed = int(timeout_sec)
+    except Exception:
+        _YOUTUBE_API_TIMEOUT_SEC = DEFAULT_YOUTUBE_API_TIMEOUT_SEC
+        return
+    _YOUTUBE_API_TIMEOUT_SEC = max(5, min(300, parsed))
 
 
 def _require_googleapiclient():
@@ -225,7 +241,7 @@ def get_channel_by_handle(youtube: Resource, handle: str) -> Optional[ChannelInf
         search_response = _execute_with_retries(
             request,
             num_retries=DEFAULT_YOUTUBE_API_NUM_RETRIES,
-            timeout_sec=DEFAULT_YOUTUBE_API_TIMEOUT_SEC,
+            timeout_sec=_YOUTUBE_API_TIMEOUT_SEC,
         )
 
         if not search_response.get("items"):
@@ -282,7 +298,7 @@ def get_channel_videos(
         channels_response = _execute_with_retries(
             request,
             num_retries=DEFAULT_YOUTUBE_API_NUM_RETRIES,
-            timeout_sec=DEFAULT_YOUTUBE_API_TIMEOUT_SEC,
+            timeout_sec=_YOUTUBE_API_TIMEOUT_SEC,
         )
 
         if not channels_response.get("items"):
@@ -307,7 +323,7 @@ def get_channel_videos(
             playlist_items_response = _execute_with_retries(
                 request,
                 num_retries=DEFAULT_YOUTUBE_API_NUM_RETRIES,
-                timeout_sec=DEFAULT_YOUTUBE_API_TIMEOUT_SEC,
+                timeout_sec=_YOUTUBE_API_TIMEOUT_SEC,
             )
 
             for item in playlist_items_response.get("items", []):

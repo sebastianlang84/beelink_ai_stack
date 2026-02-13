@@ -310,6 +310,9 @@ Erwartung (normativ):
 
 ## Schema-Details
 
+Hinweis zur Validierung (Ist-Zustand):
+- Unbekannte Config-Keys werden strikt abgewiesen (`extra=forbid` in den Pydantic-Modellen), damit Tippfehler/nicht verdrahtete Felder nicht still ignoriert werden.
+
 ### `api`
 
 Definiert externe API-Zugänge.
@@ -334,6 +337,7 @@ YouTube-Kanäle und Filter-/Download-Parameter (siehe [`YoutubeConfig`](../src/c
 - `youtube.num_videos` *(int, default 10, min 1)*: Anzahl neuester Videos pro Kanal.
 - `youtube.lookback_days` *(int, optional, min 1)*: Zeitfenster in Tagen; wenn gesetzt, werden nur Videos der letzten N Tage beruecksichtigt.
 - `youtube.max_videos_per_channel` *(int, optional, min 1)*: Limit pro Kanal innerhalb `lookback_days` (Fallback: `num_videos`).
+- `youtube.api_timeout_s` *(int, default 30, min 5, max 300)*: Timeout pro YouTube Data API Request (Sekunden).
 - `youtube.keywords` *(list[string])*: Suchbegriffe für Titel/Transkript-Filterung.
 - `youtube.preferred_languages` *(list[string], default `["en", "de"]`)*: Bevorzugte Transkriptsprachen.
 
@@ -528,6 +532,9 @@ Diese Semantik ist konsistent mit dem Scaling-ADR, das „Instructions pro Confi
 - `analysis.llm.user_prompt_template` *(string | null)*
   - Muss gesetzt sein, wenn `enabled=true` (Validierung: [`LlmAnalysisConfig._validate_required_fields_when_enabled()`](../src/common/config_models.py:228)).
   - Unterstützte Platzhalter (Ist-Zustand, schema-docstring): `{transcripts}`, `{transcript_count}` (siehe Feldbeschreibung in [`LlmAnalysisConfig.user_prompt_template`](../src/common/config_models.py:198)).
+- `analysis.llm.timeout_s` *(int, default 600, min 30, max 3600)*
+  - Timeout pro LLM-Call (OpenRouter und Gemini-CLI-Pfad).  
+  - Hinweis: `TM_GEMINI_CLI_TIMEOUT_SECONDS` kann den Gemini-CLI-Timeout weiterhin explizit überschreiben.
 
 Weitere Felder zur Größenbegrenzung (Ist-Schema): `max_transcripts`, `max_chars_per_transcript`, `max_total_chars`, `max_input_tokens`, `max_output_tokens` (siehe [`common.config_models.LlmAnalysisConfig`](../src/common/config_models.py:186)).
   - `max_input_tokens`: hartes Token-Limit für `system_prompt` + `user_prompt` (bei Überschreitung wird der Run abgebrochen bzw. per-video Transcript übersprungen).
@@ -564,6 +571,7 @@ Diese Regeln sind **Doku-/Policy-Semantik** (kein neues Schema):
 Konfiguration für die finale Report-Generierung via Aggregation (automatisch, wenn gesetzt) oder manuell via `tools/generate_llm_report.py`.
 
 - `report.llm.model` *(string)*: Das zu verwendende Modell (z.B. `openai/gpt-5.2`).
+- `report.llm.timeout_s` *(int, default 600, min 30, max 3600)*: Timeout pro Report-LLM-Call.
 - `report.llm.system_prompt` *(dict)*: System-Prompts pro Sprache.
   - `de`: Deutscher Prompt.
   - `en`: Englischer Prompt.

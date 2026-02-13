@@ -366,7 +366,7 @@ def run_miner(
     logger = logging.getLogger("transcript_miner.run_miner")
 
     from common.telemetry import pipeline_duration_histogram
-    from .youtube_client import get_youtube_client
+    from .youtube_client import configure_youtube_api_timeout_sec, get_youtube_client
 
     start_time = time.time()
 
@@ -385,6 +385,12 @@ def run_miner(
         logger.debug("Using API key from environment variable")
     else:
         logger.debug("Using API key from config")
+
+    configure_youtube_api_timeout_sec(getattr(config.youtube, "api_timeout_s", 30))
+    logger.info(
+        "YouTube API timeout configured: %ss",
+        getattr(config.youtube, "api_timeout_s", 30),
+    )
 
     # Build YouTube client
     logger.info("Initializing YouTube client...")
