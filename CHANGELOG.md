@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- docs(agent): `AGENTS.md` mit harten Execution-Gates erweitert (Preflight, Read-Only-Diagnose, Single-Scope, Upgrade-Safety-Gate, klares Antwortformat)
+- ops(open-webui): Standard-Image-Tag auf `0.8.0` angehoben (Compose + `.config.env.example` + `open-webui/.config.env.example`)
 - feat(transcript-miner): Summary-LLM Backend auf Gemini CLI erweiterbar gemacht (`TM_LLM_BACKEND=gemini_cli`) inkl. `gemini-3-flash-preview` Policy, Pro-Block und Usage-Logs im Runner
 - ops(mcp-transcript-miner): TM-Container installiert jetzt `@google/gemini-cli`; Compose setzt `TM_LLM_BACKEND=gemini_cli` + Timeout/Model-Overrides
 - ops(scripts): Scheduler-Runs (`run-tm-investing*.sh`) nutzen `skip_report=true` und brechen bei Run-Fehlern vor dem Sync hart ab

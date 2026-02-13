@@ -819,3 +819,25 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
     - Logbeleg fuer Gemini CLI: wiederholte `gemini-cli usage ... model_effective=gemini-3-flash-preview ... tokens_thoughts=0`.
     - OWUI-Indexing-Kette verifiziert via `sync/topic/investing` (`processed=5`, `indexed=5`, `errors=0`) und OWUI API zeigt `investing_new`/`investing_archive` jeweils `status=completed` fuer alle Files.
   - Living Docs aktualisiert: `README.md`, `scripts/README.md`, `mcp-transcript-miner/README.md`, `TODO.md`, `CHANGELOG.md`.
+
+## 2026-02-13
+- Aufgabe: Open WebUI auf `0.8.0` anheben und laufenden Service upgraden.
+- Probleme/Bugs/Issues:
+  - Erstes Upgrade-Window wurde durch User-Feedback gestoppt, weil Version/Stable-Status vorab explizit belegt werden sollte.
+  - Ein erster `docker pull` Versuch hing; zweiter Pull mit sauberem Retry lief durch.
+- Loesung:
+  - Offizielle Verifikation vor Rollout: GitHub Release API (`v0.8.0`, `prerelease=false`, `published_at=2026-02-12T23:42:36Z`) + GHCR Tag-Existenz geprueft.
+  - Defaults aktualisiert: `open-webui/docker-compose.yml` (`OPEN_WEBUI_IMAGE_TAG` Fallback), `.config.env.example`, `open-webui/.config.env.example`.
+  - Doku/Living Docs aktualisiert: `open-webui/README.md`, `TODO.md`, `CHANGELOG.md`; Root-`README.md` geprueft (keine Aenderung noetig).
+  - Laufzeit-Umstellung ausgefuehrt: lokale `open-webui/.config.env` auf `OPEN_WEBUI_IMAGE_TAG=0.8.0` gesetzt, `docker compose ... up -d owui` ausgefuehrt, Container auf `ghcr.io/open-webui/open-webui:0.8.0` verifiziert, Health `healthy`.
+
+## 2026-02-13
+- Aufgabe: `AGENTS.md` grundsaetzlich verschaerfen, damit Agent-Verhalten reproduzierbar und fail-closed ist.
+- Probleme/Bugs/Issues:
+  - Die bestehende Policy war in Kernpunkten zu weich (kein harter Ablauf-Gate vor mutierenden Aktionen, keine verbindliche Single-Scope-Regel, kein expliziter Upgrade-Safety-Gate).
+  - Folge: Risiko fuer Action-first, Scope-Drift und unklare Kommunikation.
+- Loesung:
+  - `AGENTS.md` erweitert um harte Non-Negotiables und ein verpflichtendes Ausfuehrungsprotokoll (Preflight, Read-Only-Diagnose, Umsetzungsfreigabe, Verifikation).
+  - Verbindliches Antwortformat ergänzt (`Ist-Zustand`, `Naechster Schritt`, `Risiko/Blocker`) und vage Sprache explizit verboten.
+  - Upgrade-Safety-Gate ergänzt (Release/Stable/Migrationswarnungen pruefen und vor DB-Migrationen Backup-Entscheidung explizit mit User klaeren).
+  - Living Docs geprueft: `README.md`/`TODO.md` keine Aenderung noetig; `CHANGELOG.md` mit `docs(agent)` Eintrag aktualisiert.

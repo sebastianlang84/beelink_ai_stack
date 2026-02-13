@@ -21,6 +21,40 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 
 ## 1) Agent Rules (global, verbindlich)
 
+### 1.0) Non-Negotiables (hart, fail-closed)
+- Keine "Action-first" Ausfuehrung: erst verifizieren, dann handeln.
+- Keine Scope-Vermischung: pro Task genau **ein** technisches Ziel.
+- Keine impliziten Annahmen: Unklarheiten explizit markieren, nicht raten.
+- Keine Ausreden/Meta-Begruendungen: nur technische Ursachen und konkrete Massnahmen.
+- Wenn eine dieser Regeln verletzt wird: sofort benennen, stoppen, korrigierten Plan liefern.
+
+### 1.1) Ausfuehrungsprotokoll (verpflichtend pro Task)
+- **Gate A: Preflight (immer zuerst)**
+  - Vor dem ersten schreibenden Kommando muss der Agent kurz ausgeben:
+    - `Ziel`
+    - `Scope (in/out)`
+    - `Gelesene Quellen` (konkrete Dateien, mind. `AGENTS.md` + betroffene Service-Docs/Runbooks)
+- **Gate B: Read-Only Diagnose**
+  - Zuerst nur lesen/pruefen (z. B. `rg`, `cat`, Status, Logs, `docker inspect`, `docker compose config`).
+  - In dieser Phase keine mutierenden Aktionen (keine Datei-Schreibzugriffe, keine Service-Restarts, keine Upgrades, keine Deletes).
+- **Gate C: Umsetzungsfreigabe**
+  - Erst nach Diagnosezusammenfassung und User-Freigabe (`go`/`mach`) in die Umsetzung.
+  - Ausnahme: Der User fordert explizit sofortige Umsetzung; trotzdem bleibt Gate A/B Pflicht in Kurzform.
+- **Gate D: Verifikation nach Umsetzung**
+  - Nach jeder Aenderung zwingend Erfolg verifizieren (Status/Health/Endpoint/Output).
+  - Wenn Verifikation fehlt oder fehlschlaegt: Task nicht als abgeschlossen melden.
+
+### 1.2) Antwortformat (verbindlich, knapp, eindeutig)
+- Kein vager Sprachgebrauch ("wirklich", "eigentlich", "sollte").
+- Standardstruktur bei technischen Antworten:
+  1. `Ist-Zustand`
+  2. `Naechster Schritt`
+  3. `Risiko/Blocker` (nur wenn vorhanden)
+- Bei Fehlern:
+  - Ursache in 1 Satz
+  - konkrete Korrektur in 1-3 Schritten
+  - kein blame, keine Ausreden
+
 ### Pflicht: Agent-Tagebuch + Abschluss-Tasks
 - Das Agent-Tagebuch ist **verpflichtend** und muss wie alle anderen Dokumentationsarbeiten gepflegt werden.
 - Speicherort: `AGENTDIARY.md` (Repo-Root).
@@ -51,6 +85,8 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - Änderungen als **kleine, nachvollziehbare Diffs**; keine unnötigen Refactors.
 - **Stetige Verbesserung**: bei jedem Task prüfen, ob ein wiederholbarer/komplexer Workflow als Skill abgebildet werden sollte; Skills bei komplexen Workflows bevorzugt nutzen/erstellen.
 - **Stop & Ask bei Dirty Worktree**: Wenn im Git-Status unerwartete/unrelated Aenderungen auftauchen, die nicht Teil des aktuellen Tasks sind, erst kurz nachfragen, bevor irgendetwas davon committed/reverted wird.
+- **Single-Service-Fokus**: keine parallelen Eingriffe in mehrere Services, ausser User fordert es explizit.
+- **Change Isolation**: nur Dateien aendern, die fuer den Task notwendig sind; keine opportunistischen Neben-Edits.
 
 ### Sicherheit & Betrieb
 - **Keine Secrets committen** (Tokens, Passwörter, Private Keys).
@@ -64,6 +100,13 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - **Keine neuen Host-Ports** ohne Begründung + Doku (was, warum, Risiko).
 - Bevorzugt **Reverse Proxy** statt direktes Exposing; intern auf Docker-Netzwerk halten, wo möglich.
 - Persistenz/Backups mitdenken: Volumes/Bind-Mounts klar benennen; Hinweis, was gesichert werden muss.
+- **Upgrade Safety Gate (verpflichtend)**:
+  - Vor jedem Versions-Upgrade muss der Agent pruefen und belegen:
+    - Release/Tag existiert wirklich.
+    - Stable vs. prerelease.
+    - Migrations-/Breaking-Warnungen aus den Release Notes.
+  - Vor dem Upgrade muss der Agent Risiken in 1-3 Bulletpoints nennen und den User explizit bestaetigen lassen.
+  - Bei DB-Migrationen: Backup-Entscheidung immer explizit mit User klaeren (durchfuehren oder bewusst skippen).
 
 ### Docker/Compose Konventionen
 - Ordnernamen sind **kebab-case** (z. B. `open-webui/`, `mcp-transcript-miner/`, `mcp-context6/`, `emb-bench/`).
