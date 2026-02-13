@@ -811,9 +811,11 @@ def _fetch_knowledge_files(knowledge_id: str) -> list[dict[str, Any]]:
 
     url = f"{OPEN_WEBUI_BASE_URL}/api/v1/knowledge/{knowledge_id}/files"
     headers = _auth_headers()
-    page = 0
+    page = 1
     limit = 200
     files: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    max_pages = 500
     while True:
         resp = requests.get(
             url,
@@ -828,25 +830,53 @@ def _fetch_knowledge_files(knowledge_id: str) -> list[dict[str, Any]]:
         total = data.get("total")
         if not batch:
             break
-        files.extend(batch)
+        added = 0
+        for item in batch:
+            fid = str(item.get("id") or item.get("file_id") or "")
+            if fid and fid in seen_ids:
+                continue
+            if fid:
+                seen_ids.add(fid)
+            files.append(item)
+            added += 1
+        # Defensive stop: avoid infinite loops if API keeps returning the same page.
+        if added == 0:
+            break
         if total is not None and len(files) >= total:
             break
-        if len(batch) < limit:
-            break
         page += 1
+        if page > max_pages:
+            break
     return files
 
 
 def _extract_source_id_from_knowledge_file(item: dict[str, Any]) -> str | None:
-    # OWUI returns processed content including our YAML frontmatter; prefer that over parsing filename.
+    # Try explicit fields first.
+    direct = item.get("source_id")
+    if isinstance(direct, str) and direct.strip():
+        return direct.strip()
+    meta = item.get("meta") or {}
+    if isinstance(meta, dict):
+        meta_src = meta.get("source_id")
+        if isinstance(meta_src, str) and meta_src.strip():
+            return meta_src.strip()
+
+    # OWUI returns processed content including our YAML frontmatter.
     data = item.get("data") or {}
     content = data.get("content") if isinstance(data, dict) else None
     if isinstance(content, str) and content:
         head = content[:3000]
-        m = re.search(r'(?m)^source_id:\\s*"?([^"\\n]+)"?\\s*$', head)
+        m = re.search(r'(?m)^source_id:\s*"?([^"\n]+)"?\s*$', head)
         if m:
             src = str(m.group(1)).strip()
             return src or None
+
+    # Fallback for legacy files that miss frontmatter: derive from filename suffix.
+    filename = str(item.get("filename") or item.get("name") or "").strip()
+    if filename:
+        m = re.search(r"__([A-Za-z0-9_-]{6,20})\.md$", filename)
+        if m:
+            return f"youtube:{m.group(1)}"
     return None
 
 

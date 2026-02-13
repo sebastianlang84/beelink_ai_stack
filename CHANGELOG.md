@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- fix(mcp-transcript-miner): `source_id`-Extraktion aus OWUI-Files korrigiert (Regex-Fix + Fallback ueber Filename), damit Lifecycle-Moves/Removals wieder greifen
+- fix(mcp-transcript-miner): Pagination fuer Knowledge-Files robust gemacht (alle Seiten statt nur erster Page-Chunk), dadurch vollständige Reconciliation moeglich
 - fix(mcp-transcript-miner): Race-Duplikate in OWUI Collections bereinigt (`investing_archive`/`investing_new`) und Bestand auf eindeutige `source_id` normalisiert
 - fix(mcp-transcript-miner): `sync/topic` hat jetzt einen Topic-Guard; parallele Laeufe fuer dasselbe Topic liefern `status=busy` statt konkurrierender Uploads
 - fix(mcp-transcript-miner): Dedupe-Precheck ist standardmaessig aktiv (`OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true`)

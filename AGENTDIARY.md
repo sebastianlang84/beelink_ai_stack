@@ -861,3 +861,18 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
     - Duplikat-Scan: beide Collections ohne doppelte `source_id`.
     - Paralleltest mit zwei gleichzeitigen Requests: ein Request `success`, zweiter korrekt `busy`.
   - Living Docs aktualisiert: `README.md`, `mcp-transcript-miner/README.md`, `CHANGELOG.md`; `TODO.md` geprueft (keine neue Aenderung committed in diesem Task).
+
+## 2026-02-13
+- Aufgabe: Nachfix fuer weiterhin schlechten Zustand in `investing_new` (Root-Cause nach User-Eskalation).
+- Probleme/Bugs/Issues:
+  - Trotz erstem Cleanup blieb `investing_new` sichtbar unaufgeraeumt.
+  - Root-Cause 1: `_extract_source_id_from_knowledge_file` hatte einen Regex-Fehler (`\\s` statt `\s`), dadurch wurden praktisch alle Files als `unknown` behandelt.
+  - Root-Cause 2: `_fetch_knowledge_files` hat wegen Pagination-Logik effektiv nur die erste Seite verarbeitet; Reconciliation lief dadurch nur teilweise.
+  - Ein Full-Sync blieb zwischenzeitlich als langer Lock-Lauf haengen (`status=busy`), musste kontrolliert beendet werden.
+- Loesung:
+  - Regex in `mcp-transcript-miner/app/main.py` korrigiert und robuste Fallback-Extraktion per Filename-Suffix ergänzt.
+  - Pagination in `mcp-transcript-miner/app/main.py` auf vollstaendiges Seiten-Iterieren mit Duplicate-Page-Schutz umgestellt.
+  - `tm` neu gebaut/neu gestartet, Lifecycle-Sync erneut ausgefuehrt.
+  - Verifiziert:
+    - `investing_new`: `19` Files, `19` eindeutige `source_id`, `0` Duplikate.
+    - `investing_archive`: `120` Files, `120` eindeutige `source_id`, `0` Duplikate.
