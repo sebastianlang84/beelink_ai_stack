@@ -101,9 +101,10 @@ Optional:
   - Request: `create_knowledge_if_missing=true`
   - Optional: Allowlist via `OPEN_WEBUI_CREATE_KNOWLEDGE_ALLOWLIST=investing,investing_test,...` (leer = alle)
 - Upload-Dateinamen werden aus Datum/Channel/Title/Video-ID gebildet (lesbar).
-- Optional: Pre-Check gegen OWUI (Hash/Dateiname) vor Upload:
-  - `OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true`
+- Dedupe-Precheck gegen OWUI (Hash/Dateiname) ist standardmaessig aktiv:
+  - `OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true` (Default)
   - Cache: `OPEN_WEBUI_KNOWLEDGE_DEDUP_CACHE_TTL_SECONDS=900`
+- Parallel-Guard: gleichzeitige `POST /sync/topic/{topic}`-Laufe fuer dasselbe Topic werden mit `status=busy` abgewiesen (verhindert Race-Condition-Duplikate).
 - Lifecycle-Parameter:
   - Source: `transcript-miner/config/config_global.yaml` -> `owui_collections.*`
   - Optional Override: `OPEN_WEBUI_COLLECTIONS_CONFIG_PATH=/transcript_miner_config/config_global.yaml`

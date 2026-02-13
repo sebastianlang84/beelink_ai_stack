@@ -1,6 +1,11 @@
 # Changelog
 
 ## Unreleased
+- fix(mcp-transcript-miner): Race-Duplikate in OWUI Collections bereinigt (`investing_archive`/`investing_new`) und Bestand auf eindeutige `source_id` normalisiert
+- fix(mcp-transcript-miner): `sync/topic` hat jetzt einen Topic-Guard; parallele Laeufe fuer dasselbe Topic liefern `status=busy` statt konkurrierender Uploads
+- fix(mcp-transcript-miner): Dedupe-Precheck ist standardmaessig aktiv (`OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true`)
+- fix(mcp-transcript-miner): Compose reicht Dedupe-Env-Variablen an den TM-Container durch (`OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK`, `OPEN_WEBUI_KNOWLEDGE_DEDUP_CACHE_TTL_SECONDS`)
+- docs: README + mcp-transcript-miner README + TODO um Sync-Guard/Dedupe-Default und bereinigten Collection-Status aktualisiert
 - docs(agent): `AGENTS.md` mit harten Execution-Gates erweitert (Preflight, Read-Only-Diagnose, Single-Scope, Upgrade-Safety-Gate, klares Antwortformat)
 - ops(open-webui): Standard-Image-Tag auf `0.8.0` angehoben (Compose + `.config.env.example` + `open-webui/.config.env.example`)
 - feat(transcript-miner): Summary-LLM Backend auf Gemini CLI erweiterbar gemacht (`TM_LLM_BACKEND=gemini_cli`) inkl. `gemini-3-flash-preview` Policy, Pro-Block und Usage-Logs im Runner

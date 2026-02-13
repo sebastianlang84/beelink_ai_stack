@@ -83,6 +83,8 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
 - Trigger: `./scripts/sync-investing-lifecycle.sh` (reconciled beide Collections aus Source-Topic `investing`: add/move/remove ohne Delete+Recreate, damit Knowledge-IDs und OWUI-Folder-Bindings stabil bleiben).
 - Download-unabhaengige Maintenance (neu): `./scripts/maintain-investing-lifecycle.sh ensure` (Lifecycle-Sweep + Freshness-Guard).
 - `ensure` beinhaltet zudem einen Orphan-Prune (stale hot summaries ohne aktuellen investing-Index-Eintrag -> `cold`).
+- Sync-Schutz: parallele `POST /sync/topic/investing`-Aufrufe werden serverseitig fuer dasselbe Topic geblockt (`status=busy`), um Race-Condition-Duplikate zu verhindern.
+- Dedupe-Precheck vor Upload ist standardmaessig aktiv (`OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true`).
 - Runbook: `docs/runbook-tm-lifecycle-maintenance.md:1`
 
 ## Scheduled Runs (investing, alle 3h)

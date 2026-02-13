@@ -68,7 +68,7 @@ AUTO_CREATE_KNOWLEDGE_ALLOWLIST = {
     for t in os.getenv("OPEN_WEBUI_CREATE_KNOWLEDGE_ALLOWLIST", "").split(",")
     if t.strip()
 }
-KNOWLEDGE_DEDUP_PRECHECK = os.getenv("OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK", "").strip().lower() in {
+KNOWLEDGE_DEDUP_PRECHECK = os.getenv("OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK", "true").strip().lower() in {
     "1",
     "true",
     "yes",
@@ -174,6 +174,21 @@ def _load_owui_collections_config() -> OwuiCollectionsConfig:
     return _OWUI_COLLECTIONS_CFG
 
 _KNOWLEDGE_FILE_CACHE: dict[str, dict[str, Any]] = {}
+_SYNC_TOPIC_GUARD_LOCK = threading.Lock()
+_SYNC_TOPIC_ACTIVE: set[str] = set()
+
+
+def _sync_topic_guard_acquire(topic: str) -> bool:
+    with _SYNC_TOPIC_GUARD_LOCK:
+        if topic in _SYNC_TOPIC_ACTIVE:
+            return False
+        _SYNC_TOPIC_ACTIVE.add(topic)
+        return True
+
+
+def _sync_topic_guard_release(topic: str) -> None:
+    with _SYNC_TOPIC_GUARD_LOCK:
+        _SYNC_TOPIC_ACTIVE.discard(topic)
 
 CAPABILITIES_MARKDOWN = """\
 ## Transcript Miner — Capabilities
@@ -2178,13 +2193,7 @@ def get_run(run_id: str) -> RunStatusResponse:
     )
 
 
-@app.post("/sync/topic/{topic}", summary="Index summaries for a topic into Open WebUI Knowledge", operation_id="sync_topic")
-def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
-    try:
-        safe_topic = _safe_id(topic, label="topic")
-    except ValueError:
-        return SyncTopicResponse(status="error", topic=topic, last_error="invalid topic", run_id=req.run_id)
-
+def _sync_topic_impl(safe_topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
     cfg = _load_owui_collections_config()
     # Guard: lifecycle expects base topics, not already-suffixed derived targets.
     # Without this, callers get a confusing "missing transcripts.jsonl" (because indexes exist only for base topics).
@@ -2341,6 +2350,30 @@ def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
         last_error=last_error,
         run_id=req.run_id,
     )
+
+
+@app.post("/sync/topic/{topic}", summary="Index summaries for a topic into Open WebUI Knowledge", operation_id="sync_topic")
+def sync_topic(topic: str, req: SyncTopicRequest) -> SyncTopicResponse:
+    try:
+        safe_topic = _safe_id(topic, label="topic")
+    except ValueError:
+        return SyncTopicResponse(status="error", topic=topic, last_error="invalid topic", run_id=req.run_id)
+
+    guard_acquired = False
+    if not req.dry_run:
+        guard_acquired = _sync_topic_guard_acquire(safe_topic)
+        if not guard_acquired:
+            return SyncTopicResponse(
+                status="busy",
+                topic=safe_topic,
+                last_error="sync already running for topic; wait for completion and retry",
+                run_id=req.run_id,
+            )
+    try:
+        return _sync_topic_impl(safe_topic, req)
+    finally:
+        if guard_acquired:
+            _sync_topic_guard_release(safe_topic)
 
 
 @app.post(

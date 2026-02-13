@@ -841,3 +841,23 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Verbindliches Antwortformat ergänzt (`Ist-Zustand`, `Naechster Schritt`, `Risiko/Blocker`) und vage Sprache explizit verboten.
   - Upgrade-Safety-Gate ergänzt (Release/Stable/Migrationswarnungen pruefen und vor DB-Migrationen Backup-Entscheidung explizit mit User klaeren).
   - Living Docs geprueft: `README.md`/`TODO.md` keine Aenderung noetig; `CHANGELOG.md` mit `docs(agent)` Eintrag aktualisiert.
+
+## 2026-02-13
+- Aufgabe: OWUI Knowledge Collections reparieren (Duplikate entfernen) und TM-Sync robust gegen Race-Conditions machen.
+- Probleme/Bugs/Issues:
+  - `investing_archive` und `investing_new` enthielten massive Duplikate (gleiche `source_id` teils 2-3x), was zu schlechter RAG-Qualitaet fuehrte.
+  - OWUI-Logs zeigten gemischte `200` + `400 Duplicate content`, d. h. konkurrierende/ueberlappende Add-Requests.
+  - Im laufenden Setup war `OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK` nicht wirksam durchgereicht; parallele `sync/topic`-Runs fuer dasselbe Topic waren ungebremst.
+- Loesung:
+  - Laufende Collections bereinigt (OWUI API, dedupe nach `source_id`, Keep-neuester Eintrag):
+    - `investing_archive`: auf `182` eindeutige Files normalisiert.
+    - `investing_new`: auf `57` eindeutige Files normalisiert.
+  - `mcp-transcript-miner/app/main.py` gehaertet:
+    - Dedupe-Precheck Default auf `true` gesetzt.
+    - Topic-Guard eingebaut; konkurrierende `sync/topic` fuer dasselbe Topic liefern `status=busy`.
+  - `mcp-transcript-miner/docker-compose.yml` erweitert, damit Dedupe-Env-Variablen wirklich an den Container gehen.
+  - Laufzeit-Konfig (`mcp-transcript-miner/.config.env`) auf `OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true` gesetzt, `tm` neu gebaut/neu gestartet.
+  - Verifikation:
+    - Duplikat-Scan: beide Collections ohne doppelte `source_id`.
+    - Paralleltest mit zwei gleichzeitigen Requests: ein Request `success`, zweiter korrekt `busy`.
+  - Living Docs aktualisiert: `README.md`, `mcp-transcript-miner/README.md`, `CHANGELOG.md`; `TODO.md` geprueft (keine neue Aenderung committed in diesem Task).
