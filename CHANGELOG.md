@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- chore(repo): Lokalen Notizordner `wasticlaw-coms/` in `.gitignore` aufgenommen (Worktree-Hygiene)
+- ops(transcript-miner): Investing Config auf engeres Recency-Fenster umgestellt (`lookback_days=3`, `max_videos_per_channel=3`) und Channel-Liste erweitert (`Blocktrainer`, `DennisRiedl`, `jesseeckel2`, `TickerSymbolYOU`)
 - ops(watchdog): Watchdog im Monitoring-only Modus reaktiviert; Auto-Stop ist jetzt per Default deaktiviert (`WATCHDOG_TEMP_STOP_CONTAINER_NAMES=`)
 - feat(transcript-miner): Report-LLM folgt jetzt `TM_LLM_BACKEND` (inkl. `gemini_cli`); Scheduler-Skripte setzen `skip_report` nicht mehr erzwungen
 - chore(docs): Markdown-Lint Baseline integriert (`.markdownlint-cli2.yaml` + `scripts/lint-markdown.sh`) und in README/TODO dokumentiert

@@ -11,8 +11,8 @@ youtube:
 
 
   # Filteroptionen (Schema-konform)
-  num_videos: 2
-  lookback_days: 30
+  num_videos: 1
+  lookback_days: 3
   max_videos_per_channel: 1
   # Wichtig: leeres `keywords:` wird von YAML als `null` geparst und scheitert
   # dann an der Pydantic-Validierung (erwartet: list[string]).

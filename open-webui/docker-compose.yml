@@ -2,7 +2,7 @@ name: owui
 services:
   owui:
     container_name: owui
-    image: ghcr.io/open-webui/open-webui:${OPEN_WEBUI_IMAGE_TAG:-0.7.2}
+    image: ghcr.io/open-webui/open-webui:${OPEN_WEBUI_IMAGE_TAG:-0.8.1}
     restart: unless-stopped
     environment:
       TZ: ${TZ:-Europe/Vienna}

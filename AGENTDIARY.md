@@ -928,3 +928,14 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Default auf Monitoring-only gehaertet: `watchdog/.config.env.example` mit `WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` (leer).
   - Compose-Fallback angepasst (`watchdog/docker-compose.yml`), damit kein implizites `owui` als Stop-Target gesetzt wird.
   - Doku/TODO/CHANGELOG aktualisiert und Watchdog erneut gestartet/verifiziert.
+
+## 2026-02-15
+- Aufgabe: Dirty Worktree bereinigen (Open WebUI Tag-Bump + offene TM-Config-Aenderungen + untracked lokale Notizen).
+- Probleme/Bugs/Issues:
+  - Mehrere alte, nicht-committete Aenderungsbloecke blockierten den naechsten TODO-Task.
+  - Untracked lokaler Notizordner (`wasticlaw-coms/`) hielt den Worktree dauerhaft dirty.
+- Loesung:
+  - Open-WebUI-Bump auf `0.8.1` finalisiert (`.config.env.example`, `open-webui/.config.env.example`, `open-webui/docker-compose.yml`, `open-webui/README.md`) und Compose-Render verifiziert.
+  - Investing-Configs finalisiert (`config_investing.yaml`, `config_investing_test.yaml`) und per `load_config` validiert.
+  - `wasticlaw-coms/` in `.gitignore` aufgenommen.
+  - Living Docs geprueft/aktualisiert: `CHANGELOG.md` aktualisiert; `README.md`/`TODO.md` inhaltlich geprueft, keine weiteren Aenderungen noetig.

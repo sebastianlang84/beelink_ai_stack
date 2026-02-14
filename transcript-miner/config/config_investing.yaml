@@ -12,22 +12,26 @@ youtube:
     - "@bravosresearchcrypto"
     - "@brianstoffelyt"
     - "@BrunoKreidler"
+    - "@Blocktrainer"
     - "@BusinessWithBrian"
     - "@CouchInvestor"
     - "@DataCatInvest"
+    - "@DennisRiedl"
     - "@DividendTalks"
     - "@jeremylefebvremakesmoney7934"
+    - "@jesseeckel2"
     - "@maximinvestiert"
     - "@parkevtatevosiancfa9544"
     - "@thepatientinvestorr"
+    - "@TickerSymbolYOU"
     - "@TomNashTV"
     - "@VirtualBacon"
 
 
   # Filteroptionen (Schema-konform)
   num_videos: 5
-  lookback_days: 30
-  max_videos_per_channel: 5
+  lookback_days: 3
+  max_videos_per_channel: 3
   # Wichtig: leeres `keywords:` wird von YAML als `null` geparst und scheitert
   # dann an der Pydantic-Validierung (erwartet: list[string]).
   keywords: []
