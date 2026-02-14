@@ -4,6 +4,8 @@ import json
 import logging
 import os
 import re
+import shutil
+import subprocess
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -34,6 +36,128 @@ DEFAULT_PROMPTS = {
     "de": "Du bist ein erfahrener Analyst für Video-Transkripte. Erstelle einen strukturierten Bericht.",
     "en": "You are an experienced video transcript analyst. Create a structured report.",
 }
+
+
+def _resolve_llm_backend(*, model: str) -> str:
+    raw = (os.environ.get("TM_LLM_BACKEND") or "openrouter").strip().lower()
+    if raw in {"gemini_cli", "gemini-cli"}:
+        return "gemini_cli"
+    if raw in {"openrouter", "openai"}:
+        return "openrouter"
+    if raw == "auto":
+        if "gemini" in (model or "").strip().lower() and shutil.which("gemini"):
+            return "gemini_cli"
+        return "openrouter"
+    logger.warning("Unknown TM_LLM_BACKEND=%r; falling back to openrouter", raw)
+    return "openrouter"
+
+
+def _effective_report_model_for_backend(*, model: str, backend: str) -> str:
+    if backend != "gemini_cli":
+        return model
+    normalized = (model or "").strip().lower()
+    if "gemini" in normalized:
+        return model
+    fallback = (os.environ.get("TM_GEMINI_CLI_MODEL") or "gemini-3-flash-preview").strip()
+    logger.warning(
+        "Report model %r is not a Gemini model; using %r for gemini_cli backend.",
+        model,
+        fallback,
+    )
+    return fallback
+
+
+def _normalize_gemini_cli_model(model: str) -> str:
+    override = (os.environ.get("TM_GEMINI_CLI_MODEL") or "").strip()
+    if override:
+        return override
+    normalized = (model or "").strip()
+    if "/" in normalized:
+        provider, suffix = normalized.split("/", 1)
+        if provider.strip().lower() in {"google", "gemini"}:
+            normalized = suffix.strip()
+    return normalized or "gemini-3-flash-preview"
+
+
+def _call_gemini_cli(
+    *,
+    model: str,
+    system_prompt: str,
+    user_prompt_text: str,
+    timeout_s: int | None = None,
+) -> str | None:
+    gemini_bin = shutil.which("gemini")
+    if not gemini_bin:
+        logger.error("Gemini CLI backend selected but 'gemini' command is not available.")
+        return None
+
+    model_cli = _normalize_gemini_cli_model(model)
+    if "pro" in model_cli.lower():
+        logger.error("Gemini CLI model blocked by policy (no pro models): %s", model_cli)
+        return None
+
+    combined_prompt = (
+        "Follow the SYSTEM PROMPT exactly.\n"
+        "Use the USER PROMPT as task input.\n"
+        "Return only the final answer content.\n"
+        "Do not use thinking/reasoning mode.\n\n"
+        "===== SYSTEM PROMPT =====\n"
+        f"{system_prompt}\n\n"
+        "===== USER PROMPT =====\n"
+        f"{user_prompt_text}\n"
+    )
+    timeout_from_cfg = max(30, int(timeout_s or 900))
+    timeout_s = max(
+        30,
+        int(os.environ.get("TM_GEMINI_CLI_TIMEOUT_SECONDS", str(timeout_from_cfg))),
+    )
+    cmd = [
+        gemini_bin,
+        "--model",
+        model_cli,
+        "-o",
+        "json",
+        "--approval-mode",
+        "yolo",
+        "-p",
+        "Use the full prompt from stdin.",
+    ]
+    try:
+        proc = subprocess.run(
+            cmd,
+            input=combined_prompt,
+            text=True,
+            capture_output=True,
+            timeout=timeout_s,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        logger.error("Gemini CLI call timed out after %ss (model=%s)", timeout_s, model_cli)
+        return None
+    except Exception as exc:
+        logger.error("Gemini CLI invocation failed: %s", exc)
+        return None
+
+    if proc.returncode != 0:
+        err = (proc.stderr or "").strip()
+        if len(err) > 2000:
+            err = err[:2000] + "..."
+        logger.error("Gemini CLI call failed (exit=%s): %s", proc.returncode, err)
+        return None
+
+    raw = (proc.stdout or "").lstrip()
+    try:
+        payload, _ = json.JSONDecoder().raw_decode(raw)
+    except Exception as exc:
+        logger.error("Gemini CLI JSON parse failed: %s", exc)
+        return None
+
+    response = payload.get("response") if isinstance(payload, dict) else None
+    if not isinstance(response, str):
+        logger.error("Gemini CLI response missing 'response' text field.")
+        return None
+
+    return response
 
 GLOSSARY = {
     "mNAV": {"de": "multiple of Net Asset Value", "en": "multiple of Net Asset Value"},
@@ -553,29 +677,41 @@ def generate_reports(
     timeout_s = max(30, int(report_config.get("timeout_s", 600)))
     config_prompts = report_config.get("system_prompt", {})
 
-    api_key = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        logger.error("No API key found. Please set OPENROUTER_API_KEY or OPENAI_API_KEY.")
-        return []
+    llm_backend = _resolve_llm_backend(model=model)
+    backend_model = _effective_report_model_for_backend(model=model, backend=llm_backend)
+    api_key: str | None = None
 
     api_config = config.get("api", {}) if isinstance(config, dict) else {}
     openrouter_headers: dict[str, str] = {}
-    title_raw = api_config.get("openrouter_app_title") if isinstance(api_config, dict) else None
-    title_value = title_raw.strip() if isinstance(title_raw, str) and title_raw.strip() else "TranscriptMiner"
-    if title_value:
-        openrouter_headers["X-Title"] = title_value
-    referer_raw = api_config.get("openrouter_http_referer") if isinstance(api_config, dict) else None
-    referer_value = referer_raw.strip() if isinstance(referer_raw, str) else ""
-    if referer_value:
-        openrouter_headers["HTTP-Referer"] = referer_value
+    client: Any = None
+    if llm_backend == "openrouter":
+        api_key = (
+            (api_config.get("openrouter_api_key") if isinstance(api_config, dict) else None)
+            or os.environ.get("OPENROUTER_API_KEY")
+            or os.environ.get("openrouter_key")
+            or (api_config.get("openai_api_key") if isinstance(api_config, dict) else None)
+            or os.environ.get("OPENAI_API_KEY")
+        )
+        if not api_key:
+            logger.error("No API key found. Please set OPENROUTER_API_KEY or OPENAI_API_KEY.")
+            return []
 
-    try:
-        from openai import OpenAI
-    except ImportError as exc:
-        logger.error("openai package not installed: %s", exc)
-        return []
+        title_raw = api_config.get("openrouter_app_title") if isinstance(api_config, dict) else None
+        title_value = title_raw.strip() if isinstance(title_raw, str) and title_raw.strip() else "TranscriptMiner"
+        if title_value:
+            openrouter_headers["X-Title"] = title_value
+        referer_raw = api_config.get("openrouter_http_referer") if isinstance(api_config, dict) else None
+        referer_value = referer_raw.strip() if isinstance(referer_raw, str) else ""
+        if referer_value:
+            openrouter_headers["HTTP-Referer"] = referer_value
 
-    client = OpenAI(api_key=api_key, base_url=_OPENROUTER_BASE_URL, timeout=timeout_s)
+        try:
+            from openai import OpenAI
+        except ImportError as exc:
+            logger.error("openai package not installed: %s", exc)
+            return []
+
+        client = OpenAI(api_key=api_key, base_url=_OPENROUTER_BASE_URL, timeout=timeout_s)
 
     if report_lang not in {"de", "en", "both"}:
         logger.error("Invalid report_lang=%r (expected: de|en|both)", report_lang)
@@ -680,42 +816,72 @@ def generate_reports(
 
         full_prompt_text = system_prompt + user_prompt
         token_count = estimate_tokens(full_prompt_text)
-        limit = MODEL_LIMITS.get(model, 128000)
+        limit = MODEL_LIMITS.get(backend_model, MODEL_LIMITS.get(model, 128000))
 
         logger.info("Estimated token count: %s (Limit: %s)", token_count, limit)
         if token_count > limit:
             logger.warning(
                 "Token count (%s) exceeds estimated limit for %s (%s).",
                 token_count,
-                model,
+                backend_model,
                 limit,
             )
 
         try:
             start_time = time.time()
-            response = call_openai_with_retry(
-                client.chat.completions.create,
-                model=model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=0.7,
-                extra_headers=openrouter_headers,
-            )
-            duration_ms = (time.time() - start_time) * 1000.0
-            total_tokens = getattr(getattr(response, "usage", None), "total_tokens", None)
-            logger.info(
-                "LLM report call completed: lang=%s duration_ms=%.2f total_tokens=%s",
-                lang["code"],
-                duration_ms,
-                total_tokens if total_tokens is not None else "unknown",
-            )
+            if llm_backend == "gemini_cli":
+                content = _call_gemini_cli(
+                    model=backend_model,
+                    system_prompt=system_prompt,
+                    user_prompt_text=user_prompt,
+                    timeout_s=timeout_s,
+                )
+                duration_ms = (time.time() - start_time) * 1000.0
+                if not isinstance(content, str):
+                    logger.error(
+                        "LLM report call failed (%s): gemini_cli returned no content",
+                        lang["code"],
+                    )
+                    continue
+                logger.info(
+                    "LLM report call completed: backend=%s model=%s lang=%s duration_ms=%.2f",
+                    llm_backend,
+                    backend_model,
+                    lang["code"],
+                    duration_ms,
+                )
+            else:
+                response = call_openai_with_retry(
+                    client.chat.completions.create,
+                    model=backend_model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=0.7,
+                    extra_headers=openrouter_headers,
+                )
+                duration_ms = (time.time() - start_time) * 1000.0
+                total_tokens = getattr(getattr(response, "usage", None), "total_tokens", None)
+                logger.info(
+                    "LLM report call completed: backend=%s model=%s lang=%s duration_ms=%.2f total_tokens=%s",
+                    llm_backend,
+                    backend_model,
+                    lang["code"],
+                    duration_ms,
+                    total_tokens if total_tokens is not None else "unknown",
+                )
+                content = response.choices[0].message.content
         except Exception as exc:
-            logger.error("LLM report call failed (%s): %s", lang["code"], exc)
+            logger.error(
+                "LLM report call failed (backend=%s model=%s lang=%s): %s",
+                llm_backend,
+                backend_model,
+                lang["code"],
+                exc,
+            )
             continue
 
-        content = response.choices[0].message.content
         if not isinstance(content, str):
             logger.error("Unexpected LLM response content for %s", lang["code"])
             continue

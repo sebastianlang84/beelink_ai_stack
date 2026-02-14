@@ -156,7 +156,7 @@
 - One-shot run (investing):
   - `./scripts/run-tm-investing.sh`
 - The run script waits for completion and triggers `sync.topic` for `investing` (global lifecycle routing -> `investing_new` + `investing_archive`).
-- Gemini migration detail: scheduler sends `skip_report=true` (Summary/Sync ja, Report nein), weil Report-Generierung aktuell noch OpenRouter nutzt.
+- Gemini migration detail: scheduler setzt `skip_report` nicht mehr erzwungen; Report-Generierung nutzt dasselbe Backend wie `TM_LLM_BACKEND`.
 - One-shot run (Company Dossier Agent):
   - `./scripts/run-tm-investing-companies.sh`
 - The company script uses `config_investing_companies.yaml` and syncs topic `company_dossiers`.

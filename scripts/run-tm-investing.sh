@@ -29,9 +29,6 @@ TOPIC = "investing"
 BASE = "http://127.0.0.1:8000"
 
 payload = {"config_id": CONFIG_ID}
-# Report generation currently uses OpenRouter API. For Gemini-CLI migration we
-# keep report disabled in scheduled runs.
-payload["skip_report"] = True
 req = urllib.request.Request(
     f"{BASE}/runs/start",
     data=json.dumps(payload).encode("utf-8"),

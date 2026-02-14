@@ -127,7 +127,7 @@ Persistenz/Backup: `docs/runbook_backup_restore.md:1`
   - `TM_GEMINI_CLI_MODEL` ueberschreibt das Modell aus der Config
   - `TM_GEMINI_CLI_TIMEOUT_SECONDS` setzt das CLI-Timeout (Default `900`)
 - Betriebsdetail Scheduler:
-  - `scripts/run-tm-investing.sh` und `scripts/run-tm-investing-companies.sh` starten aktuell mit `skip_report=true`, da der Report-Pfad noch OpenRouter-basiert ist.
+  - `scripts/run-tm-investing.sh` und `scripts/run-tm-investing-companies.sh` starten ohne erzwungenes `skip_report`; der Report-Pfad nutzt dasselbe Backend wie `TM_LLM_BACKEND` (z. B. `gemini_cli`).
 
 ## Troubleshooting
 
