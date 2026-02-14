@@ -131,28 +131,18 @@
   - Offen:
     - Upsert-Mechanik fuer echte `company_dossiers`-Dateien (nicht nur Dossier-Deltas pro Video).
 
-- [ ] **OWUI RAG/Embedder Settings Snapshot (Ist-Stand, aus Chat/DB)**
-  - Quelle: `owui-data:/app/backend/data/webui.db` -> `config.data.rag`
-  - Aktuelle Werte:
+- [x] **OWUI RAG/Embedder Settings Snapshot (Ist-Stand, aus Chat/DB)**
+  - Umsetzung (2026-02-14):
+    - Reproduzierbarer Snapshot-Export hinzugefuegt: `scripts/openwebui_snapshot_rag_settings.sh`.
+    - Snapshot-Datei erstellt: `docs/owui_rag_settings_snapshot.md` (Quelle: `owui` Container, `webui.db`, `config.id=1`).
+  - Aktuelle Werte (Snapshot 2026-02-14):
     - `embedding_engine=openai`, `embedding_model=baai/bge-m3`, `openai_api_base_url=https://openrouter.ai/api/v1`
-    - Retrieval: `top_k=15`, `top_k_reranker=5`, `relevance_threshold=0.4`
-    - Hybrid Search: `enable_hybrid_search=true`, `hybrid_bm25_weight=0.65`
+    - Retrieval: `top_k=20`, `top_k_reranker=8`, `relevance_threshold=0.35`
+    - Hybrid Search: `enable_hybrid_search=false`, `hybrid_bm25_weight=0.35`
     - Chunking: `chunk_size=800`, `chunk_overlap=120`, `chunk_min_size_target=200`, `text_splitter=\"\"`
     - Reranker: `reranking_engine=\"\"`, `reranking_model=\"BAAI/bge-reranker-v2-m3\"`
-    - RAG Template: striktes `Same-day sufficiency gate` aktiv fuer Queries wie "heute/des Tages/latest/current"
-  - Empfehlung (aus Chat, fuer bessere Praezision/geringeren Drift):
-    - Reranking Engine final aktivieren (sonst ist `top_k_reranker` nur eingeschraenkt wirksam)
-      - `reranking_engine`: Default
-      - `reranking_model`: z. B. `BAAI/bge-reranker-v2-m3`
-      - `top_k`: eher kleiner (10–20)
-      - `top_k_reranker`: 3–8
-    - Chunking/Text-Splitter:
-      - token-basierter Splitter (statt \"\"/Default), kleinere Chunks (ca. 500–1000 Tokens)
-      - fuer Topic-Reinheit oft besser: 350–650 Tokens (falls `chunk_size` Tokens repraesentiert)
-      - Overlap: 80–120
-      - Layout-Regeln im Content: kurze Absaetze, klare Zwischenueberschriften, keine \"Macro + Crypto\" in einem Absatz
-  - Entscheidung fuer morgen:
-    - Ob wir die Empfehlung 1:1 im OWUI-Admin-Panel umsetzen oder erst \"topic collections + routing\" fertig machen und Settings danach feinjustieren.
+    - RAG Template: `Same-day sufficiency gate` aktiv.
+  - Offene Folgeentscheidung bleibt in `Prompt-Engineering + RAG Umsetzung (OWUI)` (Reranker-Engine/Text-Splitter final setzen).
 
 - [x] **Apache Tika als Docker-Service installieren**
   - Ziel: Tika via Docker bereitstellen (fuer OWUI Documents/RAG).

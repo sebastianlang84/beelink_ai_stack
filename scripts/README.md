@@ -99,6 +99,8 @@
 ## Open WebUI RAG Guard (Investing)
 - Apply stricter day-sensitive retrieval defaults in OWUI config (`webui.db`) and restart `owui`:
   - `./scripts/openwebui_apply_investing_rag_guard.sh`
+- Snapshot current RAG settings from `webui.db` into Markdown:
+  - `./scripts/openwebui_snapshot_rag_settings.sh docs/owui_rag_settings_snapshot.md`
 - Sets:
   - `rag.relevance_threshold=0.4`
   - `rag.top_k=15`

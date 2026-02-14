@@ -27,7 +27,7 @@ Dokunetz: Einstieg über `docs/README.md:1`.
 5. Zugriff lokal am Server: `http://127.0.0.1:3000` (VPN-only empfohlen via Tailscale Serve)
 
 Betrieb/Access: `open-webui/README.md:1` (default localhost-only; empfohlen via Tailscale Serve im Tailnet).
-RAG Retrieval (aktueller Stand, 2026-02-04): `top_k=15`, `top_k_reranker=5`, `relevance_threshold=0.4`, `enable_hybrid_search=true`, `hybrid_bm25_weight=0.65` (OWUI).
+RAG Retrieval (Snapshot aus `webui.db`, 2026-02-14): `top_k=20`, `top_k_reranker=8`, `relevance_threshold=0.35`, `enable_hybrid_search=false`, `hybrid_bm25_weight=0.35` (OWUI). Reproduzierbarer Dump: `./scripts/openwebui_snapshot_rag_settings.sh docs/owui_rag_settings_snapshot.md`.
 Day-sensitive Guard (heute/des Tages/latest): Striktes Same-Day-Sufficiency-Gate im OWUI-RAG-Template aktiv; Update reproduzierbar via `./scripts/openwebui_apply_investing_rag_guard.sh`.
 API Keys (aktueller Stand): Default User Permissions erlauben `features.api_keys=true` (siehe `open-webui/README.md:1`).
 

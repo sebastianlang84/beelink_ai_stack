@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- ops(open-webui): Reproduzierbaren RAG-Settings Snapshot aus `webui.db` hinzugefuegt (`scripts/openwebui_snapshot_rag_settings.sh` + `docs/owui_rag_settings_snapshot.md`)
+- docs(todo): OWUI RAG/Embedder Snapshot-Task abgeschlossen und Ist-Werte auf Stand 2026-02-14 aktualisiert
 - chore(repo): Lokalen Notizordner `wasticlaw-coms/` in `.gitignore` aufgenommen (Worktree-Hygiene)
 - ops(transcript-miner): Investing Config auf engeres Recency-Fenster umgestellt (`lookback_days=3`, `max_videos_per_channel=3`) und Channel-Liste erweitert (`Blocktrainer`, `DennisRiedl`, `jesseeckel2`, `TickerSymbolYOU`)
 - ops(watchdog): Watchdog im Monitoring-only Modus reaktiviert; Auto-Stop ist jetzt per Default deaktiviert (`WATCHDOG_TEMP_STOP_CONTAINER_NAMES=`)

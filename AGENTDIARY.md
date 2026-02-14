@@ -939,3 +939,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Investing-Configs finalisiert (`config_investing.yaml`, `config_investing_test.yaml`) und per `load_config` validiert.
   - `wasticlaw-coms/` in `.gitignore` aufgenommen.
   - Living Docs geprueft/aktualisiert: `CHANGELOG.md` aktualisiert; `README.md`/`TODO.md` inhaltlich geprueft, keine weiteren Aenderungen noetig.
+
+## 2026-02-15
+- Aufgabe: TODO "OWUI RAG/Embedder Settings Snapshot" abschliessen und reproduzierbar machen.
+- Probleme/Bugs/Issues:
+  - TODO/README enthielten veraltete RAG-Ist-Werte (z. B. `top_k=15`), die nicht mehr dem echten `webui.db`-Stand entsprachen.
+- Loesung:
+  - Snapshot-Script hinzugefuegt: `scripts/openwebui_snapshot_rag_settings.sh` (liest `config.id=1 -> data.rag` aus `webui.db` im `owui` Container).
+  - Snapshot geschrieben: `docs/owui_rag_settings_snapshot.md`.
+  - Living Docs aktualisiert: `README.md`, `TODO.md`, `CHANGELOG.md` auf den echten Snapshot-Stand (2026-02-14) gebracht.
