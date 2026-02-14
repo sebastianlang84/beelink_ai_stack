@@ -1,8 +1,12 @@
 # Changelog
 
 ## Unreleased
+- ops(watchdog): Watchdog im Monitoring-only Modus reaktiviert; Auto-Stop ist jetzt per Default deaktiviert (`WATCHDOG_TEMP_STOP_CONTAINER_NAMES=`)
+- feat(transcript-miner): Report-LLM folgt jetzt `TM_LLM_BACKEND` (inkl. `gemini_cli`); Scheduler-Skripte setzen `skip_report` nicht mehr erzwungen
+- chore(docs): Markdown-Lint Baseline integriert (`.markdownlint-cli2.yaml` + `scripts/lint-markdown.sh`) und in README/TODO dokumentiert
 - fix(transcript-miner): `youtube.api_timeout_s`, `analysis.llm.timeout_s` und `report.llm.timeout_s` sind jetzt end-to-end verdrahtet (YouTube Data API, Summary-LLM, Report-LLM)
 - fix(transcript-miner): Config-Validierung ist jetzt strikt (`extra=forbid`), unbekannte Keys failen sofort; `owui_collections` bleibt als globaler Kompatibilitaets-Block erlaubt
+- ops(open-webui): Standard-Image-Tag auf `0.8.1` angehoben (Compose + `.config.env.example` + `open-webui/.config.env.example`)
 - fix(mcp-transcript-miner): `source_id`-Extraktion aus OWUI-Files korrigiert (Regex-Fix + Fallback ueber Filename), damit Lifecycle-Moves/Removals wieder greifen
 - fix(mcp-transcript-miner): Pagination fuer Knowledge-Files robust gemacht (alle Seiten statt nur erster Page-Chunk), dadurch vollständige Reconciliation moeglich
 - fix(mcp-transcript-miner): Race-Duplikate in OWUI Collections bereinigt (`investing_archive`/`investing_new`) und Bestand auf eindeutige `source_id` normalisiert

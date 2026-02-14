@@ -10,6 +10,14 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Probleme/Bugs/Issues: Host-Python hatte keine `yaml`/`pytest` Dependencies fuer lokale Testausfuehrung.
 - Loesung: Laufzeit-Checks im `tm`-Container ausgefuehrt (Config-Load erfolgreich, Unknown-Keys schlagen mit `ValidationError` fehl); Living Docs aktualisiert (`README.md`, `CHANGELOG.md`). `TODO.md` geprueft: keine inhaltliche Aenderung fuer diesen Task noetig.
 
+## 2026-02-14
+- Aufgabe: Open WebUI auf Version `0.8.1` aktualisieren und live ausrollen.
+- Probleme/Bugs/Issues: Lokale `open-webui/.config.env` stand noch auf `OPEN_WEBUI_IMAGE_TAG=0.8.0`; dadurch waere der neue Default in Compose/Examples beim Deploy ueberschrieben worden.
+- Loesung: Version in `open-webui/docker-compose.yml`, `.config.env.example`, `open-webui/.config.env.example` und `open-webui/README.md` auf `0.8.1` gesetzt, Compose-Config validiert, Image `ghcr.io/open-webui/open-webui:0.8.1` gepullt, Container neu erstellt (`up -d owui`) und Health/HTTP-Check verifiziert (`healthy`, `HTTP 200`).
+- Aufgabe: Living Docs pruefen.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: `CHANGELOG.md` aktualisiert; `TODO.md` geprueft: keine inhaltliche Aenderung fuer diesen Task noetig.
+
 ## 2026-01-29
 - Task: Add mandatory agent diary requirement and commit rules.
 - Issues/Bugs: No agent diary existed and no explicit agent-level policy about diary + commit steps.
@@ -884,3 +892,39 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Verifiziert:
     - `investing_new`: `19` Files, `19` eindeutige `source_id`, `0` Duplikate.
     - `investing_archive`: `120` Files, `120` eindeutige `source_id`, `0` Duplikate.
+
+## 2026-02-15
+- Aufgabe: TODO "Markdown Linter integrieren (Repo-wide)" umsetzen.
+- Probleme/Bugs/Issues:
+  - Initialer Voll-Run mit `markdownlint-cli2` lieferte ~6k Verstosse ueber historische/generated Dateien (`AGENTDIARY.md`, Prompt-Engineering Fixtures, Run-Artefakte).
+  - Strikte Ruleset-Einfuehrung ohne Baseline haette sofort permanent rot produziert und waere operativ nicht nutzbar gewesen.
+- Loesung:
+  - Baseline-Linter eingefuehrt: `.markdownlint-cli2.yaml` + `scripts/lint-markdown.sh` (npx-basiert, ohne globale Installation).
+  - Baseline-Ignores fuer generated/append-only Bereiche gesetzt und Rule-Set fuer Legacy-Bestand pragmatisch entschaerft.
+  - Verifiziert: `./scripts/lint-markdown.sh` laeuft gegen die Baseline reproduzierbar.
+  - Living Docs aktualisiert: `README.md`, `TODO.md`, `CHANGELOG.md`.
+
+## 2026-02-15
+- Aufgabe: Transcript Miner Reports auf Gemini CLI umstellen (TODO-Punkt) und Scheduler ohne erzwungenes `skip_report` fahren.
+- Probleme/Bugs/Issues:
+  - Report-Generator war OpenRouter-only; bei `TM_LLM_BACKEND=gemini_cli` liefen nur Summaries, Reports wurden im Scheduler bewusst uebersprungen.
+  - Report-Configs nutzen teils nicht-Gemini Modellnamen (`openai/...`), was fuer Gemini CLI ohne Fallback fehlschlagen kann.
+- Loesung:
+  - `transcript-miner/src/transcript_ai_analysis/llm_report_generator.py` um Backend-Switch erweitert (`TM_LLM_BACKEND` fuer `openrouter`/`gemini_cli`), inkl. Gemini-CLI Call-Pfad.
+  - Sicherer Modell-Fallback fuer Report-Calls: bei `gemini_cli` + nicht-Gemini Modell -> `gemini-3-flash-preview` (oder `TM_GEMINI_CLI_MODEL`).
+  - Scheduler-Skripte `scripts/run-tm-investing.sh` und `scripts/run-tm-investing-companies.sh` von erzwungenem `skip_report=true` befreit.
+  - Tests/Verifikation:
+    - Neue Unit-Tests: `transcript-miner/tests/test_llm_report_backend.py` (Backend/Model-Fallback).
+    - `uv run pytest tests/test_llm_report_backend.py tests/test_channel_namespace_normalization.py` -> gruen.
+    - `bash -n` fuer beide Scheduler-Skripte -> ok.
+  - Living Docs aktualisiert: `README.md`, `TODO.md`, `CHANGELOG.md`, `scripts/README.md`, `mcp-transcript-miner/README.md`.
+
+## 2026-02-15
+- Aufgabe: TODO "Watchdog-Reaktivierung bewusst entscheiden" technisch abschliessen.
+- Probleme/Bugs/Issues:
+  - Watchdog war seit 2026-02-04 gestoppt; fruehere Auto-Stop-Ereignisse hatten `owui` bei niedrigen Schwellen (60C/2) mehrfach gestoppt.
+  - Es bestand Risiko, dass bei Reaktivierung wieder implizite Stop-Actions greifen, falls keine explizite Sicherung gesetzt ist.
+- Loesung:
+  - Default auf Monitoring-only gehaertet: `watchdog/.config.env.example` mit `WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` (leer).
+  - Compose-Fallback angepasst (`watchdog/docker-compose.yml`), damit kein implizites `owui` als Stop-Target gesetzt wird.
+  - Doku/TODO/CHANGELOG aktualisiert und Watchdog erneut gestartet/verifiziert.

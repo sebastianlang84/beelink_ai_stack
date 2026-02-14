@@ -3,13 +3,14 @@
 Leichter Host-Watchdog, der CPU-Last, Temperatur, Disk-Usage und Docker-Hygiene beobachtet.
 Ausloeser erzeugen Burst-Diagnosen (Top-Prozesse + Container-Stats).
 
-Status: **pausiert auf User-Wunsch seit 2026-02-04**.
+Status: **aktiv seit 2026-02-15 im Monitoring-only Modus** (kein Auto-Stop).
 
 ## Setup
 1) Shared Secrets setzen: `.env.example` -> `.env` (nicht noetig fuer Watchdog).
 2) Shared Config setzen: `.config.env.example` -> `.config.env` (optional).
 3) Service-Config setzen: `watchdog/.config.env.example` -> `watchdog/.config.env` (non-secret, gitignored).
 4) Start: `docker compose --env-file .env --env-file .config.env --env-file watchdog/.config.env -f watchdog/docker-compose.yml up -d --build`
+5) Monitoring-only bleibt aktiv, solange `WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` leer ist.
 
 ## Volumes
 - `watchdog-data`: Logs/Artefakte unter `/data`
@@ -20,7 +21,8 @@ Status: **pausiert auf User-Wunsch seit 2026-02-04**.
 
 ## Temp-Schutz (Auto-Stop)
 - Wenn `temperature.max_c` >= `WATCHDOG_TEMP_STOP_THRESHOLD_C` fuer `WATCHDOG_TEMP_STOP_CONSEC` Messungen hintereinander gilt, werden die Container in `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` gestoppt.
-- Deaktivieren: `WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` (leer).
+- Default in diesem Repo: deaktiviert (`WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` leer).
+- Aktivieren (nur wenn bewusst gewollt): z. B. `WATCHDOG_TEMP_STOP_CONTAINER_NAMES=owui`.
 - Log-Check: `/data/watchdog.alert.jsonl` (Action: `stop_containers_temp_threshold`).
 
 ## One-shot Status (stdout)

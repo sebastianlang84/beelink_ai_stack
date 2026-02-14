@@ -136,7 +136,7 @@ Optional (mit sudo): Timer wirklich deaktivieren:
 - Status: produktiv fuer Summary-Generierung in Transcript Miner (`TM_LLM_BACKEND=gemini_cli`).
 - Modell-Policy: `google/gemini-3-flash-preview` (normalisiert auf `gemini-3-flash-preview`), Pro-Modelle im Runner geblockt, no-thinking per Prompt-Policy.
 - Auth: bevorzugt Gemini-Account-Auth via `~/.gemini/settings.json`; fuer `gemini-3-flash-preview` muss `preview=true` gesetzt sein (`GEMINI_API_KEY` nur Fallback).
-- Scheduler-Default: `scripts/run-tm-investing.sh` und `scripts/run-tm-investing-companies.sh` setzen `skip_report=true` (Report-Pfad bleibt vorerst OpenRouter-basiert).
+- Scheduler-Default: `scripts/run-tm-investing.sh` und `scripts/run-tm-investing-companies.sh` starten Runs ohne erzwungenes `skip_report`; Report-Backend folgt `TM_LLM_BACKEND` (z. B. `gemini_cli`).
 - POC-Utility bleibt fuer Schnelltests verfuegbar: `./scripts/run-gemini-cli-summary-poc.sh` (schreibt `*.usage.json` mit Token-/API-Stats).
 
 Diagnose-Scripts (Transcript Miner):
@@ -146,11 +146,11 @@ Diagnose-Scripts (Transcript Miner):
 
 ## Quickstart (Watchdog)
 Ziel: Lightweight Monitoring fuer CPU/Temperatur/Disk (Host) plus Docker-Hygiene.
-Status: **pausiert auf User-Wunsch seit 2026-02-04** (Container `watchdog` manuell gestoppt).
+Status: **reaktiviert seit 2026-02-15 im Monitoring-only Modus** (kein Auto-Stop per Default).
 1. Shared Secrets setzen: `.env.example` -> `.env` (nicht noetig fuer Watchdog, aber konsistent).
 2. Shared Config setzen (non-secret): `.config.env.example` -> `.config.env` (optional).
 3. Service-Config setzen (non-secret): `watchdog/.config.env.example` -> `watchdog/.config.env` (gitignored).
-   - Hinweis: Auto-Stop bei hoher Temperatur ist aktiv, wenn `WATCHDOG_TEMP_STOP_CONTAINER_NAMES` gesetzt ist. Deaktivieren: leer setzen.
+   - Hinweis: Monitoring-only ist der Default (`WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` leer). Auto-Stop ist nur aktiv, wenn Container-Namen explizit gesetzt sind (z. B. `owui`).
 4. Start (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file watchdog/.config.env -f watchdog/docker-compose.yml up -d --build`
 
 ## Quickstart (OpenClaw)
@@ -164,6 +164,11 @@ Ziel: OpenClaw Gateway host-native betreiben (Telegram Channel) und stabil halte
 - Runbook: `docs/runbook_smoke_test.md:1`
 - Script: `./scripts/smoke_test_ai_stack.sh --up --build`
 - Reindex (Embedding-Model-Wechsel): `docs/runbook_openwebui_reindex_knowledge.md:1`
+
+## Markdown Lint
+- Baseline-Lint fuer Markdown: `./scripts/lint-markdown.sh`
+- Tooling: `markdownlint-cli2` via `npx` (keine globale Installation noetig)
+- Konfiguration: `.markdownlint-cli2.yaml` (inkl. Baseline-Ignores fuer generated/append-only Bereiche)
 
 ## Codex Remote-SSH Auth Guard (DNS)
 - Hintergrund: VS Code Codex Login kann scheitern, wenn Tailscale DNS Override (`accept-dns=true`) auf einen instabilen Resolver zeigt.

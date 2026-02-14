@@ -81,23 +81,27 @@
     - Runbook: `docs/runbook-owui-502-autorecover.md`
   - DoD: Bei gestopptem `owui` wird der Dienst ohne manuelles Eingreifen wieder gestartet; Runbook + Skript dokumentiert.
 
-- [ ] **Watchdog-Reaktivierung bewusst entscheiden (derzeit pausiert)**
-  - Status: `watchdog` wurde am 2026-02-04 auf User-Wunsch gestoppt.
-  - Entscheidung offen: komplett deaktiviert lassen oder nur read-only Monitoring ohne Container-Stop-Actions.
+- [x] **Watchdog-Reaktivierung bewusst entscheiden (derzeit pausiert)**
+  - Umsetzung (2026-02-15):
+    - Entscheidung: Reaktivierung als read-only Monitoring ohne Container-Stop-Actions.
+    - Default gehaertet: `WATCHDOG_TEMP_STOP_CONTAINER_NAMES=` (leer) in `watchdog/.config.env.example` und Compose-Fallback ohne implizites `owui`.
+    - Service wieder gestartet und im Monitoring-only Modus verifiziert.
 
 - [x] **Kosten: Summaries ueber Gemini CLI statt OpenRouter API**
   Kontext: User hat OpenAI- und Google-Abos.
   Umsetzung (2026-02-12):
   - `TM_LLM_BACKEND=gemini_cli` im TM-Compose/Env eingefuehrt.
   - Runner-Unterstuetzung in `transcript-miner/src/transcript_ai_analysis/llm_runner.py` fuer Gemini CLI (Model-Policy: `gemini-3-flash-preview`, Pro-Block, no-thinking Prompt-Policy).
-  - Scheduler (`run-tm-investing*.sh`) startet Runs mit `skip_report=true`, damit keine OpenRouter-Report-Calls entstehen.
+  - Historisch (bis 2026-02-15): Scheduler lief mit `skip_report=true`, um OpenRouter-Report-Calls zu vermeiden.
   - End-to-End verifiziert: Run via Gemini CLI + `sync/topic/investing` erfolgreich (Indexing in OWUI Collections).
   Monitoring:
   - POC-Script `scripts/run-gemini-cli-summary-poc.sh` schreibt weiterhin `*.usage.json` mit Token-/API-Stats.
 
-- [ ] **Transcript Miner Reports auf Gemini CLI umstellen (derzeit `skip_report=true`)**
-  - Status: Summaries + Sync laufen auf Gemini CLI; Report-Generierung ist noch OpenRouter-basiert und wird im Scheduler deshalb bewusst uebersprungen.
-  - Ziel: Report-Pfad backend-neutral machen (Gemini CLI oder eigener Report-Switch), damit `skip_report` optional wieder deaktivierbar wird.
+- [x] **Transcript Miner Reports auf Gemini CLI umstellen (derzeit `skip_report=true`)**
+  - Umsetzung (2026-02-15):
+    - Report-Generator (`llm_report_generator.py`) nutzt jetzt ebenfalls `TM_LLM_BACKEND` (`openrouter` oder `gemini_cli`).
+    - Bei `gemini_cli` + nicht-Gemini Report-Model wird sicher auf `gemini-3-flash-preview` (oder `TM_GEMINI_CLI_MODEL`) gefallbackt.
+    - Scheduler (`run-tm-investing*.sh`) setzt `skip_report` nicht mehr erzwungen.
 
 - [ ] **Prompt-Engineering + RAG Umsetzung (OWUI)**
   - Ziel: Topic-reine Retrieval-Treffer (macro/stocks/crypto), weniger Drift, stabile Antwortstruktur.
@@ -226,11 +230,15 @@
   - Status: investing Run fertiggestellt; `sync/topic/investing` erfolgreich (109 processed/109 indexed).
   - Hinweis: Live-Events ohne Transkript (VideoUnplayable) bleiben Skip.
 
-- [ ] **Markdown Linter integrieren (Repo-wide)**
+- [x] **Markdown Linter integrieren (Repo-wide)**
   - Ziel: Konsistente Markdown-Qualitaet (MD041/MD022/MD031/MD032 etc.).
   - Optionen: markdownlint-cli2 oder markdownlint.
   - Scope: alle `*.md`, mit erlaubter `.markdownlint.json`/`.markdownlint.yaml` Konfiguration.
   - CI: optional als eigener Job (fast fail bei Lint-Fehlern).
+  - Umsetzung (2026-02-15):
+    - Baseline-Config: `.markdownlint-cli2.yaml`
+    - Runner: `scripts/lint-markdown.sh` (npx-basiert, ohne globale Installation)
+    - Start als pragmatische Baseline mit dokumentierten Ignores/Rule-Relaxing fuer bestehende Legacy-/generated Markdown-Bestaende.
 
 - [x] **Watchdog: OWUI-Stop aufklaeren + Regeln schaerfen**
   - Fakt: Watchdog stoppt Container **nur** beim Temp-Stop und Default-Target ist `owui`.
@@ -1102,7 +1110,7 @@ Ziel: Runs aus Open WebUI starten (non-blocking) und **Summary-`.md` pro Video**
 - [ ] Traefik/Caddy + HTTPS + Domain (nur wenn gewünscht; nicht nötig für VPN-only)
 - [ ] Qdrant Setup planen (Compose + `.env.example` + PRD) und in Gesamtarchitektur einhängen
   - [x] Standalone Qdrant Stack (localhost-only) vorhanden: `qdrant/docker-compose.yml:1` (`http://127.0.0.1:6333`)
-- [x] Open WebUI Setup (Compose + Doku), Image-Tag gepinnt (0.7.2)
+- [x] Open WebUI Setup (Compose + Doku), Image-Tag gepinnt (0.8.0)
 - [x] Neues Tool: `context6` (PoC) — „persönliches Context7“ (Fetch → Normalize → Chunk → Search/Get)
   - [x] PRD: `docs/prd_context6_poc_working_draft.md:1`
   - [x] MCP Server PoC: `mcp-context6/` (`POST /mcp`)
