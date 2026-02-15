@@ -948,3 +948,17 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
   - Snapshot-Script hinzugefuegt: `scripts/openwebui_snapshot_rag_settings.sh` (liest `config.id=1 -> data.rag` aus `webui.db` im `owui` Container).
   - Snapshot geschrieben: `docs/owui_rag_settings_snapshot.md`.
   - Living Docs aktualisiert: `README.md`, `TODO.md`, `CHANGELOG.md` auf den echten Snapshot-Stand (2026-02-14) gebracht.
+
+## 2026-02-15
+- Aufgabe: Phase 1 fuer "Prompt-Engineering + RAG Umsetzung" umgesetzt (Baseline/Diagnose reproduzierbar machen).
+- Probleme/Bugs/Issues:
+  - Es gab keinen reproduzierbaren Harness fuer OWUI-RAG Chat-Tests (lokal/remote), dadurch waren Aussagen zu 500/Drift schwer belastbar.
+  - Direkte Chat-API Calls liefern bei mehreren Queries nur `tool_calls`-Chunks ohne finalen Antworttext.
+- Loesung:
+  - Query-Matrix eingefuehrt: `config/owui_rag_baseline_queries.json`.
+  - Probe-Script eingefuehrt: `scripts/owui_rag_baseline_probe.sh` (SSE-Parsing, Status/Latenz/Token, Tool-Call-Zaehler/Namen, Markdown-Report).
+  - Baseline-Reports erzeugt:
+    - `docs/owui_rag_baseline_2026-02-15.md` (lokal)
+    - `docs/owui_rag_baseline_remote_2026-02-15.md` (Tailnet URL)
+  - Ergebnis: im Baseline-Lauf aktuell kein HTTP 500 reproduzierbar; aber mehrfache tool-call-only Endzustaende ohne finalen Text vorhanden.
+  - Living Docs aktualisiert: `README.md`, `scripts/README.md`, `TODO.md`, `CHANGELOG.md`.

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- ops(open-webui): Reproduzierbare RAG-Baseline-Probe hinzugefuegt (`scripts/owui_rag_baseline_probe.sh` + `config/owui_rag_baseline_queries.json`) inkl. ersten Reports (`docs/owui_rag_baseline_2026-02-15.md`, `docs/owui_rag_baseline_remote_2026-02-15.md`)
 - ops(open-webui): Reproduzierbaren RAG-Settings Snapshot aus `webui.db` hinzugefuegt (`scripts/openwebui_snapshot_rag_settings.sh` + `docs/owui_rag_settings_snapshot.md`)
 - docs(todo): OWUI RAG/Embedder Snapshot-Task abgeschlossen und Ist-Werte auf Stand 2026-02-14 aktualisiert
 - chore(repo): Lokalen Notizordner `wasticlaw-coms/` in `.gitignore` aufgenommen (Worktree-Hygiene)

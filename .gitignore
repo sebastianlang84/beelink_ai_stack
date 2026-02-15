@@ -4,6 +4,7 @@
 **/.config.env
 config/*.json
 !config/*.example
+!config/owui_rag_baseline_queries.json
 *.env~
 *.swp
 *.bak

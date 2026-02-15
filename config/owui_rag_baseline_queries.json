@@ -1,0 +1,52 @@
+[
+  {
+    "id": "health_ok",
+    "query": "Sag nur OK",
+    "focus": "API transport, model path, SSE parsing"
+  },
+  {
+    "id": "day_sensitive_hot_list",
+    "query": "Nenne mir heute die 3 heißesten Aktien-Chancen aus den neuesten Videos.",
+    "focus": "same-day sufficiency gate behavior"
+  },
+  {
+    "id": "stocks_topic_isolation",
+    "query": "Welche 5 Aktien waren im Fokus und was ist jeweils die zentrale Thesis?",
+    "focus": "stocks retrieval quality and drift"
+  },
+  {
+    "id": "macro_topic_isolation",
+    "query": "Welche Macro-Themen dominieren aktuell laut den Zusammenfassungen?",
+    "focus": "macro retrieval quality and drift"
+  },
+  {
+    "id": "crypto_topic_isolation",
+    "query": "Welche Bitcoin- oder Krypto-Narrative sind aktuell relevant?",
+    "focus": "crypto retrieval quality and drift"
+  },
+  {
+    "id": "company_dossier_style",
+    "query": "Gib mir ein kurzes Dossier zu ServiceNow: Geschäftsmodell, Risiko, Katalysator, Kennzahl.",
+    "focus": "company dossier retrieval style"
+  },
+  {
+    "id": "evidence_requirement",
+    "query": "Nenne nur Aussagen mit konkreten Zahlen und schreibe pro Aussage die Quelle dazu.",
+    "focus": "evidence quoting behavior"
+  },
+  {
+    "id": "recency_check",
+    "query": "Welche Aussagen sind wirklich von heute und welche sind älter?",
+    "focus": "recency handling"
+  },
+  {
+    "id": "uncertainty_behavior",
+    "query": "Wenn der Kontext nicht reicht, sag es klar und erfinde nichts. Welche 2 Aktien wären trotzdem watchlist-würdig?",
+    "focus": "uncertainty handling under sparse context"
+  },
+  {
+    "id": "concise_summary",
+    "query": "Fasse die wichtigsten Punkte in exakt 5 Bulletpoints zusammen.",
+    "focus": "response structure consistency"
+  }
+]

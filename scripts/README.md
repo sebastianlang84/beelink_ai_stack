@@ -101,6 +101,9 @@
   - `./scripts/openwebui_apply_investing_rag_guard.sh`
 - Snapshot current RAG settings from `webui.db` into Markdown:
   - `./scripts/openwebui_snapshot_rag_settings.sh docs/owui_rag_settings_snapshot.md`
+- Run reproducible chat baseline matrix (local or remote OWUI URL):
+  - `./scripts/owui_rag_baseline_probe.sh --limit 5 --output docs/owui_rag_baseline_YYYY-MM-DD.md`
+  - Remote check example: `./scripts/owui_rag_baseline_probe.sh --base-url https://owui.tail027324.ts.net --limit 2 --output docs/owui_rag_baseline_remote_YYYY-MM-DD.md`
 - Sets:
   - `rag.relevance_threshold=0.4`
   - `rag.top_k=15`
