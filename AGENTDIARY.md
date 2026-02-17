@@ -979,3 +979,23 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
     - `openclaw models status --json` zeigt Primary/Fallback/Aliase nur fuer `google-gemini-cli/*`.
     - `openclaw models status --json` zeigt `allowed` nur `google-gemini-cli/*`.
   - Living Docs geprueft: `README.md`, `TODO.md`, `CHANGELOG.md` keine Aenderungen noetig (Task war Laufzeit-Config ausserhalb des Repos).
+
+## 2026-02-17
+- Aufgabe: OpenClaw-Default von `gemini-3-pro-preview` auf `gemini-3-flash-preview` umgestellt (Kostenreduktion) und alte Modelle entfernt.
+- Probleme/Bugs/Issues:
+  - Nach der Umstellung war die globale Config korrekt, aber die bereits existierende aktive Session blieb auf `gemini-3-pro-preview` gepinnt.
+  - Ein frueher paralleler Stop/Start-Lauf fuehrte kurzfristig zu inkonsistentem Gateway-Status (`ECONNREFUSED`), obwohl die Config schon korrekt war.
+- Loesung:
+  - Runtime-Config angepasst:
+    - Primary: `google-gemini-cli/gemini-3-flash-preview`
+    - Fallbacks: geleert
+    - Allowed-Liste: nur `google-gemini-cli/gemini-3-flash-preview`
+    - `gemini`-Alias auf `google-gemini-cli/gemini-3-flash-preview`
+    - `google-gemini-cli/gemini-3-pro-preview` und `google-gemini-cli/gemini-2.5-pro` aus aktiver Modellmenge entfernt.
+  - Bestehende Session-Datei `~/.openclaw/agents/main/sessions/sessions.json` aktualisiert (Model auf `gemini-3-flash-preview`, Context auf 1048576), ohne Session-Inhalt zu loeschen.
+  - Gateway sequentiell neu gestartet und verifiziert.
+  - Verifikation:
+    - `openclaw models status --json`: Default/Resolved `google-gemini-cli/gemini-3-flash-preview`, `fallbacks=[]`, `allowed=[google-gemini-cli/gemini-3-flash-preview]`.
+    - `openclaw status`: Session-Tabelle zeigt `gemini-3-flash-preview`.
+    - Gateway-Log (`openclaw-gateway.log`): `agent model: google-gemini-cli/gemini-3-flash-preview`.
+  - Living Docs geprueft: `README.md`, `TODO.md`, `CHANGELOG.md` keine Aenderungen noetig (Task war Laufzeit-Config ausserhalb des Repos).
