@@ -962,3 +962,20 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
     - `docs/owui_rag_baseline_remote_2026-02-15.md` (Tailnet URL)
   - Ergebnis: im Baseline-Lauf aktuell kein HTTP 500 reproduzierbar; aber mehrfache tool-call-only Endzustaende ohne finalen Text vorhanden.
   - Living Docs aktualisiert: `README.md`, `scripts/README.md`, `TODO.md`, `CHANGELOG.md`.
+
+## 2026-02-17
+- Aufgabe: OpenClaw-LLM-Konfiguration auf "Google via OAuth only" umgestellt und OpenRouter als moegliche Modellroute entfernt.
+- Probleme/Bugs/Issues:
+  - OpenClaw hat OpenRouter-Profile/Modelle aus mehreren Quellen gezeigt (Config + Auth-Store + CWD-abhaengige Env-Erkennung), wodurch OpenRouter weiterhin als moegliche Route erschien.
+  - Alias- und Model-ID-Keys mit Punkten (z. B. `openai/gpt-5.2`) erfordern escaped Dot-Notation bei `openclaw config` Pfaden.
+- Loesung:
+  - `~/.openclaw/openclaw.json` und `~/.openclaw/agents/main/agent/auth-profiles.json` gesichert und danach bereinigt:
+    - Primary/Fallbacks auf `google-gemini-cli/*`
+    - OpenRouter-Profil aus Config/Auth-Store entfernt
+    - Aliase auf `gemini`/`gemini-flash` via `google-gemini-cli/*` gesetzt
+    - Allowlist auf reine `google-gemini-cli/*` Modelle reduziert
+  - Gateway neu gestartet und Probe erfolgreich (`openclaw gateway probe`).
+  - Verifikation:
+    - `openclaw models status --json` zeigt Primary/Fallback/Aliase nur fuer `google-gemini-cli/*`.
+    - `openclaw models status --json` zeigt `allowed` nur `google-gemini-cli/*`.
+  - Living Docs geprueft: `README.md`, `TODO.md`, `CHANGELOG.md` keine Aenderungen noetig (Task war Laufzeit-Config ausserhalb des Repos).
