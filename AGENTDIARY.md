@@ -999,3 +999,17 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
     - `openclaw status`: Session-Tabelle zeigt `gemini-3-flash-preview`.
     - Gateway-Log (`openclaw-gateway.log`): `agent model: google-gemini-cli/gemini-3-flash-preview`.
   - Living Docs geprueft: `README.md`, `TODO.md`, `CHANGELOG.md` keine Aenderungen noetig (Task war Laufzeit-Config ausserhalb des Repos).
+
+## 2026-02-17
+- Aufgabe: OpenClaw auf "Google OAuth (Gemini CLI) only" fuer Auth fixiert, ohne erneuten Modell-Umbau.
+- Probleme/Bugs/Issues:
+  - Missverstaendnis zwischen Modellwahl (Flash/Pro/Auto) und Provider-Auth: benoetigt war nur die eindeutige Provider/Auth-Fixierung auf Gemini-CLI-OAuth.
+  - `openclaw models auth order set` erfordert in dieser Version explizit `--provider`.
+- Loesung:
+  - Auth-Order fuer Agent `main` explizit gesetzt:
+    - Provider `google-gemini-cli`
+    - Profil `google-gemini-cli:sebastian.langx@gmail.com`
+  - Verifiziert:
+    - `openclaw models auth order get --provider google-gemini-cli --json` zeigt nur das Gemini-OAuth-Profil.
+    - `openclaw models status --json` zeigt weiterhin OAuth `ok` fuer `google-gemini-cli`; OpenRouter hat `0` nutzbare Profile (`status: missing`).
+  - Living Docs geprueft: `README.md`, `TODO.md`, `CHANGELOG.md` keine Aenderungen noetig (Task war Laufzeit-Config ausserhalb des Repos).
