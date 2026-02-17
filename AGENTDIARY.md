@@ -1013,3 +1013,18 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
     - `openclaw models auth order get --provider google-gemini-cli --json` zeigt nur das Gemini-OAuth-Profil.
     - `openclaw models status --json` zeigt weiterhin OAuth `ok` fuer `google-gemini-cli`; OpenRouter hat `0` nutzbare Profile (`status: missing`).
   - Living Docs geprueft: `README.md`, `TODO.md`, `CHANGELOG.md` keine Aenderungen noetig (Task war Laufzeit-Config ausserhalb des Repos).
+
+## 2026-02-17
+- Aufgabe: Incident-Fix — OpenClaw antwortete nicht mehr auf Telegram (Gateway war down / instabil).
+- Probleme/Bugs/Issues:
+  - Gateway war lokal nicht erreichbar (`ECONNREFUSED` auf `127.0.0.1:18789`), dadurch keine Telegram-Responses.
+  - `systemd --user`-Servicepfad fuer `openclaw gateway start` ist auf diesem Host nicht nutzbar (kein User-Bus).
+- Loesung:
+  - Gateway sauber detached gestartet und verifiziert:
+    - laufender Prozess `openclaw-gateway`
+    - Listener auf `127.0.0.1:18789` und `[::1]:18789`
+    - `openclaw gateway probe` erfolgreich (`Reachable: yes`).
+  - Persistenz/Recovery aktiviert:
+    - `./scripts/install_openclaw_gateway_cron.sh`
+    - Cron-Block installiert (`@reboot` + `*/5 * * * * ensure`).
+  - Living Docs geprueft: `README.md`, `TODO.md`, `CHANGELOG.md` keine Aenderungen noetig (runtime/ops Incident-Fix ausserhalb Repo-Dateien).
