@@ -160,6 +160,7 @@ Ziel: OpenClaw Gateway host-native betreiben (Telegram Channel) und stabil halte
 - Ops/Recovery: `openclaw/OPERATIONS.md:1`
 - Health: `openclaw gateway probe`
 - Persistenz (Cron): `./scripts/install_openclaw_gateway_cron.sh`
+- Update-Guard (kein kaputter systemd-user Restart nach `openclaw update`): `./scripts/install_openclaw_update_guard_bash.sh`
 
 ## Smoke Test (P0)
 - Runbook: `docs/runbook_smoke_test.md:1`

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- fix(openclaw): Update-Flow fuer Hosts ohne `systemd --user` abgesichert (`scripts/openclaw_update_supervised.sh` + `scripts/install_openclaw_update_guard_bash.sh`), damit `openclaw update` den Gateway nicht mehr down hinterlaesst
 - ops(open-webui): Reproduzierbare RAG-Baseline-Probe hinzugefuegt (`scripts/owui_rag_baseline_probe.sh` + `config/owui_rag_baseline_queries.json`) inkl. ersten Reports (`docs/owui_rag_baseline_2026-02-15.md`, `docs/owui_rag_baseline_remote_2026-02-15.md`)
 - ops(open-webui): Reproduzierbaren RAG-Settings Snapshot aus `webui.db` hinzugefuegt (`scripts/openwebui_snapshot_rag_settings.sh` + `docs/owui_rag_settings_snapshot.md`)
 - docs(todo): OWUI RAG/Embedder Snapshot-Task abgeschlossen und Ist-Werte auf Stand 2026-02-14 aktualisiert

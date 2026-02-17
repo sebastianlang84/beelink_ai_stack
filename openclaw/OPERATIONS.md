@@ -43,6 +43,28 @@ Uninstall (entfernt nur den markierten Block):
 crontab -l | tail -n 50
 ```
 
+## Update ohne `systemd --user` (wichtig)
+
+Auf diesem Host ist der User-Bus oft nicht verfuegbar. Deshalb kann `openclaw update` beim Schritt
+`Restarting service...` fehlschlagen und den Gateway down lassen.
+
+Safer Flow:
+
+```bash
+./scripts/openclaw_update_supervised.sh --yes
+```
+
+Der Wrapper erzwingt:
+- `openclaw update --no-restart` (kein kaputter systemd-user Restart-Pfad)
+- danach `./scripts/openclaw_gateway_supervise.sh ensure`
+
+Optional (bequem): Hook in `~/.bashrc` installieren, damit auch plain `openclaw update` den Wrapper nutzt:
+
+```bash
+./scripts/install_openclaw_update_guard_bash.sh
+source ~/.bashrc
+```
+
 ## Dashboard Hinter Proxy (Tailscale Serve)
 
 Wenn du das Dashboard ueber `https://openclaw.tail...` (Tailscale Serve) oeffnest und im Gateway-Log steht:

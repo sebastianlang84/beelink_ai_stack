@@ -1028,3 +1028,17 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
     - `./scripts/install_openclaw_gateway_cron.sh`
     - Cron-Block installiert (`@reboot` + `*/5 * * * * ensure`).
   - Living Docs geprueft: `README.md`, `TODO.md`, `CHANGELOG.md` keine Aenderungen noetig (runtime/ops Incident-Fix ausserhalb Repo-Dateien).
+
+## 2026-02-17
+- Aufgabe: Dauerhaften Update-Fix fuer OpenClaw ohne `systemd --user` umgesetzt, damit `openclaw update` den Gateway nicht mehr down laesst.
+- Probleme/Bugs/Issues:
+  - Host hat keinen User-Systemd-Bus (`DBUS_SESSION_BUS_ADDRESS`/`XDG_RUNTIME_DIR` leer, `/run/user/1001/bus` nicht vorhanden).
+  - `openclaw update` beendet den laufenden Gateway und scheitert danach bei `Restarting service...` mit `systemctl --user unavailable`.
+- Loesung:
+  - Neuer Wrapper: `scripts/openclaw_update_supervised.sh`
+    - Fuehrt `openclaw update --no-restart` aus (verhindert kaputten systemd-user Restart-Pfad).
+    - Fuehrt danach `./scripts/openclaw_gateway_supervise.sh ensure` aus.
+  - Neuer Installer: `scripts/install_openclaw_update_guard_bash.sh`
+    - Installiert einen idempotenten `.bashrc`-Guard, der `openclaw update`/`openclaw --update` automatisch ueber den Wrapper laufen laesst.
+  - Doku aktualisiert: `openclaw/OPERATIONS.md`, `openclaw/README.md`, `scripts/README.md`, `README.md`, `CHANGELOG.md`.
+  - Living Docs: `TODO.md` geprueft, keine inhaltliche Aenderung noetig.

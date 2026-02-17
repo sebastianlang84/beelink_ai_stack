@@ -25,6 +25,10 @@
   - `./scripts/openclaw_gateway_supervise.sh ensure`
 - Check status:
   - `./scripts/openclaw_gateway_supervise.sh status`
+- Safe update wrapper for hosts without `systemd --user` (runs `openclaw update --no-restart` + gateway ensure):
+  - `./scripts/openclaw_update_supervised.sh --yes`
+- Install bash guard so plain `openclaw update` automatically uses the wrapper:
+  - `./scripts/install_openclaw_update_guard_bash.sh`
 - Install persistent user-cron (`@reboot` + periodic ensure every 5 min):
   - `./scripts/install_openclaw_gateway_cron.sh`
 - Uninstall the user-cron block (marked section only):

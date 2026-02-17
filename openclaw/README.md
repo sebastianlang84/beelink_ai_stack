@@ -66,6 +66,14 @@ Cron installieren (`@reboot` + alle 5 Minuten `ensure`):
 ./scripts/install_openclaw_gateway_cron.sh
 ```
 
+Update-Fix fuer Hosts ohne `systemd --user`:
+
+```bash
+./scripts/install_openclaw_update_guard_bash.sh
+source ~/.bashrc
+openclaw update --yes
+```
+
 ## Tailscale Zugriff (VPN-only)
 OpenClaw nutzt absolute Pfade (`/api`, `/ws`). Deshalb eigenen Hostnamen oder eigenen HTTPS-Port bevorzugen.
 
