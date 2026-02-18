@@ -20,3 +20,6 @@ This project follows a Keep a Changelog style.
 - OpenClaw notes moved from shared docs to `openclaw/notes/`.
 - Workflow and YouTube 429 report content consolidated into active PRD/runbook paths.
 - Root docs (`README.md`, `INDEX.md`, `TODO.md`) now include the `fourier-cycles` service entrypoint and operator quickstart.
+
+### Fixed
+- `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.

@@ -640,6 +640,14 @@ def update_latest_symlink(output_dir: Path, run_dir: Path) -> None:
     latest.symlink_to(run_dir.name)
 
 
+def _jsonable(value: Any) -> Any:
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, (dt.date, dt.datetime)):
+        return value.isoformat()
+    return value
+
+
 def main() -> int:
     cfg = parse_args()
     cfg.output_dir.mkdir(parents=True, exist_ok=True)
@@ -704,10 +712,7 @@ def main() -> int:
     run_summary = {
         "run_id": run_id,
         "generated_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
-        "config": {
-            key: (str(value) if isinstance(value, Path) else value)
-            for key, value in asdict(cfg).items()
-        },
+        "config": {key: _jsonable(value) for key, value in asdict(cfg).items()},
         "start_date": start_date.isoformat(),
         "end_date": cfg.end_date.isoformat(),
         "success_count": len(successes),

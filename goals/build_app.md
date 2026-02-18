@@ -120,13 +120,16 @@ Trace artifacts:
 
 ### 3.1 Integration checks
 - API reachability check result:
-  - Pending explicit runtime check for Yahoo/FRED in this planning task.
+  - Verified on 2026-02-18 (UTC) via Docker smoke run; Yahoo and FRED endpoints returned data for default basket (`SPY`, `BTC-USD`, `DGS10`, `CPIAUCSL`).
 - Auth check result:
   - No API auth required for Yahoo/FRED. OpenClaw handoff is local file-based.
 - Minimal request/response smoke result:
-  - Completed config/syntax gates for service scaffold:
-    - `docker compose ... -f fourier-cycles/docker-compose.yml config`
-    - `python3 -m py_compile fourier-cycles/src/fourier_cycles_pipeline.py`
+  - Completed runtime smoke run:
+    - `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env.example -f fourier-cycles/docker-compose.yml run --rm --build fourier-cycles`
+    - Result: `run_dir=/data/output/run_20260218T231819Z`, `success=4`, `failure=0`.
+  - Artifacts verified on host:
+    - `/home/wasti/ai_stack_data/fourier-cycles/output/latest -> run_20260218T231819Z`
+    - `summary.json` plus per-series PNG/CSV/JSON outputs present.
 
 ### 3.2 Failure notes
 - Known unstable endpoints:
@@ -136,7 +139,7 @@ Trace artifacts:
   - Next increment: add bounded retries/backoff and classify transient fetch errors.
 
 Link gate (must be green):
-- [ ] Every required endpoint responds.
+- [x] Every required endpoint responds.
 - [x] Auth works with intended scopes.
 - [ ] At least one successful roundtrip per integration.
 
@@ -210,7 +213,7 @@ Assemble artifacts:
   - Planned: bounded retries with exponential backoff for fetch steps.
 
 Stress Test gate (must be green):
-- [ ] Core user flow passes.
+- [x] Core user flow passes.
 - [ ] Critical edge cases handled.
 - [ ] Errors are controlled and observable.
 
@@ -286,7 +289,7 @@ Monitor artifacts:
 ---
 
 ## Final Go/No-Go
-- Decision: Go for internal alpha after first full end-to-end run (including OpenClaw Telegram handoff).
+- Decision: Go for internal alpha on batch processing path; OpenClaw Telegram handoff still pending.
 - Open risks:
   - Regime shifts can make cycles unstable despite passing current thresholds.
   - Yahoo endpoint intermittency may reduce reliability without retries.
