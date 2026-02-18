@@ -7,26 +7,10 @@ This project follows a Keep a Changelog style.
 ### Added
 - `INDEX.md` as root navigation entrypoint.
 - `docs/adr/` decision-tracking model introduced for documentation strategy.
+- `atlas` definition added to `HANDOFF.md` as cross-context continuity mandate.
 
 ### Changed
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.
 - `HANDOFF.md` reduced to a strict snapshot format (state/decisions/next steps/risks).
 - `TODO.md` reduced to active tasks only.
-
-### Removed
-- `AGENTDIARY.md` removed in favor of Git + ADR + changelog.
-
-## [2026-02-18]
-### Added
-- Finance Fourier analysis workflow:
-  - `scripts/finance_fourier_analysis.py`
-  - `docs/runbook_finance_fourier.md`
-- Context-engineering framework docs:
-  - `docs/framework_context_engineering_5plus2.md`
-  - `goals/build_app.md`
-- Reset-safe handoff baseline:
-  - `HANDOFF.md`
-
-### Changed
-- Open WebUI image baseline updated to `0.8.3`.
-- Agent process hardened for reset-resilient handoff checks.
+- `CHANGELOG.md` rebaselined to keep only concise, user/operator-relevant entries.

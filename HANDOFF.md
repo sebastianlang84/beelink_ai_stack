@@ -7,17 +7,17 @@ Purpose: One-page snapshot for the next context.
 - Core docs now include reset-safe handoff and context-engineering template (`goals/build_app.md`).
 - Finance Fourier POC exists and is runnable (`scripts/finance_fourier_analysis.py`).
 - Documentation strategy is being consolidated toward minimal, non-redundant main docs.
-- `AGENTDIARY.md` was removed; trace now relies on Git + ADR + changelog.
 - Local unstaged user changes exist in `TODO.md` and `scripts/backup_all.sh`.
+
+## Atlas Definition
+- `atlas` = the repository's cross-context continuity mandate.
+- Practical meaning: plan, decide, and track state in files (`HANDOFF.md`, `TODO.md`, ADRs), not in chat memory.
+- If a task says "atlas", it refers to long-horizon, reset-safe continuity.
 
 ## Open Decisions
 - Root navigation source:
   - Option A: `docs/README.md` as primary index
   - Option B: `INDEX.md` as primary index
-  - Default: **Option B**
-- Changelog depth:
-  - Option A: keep long operational history in file
-  - Option B: keep short release/user-relevant entries only
   - Default: **Option B**
 - TODO policy:
   - Option A: keep done+open in one file
@@ -25,11 +25,8 @@ Purpose: One-page snapshot for the next context.
   - Default: **Option B**
 
 ## Next Steps
-1. Remove residual mentions of `AGENTDIARY.md` from active docs where no longer needed.
-2. Tighten `CHANGELOG.md` further to release/user-visible items only.
-3. Verify root docs for strict no-duplication and replace repeats with links.
-4. Define `atlas` explicitly in `HANDOFF.md` (and ADR if architectural).
-5. Continue active engineering work from `TODO.md` P0/P1 items.
+1. Verify root docs for strict no-duplication and replace repeats with links.
+2. Continue active engineering work from `TODO.md` P0/P1 items.
 
 ## Known Risks / Blockers
 - Large docs cleanup can accidentally drop still-relevant context.

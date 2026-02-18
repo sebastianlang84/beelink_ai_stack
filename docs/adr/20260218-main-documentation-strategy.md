@@ -28,7 +28,7 @@ Status: Accepted
   - Existing long-form historical notes move out of main docs.
 
 ## Alternatives considered
-- Keep current mixed strategy with AGENTDIARY + long TODO + long CHANGELOG.
+- Keep current mixed strategy with task-diary + long TODO + long CHANGELOG.
   - Rejected due to persistent redundancy and ambiguity.
 - Keep two parallel indexes (`README` + `docs/README`) as equal entrypoints.
   - Rejected to avoid navigation drift; `INDEX.md` becomes primary navigation.

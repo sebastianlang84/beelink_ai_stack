@@ -16,11 +16,6 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
     - `docs/adr/` (decision records)
   - DoD: no duplicate paragraph across these files.
 
-- [ ] **ChangeLog rebaseline**
-  - Reformat to Keep a Changelog style (`Added/Changed/Fixed/Breaking`).
-  - Keep only release/user-visible entries.
-  - DoD: concise file, old detail discoverable via Git history.
-
 - [ ] **Open WebUI Knowledge cleanup (pending user confirm)**
   - Remove undesired collections (`bitcoin` / `crypto`) only after explicit confirmation.
   - Re-verify intended topics and sync behavior.
@@ -35,10 +30,6 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
   - Define first target basket (symbols/series).
   - Add significance/robustness checks (beyond raw DFT ranking).
   - Document interpretation guardrails for non-forecast use.
-
-- [ ] **Define `atlas` explicitly**
-  - Add authoritative definition/location in `HANDOFF.md` and (if needed) ADR.
-  - DoD: `atlas` survives context resets without ambiguity.
 
 - [ ] **OpenClaw Telegram E2E final verification**
   - Close DM/group behavior verification and record final operational path.
