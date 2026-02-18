@@ -2,6 +2,13 @@
 
 Purpose: Fast context rehydration after session/context reset.
 
+## Context-Window Reality (Mandatory)
+- Chat memory is session-local and can be lost after context reset.
+- Therefore, promises made only in chat are non-binding across resets.
+- Any commitment that must survive resets must be written to repo files.
+- Minimum persistence targets: `HANDOFF.md` + relevant living docs (`README.md`, `TODO.md`, `CHANGELOG.md`).
+- End-of-task rule: update/check `HANDOFF.md` every task; if no change is needed, record explicitly: `HANDOFF.md geprueft: keine Aenderung noetig`.
+
 ## Read Order After Reset
 1. `AGENTS.md`
 2. `HANDOFF.md`

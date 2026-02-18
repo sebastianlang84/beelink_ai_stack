@@ -33,6 +33,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Living Docs pruefen/aktualisieren.
 - Probleme/Bugs/Issues: `TODO.md` benoetigte fuer diesen Schritt keine Aenderung.
 - Loesung: `CHANGELOG.md` aktualisiert; `README.md` und `TODO.md` geprueft und passend belassen.
+- Aufgabe: User-Kritik zu "Versprechen nach Context-Reset wertlos" verbindlich in Repo-Regeln verankern.
+- Probleme/Bugs/Issues: Bisherige Formulierung in `HANDOFF.md` war zu weich und nicht explizit genug fuer Task-Ende-Pflicht.
+- Loesung: `HANDOFF.md` um Abschnitt "Context-Window Reality (Mandatory)" erweitert (nur persistierte Zusagen zaehlen; Pflicht-Check pro Task-Ende mit explizitem "keine Aenderung noetig"-Vermerk).
+- Aufgabe: Living Docs pruefen/aktualisieren.
+- Probleme/Bugs/Issues: `README.md` und `TODO.md` benoetigten fuer diese Praezisierung keine inhaltliche Aenderung.
+- Loesung: `CHANGELOG.md` aktualisiert; `README.md`/`TODO.md` geprueft und unveraendert belassen.
 
 ## 2026-02-13
 - Aufgabe: `api_timeout_s`/`timeout_s` in Transcript Miner wirksam verdrahten und weitere nicht wirksame Config-Pfade beheben.
