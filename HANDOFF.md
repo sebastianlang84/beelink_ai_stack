@@ -25,12 +25,11 @@ Purpose: One-page snapshot for the next context.
   - Default: **Option B**
 
 ## Next Steps
-1. Verify no remaining references to removed `AGENTDIARY.md`.
-2. Reduce `TODO.md` to active tasks only.
-3. Rebaseline `CHANGELOG.md` to short Keep-a-Changelog format.
-4. Add `docs/adr/README.md` and first ADR for documentation strategy.
-5. Keep `README.md` operator-focused and move navigation to `INDEX.md`.
-6. Verify no cross-file text duplication remains in root main docs.
+1. Remove residual mentions of `AGENTDIARY.md` from active docs where no longer needed.
+2. Tighten `CHANGELOG.md` further to release/user-visible items only.
+3. Verify root docs for strict no-duplication and replace repeats with links.
+4. Define `atlas` explicitly in `HANDOFF.md` (and ADR if architectural).
+5. Continue active engineering work from `TODO.md` P0/P1 items.
 
 ## Known Risks / Blockers
 - Large docs cleanup can accidentally drop still-relevant context.
