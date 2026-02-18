@@ -206,6 +206,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 
 ## Repo-Struktur
 - `AGENTS.md` — Arbeitsregeln für Coding Agents
+- `HANDOFF.md` — Reset-sichere Uebergabe (aktueller Stand + Schnellstart nach Context Reset)
 - `docs/` — Doku-Index (Link-Netzwerk)
 - `goals/build_app.md` — Ausfuellbare 5+2 Context-Engineering Vorlage fuer neue Projekte
 - `AGENTDIARY.md` — Agent-Tagebuch (Pflicht-Log)

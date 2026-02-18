@@ -27,6 +27,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Living Docs pruefen/aktualisieren.
 - Probleme/Bugs/Issues: `TODO.md` benoetigte fuer diesen Schritt keine Aenderung.
 - Loesung: `CHANGELOG.md` aktualisiert, `TODO.md` geprueft und unveraendert belassen.
+- Aufgabe: Reset-sichere Uebergabe-Datei (`HANDOFF.md`) erstellen, damit Kontext nach Reset schnell wiederherstellbar ist.
+- Probleme/Bugs/Issues: Begriff `atlas` war im Repo nicht auffindbar und damit nicht persistent dokumentiert.
+- Loesung: `HANDOFF.md` im Repo-Root angelegt (Read-Order, aktueller Stand, aktive lokale Aenderungen, Resume-Commands, Atlas-Hinweis) und in `README.md`/`docs/README.md` verlinkt.
+- Aufgabe: Living Docs pruefen/aktualisieren.
+- Probleme/Bugs/Issues: `TODO.md` benoetigte fuer diesen Schritt keine Aenderung.
+- Loesung: `CHANGELOG.md` aktualisiert; `README.md` und `TODO.md` geprueft und passend belassen.
 
 ## 2026-02-13
 - Aufgabe: `api_timeout_s`/`timeout_s` in Transcript Miner wirksam verdrahten und weitere nicht wirksame Config-Pfade beheben.

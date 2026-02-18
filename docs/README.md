@@ -5,6 +5,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 ## Root-Dokumente
 - `README.md` — Projektüberblick, Status, Quickstart
 - `AGENTS.md` — Hierarchisch oberstes Dokument (Auftrag + Agent-Regeln)
+- `HANDOFF.md` — Reset-sichere Uebergabe (aktueller Stand + Next Steps)
 - `TODO.md` — Gemeinsames Backlog (TranscriptMiner + ai_stack Ops), living
 - `CHANGELOG.md` — Änderungen / Releases (living)
 - `scripts/README.md` — Scripte (Install/Backup/Restore)
