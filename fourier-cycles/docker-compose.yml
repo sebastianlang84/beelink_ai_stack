@@ -1,0 +1,33 @@
+name: fourier-cycles
+services:
+  fourier-cycles:
+    container_name: fourier-cycles
+    image: fourier-cycles:latest
+    build:
+      context: .
+    restart: "no"
+    environment:
+      TZ: ${TZ:-Europe/Vienna}
+      FOURIER_OUTPUT_DIR: ${FOURIER_OUTPUT_DIR:-/data/output}
+      FOURIER_TIMEFRAME_DAYS: ${FOURIER_TIMEFRAME_DAYS:-1095}
+      FOURIER_RESAMPLE_RULE: ${FOURIER_RESAMPLE_RULE:-1D}
+      FOURIER_YAHOO_SYMBOLS: ${FOURIER_YAHOO_SYMBOLS:-SPY,BTC-USD}
+      FOURIER_FRED_SERIES: ${FOURIER_FRED_SERIES:-DGS10,CPIAUCSL}
+      FOURIER_TOP_K: ${FOURIER_TOP_K:-8}
+      FOURIER_MIN_PRESENCE_RATIO: ${FOURIER_MIN_PRESENCE_RATIO:-0.30}
+      FOURIER_MIN_WINDOW_POWER_RATIO: ${FOURIER_MIN_WINDOW_POWER_RATIO:-0.03}
+      FOURIER_ROLLING_WINDOW_RATIO: ${FOURIER_ROLLING_WINDOW_RATIO:-0.35}
+      FOURIER_ROLLING_STEP_RATIO: ${FOURIER_ROLLING_STEP_RATIO:-0.25}
+      FOURIER_MIN_PERIOD_DAYS: ${FOURIER_MIN_PERIOD_DAYS:-7}
+      FOURIER_MAX_PERIOD_DAYS: ${FOURIER_MAX_PERIOD_DAYS:-365}
+      FOURIER_MIN_POINTS: ${FOURIER_MIN_POINTS:-180}
+      FOURIER_TIMEOUT_SECONDS: ${FOURIER_TIMEOUT_SECONDS:-30}
+    volumes:
+      - ${FOURIER_OUTPUT_DIR_HOST:-/home/wasti/ai_stack_data/fourier-cycles/output}:/data/output
+    networks:
+      - ai-stack
+
+networks:
+  ai-stack:
+    external: true
+    name: ai-stack

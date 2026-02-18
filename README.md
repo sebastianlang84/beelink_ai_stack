@@ -184,6 +184,16 @@ Ziel: OpenClaw Gateway host-native betreiben (Telegram Channel) und stabil halte
   - `./scripts/finance_fourier_analysis.py --source fred --series-id DGS10 --max-points 512 --top-k 8`
 - Runbook: `docs/runbooks/runbook_finance_fourier.md:1`
 
+## Quickstart (Fourier Cycles Docker)
+Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Checks und PNG-Artefakten fuer Telegram.
+1. Shared Secrets setzen: `.env.example` -> `.env` (nur wenn weitere Provider-Keys noetig sind; fuer Yahoo/FRED selbst kein Key erforderlich).
+2. Shared Config setzen (non-secret): `.config.env.example` -> `.config.env`.
+3. Service-Config setzen (non-secret): `fourier-cycles/.config.env.example` -> `fourier-cycles/.config.env`.
+4. Run (vom Repo-Root):
+   - `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env -f fourier-cycles/docker-compose.yml run --rm fourier-cycles`
+5. Ergebnis: Artefakte unter `${FOURIER_OUTPUT_DIR_HOST}`; `latest` zeigt auf den letzten Lauf.
+- Ops/Details: `fourier-cycles/README.md:1`
+
 ## Codex Remote-SSH Auth Guard (DNS)
 - Hintergrund: VS Code Codex Login kann scheitern, wenn Tailscale DNS Override (`accept-dns=true`) auf einen instabilen Resolver zeigt.
 - Check: `./scripts/check_codex_auth_dns.sh`
@@ -227,6 +237,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `transcript-miner/` — TranscriptMiner Pipeline-Engine (Python; Transcripts + Summaries)
 - `debug-proxy/` — MITM Debug Proxy (JSONL Request Logs, optional)
 - `qdrant/` — Qdrant (optional)
+- `fourier-cycles/` — Dockerisierter Fourier-Cycle Batch-Job (Yahoo + FRED)
 - `watchdog/` — Monitoring-Watchdog (CPU/Temperatur/Disk + Docker-Hygiene)
 
 ## Security (Kurz)

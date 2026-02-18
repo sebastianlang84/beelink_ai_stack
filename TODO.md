@@ -9,6 +9,7 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 
 ## P1 (Next)
 - [ ] **Fourier analysis deepening (FRED + Yahoo)**
+  - Docker service scaffold landed: `fourier-cycles/` (batch run + rolling stability plots + output artifacts).
   - Define first target basket (symbols/series).
   - Add significance/robustness checks (beyond raw DFT ranking).
   - Document interpretation guardrails for non-forecast use.

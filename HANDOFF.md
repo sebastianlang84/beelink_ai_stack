@@ -12,8 +12,9 @@ Purpose: One-page snapshot for the next context.
 - Backup cleanup executed on 2026-02-18: `/srv/ai-stack/backups/owui-data__*.tar.gz` removed (12 files, ~48G). Free space on `/` improved from 344G to 392G.
 - Open WebUI Knowledge cleanup closed on 2026-02-18 after verification: only `investing_new` + `investing_archive` present; no `bitcoin`/`crypto` collections found.
 - OpenClaw Telegram E2E final verification closed on 2026-02-18 (user-confirmed working behavior).
+- `fourier-cycles/` service scaffold added on 2026-02-18 (Docker batch job for Yahoo+FRED, rolling cycle stability checks, PNG outputs + `latest` symlink).
 - Local unstaged user change exists in `scripts/backup_all.sh` and is intentionally untouched.
-- Living Docs check: `README.md` and `CHANGELOG.md` reviewed; no updates needed for backup/knowledge/OpenClaw-closure tasks.
+- Living Docs updated for Fourier service bootstrap: `README.md`, `TODO.md`, `CHANGELOG.md`, `INDEX.md`.
 
 ## Atlas Definition
 - `atlas` = the repository's cross-context continuity mandate.
@@ -27,7 +28,8 @@ Purpose: One-page snapshot for the next context.
   - Default: **Option B**
 
 ## Next Steps
-1. Continue P1 work from `TODO.md` (Fourier deepening).
+1. Continue P1 Fourier deepening: define target basket and tune stability thresholds on first production runs.
+2. Wire OpenClaw command(s) to ship `fourier-cycles` artifacts from `latest/` via Telegram.
 
 ## Known Risks / Blockers
 - Long-tail links outside root docs can still reference pre-consolidation paths.

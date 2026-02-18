@@ -36,6 +36,7 @@ youtube_cookies.txt
 emb-bench/.cache_out/
 emb-bench/runs/
 emb-bench/runs_out/
+fourier-cycles/output/
 open-webui/tool-imports/backup_*.json
 transcript-miner/tests/prompt-engineering/_out_gemini_cli_poc/
 

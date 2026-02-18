@@ -9,6 +9,7 @@ This project follows a Keep a Changelog style.
 - `docs/adr/` decision-tracking model introduced for documentation strategy.
 - `atlas` definition added to `HANDOFF.md` as cross-context continuity mandate.
 - `docs/adr/20260218-qdrant-indexing-boundaries.md` to lock Qdrant indexing boundaries.
+- New service `fourier-cycles/` with Dockerized Yahoo+FRED cycle extraction, rolling stability checks, and PNG artifact generation.
 
 ### Changed
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.
@@ -18,3 +19,4 @@ This project follows a Keep a Changelog style.
 - `docs/` reorganized into active sets (`runbooks/`, `policies/`, `plans/`) plus `archive/`.
 - OpenClaw notes moved from shared docs to `openclaw/notes/`.
 - Workflow and YouTube 429 report content consolidated into active PRD/runbook paths.
+- Root docs (`README.md`, `INDEX.md`, `TODO.md`) now include the `fourier-cycles` service entrypoint and operator quickstart.

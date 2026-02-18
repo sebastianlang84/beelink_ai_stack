@@ -25,3 +25,4 @@ Purpose: Navigation-only entrypoint.
 - `mcp-owui-connector/README.md` - Open WebUI connector
 - `mcp-sec-edgar/README.md` - SEC EDGAR MCP
 - `qdrant/README.md` - Qdrant optional service
+- `fourier-cycles/README.md` - Fourier cycle extraction job (Yahoo + FRED)
