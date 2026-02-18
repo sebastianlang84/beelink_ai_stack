@@ -15,6 +15,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 - `docs/policy_qdrant_indexing.md` — Was in Qdrant indexiert wird (Collections/IDs/Payload)
 - `docs/runbook_secrets_env_files.md` — Schritt-für-Schritt: `.env` (secrets) + `.config.env`/`<service>/.config.env` (config) anlegen und Stacks starten
 - `docs/runbook_backup_restore.md` — Backups/Restore für Volumes + Output Root
+- `docs/runbook_finance_fourier.md` — Fourier Analyse fuer Yahoo/FRED Zeitreihen (Host Script + Artefakte)
 - `docs/runbook_smoke_test.md` — Smoke Test (P0): Open WebUI + Transcript Miner Tool + Tool→OWUI Auth
 - `docs/runbook-owui-502-autorecover.md` — OWUI 502 Auto-Recovery (Tailscale Serve Upstream, Script + systemd Timer)
 - `docs/runbook-tm-lifecycle-maintenance.md` — Lifecycle Maintenance (cleanup/rotation ohne Downloads) + Freshness Guard

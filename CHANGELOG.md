@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- feat(scripts): Fourier-Analyse Script fuer Yahoo/FRED hinzugefuegt (`scripts/finance_fourier_analysis.py`) inkl. Runbook (`docs/runbook_finance_fourier.md`) und README-Eintraege
 - ops(open-webui): Standard-Image-Tag auf `0.8.3` angehoben (Compose + `.config.env.example` + `open-webui/.config.env.example`)
 - fix(openclaw): Update-Flow fuer Hosts ohne `systemd --user` abgesichert (`scripts/openclaw_update_supervised.sh` + `scripts/install_openclaw_update_guard_bash.sh`), damit `openclaw update` den Gateway nicht mehr down hinterlaesst
 - ops(open-webui): Reproduzierbare RAG-Baseline-Probe hinzugefuegt (`scripts/owui_rag_baseline_probe.sh` + `config/owui_rag_baseline_queries.json`) inkl. ersten Reports (`docs/owui_rag_baseline_2026-02-15.md`, `docs/owui_rag_baseline_remote_2026-02-15.md`)

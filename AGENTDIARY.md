@@ -9,6 +9,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Living Docs pruefen/aktualisieren.
 - Probleme/Bugs/Issues: Keine.
 - Loesung: `CHANGELOG.md` und `open-webui/README.md` aktualisiert; `README.md` und `TODO.md` geprueft, keine weiteren inhaltlichen Anpassungen notwendig.
+- Aufgabe: Fourier-Analyse fuer FRED/Yahoo gestartet (hostseitig, ohne zusaetzliche Python-Pakete).
+- Probleme/Bugs/Issues: Erster FRED-Lauf schlug fehl, weil der CSV-Date-Spaltenname `observation_date` statt `DATE` war.
+- Loesung: Neues Script `scripts/finance_fourier_analysis.py` implementiert (Yahoo Chart API + FRED CSV + DFT + Report/CSV-Artefakte), FRED-Parser robust auf beide Headernamen erweitert und E2E fuer `SPY` (Yahoo) sowie `DGS10` (FRED) erfolgreich getestet.
+- Aufgabe: Living Docs pruefen/aktualisieren.
+- Probleme/Bugs/Issues: `TODO.md` enthielt bereits den Fourier-Punkt; keine zusaetzliche TODO-Aenderung noetig.
+- Loesung: `README.md`, `scripts/README.md`, `docs/README.md`, `CHANGELOG.md` aktualisiert; `TODO.md` geprueft und unveraendert belassen.
 
 ## 2026-02-13
 - Aufgabe: `api_timeout_s`/`timeout_s` in Transcript Miner wirksam verdrahten und weitere nicht wirksame Config-Pfade beheben.

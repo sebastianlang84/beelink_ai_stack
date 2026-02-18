@@ -57,6 +57,19 @@
 - Run a Tavily web search using `TAVILY_API_KEY` from the environment or repo-local `.env` (gitignored):
   - `./scripts/tavily_search.sh "openclaw gateway trustedProxies"`
 
+## Finance Fourier Analysis (Host)
+- Run Fourier analysis on Yahoo Finance data (no API key required):
+  - `./scripts/finance_fourier_analysis.py --source yahoo --symbol SPY --yahoo-range 5y --max-points 512 --top-k 8`
+- Run Fourier analysis on FRED series data (no API key required):
+  - `./scripts/finance_fourier_analysis.py --source fred --series-id DGS10 --max-points 512 --top-k 8`
+- Output per run:
+  - `output/finance-fourier/<timestamp>-<source>-<series>/series.csv`
+  - `output/finance-fourier/<timestamp>-<source>-<series>/signal.csv`
+  - `output/finance-fourier/<timestamp>-<source>-<series>/spectrum.csv`
+  - `output/finance-fourier/<timestamp>-<source>-<series>/report.md`
+- Runbook:
+  - `docs/runbook_finance_fourier.md:1`
+
 ## Smoke Test (P0)
 - Run an end-to-end-ish health/auth smoke test for Open WebUI + Transcript Miner tool:
   - `./scripts/smoke_test_ai_stack.sh --up --build`

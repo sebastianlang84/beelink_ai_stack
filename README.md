@@ -172,6 +172,14 @@ Ziel: OpenClaw Gateway host-native betreiben (Telegram Channel) und stabil halte
 - Tooling: `markdownlint-cli2` via `npx` (keine globale Installation noetig)
 - Konfiguration: `.markdownlint-cli2.yaml` (inkl. Baseline-Ignores fuer generated/append-only Bereiche)
 
+## Finance Fourier Analysis (POC)
+- Ziel: Explorative Zyklusanalyse fuer Yahoo/FRED Zeitreihen mit reproduzierbaren Artefakten.
+- Script: `./scripts/finance_fourier_analysis.py`
+- Beispiele:
+  - `./scripts/finance_fourier_analysis.py --source yahoo --symbol SPY --yahoo-range 5y --max-points 512 --top-k 8`
+  - `./scripts/finance_fourier_analysis.py --source fred --series-id DGS10 --max-points 512 --top-k 8`
+- Runbook: `docs/runbook_finance_fourier.md:1`
+
 ## Codex Remote-SSH Auth Guard (DNS)
 - Hintergrund: VS Code Codex Login kann scheitern, wenn Tailscale DNS Override (`accept-dns=true`) auf einen instabilen Resolver zeigt.
 - Check: `./scripts/check_codex_auth_dns.sh`
