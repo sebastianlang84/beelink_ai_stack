@@ -23,7 +23,7 @@ services:
       FOURIER_MIN_POINTS: ${FOURIER_MIN_POINTS:-180}
       FOURIER_TIMEOUT_SECONDS: ${FOURIER_TIMEOUT_SECONDS:-30}
     volumes:
-      - ${FOURIER_OUTPUT_DIR_HOST:-/home/wasti/ai_stack_data/fourier-cycles/output}:/data/output
+      - ${FOURIER_OUTPUT_DIR_HOST:-/home/wasti/ai_stack/fourier-cycles/output}:/data/output
     networks:
       - ai-stack
 

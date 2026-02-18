@@ -128,7 +128,7 @@ Trace artifacts:
     - `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env.example -f fourier-cycles/docker-compose.yml run --rm --build fourier-cycles`
     - Result: `run_dir=/data/output/run_20260218T231819Z`, `success=4`, `failure=0`.
   - Artifacts verified on host:
-    - `/home/wasti/ai_stack_data/fourier-cycles/output/latest -> run_20260218T231819Z`
+    - `/home/wasti/ai_stack/fourier-cycles/output/latest -> run_20260218T231819Z`
     - `summary.json` plus per-series PNG/CSV/JSON outputs present.
 
 ### 3.2 Failure notes

@@ -19,7 +19,7 @@ docker compose \
 ## Outputs
 
 Standardpfad (Host):
-- `${FOURIER_OUTPUT_DIR_HOST}`
+- `${FOURIER_OUTPUT_DIR_HOST}` (Default: `/home/wasti/ai_stack/fourier-cycles/output`)
 
 Pro Lauf:
 - `run_<timestamp>/summary.json` - Laufzusammenfassung
