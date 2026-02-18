@@ -15,6 +15,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Living Docs pruefen/aktualisieren.
 - Probleme/Bugs/Issues: `TODO.md` enthielt bereits den Fourier-Punkt; keine zusaetzliche TODO-Aenderung noetig.
 - Loesung: `README.md`, `scripts/README.md`, `docs/README.md`, `CHANGELOG.md` aktualisiert; `TODO.md` geprueft und unveraendert belassen.
+- Aufgabe: User-Framework "Context Engineering 5+2" unter `docs/` dokumentieren und einordnen.
+- Probleme/Bugs/Issues: Keine technischen Blocker; Fokus war saubere Einordnung zwischen Prozessnutzen und Overhead.
+- Loesung: Neues Dokument `docs/framework_context_engineering_5plus2.md` erstellt (Phasen, Outputs, Arbeitsregel, Einschaetzung) und im Docs-Index verlinkt.
+- Aufgabe: Living Docs pruefen/aktualisieren.
+- Probleme/Bugs/Issues: `README.md`/`TODO.md` benoetigten fuer diesen Dokumentationsschritt keine inhaltliche Anpassung.
+- Loesung: `CHANGELOG.md` aktualisiert, `README.md` und `TODO.md` geprueft und unveraendert belassen.
 
 ## 2026-02-13
 - Aufgabe: `api_timeout_s`/`timeout_s` in Transcript Miner wirksam verdrahten und weitere nicht wirksame Config-Pfade beheben.

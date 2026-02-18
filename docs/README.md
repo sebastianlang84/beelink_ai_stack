@@ -30,6 +30,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 ## Notes / Research
 - `docs/notes_openclaw_install_sources.md` — OpenClaw install commands + Telegram setup pointers (sources)
 - `docs/notes_access_tailscale_vs_lan_owui_openclaw.md` — OWUI/OpenClaw access topology: Tailscale vs LAN + /owui,/openclaw collisions
+- `docs/framework_context_engineering_5plus2.md` — 5+2 Phasen Framework fuer KI-gestuetzte, reproduzierbare Umsetzung (Architect bis Monitor)
 
 ## Services
 - `mcp-transcript-miner/README.md` — **Transcript Miner** MCP Server (Configs/Runs/Outputs + Knowledge Indexing)

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(framework): 5+2 Context-Engineering Framework dokumentiert (`docs/framework_context_engineering_5plus2.md`) und im Docs-Index verlinkt
 - feat(scripts): Fourier-Analyse Script fuer Yahoo/FRED hinzugefuegt (`scripts/finance_fourier_analysis.py`) inkl. Runbook (`docs/runbook_finance_fourier.md`) und README-Eintraege
 - ops(open-webui): Standard-Image-Tag auf `0.8.3` angehoben (Compose + `.config.env.example` + `open-webui/.config.env.example`)
 - fix(openclaw): Update-Flow fuer Hosts ohne `systemd --user` abgesichert (`scripts/openclaw_update_supervised.sh` + `scripts/install_openclaw_update_guard_bash.sh`), damit `openclaw update` den Gateway nicht mehr down hinterlaesst
