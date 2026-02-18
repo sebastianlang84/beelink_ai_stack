@@ -9,6 +9,7 @@ Ziel: Jedes `.md` ist von mindestens einem anderen `.md` aus verlinkt, damit ein
 - `CHANGELOG.md` — Änderungen / Releases (living)
 - `scripts/README.md` — Scripte (Install/Backup/Restore)
 - `AGENTDIARY.md` — Agent-Tagebuch (Pflicht-Log)
+- `goals/build_app.md` — Ausfuellbare 5+2 Context-Engineering Vorlage (Architect bis Monitor)
 
 ## Policies
 - `docs/policy_secrets_environment_variables_ai_stack.md` — SSOT/Least-Privilege Policy für Secrets & Env Vars (Compose/systemd)

@@ -4,6 +4,9 @@ Zweck: Dieses Framework reduziert Zufall in KI-gestuetzter Entwicklung, indem vo
 
 Hinweis: "Deterministisch" ist in der Praxis nicht absolut erreichbar, aber mit diesem Prozess wird das Ergebnis deutlich reproduzierbarer und stabiler.
 
+Template im Repo:
+- `goals/build_app.md`
+
 ## Ueberblick
 1. Architect
 2. Trace

@@ -21,6 +21,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Living Docs pruefen/aktualisieren.
 - Probleme/Bugs/Issues: `README.md`/`TODO.md` benoetigten fuer diesen Dokumentationsschritt keine inhaltliche Anpassung.
 - Loesung: `CHANGELOG.md` aktualisiert, `README.md` und `TODO.md` geprueft und unveraendert belassen.
+- Aufgabe: User-Wunsch umgesetzt: `build_app.md` als ausfuellbare Vorlage fuer neue Projekte erstellt.
+- Probleme/Bugs/Issues: Kein vorhandener `goals/`-Pfad im Repo-Root; musste neu angelegt werden.
+- Loesung: `goals/build_app.md` mit 5+2 Phasen, Gates und Artefakt-Checks erstellt und in `README.md`, `docs/README.md` sowie `docs/framework_context_engineering_5plus2.md` verlinkt.
+- Aufgabe: Living Docs pruefen/aktualisieren.
+- Probleme/Bugs/Issues: `TODO.md` benoetigte fuer diesen Schritt keine Aenderung.
+- Loesung: `CHANGELOG.md` aktualisiert, `TODO.md` geprueft und unveraendert belassen.
 
 ## 2026-02-13
 - Aufgabe: `api_timeout_s`/`timeout_s` in Transcript Miner wirksam verdrahten und weitere nicht wirksame Config-Pfade beheben.

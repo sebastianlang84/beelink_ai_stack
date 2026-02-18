@@ -207,6 +207,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 ## Repo-Struktur
 - `AGENTS.md` — Arbeitsregeln für Coding Agents
 - `docs/` — Doku-Index (Link-Netzwerk)
+- `goals/build_app.md` — Ausfuellbare 5+2 Context-Engineering Vorlage fuer neue Projekte
 - `AGENTDIARY.md` — Agent-Tagebuch (Pflicht-Log)
 - `skills/` — Projekt-spezifische Codex Skills (Workflows/Checks)
 - `skills/codex-mcp-self-config/` — Codex MCP Server (self) in `.codex/config.toml` upserten + Projekt-Trust in `~/.codex/config.toml`

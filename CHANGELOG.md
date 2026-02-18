@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(goals): Ausfuellbare `build_app.md` Vorlage unter `goals/` fuer das 5+2 Framework hinzugefuegt und in Doku verlinkt
 - docs(framework): 5+2 Context-Engineering Framework dokumentiert (`docs/framework_context_engineering_5plus2.md`) und im Docs-Index verlinkt
 - feat(scripts): Fourier-Analyse Script fuer Yahoo/FRED hinzugefuegt (`scripts/finance_fourier_analysis.py`) inkl. Runbook (`docs/runbook_finance_fourier.md`) und README-Eintraege
 - ops(open-webui): Standard-Image-Tag auf `0.8.3` angehoben (Compose + `.config.env.example` + `open-webui/.config.env.example`)
