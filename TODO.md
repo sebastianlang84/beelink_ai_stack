@@ -8,11 +8,7 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 - [ ] **Open WebUI Knowledge cleanup (pending user confirm)**
   - Remove undesired collections (`bitcoin` / `crypto`) only after explicit confirmation.
   - Re-verify intended topics and sync behavior.
-
-- [ ] **Backup disk cleanup**
-  - Delete large backup files under `/srv/ai-stack/backups/` (user-intended cleanup).
-  - Command (requires sudo): `sudo rm /srv/ai-stack/backups/owui-data__*.tar.gz`
-  - DoD: free disk space validated before/after.
+  - Read-only verification on 2026-02-18: only `investing_new` + `investing_archive` exist; no `bitcoin`/`crypto` collections present.
 
 ## P1 (Next)
 - [ ] **Fourier analysis deepening (FRED + Yahoo)**
