@@ -11,6 +11,7 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 - [ ] **Fourier analysis deepening (FRED + Yahoo)**
   - Docker service scaffold landed: `fourier-cycles/` (batch run + rolling stability plots + output artifacts).
   - Smoke run passed on 2026-02-18 UTC (`success=4`, `failure=0`) with default basket (`SPY`, `BTC-USD`, `DGS10`, `CPIAUCSL`).
+  - Visual selection policy implemented: default top 3 cycles with stricter presence/power/distance filters + price overlay charts.
   - Define first target basket (symbols/series).
   - Add significance/robustness checks (beyond raw DFT ranking).
   - Document interpretation guardrails for non-forecast use.

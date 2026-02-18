@@ -38,6 +38,10 @@ class AnalysisConfig:
     rolling_step_ratio: float
     min_period_days: float
     max_period_days: float
+    selection_top_k: int
+    selection_min_presence_ratio: float
+    selection_min_norm_power_percentile: float
+    selection_min_period_distance_ratio: float
     min_points: int
     timeout_seconds: int
     end_date: dt.date
@@ -119,6 +123,24 @@ def parse_args() -> AnalysisConfig:
     parser.add_argument(
         "--max-period-days", type=float, default=_env_float("FOURIER_MAX_PERIOD_DAYS", 365.0)
     )
+    parser.add_argument(
+        "--selection-top-k", type=int, default=_env_int("FOURIER_SELECTION_TOP_K", 3)
+    )
+    parser.add_argument(
+        "--selection-min-presence-ratio",
+        type=float,
+        default=_env_float("FOURIER_SELECTION_MIN_PRESENCE_RATIO", 0.60),
+    )
+    parser.add_argument(
+        "--selection-min-norm-power-percentile",
+        type=float,
+        default=_env_float("FOURIER_SELECTION_MIN_NORM_POWER_PERCENTILE", 0.75),
+    )
+    parser.add_argument(
+        "--selection-min-period-distance-ratio",
+        type=float,
+        default=_env_float("FOURIER_SELECTION_MIN_PERIOD_DISTANCE_RATIO", 0.20),
+    )
     parser.add_argument("--min-points", type=int, default=_env_int("FOURIER_MIN_POINTS", 180))
     parser.add_argument("--timeout-seconds", type=int, default=_env_int("FOURIER_TIMEOUT_SECONDS", 30))
     parser.add_argument("--end-date", type=parse_iso_date, default=dt.date.today())
@@ -140,6 +162,14 @@ def parse_args() -> AnalysisConfig:
         rolling_step_ratio=max(0.05, min(1.0, args.rolling_step_ratio)),
         min_period_days=min_period_days,
         max_period_days=max_period_days,
+        selection_top_k=max(1, args.selection_top_k),
+        selection_min_presence_ratio=max(0.0, min(1.0, args.selection_min_presence_ratio)),
+        selection_min_norm_power_percentile=max(
+            0.0, min(1.0, args.selection_min_norm_power_percentile)
+        ),
+        selection_min_period_distance_ratio=max(
+            0.0, min(1.0, args.selection_min_period_distance_ratio)
+        ),
         min_points=max(32, args.min_points),
         timeout_seconds=max(5, args.timeout_seconds),
         end_date=args.end_date,
@@ -430,6 +460,68 @@ def evaluate_stability(
     return candidates, window_mid_dates
 
 
+def _period_distance_ratio(a_days: float, b_days: float) -> float:
+    return abs(a_days - b_days) / max(a_days, b_days)
+
+
+def select_cycles_for_output(
+    evaluated_cycles: list[dict[str, Any]], cfg: AnalysisConfig
+) -> list[dict[str, Any]]:
+    if not evaluated_cycles:
+        return []
+
+    norm_powers = np.array([cycle["norm_power"] for cycle in evaluated_cycles], dtype=np.float64)
+    power_threshold = float(
+        np.quantile(norm_powers, cfg.selection_min_norm_power_percentile, method="linear")
+    )
+
+    filtered = [
+        cycle
+        for cycle in evaluated_cycles
+        if cycle["stable"]
+        and cycle["presence_ratio"] >= cfg.selection_min_presence_ratio
+        and cycle["norm_power"] >= power_threshold
+    ]
+    if not filtered:
+        filtered = [
+            cycle
+            for cycle in evaluated_cycles
+            if cycle["stable"] and cycle["presence_ratio"] >= cfg.selection_min_presence_ratio
+        ]
+    if not filtered:
+        filtered = [cycle for cycle in evaluated_cycles if cycle["stable"]]
+    if not filtered:
+        filtered = list(evaluated_cycles)
+
+    ranked = sorted(
+        filtered,
+        key=lambda cycle: (cycle["stability_score"], cycle["presence_ratio"], cycle["norm_power"]),
+        reverse=True,
+    )
+
+    selected: list[dict[str, Any]] = []
+    for cycle in ranked:
+        too_close = any(
+            _period_distance_ratio(cycle["period_days"], existing["period_days"])
+            < cfg.selection_min_period_distance_ratio
+            for existing in selected
+        )
+        if too_close:
+            continue
+        selected.append(cycle)
+        if len(selected) >= cfg.selection_top_k:
+            return selected
+
+    # Backfill if spacing filter removed too many cycles.
+    for cycle in ranked:
+        if cycle in selected:
+            continue
+        selected.append(cycle)
+        if len(selected) >= cfg.selection_top_k:
+            break
+    return selected
+
+
 def reconstruct_signal_from_cycles(
     signal: np.ndarray,
     full_freqs: np.ndarray,
@@ -445,6 +537,26 @@ def reconstruct_signal_from_cycles(
         keep[idx] = full_coeff[idx]
     reconstructed = np.fft.irfft(keep, n=len(signal))
     return reconstructed.real
+
+
+def reconstruct_cycle_components(
+    signal_len: int,
+    full_freqs: np.ndarray,
+    full_coeff: np.ndarray,
+    selected_cycles: list[dict[str, Any]],
+) -> list[tuple[str, np.ndarray]]:
+    components: list[tuple[str, np.ndarray]] = []
+    for cycle in selected_cycles:
+        keep = np.zeros_like(full_coeff)
+        idx = int(np.argmin(np.abs(full_freqs - cycle["freq_per_day"])))
+        keep[idx] = full_coeff[idx]
+        component = np.fft.irfft(keep, n=signal_len).real
+        label = (
+            f"{cycle['period_days']:.1f}d "
+            f"(presence={cycle['presence_ratio']:.2f}, power={cycle['norm_power']:.3f})"
+        )
+        components.append((label, component))
+    return components
 
 
 def save_plot_spectrum(path: Path, spectrum: pd.DataFrame, selected_cycles: list[dict[str, Any]], title: str) -> None:
@@ -526,6 +638,70 @@ def save_plot_price(path: Path, levels: pd.Series, title: str) -> None:
     plt.close(fig)
 
 
+def _normalize_for_overlay(values: np.ndarray) -> np.ndarray:
+    std = float(np.std(values))
+    if std <= 0:
+        return values - np.mean(values)
+    return (values - np.mean(values)) / std
+
+
+def save_plot_cycle_components(
+    path: Path,
+    signal_dates: pd.DatetimeIndex,
+    components: list[tuple[str, np.ndarray]],
+    title: str,
+) -> None:
+    fig, ax = plt.subplots(figsize=(12, 6))
+    x = pd.to_datetime(signal_dates)
+    if not components:
+        ax.text(0.5, 0.5, "No cycle components selected", ha="center", va="center")
+        ax.set_axis_off()
+    else:
+        for label, component in components:
+            normalized = _normalize_for_overlay(component)
+            ax.plot(x, normalized, lw=1.2, label=label)
+        ax.axhline(0.0, color="#616161", ls=":", lw=1.0)
+        ax.set_ylabel("Normalized component value")
+        ax.set_xlabel("Date")
+        ax.legend(loc="best", fontsize=8)
+        ax.grid(True, alpha=0.25)
+    ax.set_title(title)
+    fig.tight_layout()
+    fig.savefig(path, dpi=140)
+    plt.close(fig)
+
+
+def save_plot_price_cycle_overlay(
+    path: Path,
+    levels: pd.Series,
+    signal_dates: pd.DatetimeIndex,
+    reconstructed: np.ndarray,
+    title: str,
+) -> None:
+    fig, ax_price = plt.subplots(figsize=(12, 6))
+    x_signal = pd.to_datetime(signal_dates)
+    price_aligned = levels.reindex(signal_dates).ffill().bfill()
+    cycle_index = np.cumsum(reconstructed)
+    cycle_index = _normalize_for_overlay(cycle_index)
+
+    ax_price.plot(x_signal, price_aligned.to_numpy(dtype=np.float64), color="#145c9e", lw=1.4)
+    ax_price.set_xlabel("Date")
+    ax_price.set_ylabel("Price / level", color="#145c9e")
+    ax_price.tick_params(axis="y", labelcolor="#145c9e")
+    ax_price.grid(True, alpha=0.2)
+
+    ax_cycle = ax_price.twinx()
+    ax_cycle.plot(x_signal, cycle_index, color="#ef6c00", lw=1.3, alpha=0.9)
+    ax_cycle.axhline(0.0, color="#616161", ls=":", lw=1.0)
+    ax_cycle.set_ylabel("Composite cycle index (normalized)", color="#ef6c00")
+    ax_cycle.tick_params(axis="y", labelcolor="#ef6c00")
+
+    ax_price.set_title(title)
+    fig.tight_layout()
+    fig.savefig(path, dpi=140)
+    plt.close(fig)
+
+
 def write_cycles_csv(path: Path, cycles: list[dict[str, Any]]) -> None:
     columns = [
         "period_days",
@@ -574,7 +750,8 @@ def process_single_series(
         max_period_days=cfg.max_period_days,
     )
 
-    candidate_pool = spectrum.head(cfg.top_k * 3)
+    candidate_pool_size = max(cfg.top_k * 3, cfg.selection_top_k * 8)
+    candidate_pool = spectrum.head(candidate_pool_size)
     evaluated, window_mid_dates = evaluate_stability(
         signal=signal,
         signal_dates=signal_dates,
@@ -584,12 +761,16 @@ def process_single_series(
     )
 
     stable_cycles = [cycle for cycle in evaluated if cycle["stable"]]
-    selected_cycles = stable_cycles[: cfg.top_k]
-    if not selected_cycles:
-        selected_cycles = evaluated[: cfg.top_k]
+    selected_cycles = select_cycles_for_output(evaluated, cfg)
 
     reconstructed = reconstruct_signal_from_cycles(
         signal=signal,
+        full_freqs=full_freqs,
+        full_coeff=full_coeff,
+        selected_cycles=selected_cycles,
+    )
+    components = reconstruct_cycle_components(
+        signal_len=len(signal),
         full_freqs=full_freqs,
         full_coeff=full_coeff,
         selected_cycles=selected_cycles,
@@ -608,6 +789,19 @@ def process_single_series(
         series_dir / "price.png",
         levels,
         f"{source}:{series_name} price/level ({cfg.timeframe_days}d)",
+    )
+    save_plot_price_cycle_overlay(
+        series_dir / "price_cycle_overlay.png",
+        levels,
+        signal_dates,
+        reconstructed,
+        f"{source}:{series_name} price with composite cycle overlay",
+    )
+    save_plot_cycle_components(
+        series_dir / "cycle_components.png",
+        signal_dates,
+        components,
+        f"{source}:{series_name} top cycle components",
     )
 
     save_plot_spectrum(
@@ -643,6 +837,10 @@ def process_single_series(
         "signal_points": int(len(signal)),
         "stable_cycle_count": len(stable_cycles),
         "selected_cycle_count": len(selected_cycles),
+        "selection_top_k": cfg.selection_top_k,
+        "selection_min_presence_ratio": cfg.selection_min_presence_ratio,
+        "selection_min_norm_power_percentile": cfg.selection_min_norm_power_percentile,
+        "selection_min_period_distance_ratio": cfg.selection_min_period_distance_ratio,
         "selected_cycles": selected_cycles,
     }
     (series_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")

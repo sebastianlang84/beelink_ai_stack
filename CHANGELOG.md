@@ -22,6 +22,7 @@ This project follows a Keep a Changelog style.
 - Workflow and YouTube 429 report content consolidated into active PRD/runbook paths.
 - Root docs (`README.md`, `INDEX.md`, `TODO.md`) now include the `fourier-cycles` service entrypoint and operator quickstart.
 - `fourier-cycles` default host output path moved into workspace (`/home/wasti/ai_stack/fourier-cycles/output`).
+- `fourier-cycles` output selection now defaults to top 3 stable cycles using stricter presence/power thresholds and minimum period-distance filtering.
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.

@@ -24,6 +24,8 @@ Standardpfad (Host):
 Pro Lauf:
 - `run_<timestamp>/summary.json` - Laufzusammenfassung
 - `run_<timestamp>/<source>-<series>/price.png` - echter Preis-/Level-Chart der Zeitreihe
+- `run_<timestamp>/<source>-<series>/price_cycle_overlay.png` - Preis/Level plus normalisierter Composite-Cycle-Index
+- `run_<timestamp>/<source>-<series>/cycle_components.png` - normalisierte Top-Cycle-Komponenten (uebereinander)
 - `run_<timestamp>/<source>-<series>/spectrum.png` - globales Spektrum
 - `run_<timestamp>/<source>-<series>/stability.png` - Rolling-Power/Presence je Cycle
 - `run_<timestamp>/<source>-<series>/reconstruction.png` - transformiertes Signal (Returns) vs. rekonstruiertes Cycle-Signal
@@ -39,6 +41,12 @@ Ein Cycle gilt als stabil, wenn er in Rolling-Windows haeufig genug auftaucht:
 - Presence basiert auf Window-Power-Ratio >= `FOURIER_MIN_WINDOW_POWER_RATIO`
 
 Damit werden Peaks verworfen, die nur in einem kleinen Bruchteil des Zeitraums auftreten.
+
+Ausgabe-Selektion fuer Visualisierung/Reporting:
+- Top `FOURIER_SELECTION_TOP_K` Cycles (Default: 3)
+- Presence >= `FOURIER_SELECTION_MIN_PRESENCE_RATIO` (Default: 0.60)
+- Mindest-Power via `FOURIER_SELECTION_MIN_NORM_POWER_PERCENTILE` (Default: 0.75)
+- Mindestabstand der Perioden via `FOURIER_SELECTION_MIN_PERIOD_DISTANCE_RATIO` (Default: 0.20)
 
 ## Telegram-Integration (ohne neue UI)
 

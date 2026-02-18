@@ -20,12 +20,15 @@ Purpose: One-page snapshot for the next context.
 - Existing Fourier run artifacts were migrated into workspace output; legacy external folder `/home/wasti/ai_stack_data/fourier-cycles/output` was removed.
 - `fourier-cycles` now writes `price.png` per series (raw price/level chart) so index/asset levels are directly visible next to spectral plots.
 - Reconstruction plot labeling was clarified to indicate transformed signal (returns), not raw price levels.
+- `fourier-cycles` cycle selection now defaults to top 3 stable cycles (presence/power thresholds + minimum period distance), with new charts: `price_cycle_overlay.png` and `cycle_components.png`.
+- Validation run on 2026-02-18 UTC for `^GSPC` succeeded (`success=1`, `failure=0`); outputs include new overlay/component charts.
 - Local unstaged user change exists in `scripts/backup_all.sh` and is intentionally untouched.
 - Living Docs updated for Fourier service bootstrap: `README.md`, `TODO.md`, `CHANGELOG.md`, `INDEX.md`.
 - Living Docs check for build-app planning task: `README.md`, `TODO.md`, `CHANGELOG.md` reviewed; no additional changes needed.
 - Living Docs updated for smoke-run/fix task: `TODO.md`, `CHANGELOG.md`; `README.md` reviewed (no change needed).
 - Living Docs updated for output-path migration task: `README.md`, `CHANGELOG.md`; `TODO.md` reviewed (no change needed).
 - Living Docs updated for price-chart clarity task: `CHANGELOG.md`; `README.md` and `TODO.md` reviewed (no change needed).
+- Living Docs updated for top-cycle visualization task: `README.md`, `TODO.md`, `CHANGELOG.md`.
 
 ## Atlas Definition
 - `atlas` = the repository's cross-context continuity mandate.
