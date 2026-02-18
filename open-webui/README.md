@@ -1,6 +1,6 @@
 # open-webui — Betrieb
 
-Ziel: Open WebUI läuft persistent, upgradesicher und ohne Secrets im Repo. Image ist auf **0.8.1** gepinnt.
+Ziel: Open WebUI läuft persistent, upgradesicher und ohne Secrets im Repo. Image ist auf **0.8.3** gepinnt.
 
 ## Quickstart
 1. Shared Secrets setzen: `/home/wasti/ai_stack/.env.example` → `/home/wasti/ai_stack/.env` (nicht committen).

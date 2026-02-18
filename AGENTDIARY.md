@@ -2,6 +2,14 @@
 
 This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 
+## 2026-02-18
+- Aufgabe: Open WebUI auf die neueste stabile Version `0.8.3` aktualisieren und live verifizieren.
+- Probleme/Bugs/Issues: Dirty Worktree mit unrelated lokalen Aenderungen (`TODO.md`, `scripts/backup_all.sh`); Upgrade wurde explizit ohne Backup freigegeben.
+- Loesung: Upgrade strikt auf `open-webui`-Scope isoliert (Image-Tag in Compose/Config/Examples + Service-README angepasst), Release/Tag gegen offizielle GitHub-Releases verifiziert (`v0.8.3`, stable, published 2026-02-17), Deploy mit Compose durchgefuehrt und Runtime per Container-Health + HTTP-Endpoint validiert.
+- Aufgabe: Living Docs pruefen/aktualisieren.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: `CHANGELOG.md` und `open-webui/README.md` aktualisiert; `README.md` und `TODO.md` geprueft, keine weiteren inhaltlichen Anpassungen notwendig.
+
 ## 2026-02-13
 - Aufgabe: `api_timeout_s`/`timeout_s` in Transcript Miner wirksam verdrahten und weitere nicht wirksame Config-Pfade beheben.
 - Probleme/Bugs/Issues: `youtube.api_timeout_s` war im YAML vorhanden, aber nicht im Laufzeitpfad genutzt; `analysis.llm.timeout_s` und `report.llm.timeout_s` waren nicht durchgaengig verdrahtet; unbekannte Config-Keys konnten still durchrutschen.
