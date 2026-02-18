@@ -149,3 +149,31 @@ Minimal-Metadaten:
 2. TranscriptMiner Output-Discovery (Summary-only)
 3. Open WebUI Ingest-Flow implementieren
 4. Config-SSOT + Overrides klären/umsetzen
+
+## 15) Natural-Language Trigger: "hole die neuesten videos"
+Minimaler Interaction-Contract fuer die Chat-Trigger-Variante:
+
+### Parameter-Aufloesung + Defaults
+- `topic`: aus Tool-Konfiguration (empfohlen `ai_knowledge`)
+- `x`: `num_videos_per_channel` (Default aus Topic-Config)
+- `y`: `max_total_videos` (Tool-Sicherheitslimit, z. B. `25`)
+- `lookback_days`: aus Topic-/Global-Config
+- `force_redownload_transcripts`: default `false`
+
+Bei fehlenden Parametern fragt das Tool einmal kurz zur Bestaetigung nach, bevor ein kostenrelevanter Run startet.
+
+### Ausfuehrungsreihenfolge
+1. TranscriptMiner-Run starten (Topics/Kanaele aus Config).
+2. Pro Channel gilt `x`; global limitiert der Orchestrator auf `y`.
+3. Danach genau ein Sync-Zyklus nach Open WebUI Knowledge (`POST /sync/topic/{topic}` oder `POST /index/transcript`).
+
+### Ergebnis-Reporting (kompakt)
+- Channels gefunden
+- Videos verarbeitet (inkl. Hinweis auf `y`-Kappung)
+- Summaries erzeugt
+- Knowledge Uploads: `indexed` vs `skipped`
+
+## 16) Guardrails
+- Keine neuen Host-Ports (Service bleibt im Docker-Netzwerk).
+- Fail-fast bei fehlendem Topic->Knowledge Mapping.
+- Secrets bleiben in `.env`; non-secrets in `.config.env`/`<service>/.config.env` (siehe Policy).

@@ -3,7 +3,16 @@
 Purpose: Catalog of documentation files under `docs/`.
 Primary repo navigation starts at `INDEX.md`.
 
-## Core
+## Active Sets
+- `docs/adr/` - architecture and process decisions
+- `docs/runbooks/` - operational runbooks
+- `docs/policies/` - normative technical policies
+- `docs/plans/` - PRDs, plans, and design drafts
+
+## Archive
+- `docs/archive/` - dated snapshots, historic reports, and superseded drafts
+
+## Root Main Docs
 - `INDEX.md` - root navigation
 - `README.md` - operator guide
 - `AGENTS.md` - normative process rules
@@ -11,14 +20,5 @@ Primary repo navigation starts at `INDEX.md`.
 - `TODO.md` - active work only
 - `CHANGELOG.md` - user/release-visible changes
 
-## Decisions
-- `docs/adr/README.md` - ADR index + convention
-- `docs/adr/20260218-main-documentation-strategy.md` - accepted main doc strategy
-
-## Runbooks
-- `docs/runbook_secrets_env_files.md`
-- `docs/runbook_backup_restore.md`
-- `docs/runbook_smoke_test.md`
-- `docs/runbook_finance_fourier.md`
-- `docs/runbook-owui-502-autorecover.md`
-- `docs/runbook-tm-lifecycle-maintenance.md`
+## Service-Local Notes
+- `openclaw/notes/` - OpenClaw-specific notes moved out of shared `docs/`

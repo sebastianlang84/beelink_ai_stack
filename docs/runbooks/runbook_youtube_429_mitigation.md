@@ -93,3 +93,17 @@ Probe (wie T0).
 ## Hinweise
 - Bei **Single-Probe 429** sind Retries meist nutzlos → Wechsel der IP ist der Hebel.
 - `config_wsl_optimized.yaml` ist das konservative Default-Profil für blockanfällige Umgebungen.
+
+## Incident-Baseline (2026-01-24)
+- Einzelrequest gegen `https://www.youtube.com/api/timedtext` lieferte bereits `HTTP 429`.
+- Umgebung damals: `tm` Container, `config_investing.yaml`, Cookies aus, Proxy aus.
+- Interpretation: eher IP-Reputation/Anti-Bot Block als klassisches Rate-Limit.
+- Praktische Konsequenz: IP-Wechsel/Residential Proxy hilft typischerweise mehr als Retries/Jitter.
+
+## Alternativen (wenn Mitigation nicht reicht)
+1. `yt-dlp` als Fallback fuer Captions (mit Privacy-/Account-Risiko-Bewertung).
+2. Drittanbieter-API nur mit Kosten/Compliance-Freigabe.
+3. YouTube Data API v3 nur fuer owner-faehige Caption-Use-Cases.
+
+## Historie
+- Historischer Incident-Report liegt unter `docs/archive/report_youtube_ip_block.md`.

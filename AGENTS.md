@@ -125,7 +125,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 
 ### Sicherheit & Betrieb
 - **Keine Secrets committen** (Tokens, Passwörter, Private Keys).
-- Secrets-Handling: siehe `docs/policy_secrets_environment_variables_ai_stack.md` (Repo-Layout: `.env` = secrets-only; `.config.env` + `<service>/.config.env` = non-secrets; alles gitignored; Start immer via `--env-file`).
+- Secrets-Handling: siehe `docs/policies/policy_secrets_environment_variables_ai_stack.md` (Repo-Layout: `.env` = secrets-only; `.config.env` + `<service>/.config.env` = non-secrets; alles gitignored; Start immer via `--env-file`).
 - **Glasklar (Wasti-Policy): In `.env` stehen NUR Secrets.**
   - `.env` enthält ausschließlich: API Keys, Tokens, Passwörter, private Schlüssel.
   - Nicht-Secrets (Pfade/Hosts/Ports/IDs/Mappings) gehören **nicht** in `.env`, sondern in `.config.env` oder `<service>/.config.env`.

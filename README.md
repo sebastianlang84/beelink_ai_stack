@@ -31,15 +31,15 @@ Dokunetz: Einstieg über `INDEX.md:1`.
 5. Zugriff lokal am Server: `http://127.0.0.1:3000` (VPN-only empfohlen via Tailscale Serve)
 
 Betrieb/Access: `open-webui/README.md:1` (default localhost-only; empfohlen via Tailscale Serve im Tailnet).
-RAG Retrieval (Snapshot aus `webui.db`, 2026-02-14): `top_k=20`, `top_k_reranker=8`, `relevance_threshold=0.35`, `enable_hybrid_search=false`, `hybrid_bm25_weight=0.35` (OWUI). Reproduzierbarer Dump: `./scripts/openwebui_snapshot_rag_settings.sh docs/owui_rag_settings_snapshot.md`.
+RAG Retrieval (Snapshot aus `webui.db`, 2026-02-14): `top_k=20`, `top_k_reranker=8`, `relevance_threshold=0.35`, `enable_hybrid_search=false`, `hybrid_bm25_weight=0.35` (OWUI). Reproduzierbarer Dump: `./scripts/openwebui_snapshot_rag_settings.sh docs/archive/owui-rag/owui_rag_settings_snapshot.md`.
 Day-sensitive Guard (heute/des Tages/latest): Striktes Same-Day-Sufficiency-Gate im OWUI-RAG-Template aktiv; Update reproduzierbar via `./scripts/openwebui_apply_investing_rag_guard.sh`.
-RAG Baseline-Probe (Phase 1): `./scripts/owui_rag_baseline_probe.sh` mit Query-Matrix aus `config/owui_rag_baseline_queries.json` (Beispielreports: `docs/owui_rag_baseline_2026-02-15.md`, `docs/owui_rag_baseline_remote_2026-02-15.md`).
+RAG Baseline-Probe (Phase 1): `./scripts/owui_rag_baseline_probe.sh` mit Query-Matrix aus `config/owui_rag_baseline_queries.json` (Beispielreports: `docs/archive/owui-rag/owui_rag_baseline_2026-02-15.md`, `docs/archive/owui-rag/owui_rag_baseline_remote_2026-02-15.md`).
 API Keys (aktueller Stand): Default User Permissions erlauben `features.api_keys=true` (siehe `open-webui/README.md:1`).
 
 ## Open WebUI 502 Auto-Recovery (Tailscale Serve)
 Wenn `owui` stoppt und die `ts.net` URL `502` liefert:
 - Script: `./scripts/ensure-owui-up.sh ensure`
-- Runbook: `docs/runbook-owui-502-autorecover.md:1`
+- Runbook: `docs/runbooks/runbook-owui-502-autorecover.md:1`
 - Optional persistent: systemd Timer via `scripts/systemd/ai-stack-owui-ensure.{service,timer}`
 
 ## Quickstart (Transcript Miner Tool)
@@ -91,7 +91,7 @@ Ziel: Prompt-Tuning/Schema-Iterationen **schnell und guenstig** mit kleiner Date
 - `ensure` beinhaltet zudem einen Orphan-Prune (stale hot summaries ohne aktuellen investing-Index-Eintrag -> `cold`).
 - Sync-Schutz: parallele `POST /sync/topic/investing`-Aufrufe werden serverseitig fuer dasselbe Topic geblockt (`status=busy`), um Race-Condition-Duplikate zu verhindern.
 - Dedupe-Precheck vor Upload ist standardmaessig aktiv (`OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true`).
-- Runbook: `docs/runbook-tm-lifecycle-maintenance.md:1`
+- Runbook: `docs/runbooks/runbook-tm-lifecycle-maintenance.md:1`
 
 ## Scheduled Runs (investing, alle 3h)
 Systemd Timer für automatische Runs inkl. Sync (Lifecycle-Routing):
@@ -167,9 +167,9 @@ Ziel: OpenClaw Gateway host-native betreiben (Telegram Channel) und stabil halte
 - Update-Guard (kein kaputter systemd-user Restart nach `openclaw update`): `./scripts/install_openclaw_update_guard_bash.sh`
 
 ## Smoke Test (P0)
-- Runbook: `docs/runbook_smoke_test.md:1`
+- Runbook: `docs/runbooks/runbook_smoke_test.md:1`
 - Script: `./scripts/smoke_test_ai_stack.sh --up --build`
-- Reindex (Embedding-Model-Wechsel): `docs/runbook_openwebui_reindex_knowledge.md:1`
+- Reindex (Embedding-Model-Wechsel): `docs/runbooks/runbook_openwebui_reindex_knowledge.md:1`
 
 ## Markdown Lint
 - Baseline-Lint fuer Markdown: `./scripts/lint-markdown.sh`
@@ -182,17 +182,17 @@ Ziel: OpenClaw Gateway host-native betreiben (Telegram Channel) und stabil halte
 - Beispiele:
   - `./scripts/finance_fourier_analysis.py --source yahoo --symbol SPY --yahoo-range 5y --max-points 512 --top-k 8`
   - `./scripts/finance_fourier_analysis.py --source fred --series-id DGS10 --max-points 512 --top-k 8`
-- Runbook: `docs/runbook_finance_fourier.md:1`
+- Runbook: `docs/runbooks/runbook_finance_fourier.md:1`
 
 ## Codex Remote-SSH Auth Guard (DNS)
 - Hintergrund: VS Code Codex Login kann scheitern, wenn Tailscale DNS Override (`accept-dns=true`) auf einen instabilen Resolver zeigt.
 - Check: `./scripts/check_codex_auth_dns.sh`
 - Remediation: `./scripts/remediate_codex_auth_dns.sh --reason manual`
 - Persistenter Guard (`@reboot` + alle 10 Minuten): `./scripts/install_codex_auth_dns_guard_cron.sh`
-- Runbook: `docs/runbook_codex_ssh_auth_dns_guard.md:1`
+- Runbook: `docs/runbooks/runbook_codex_ssh_auth_dns_guard.md:1`
 
 ## Monitoring (Plan)
-- Watchdog-Ideen (CPU/Temp/Disk): `docs/plan_watchdog_monitoring.md`
+- Watchdog-Ideen (CPU/Temp/Disk): `docs/plans/plan_watchdog_monitoring.md`
 
 ## Open WebUI External Tools (Import JSON)
 - Context7 (MCP Streamable HTTP): `open-webui/tool-imports/tool_import_context7.json`
@@ -200,7 +200,7 @@ Ziel: OpenClaw Gateway host-native betreiben (Telegram Channel) und stabil halte
 - context6 (MCP Streamable HTTP): `open-webui/tool-imports/tool_import_context6.json`
 
 ## Workflow-Zielbilder
-- Open WebUI Tool-Workflow: „hole die neuesten videos“ → TranscriptMiner → Knowledge: `docs/workflow_openwebui_hole_neueste_videos.md:1`
+- Open WebUI Tool-Workflow: „hole die neuesten videos“ → TranscriptMiner → Knowledge: `docs/plans/prd-tool-owui-transcript-miner-sync.md:1`
 
 ## Private GitHub Repos (SSH)
 Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** auf deinem Host für GitHub eingerichtet sein.
@@ -230,7 +230,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `watchdog/` — Monitoring-Watchdog (CPU/Temperatur/Disk + Docker-Hygiene)
 
 ## Security (Kurz)
-- Secrets liegen in `.env` (gitignored, secrets-only). Non-Secrets liegen in `.config.env` + `<service>/.config.env` (gitignored). Policy: `docs/policy_secrets_environment_variables_ai_stack.md:1`.
+- Secrets liegen in `.env` (gitignored, secrets-only). Non-Secrets liegen in `.config.env` + `<service>/.config.env` (gitignored). Policy: `docs/policies/policy_secrets_environment_variables_ai_stack.md:1`.
 
 ## Nicht-Ziele (Phase 1)
 - Kein Reverse Proxy / kein öffentliches TLS-Setup / keine öffentliche Exponierung ins Internet

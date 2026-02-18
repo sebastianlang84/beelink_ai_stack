@@ -4,7 +4,7 @@ Benchmarks für:
 - Phase A: MRL Prefix-Slicing vs PCA/Random-Projection (Qwen3 remote)
 - Phase B: Local CPU vs OpenRouter remote (Qwen3)
 
-PRD: `docs/prd_embedding_benchmark_suite_mrl_local_vs_openrouter_qwen3.md:1`
+PRD: `docs/plans/prd_embedding_benchmark_suite_mrl_local_vs_openrouter_qwen3.md:1`
 
 ## Quickstart (Docker, empfohlen)
 

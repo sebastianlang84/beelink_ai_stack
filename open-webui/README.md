@@ -42,12 +42,12 @@ Persistenter Guard (systemd timer):
 - `scripts/systemd/ai-stack-owui-ensure.service`
 - `scripts/systemd/ai-stack-owui-ensure.timer`
 
-Runbook: `docs/runbook-owui-502-autorecover.md:1`
+Runbook: `docs/runbooks/runbook-owui-502-autorecover.md:1`
 
 ## Persistenz / Backup
 - Volume: `owui-data` (Pfad im Container: `/app/backend/data`)
 
-Runbook: `docs/runbook_backup_restore.md:1`
+Runbook: `docs/runbooks/runbook_backup_restore.md:1`
 
 ## Integration (RAG / Knowledge Auto-Indexing)
 - Für Cross-Stack Kommunikation (z. B. Tool ↔ `owui`) wird ein externes Docker-Netz `ai-stack` verwendet:

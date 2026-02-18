@@ -7,7 +7,7 @@ description: Perform and document backup/restore for ai_stack (docker volumes an
 
 ## Source of truth
 
-- Runbook: `docs/runbook_backup_restore.md:1`
+- Runbook: `docs/runbooks/runbook_backup_restore.md:1`
 - Scripts: `scripts/backup_*` and `scripts/restore_docker_volume.sh`
 
 ## Common backups (examples)

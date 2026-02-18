@@ -2,7 +2,7 @@
 
 MCP Streamable HTTP Server für `context6` (Doku-Fetch/Normalize/Chunk/Search/Get).
 
-PRD: `docs/prd_context6_poc_working_draft.md:1`
+PRD: `docs/plans/prd_context6_poc_working_draft.md:1`
 
 ## Quickstart (Docker)
 
@@ -94,4 +94,4 @@ Danach in Open WebUI Knowledge hochladen (Open WebUI übernimmt Processing/Embed
 - `context6-data` (SQLite + Artefakte)
 - `context6-cache` (Cache)
 
-Runbook: `docs/runbook_backup_restore.md:1` (Volume-Backup via `scripts/backup_docker_volume.sh`)
+Runbook: `docs/runbooks/runbook_backup_restore.md:1` (Volume-Backup via `scripts/backup_docker_volume.sh`)

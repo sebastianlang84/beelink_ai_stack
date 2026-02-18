@@ -73,4 +73,4 @@ Danach in VS Code: **Developer: Reload Window** oder im MCP Settings Screen **Re
 ## Storage / Backup
 - Volume: `owui-connector-data` (Backups der Tool-Server Config)
 
-Runbook: `docs/runbook_backup_restore.md:1`
+Runbook: `docs/runbooks/runbook_backup_restore.md:1`

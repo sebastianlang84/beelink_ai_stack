@@ -14,3 +14,4 @@ Purpose: Decision records for this repository.
 
 ## Current ADRs
 - `docs/adr/20260218-main-documentation-strategy.md`
+- `docs/adr/20260218-qdrant-indexing-boundaries.md`

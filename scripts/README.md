@@ -68,12 +68,12 @@
   - `output/finance-fourier/<timestamp>-<source>-<series>/spectrum.csv`
   - `output/finance-fourier/<timestamp>-<source>-<series>/report.md`
 - Runbook:
-  - `docs/runbook_finance_fourier.md:1`
+  - `docs/runbooks/runbook_finance_fourier.md:1`
 
 ## Smoke Test (P0)
 - Run an end-to-end-ish health/auth smoke test for Open WebUI + Transcript Miner tool:
   - `./scripts/smoke_test_ai_stack.sh --up --build`
-  - Runbook: `docs/runbook_smoke_test.md:1`
+  - Runbook: `docs/runbooks/runbook_smoke_test.md:1`
 
 ## Open WebUI 502 Auto-Recovery (Tailscale Serve Upstream)
 - Status only (no changes):
@@ -86,7 +86,7 @@
   - `scripts/systemd/ai-stack-owui-ensure.service`
   - `scripts/systemd/ai-stack-owui-ensure.timer`
 - Runbook:
-  - `docs/runbook-owui-502-autorecover.md:1`
+  - `docs/runbooks/runbook-owui-502-autorecover.md:1`
 
 ## Gemini CLI Summary POC (headless helper)
 - Quick test (default fixture prompt + transcript):
@@ -103,7 +103,7 @@
   - bevorzugt Gemini auth in `~/.gemini/settings.json` mit `preview=true` fuer `gemini-3-flash-preview`
   - `GEMINI_API_KEY` nur als Fallback
 - Runbook:
-  - `docs/runbook-gemini-cli-summary-poc.md:1`
+  - `docs/runbooks/runbook-gemini-cli-summary-poc.md:1`
 
 ## Transcript Miner LLM Backend (Gemini CLI)
 - Produktiv-Backend fuer Summaries: `TM_LLM_BACKEND=gemini_cli` (in `mcp-transcript-miner/.config.env`).
@@ -117,10 +117,10 @@
 - Apply stricter day-sensitive retrieval defaults in OWUI config (`webui.db`) and restart `owui`:
   - `./scripts/openwebui_apply_investing_rag_guard.sh`
 - Snapshot current RAG settings from `webui.db` into Markdown:
-  - `./scripts/openwebui_snapshot_rag_settings.sh docs/owui_rag_settings_snapshot.md`
+  - `./scripts/openwebui_snapshot_rag_settings.sh docs/archive/owui-rag/owui_rag_settings_snapshot.md`
 - Run reproducible chat baseline matrix (local or remote OWUI URL):
-  - `./scripts/owui_rag_baseline_probe.sh --limit 5 --output docs/owui_rag_baseline_YYYY-MM-DD.md`
-  - Remote check example: `./scripts/owui_rag_baseline_probe.sh --base-url https://owui.tail027324.ts.net --limit 2 --output docs/owui_rag_baseline_remote_YYYY-MM-DD.md`
+  - `./scripts/owui_rag_baseline_probe.sh --limit 5 --output docs/archive/owui-rag/owui_rag_baseline_YYYY-MM-DD.md`
+  - Remote check example: `./scripts/owui_rag_baseline_probe.sh --base-url https://owui.tail027324.ts.net --limit 2 --output docs/archive/owui-rag/owui_rag_baseline_remote_YYYY-MM-DD.md`
 - Sets:
   - `rag.relevance_threshold=0.4`
   - `rag.top_k=15`
@@ -152,7 +152,7 @@
   - `scripts/systemd/ai-stack-tm-investing-maintenance.service`
   - `scripts/systemd/ai-stack-tm-investing-maintenance.timer`
 - Runbook:
-  - `docs/runbook-tm-lifecycle-maintenance.md:1`
+  - `docs/runbooks/runbook-tm-lifecycle-maintenance.md:1`
 
 ## Provision / Migration (Naming SSOT)
 - Provision shared Docker objects (network + named volumes):

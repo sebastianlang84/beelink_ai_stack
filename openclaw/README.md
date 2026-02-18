@@ -3,6 +3,7 @@
 Ziel: OpenClaw laeuft nativ auf dem Host.
 
 Operations/Recovery: `openclaw/OPERATIONS.md`
+Advanced notes: `openclaw/notes/notes_access_tailscale_vs_lan_owui_openclaw.md`, `openclaw/notes/notes_openclaw_install_sources.md`
 
 ## Ist-Zustand (dieses Setup)
 - CLI: `/home/wasti/.local/bin/openclaw`

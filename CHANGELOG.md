@@ -8,9 +8,13 @@ This project follows a Keep a Changelog style.
 - `INDEX.md` as root navigation entrypoint.
 - `docs/adr/` decision-tracking model introduced for documentation strategy.
 - `atlas` definition added to `HANDOFF.md` as cross-context continuity mandate.
+- `docs/adr/20260218-qdrant-indexing-boundaries.md` to lock Qdrant indexing boundaries.
 
 ### Changed
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.
 - `HANDOFF.md` reduced to a strict snapshot format (state/decisions/next steps/risks).
 - `TODO.md` reduced to active tasks only.
 - `CHANGELOG.md` rebaselined to keep only concise, user/operator-relevant entries.
+- `docs/` reorganized into active sets (`runbooks/`, `policies/`, `plans/`) plus `archive/`.
+- OpenClaw notes moved from shared docs to `openclaw/notes/`.
+- Workflow and YouTube 429 report content consolidated into active PRD/runbook paths.

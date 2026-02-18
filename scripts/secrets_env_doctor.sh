@@ -315,7 +315,7 @@ if ((${#missing_required[@]} > 0)); then
   for key in "${missing_required[@]}"; do
     echo "  - ${key}"
   done
-  echo "See: docs/runbook_secrets_env_files.md"
+  echo "See: docs/runbooks/runbook_secrets_env_files.md"
   exit 1
 fi
 echo "OK: base required keys present"

@@ -1,5 +1,7 @@
 # Policy — Was in Qdrant indexiert wird (ai_stack)
 
+Status: superseded by `docs/adr/20260218-qdrant-indexing-boundaries.md` (detail background retained here).
+
 Ziel: Klar definieren, **welche Texte** als Vektoren in Qdrant landen, welche Metadaten als Payload gespeichert werden, und wie wir Collection-Namen/Versionierung handhaben.
 
 Grundsatz: **Qdrant speichert nur Vektoren + Filter-Metadaten**, der „Source of Truth“ für den Volltext bleibt im jeweiligen Service (Files/SQLite).

@@ -7,19 +7,19 @@ set -euo pipefail
 # Usage:
 #   ./scripts/owui_rag_baseline_probe.sh
 #   ./scripts/owui_rag_baseline_probe.sh --limit 3
-#   ./scripts/owui_rag_baseline_probe.sh --model google/gemini-3-flash-preview --output docs/owui_rag_baseline_2026-02-15.md
+#   ./scripts/owui_rag_baseline_probe.sh --model google/gemini-3-flash-preview --output docs/archive/owui-rag/owui_rag_baseline_2026-02-15.md
 #
 # Inputs:
 #   - OPEN_WEBUI_API_KEY or OWUI_API_KEY (env) OR shared .env file in repo root
 #   - config/owui_rag_baseline_queries.json (default query matrix)
 #
 # Output:
-#   - Markdown report (default: docs/owui_rag_baseline_latest.md)
+#   - Markdown report (default: docs/archive/owui-rag/owui_rag_baseline_latest.md)
 
 BASE_URL="${OPEN_WEBUI_BASE_URL_PUBLIC:-http://127.0.0.1:3000}"
 MODEL="${OWUI_BASELINE_MODEL:-google/gemini-3-flash-preview}"
 QUERIES_FILE="${OWUI_BASELINE_QUERIES_FILE:-config/owui_rag_baseline_queries.json}"
-OUTPUT_FILE="${OWUI_BASELINE_OUTPUT_FILE:-docs/owui_rag_baseline_latest.md}"
+OUTPUT_FILE="${OWUI_BASELINE_OUTPUT_FILE:-docs/archive/owui-rag/owui_rag_baseline_latest.md}"
 LIMIT="${OWUI_BASELINE_LIMIT:-0}"
 TIMEOUT_SECONDS="${OWUI_BASELINE_TIMEOUT_SECONDS:-120}"
 
@@ -145,7 +145,12 @@ model = os.environ.get("OWUI_BASELINE_MODEL_EFFECTIVE", "google/gemini-3-flash-p
 queries_file = Path(os.environ.get("OWUI_BASELINE_QUERIES_FILE_EFFECTIVE", "config/owui_rag_baseline_queries.json"))
 limit = int(os.environ.get("OWUI_BASELINE_LIMIT_EFFECTIVE", "0") or "0")
 timeout_seconds = int(os.environ.get("OWUI_BASELINE_TIMEOUT_SECONDS_EFFECTIVE", "120") or "120")
-output_file = Path(os.environ.get("OWUI_BASELINE_OUTPUT_FILE_EFFECTIVE", "docs/owui_rag_baseline_latest.md"))
+output_file = Path(
+    os.environ.get(
+        "OWUI_BASELINE_OUTPUT_FILE_EFFECTIVE",
+        "docs/archive/owui-rag/owui_rag_baseline_latest.md",
+    )
+)
 
 token = (
     os.environ.get("OPEN_WEBUI_API_KEY", "").strip()

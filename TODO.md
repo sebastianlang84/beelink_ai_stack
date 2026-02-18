@@ -5,17 +5,6 @@ Contains: Open tasks with priority and status.
 Does not contain: Completed history (see Git/ADR/CHANGELOG).
 
 ## P0 (Now)
-- [ ] **Docs strategy finalization (root main docs)**
-  - Align all root docs to target model:
-    - `AGENTS.md` (rules only)
-    - `README.md` (operator guide)
-    - `INDEX.md` (navigation)
-    - `HANDOFF.md` (snapshot)
-    - `TODO.md` (active only)
-    - `CHANGELOG.md` (short, user/release relevant)
-    - `docs/adr/` (decision records)
-  - DoD: no duplicate paragraph across these files.
-
 - [ ] **Open WebUI Knowledge cleanup (pending user confirm)**
   - Remove undesired collections (`bitcoin` / `crypto`) only after explicit confirmation.
   - Re-verify intended topics and sync behavior.

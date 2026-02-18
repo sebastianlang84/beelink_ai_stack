@@ -112,7 +112,7 @@ Optional:
 ## Betrieb
 - Standalone (vom Repo-Root): `docker compose --env-file .env --env-file .config.env --env-file mcp-transcript-miner/.config.env -f mcp-transcript-miner/docker-compose.yml up -d --build` (Compose-Service: `tm`)
 
-Persistenz/Backup: `docs/runbook_backup_restore.md:1`
+Persistenz/Backup: `docs/runbooks/runbook_backup_restore.md:1`
 
 ## LLM Backend (Gemini CLI)
 - Der TM-Container unterstuetzt jetzt zwei LLM-Backends fuer Summary-Generierung:

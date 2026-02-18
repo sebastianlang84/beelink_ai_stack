@@ -12,10 +12,12 @@ Purpose: Navigation-only entrypoint.
 
 ## Documentation
 - `docs/README.md` - Docs catalog (service docs, runbooks, policies)
-- `docs/runbook_secrets_env_files.md` - Secrets/config env handling
-- `docs/runbook_backup_restore.md` - Backup/restore
-- `docs/runbook_smoke_test.md` - Smoke-test flow
-- `docs/framework_context_engineering_5plus2.md` - 5+2 framework summary
+- `docs/runbooks/runbook_secrets_env_files.md` - Secrets/config env handling
+- `docs/runbooks/runbook_backup_restore.md` - Backup/restore
+- `docs/runbooks/runbook_smoke_test.md` - Smoke-test flow
+- `docs/policies/policy_secrets_environment_variables_ai_stack.md` - env/secrets policy
+- `docs/plans/` - PRDs and planning docs
+- `docs/archive/` - historical snapshots and deprecated drafts
 
 ## Service Entry Points
 - `open-webui/README.md` - Open WebUI operations

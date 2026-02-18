@@ -7,7 +7,7 @@ set -euo pipefail
 #   ./scripts/openwebui_snapshot_rag_settings.sh [output_file]
 #
 # Example:
-#   ./scripts/openwebui_snapshot_rag_settings.sh docs/owui_rag_settings_snapshot.md
+#   ./scripts/openwebui_snapshot_rag_settings.sh docs/archive/owui-rag/owui_rag_settings_snapshot.md
 
 OWUI_CONTAINER="${OWUI_CONTAINER:-owui}"
 DB_PATH="${OWUI_DB_PATH:-/app/backend/data/webui.db}"
