@@ -11,8 +11,9 @@ Purpose: One-page snapshot for the next context.
 - Finance Fourier POC exists and is runnable (`scripts/finance_fourier_analysis.py`).
 - Backup cleanup executed on 2026-02-18: `/srv/ai-stack/backups/owui-data__*.tar.gz` removed (12 files, ~48G). Free space on `/` improved from 344G to 392G.
 - Open WebUI Knowledge cleanup closed on 2026-02-18 after verification: only `investing_new` + `investing_archive` present; no `bitcoin`/`crypto` collections found.
+- OpenClaw Telegram E2E final verification closed on 2026-02-18 (user-confirmed working behavior).
 - Local unstaged user change exists in `scripts/backup_all.sh` and is intentionally untouched.
-- Living Docs check: `README.md` and `CHANGELOG.md` reviewed; no updates needed for backup/knowledge-closure tasks.
+- Living Docs check: `README.md` and `CHANGELOG.md` reviewed; no updates needed for backup/knowledge/OpenClaw-closure tasks.
 
 ## Atlas Definition
 - `atlas` = the repository's cross-context continuity mandate.
@@ -26,7 +27,7 @@ Purpose: One-page snapshot for the next context.
   - Default: **Option B**
 
 ## Next Steps
-1. Continue P1 work from `TODO.md` (Fourier deepening, OpenClaw Telegram E2E verification).
+1. Continue P1 work from `TODO.md` (Fourier deepening).
 
 ## Known Risks / Blockers
 - Long-tail links outside root docs can still reference pre-consolidation paths.
