@@ -504,7 +504,21 @@ def save_plot_reconstruction(
     ax.plot(x, reconstructed, color="#ef6c00", lw=1.4, label="Stable-cycle reconstruction")
     ax.set_title(title)
     ax.set_xlabel("Date")
-    ax.set_ylabel("Value")
+    ax.set_ylabel("Transformed value")
+    ax.grid(True, alpha=0.25)
+    ax.legend(loc="best")
+    fig.tight_layout()
+    fig.savefig(path, dpi=140)
+    plt.close(fig)
+
+
+def save_plot_price(path: Path, levels: pd.Series, title: str) -> None:
+    fig, ax = plt.subplots(figsize=(12, 6))
+    x = pd.to_datetime(levels.index)
+    ax.plot(x, levels.to_numpy(dtype=np.float64), color="#145c9e", lw=1.4, label="Price level")
+    ax.set_title(title)
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Price / level")
     ax.grid(True, alpha=0.25)
     ax.legend(loc="best")
     fig.tight_layout()
@@ -590,6 +604,11 @@ def process_single_series(
     )
     spectrum.to_csv(series_dir / "spectrum.csv", index=False)
     write_cycles_csv(series_dir / "cycles.csv", selected_cycles)
+    save_plot_price(
+        series_dir / "price.png",
+        levels,
+        f"{source}:{series_name} price/level ({cfg.timeframe_days}d)",
+    )
 
     save_plot_spectrum(
         series_dir / "spectrum.png",
@@ -609,7 +628,7 @@ def process_single_series(
         signal_dates,
         signal,
         reconstructed,
-        f"{source}:{series_name} signal vs stable-cycle reconstruction",
+        f"{source}:{series_name} {transform_name} signal vs stable-cycle reconstruction",
     )
 
     summary = {

@@ -23,9 +23,10 @@ Standardpfad (Host):
 
 Pro Lauf:
 - `run_<timestamp>/summary.json` - Laufzusammenfassung
+- `run_<timestamp>/<source>-<series>/price.png` - echter Preis-/Level-Chart der Zeitreihe
 - `run_<timestamp>/<source>-<series>/spectrum.png` - globales Spektrum
 - `run_<timestamp>/<source>-<series>/stability.png` - Rolling-Power/Presence je Cycle
-- `run_<timestamp>/<source>-<series>/reconstruction.png` - Signal vs. rekonstruiertes Cycle-Signal
+- `run_<timestamp>/<source>-<series>/reconstruction.png` - transformiertes Signal (Returns) vs. rekonstruiertes Cycle-Signal
 - `run_<timestamp>/<source>-<series>/cycles.csv` - finale Cycle-Metriken
 
 Zusatz:

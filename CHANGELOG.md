@@ -10,6 +10,7 @@ This project follows a Keep a Changelog style.
 - `atlas` definition added to `HANDOFF.md` as cross-context continuity mandate.
 - `docs/adr/20260218-qdrant-indexing-boundaries.md` to lock Qdrant indexing boundaries.
 - New service `fourier-cycles/` with Dockerized Yahoo+FRED cycle extraction, rolling stability checks, and PNG artifact generation.
+- `fourier-cycles` now writes a dedicated `price.png` per series (raw level/price chart) alongside spectral plots.
 
 ### Changed
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.
@@ -24,3 +25,4 @@ This project follows a Keep a Changelog style.
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.
+- `fourier-cycles` reconstruction chart labeling now clearly indicates transformed signal values (returns), avoiding confusion with raw price charts.
