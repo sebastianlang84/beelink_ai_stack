@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- docs(agent): AGENTS-Regeln auf reset-resiliente Arbeitsweise geschaerft (`HANDOFF.md` als Pflichtquelle in Gate A + Pflicht-Check/Update pro Task-Ende)
 - docs(agent): HANDOFF-Regel geschaerft: Zusagen muessen fuer Reset-Ueberdauerung in Repo-Dateien persistiert werden (Context-Window Reality + Pflicht-Check pro Task-Ende)
 - docs(handoff): `HANDOFF.md` hinzugefuegt (Reset-sichere Uebergabe inkl. Read-Order, Arbeitsstand, Resume-Commands, atlas-Hinweis)
 - docs(goals): Ausfuellbare `build_app.md` Vorlage unter `goals/` fuer das 5+2 Framework hinzugefuegt und in Doku verlinkt

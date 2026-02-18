@@ -39,6 +39,12 @@ This diary tracks tasks, issues/bugs encountered, and how they were resolved.
 - Aufgabe: Living Docs pruefen/aktualisieren.
 - Probleme/Bugs/Issues: `README.md` und `TODO.md` benoetigten fuer diese Praezisierung keine inhaltliche Aenderung.
 - Loesung: `CHANGELOG.md` aktualisiert; `README.md`/`TODO.md` geprueft und unveraendert belassen.
+- Aufgabe: User-Einwand "Warum sollte HANDOFF ueberhaupt gelesen werden?" in harte Repo-Regeln uebersetzen.
+- Probleme/Bugs/Issues: Bisher fehlte eine verbindliche Verankerung in `AGENTS.md`; damit war HANDOFF-Nutzung zu optional.
+- Loesung: `AGENTS.md` erweitert: neue Sektion "Reset-Resilienz", Gate-A Pflichtquelle um `HANDOFF.md` ergaenzt und Abschluss-Tasks um verpflichtenden HANDOFF-Check/Update erweitert.
+- Aufgabe: Abschluss-Checks fuer diesen Task.
+- Probleme/Bugs/Issues: Keine.
+- Loesung: `HANDOFF.md` geprueft: keine Aenderung noetig. Living Docs geprueft: `README.md`/`TODO.md` keine Aenderung noetig; `CHANGELOG.md` aktualisiert.
 
 ## 2026-02-13
 - Aufgabe: `api_timeout_s`/`timeout_s` in Transcript Miner wirksam verdrahten und weitere nicht wirksame Config-Pfade beheben.

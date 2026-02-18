@@ -19,6 +19,11 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - Keine Doku darf dem Projekt hinterherhinken: Wenn Code/Compose/Prozesse geändert werden, müssen diese Dateien im gleichen Zug aktualisiert werden (oder die Änderung wird als „unvollständig“ behandelt).
 - Wenn bei einem Task **keine** Living-Docs-Aenderung noetig ist: das im Tagebuch kurz festhalten (z. B. "README/TODO/CHANGELOG geprueft: keine Aenderungen noetig").
 
+## 0.2) Reset-Resilienz (Context-Window uebergreifend, verpflichtend)
+- Chat-Zusagen sind nur in-session gueltig und duerfen nicht als persistente Verbindlichkeit behandelt werden.
+- Verbindliche Absprachen muessen in Repo-Dateien stehen (mindestens `HANDOFF.md`, plus relevante Living Docs).
+- `HANDOFF.md` ist das verpflichtende Uebergabe-Dokument fuer den naechsten Context.
+
 ## 1) Agent Rules (global, verbindlich)
 
 ### 1.0) Non-Negotiables (hart, fail-closed)
@@ -33,7 +38,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
   - Vor dem ersten schreibenden Kommando muss der Agent kurz ausgeben:
     - `Ziel`
     - `Scope (in/out)`
-    - `Gelesene Quellen` (konkrete Dateien, mind. `AGENTS.md` + betroffene Service-Docs/Runbooks)
+    - `Gelesene Quellen` (konkrete Dateien, mind. `AGENTS.md` + `HANDOFF.md` + betroffene Service-Docs/Runbooks)
 - **Gate B: Read-Only Diagnose**
   - Zuerst nur lesen/pruefen (z. B. `rg`, `cat`, Status, Logs, `docker inspect`, `docker compose config`).
   - In dieser Phase keine mutierenden Aktionen (keine Datei-Schreibzugriffe, keine Service-Restarts, keine Upgrades, keine Deletes).
@@ -65,9 +70,10 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
   - Probleme/Bugs/Issues, die auftraten
   - Wie sie geloest wurden (konkret)
 - **Pflicht am Ende jeder Aufgabe**:
-  1. Agent-Tagebuch aktualisieren (`AGENTDIARY.md`).
-  2. Living Docs pruefen/aktualisieren (mindestens: `README.md`, `TODO.md`, `CHANGELOG.md`).
-  3. Commit erstellen, **sofern der User nicht explizit etwas anderes sagt**.
+  1. `HANDOFF.md` aktualisieren/prüfen. Wenn keine inhaltliche Aenderung noetig ist, explizit dokumentieren: `HANDOFF.md geprueft: keine Aenderung noetig`.
+  2. Agent-Tagebuch aktualisieren (`AGENTDIARY.md`).
+  3. Living Docs pruefen/aktualisieren (mindestens: `README.md`, `TODO.md`, `CHANGELOG.md`).
+  4. Commit erstellen, **sofern der User nicht explizit etwas anderes sagt**.
 
 ### Commit-Regeln
 - Keine Secrets committen.
