@@ -22,6 +22,7 @@ Purpose: One-page snapshot for the next context.
 - Reconstruction plot labeling was clarified to indicate transformed signal (returns), not raw price levels.
 - `fourier-cycles` cycle selection now defaults to top 3 stable cycles (presence/power thresholds + minimum period distance), with new charts: `price_cycle_overlay.png` and `cycle_components.png`.
 - Validation run on 2026-02-18 UTC for `^GSPC` succeeded (`success=1`, `failure=0`); outputs include new overlay/component charts.
+- Web app planning started in `fourier-cycles/PRD_webapp.md` (dockerized FE/BE split, Tailscale access strategy, Windows `.bat` SSH tunnel + browser debug workflow for MCP DevTools).
 - Local unstaged user change exists in `scripts/backup_all.sh` and is intentionally untouched.
 - Living Docs updated for Fourier service bootstrap: `README.md`, `TODO.md`, `CHANGELOG.md`, `INDEX.md`.
 - Living Docs check for build-app planning task: `README.md`, `TODO.md`, `CHANGELOG.md` reviewed; no additional changes needed.
@@ -29,6 +30,7 @@ Purpose: One-page snapshot for the next context.
 - Living Docs updated for output-path migration task: `README.md`, `CHANGELOG.md`; `TODO.md` reviewed (no change needed).
 - Living Docs updated for price-chart clarity task: `CHANGELOG.md`; `README.md` and `TODO.md` reviewed (no change needed).
 - Living Docs updated for top-cycle visualization task: `README.md`, `TODO.md`, `CHANGELOG.md`.
+- Living Docs updated for webapp-planning task: `TODO.md`, `CHANGELOG.md`; `README.md` updated with PRD link.
 
 ## Atlas Definition
 - `atlas` = the repository's cross-context continuity mandate.
@@ -44,7 +46,8 @@ Purpose: One-page snapshot for the next context.
 ## Next Steps
 1. Continue P1 Fourier deepening: define production basket and tune stability thresholds from first successful run outputs.
 2. Add bounded retries/backoff for Yahoo/FRED fetch path.
-3. OpenClaw integration remains intentionally deferred for now.
+3. Decide and implement Fourier web app Phase A (stack confirmation + FE/BE container skeleton).
+4. OpenClaw integration remains intentionally deferred for now.
 
 ## Known Risks / Blockers
 - Long-tail links outside root docs can still reference pre-consolidation paths.

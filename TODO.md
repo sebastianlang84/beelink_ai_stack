@@ -16,6 +16,12 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
   - Add significance/robustness checks (beyond raw DFT ranking).
   - Document interpretation guardrails for non-forecast use.
 
+- [ ] **Fourier web app (dockerized frontend/backend)**
+  - Planning baseline created: `fourier-cycles/PRD_webapp.md`.
+  - Confirm stack decisions (React/Vite + FastAPI), Tailscale mapping mode, MCP DevTools runtime.
+  - Implement Phase A skeleton (separate UI/API containers + health checks).
+  - Add Windows `.bat` workflow for SSH tunnel + browser debug mode (for MCP DevTools use).
+
 ## P2 (Later)
 - [ ] **Resource checks automation**
   - Periodic free-space + backup growth checks.

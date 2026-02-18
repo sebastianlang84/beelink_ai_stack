@@ -52,3 +52,7 @@ Ausgabe-Selektion fuer Visualisierung/Reporting:
 
 OpenClaw kann Bilder aus `latest/<source>-<series>/` direkt verschicken.
 Empfohlen: Ein einfacher OpenClaw-Command mappt Query -> Dateipfad in `latest`.
+
+## Web App Planung
+
+- Plan-Dokument: `fourier-cycles/PRD_webapp.md`
