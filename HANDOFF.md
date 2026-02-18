@@ -10,9 +10,9 @@ Purpose: One-page snapshot for the next context.
 - Qdrant indexing boundary is now fixed as ADR: `docs/adr/20260218-qdrant-indexing-boundaries.md`.
 - Finance Fourier POC exists and is runnable (`scripts/finance_fourier_analysis.py`).
 - Backup cleanup executed on 2026-02-18: `/srv/ai-stack/backups/owui-data__*.tar.gz` removed (12 files, ~48G). Free space on `/` improved from 344G to 392G.
-- Open WebUI Knowledge read-only check on 2026-02-18: only `investing_new` + `investing_archive` present; no `bitcoin`/`crypto` collections found.
+- Open WebUI Knowledge cleanup closed on 2026-02-18 after verification: only `investing_new` + `investing_archive` present; no `bitcoin`/`crypto` collections found.
 - Local unstaged user change exists in `scripts/backup_all.sh` and is intentionally untouched.
-- Living Docs check: `README.md` and `CHANGELOG.md` reviewed; no updates needed for this task.
+- Living Docs check: `README.md` and `CHANGELOG.md` reviewed; no updates needed for backup/knowledge-closure tasks.
 
 ## Atlas Definition
 - `atlas` = the repository's cross-context continuity mandate.
@@ -26,8 +26,7 @@ Purpose: One-page snapshot for the next context.
   - Default: **Option B**
 
 ## Next Steps
-1. User-confirmed Open WebUI Knowledge cleanup (`bitcoin`/`crypto`) and re-verify sync behavior.
-2. Continue P1 work from `TODO.md` (Fourier deepening, OpenClaw Telegram E2E verification).
+1. Continue P1 work from `TODO.md` (Fourier deepening, OpenClaw Telegram E2E verification).
 
 ## Known Risks / Blockers
 - Long-tail links outside root docs can still reference pre-consolidation paths.

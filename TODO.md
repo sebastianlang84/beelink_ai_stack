@@ -5,10 +5,7 @@ Contains: Open tasks with priority and status.
 Does not contain: Completed history (see Git/ADR/CHANGELOG).
 
 ## P0 (Now)
-- [ ] **Open WebUI Knowledge cleanup (pending user confirm)**
-  - Remove undesired collections (`bitcoin` / `crypto`) only after explicit confirmation.
-  - Re-verify intended topics and sync behavior.
-  - Read-only verification on 2026-02-18: only `investing_new` + `investing_archive` exist; no `bitcoin`/`crypto` collections present.
+- None.
 
 ## P1 (Next)
 - [ ] **Fourier analysis deepening (FRED + Yahoo)**
