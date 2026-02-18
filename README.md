@@ -2,7 +2,11 @@
 
 Dieses Repository enthält die „source of truth“ für ein **privates** Home-Server Setup (kein öffentliches Produkt, kein Business-Deployment).
 
-Dokunetz: Einstieg über `docs/README.md:1`.
+Purpose: Operator-Guide.  
+Contains: Setup, Betrieb, Runbooks mit Kontext.  
+Does not contain: Laufende Entscheidungen/Historie (siehe `HANDOFF.md`, `CHANGELOG.md`, `docs/adr/`).
+
+Dokunetz: Einstieg über `INDEX.md:1`.
 
 ## Zielsystem (Soll-Zustand)
 - Server: Home-Server / Mini-PC im LAN
@@ -206,10 +210,10 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 
 ## Repo-Struktur
 - `AGENTS.md` — Arbeitsregeln für Coding Agents
+- `INDEX.md` — Reiner Link-Index (Startpunkt für Navigation)
 - `HANDOFF.md` — Reset-sichere Uebergabe (aktueller Stand + Schnellstart nach Context Reset)
 - `docs/` — Doku-Index (Link-Netzwerk)
 - `goals/build_app.md` — Ausfuellbare 5+2 Context-Engineering Vorlage fuer neue Projekte
-- `AGENTDIARY.md` — Agent-Tagebuch (Pflicht-Log)
 - `skills/` — Projekt-spezifische Codex Skills (Workflows/Checks)
 - `skills/codex-mcp-self-config/` — Codex MCP Server (self) in `.codex/config.toml` upserten + Projekt-Trust in `~/.codex/config.toml`
 - `skills/owui-prompt-debug-loop/` — Prompt-Debug/PDCA fuer Open WebUI (Model/Folder/RAG) via debug-proxy + webui.db

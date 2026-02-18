@@ -1,294 +1,32 @@
 # Changelog
 
-## Unreleased
-- docs(agent): AGENTS-Regeln auf reset-resiliente Arbeitsweise geschaerft (`HANDOFF.md` als Pflichtquelle in Gate A + Pflicht-Check/Update pro Task-Ende)
-- docs(agent): HANDOFF-Regel geschaerft: Zusagen muessen fuer Reset-Ueberdauerung in Repo-Dateien persistiert werden (Context-Window Reality + Pflicht-Check pro Task-Ende)
-- docs(handoff): `HANDOFF.md` hinzugefuegt (Reset-sichere Uebergabe inkl. Read-Order, Arbeitsstand, Resume-Commands, atlas-Hinweis)
-- docs(goals): Ausfuellbare `build_app.md` Vorlage unter `goals/` fuer das 5+2 Framework hinzugefuegt und in Doku verlinkt
-- docs(framework): 5+2 Context-Engineering Framework dokumentiert (`docs/framework_context_engineering_5plus2.md`) und im Docs-Index verlinkt
-- feat(scripts): Fourier-Analyse Script fuer Yahoo/FRED hinzugefuegt (`scripts/finance_fourier_analysis.py`) inkl. Runbook (`docs/runbook_finance_fourier.md`) und README-Eintraege
-- ops(open-webui): Standard-Image-Tag auf `0.8.3` angehoben (Compose + `.config.env.example` + `open-webui/.config.env.example`)
-- fix(openclaw): Update-Flow fuer Hosts ohne `systemd --user` abgesichert (`scripts/openclaw_update_supervised.sh` + `scripts/install_openclaw_update_guard_bash.sh`), damit `openclaw update` den Gateway nicht mehr down hinterlaesst
-- ops(open-webui): Reproduzierbare RAG-Baseline-Probe hinzugefuegt (`scripts/owui_rag_baseline_probe.sh` + `config/owui_rag_baseline_queries.json`) inkl. ersten Reports (`docs/owui_rag_baseline_2026-02-15.md`, `docs/owui_rag_baseline_remote_2026-02-15.md`)
-- ops(open-webui): Reproduzierbaren RAG-Settings Snapshot aus `webui.db` hinzugefuegt (`scripts/openwebui_snapshot_rag_settings.sh` + `docs/owui_rag_settings_snapshot.md`)
-- docs(todo): OWUI RAG/Embedder Snapshot-Task abgeschlossen und Ist-Werte auf Stand 2026-02-14 aktualisiert
-- chore(repo): Lokalen Notizordner `wasticlaw-coms/` in `.gitignore` aufgenommen (Worktree-Hygiene)
-- ops(transcript-miner): Investing Config auf engeres Recency-Fenster umgestellt (`lookback_days=3`, `max_videos_per_channel=3`) und Channel-Liste erweitert (`Blocktrainer`, `DennisRiedl`, `jesseeckel2`, `TickerSymbolYOU`)
-- ops(watchdog): Watchdog im Monitoring-only Modus reaktiviert; Auto-Stop ist jetzt per Default deaktiviert (`WATCHDOG_TEMP_STOP_CONTAINER_NAMES=`)
-- feat(transcript-miner): Report-LLM folgt jetzt `TM_LLM_BACKEND` (inkl. `gemini_cli`); Scheduler-Skripte setzen `skip_report` nicht mehr erzwungen
-- chore(docs): Markdown-Lint Baseline integriert (`.markdownlint-cli2.yaml` + `scripts/lint-markdown.sh`) und in README/TODO dokumentiert
-- fix(transcript-miner): `youtube.api_timeout_s`, `analysis.llm.timeout_s` und `report.llm.timeout_s` sind jetzt end-to-end verdrahtet (YouTube Data API, Summary-LLM, Report-LLM)
-- fix(transcript-miner): Config-Validierung ist jetzt strikt (`extra=forbid`), unbekannte Keys failen sofort; `owui_collections` bleibt als globaler Kompatibilitaets-Block erlaubt
-- ops(open-webui): Standard-Image-Tag auf `0.8.1` angehoben (Compose + `.config.env.example` + `open-webui/.config.env.example`)
-- fix(mcp-transcript-miner): `source_id`-Extraktion aus OWUI-Files korrigiert (Regex-Fix + Fallback ueber Filename), damit Lifecycle-Moves/Removals wieder greifen
-- fix(mcp-transcript-miner): Pagination fuer Knowledge-Files robust gemacht (alle Seiten statt nur erster Page-Chunk), dadurch vollständige Reconciliation moeglich
-- fix(mcp-transcript-miner): Race-Duplikate in OWUI Collections bereinigt (`investing_archive`/`investing_new`) und Bestand auf eindeutige `source_id` normalisiert
-- fix(mcp-transcript-miner): `sync/topic` hat jetzt einen Topic-Guard; parallele Laeufe fuer dasselbe Topic liefern `status=busy` statt konkurrierender Uploads
-- fix(mcp-transcript-miner): Dedupe-Precheck ist standardmaessig aktiv (`OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK=true`)
-- fix(mcp-transcript-miner): Compose reicht Dedupe-Env-Variablen an den TM-Container durch (`OPEN_WEBUI_KNOWLEDGE_DEDUP_PRECHECK`, `OPEN_WEBUI_KNOWLEDGE_DEDUP_CACHE_TTL_SECONDS`)
-- docs: README + mcp-transcript-miner README + TODO um Sync-Guard/Dedupe-Default und bereinigten Collection-Status aktualisiert
-- docs(agent): `AGENTS.md` mit harten Execution-Gates erweitert (Preflight, Read-Only-Diagnose, Single-Scope, Upgrade-Safety-Gate, klares Antwortformat)
-- ops(open-webui): Standard-Image-Tag auf `0.8.0` angehoben (Compose + `.config.env.example` + `open-webui/.config.env.example`)
-- feat(transcript-miner): Summary-LLM Backend auf Gemini CLI erweiterbar gemacht (`TM_LLM_BACKEND=gemini_cli`) inkl. `gemini-3-flash-preview` Policy, Pro-Block und Usage-Logs im Runner
-- ops(mcp-transcript-miner): TM-Container installiert jetzt `@google/gemini-cli`; Compose setzt `TM_LLM_BACKEND=gemini_cli` + Timeout/Model-Overrides
-- ops(scripts): Scheduler-Runs (`run-tm-investing*.sh`) nutzen `skip_report=true` und brechen bei Run-Fehlern vor dem Sync hart ab
-- docs: README/TODO/scripts-README/mcp-transcript-miner-README auf produktiven Gemini-CLI-Summary-Flow aktualisiert
-- feat(scripts): Gemini-CLI POC schreibt jetzt pro Lauf `*.usage.json` mit Token-/API-Stats (inkl. `tokens.input/total/thoughts`) zur Verbrauchskontrolle
-- docs(gemini-cli): Preview-Mode Requirement dokumentiert (`~/.gemini/settings.json` mit `preview=true` fuer `gemini-3-flash-preview`)
-- fix(scripts): Gemini-CLI POC auf `gemini-3-flash-preview` festgelegt (laufender Gemini-3-Flash Modellname im CLI); Pro-Modelle geblockt und no-thinking Policy im Prompt verankert
-- feat(scripts): Gemini-CLI Summary POC hinzugefuegt (`run-gemini-cli-summary-poc.sh`) inkl. Runbook fuer headless Test
-- ops(transcript-miner): Download-unabhaengige Investing-Lifecycle-Maintenance hinzugefuegt (`maintain-investing-lifecycle.sh` + `check-hot-summaries-freshness.sh` + systemd Timer/Service)
-- fix(open-webui): 502-Auto-Recovery fuer Tailscale Serve Upstream hinzugefuegt (`scripts/ensure-owui-up.sh` + systemd Timer/Service + Runbook)
-- docs(todo): TODO aufgeraeumt (operative Priorisierung P0->P2 ergaenzt; erledigte Parent-Tasks fuer Tailnet-HTTPS, Smoke-Test und Backup auf `x` gesetzt)
-- ops(scripts): systemd Timer/Service Templates fuer `company_dossiers` taeglich hinzugefuegt
-- fix(scripts): Kill-Switch Datei (`$XDG_STATE_HOME/.../ai_stack/schedulers.disabled`) um Schedules ohne sudo sofort zu pausieren
-- docs(todo): Notiz: User hat OpenAI/Google Abos; POC fuer Summaries via Gemini CLI (Abo) statt API evaluieren
-- feat(mcp-owui-connector): MCP Server fuer Open WebUI Knowledge/Admin APIs hinzugefuegt (Write-Tools default off, gated via Env)
-- docs(mcp-owui-connector): VS Code (OpenAI Codex Extension) MCP Server Setup dokumentiert
-- ops(scripts): `scripts/provision_ai_stack_docker_objects.sh` erstellt jetzt auch Volume `owui-connector-data`
-- docs(todo): OpenClaw RAG Status + offene Entscheidung (Memory-RAG vs OWUI Knowledge API) dokumentiert
-- ops(tavily): Host-Helper `scripts/tavily_search.sh` hinzugefuegt + Runbook-Hinweis: `.env` wird fuer Host-Prozesse nicht automatisch exportiert
-- ops(openclaw): Gateway Supervision ohne sudo: `scripts/openclaw_gateway_supervise.sh` + Cron-Installer `scripts/install_openclaw_gateway_cron.sh`
-- ops(openclaw): Cron-Uninstall: `scripts/uninstall_openclaw_gateway_cron.sh`
-- fix(openclaw): Gateway-Supervisor erkennt laufenden Gateway jetzt auch ohne `ss` (Fallback via `/dev/tcp`), damit `status/ensure` stabil sind
-- fix(openclaw): Gateway-Supervisor wartet beim Start aktiv auf Listener-Port und gibt bei Failure Log-Tail aus
-- docs(openclaw): `1008 pairing required` sauber als Control-UI Device-Pairing dokumentiert; Telegram-DM-Pairing separat erklaert
-- docs(openclaw): Runbook fuer `Unknown model: openrouter/auto` (Default-Model auf gueltigen OpenRouter Model-Key setzen)
-- docs(openclaw): README/TODO/scripts-README/docs-Index + OpenClaw Operations aktualisiert
-- fix(openclaw): Hinweis/Fix fuer Dashboard hinter Tailscale Serve: `gateway.trustedProxies` um loopback erweitern
-- fix(docs): Transcript-Miner Doku-Links repariert (AGENTS/logs) und emb-bench `.config.env.example` fuer Compose-Checks vervollstaendigt (DOCKER_UID/GID)
-- docs(agent): AGENTS-Regeln geschaerft (Dirty-Worktree Stop&Ask, Living-Docs Check) und Connector-Pfad in Doku korrigiert
-- fix(mcp-transcript-miner): Lifecycle-Sync reconciled OWUI Knowledge Files (add/move/remove) statt Delete+Recreate, damit Knowledge-IDs stabil bleiben und Collections nicht aus OWUI-Folders "rausfliegen"
-- ops(mcp-sec-edgar): Compose-Service fuer `mcp/sec-edgar` (MCP Streamable HTTP) hinzugefuegt
-- docs(open-webui): Tool-Import Template fuer SEC EDGAR MCP hinzugefuegt (`open-webui/tool-imports/tool_import_sec_edgar_mcp.json`)
-- fix(open-webui): SEC EDGAR MCP Tool-Import setzt explizit `Accept: application/json, text/event-stream` um 406 beim Connect-Check zu vermeiden
-- feat(mcp-transcript-miner): Globales Lifecycle-Routing: `sync/topic/<topic>` synced nach `<topic>_new` + `<topic>_archive` (Regeln aus `config_global.yaml`), Excluded Topics syncen direkt
-- feat(mcp-transcript-miner): Lifecycle-Sync verschiebt Summaries außerhalb des Archive-Fensters automatisch nach `output/data/summaries/cold/by_video_id`
-- fix(mcp-transcript-miner): `*_new` kann optional via `owui_collections.new_max_age_days` auf wirklich frische Videos begrenzt werden (verhindert "stale channel" Videos in `_new`)
-- fix(mcp-transcript-miner): `new_max_age_days`/`archive_max_age_days` werden strikt als 24h*days ausgewertet (nicht per `.days` floor)
-- feat(mcp-transcript-miner): Lifecycle-Sync für `investing_new`/`investing_archive` implementiert (max 2 neueste pro Channel + Archive bis 15 Tage)
-- fix(mcp-transcript-miner): `sync/topic/<topic>_new`/`sync/topic/<topic>_archive` wird explizit abgelehnt (verwende Base-Topic ohne Suffix)
-- ops(scripts): `sync-investing-lifecycle.sh` hinzugefügt
-- docs: Lifecycle-Flow in `README.md`, `scripts/README.md`, `mcp-transcript-miner/README.md` dokumentiert
-- chore(naming): Collection-Namen auf `investing_new`, `investing_archive`, `company_dossiers` festgelegt
-- ops(transcript-miner): Company-Dossier-Topic von `investing_companies` auf `company_dossiers` umgestellt
-- feat(transcript-miner): neuer Company Dossier Agent via `config_investing_companies.yaml` (eigener Prompt fuer company_dossier_delta)
-- ops(scripts): `run-tm-investing-companies.sh` hinzugefuegt (startet Run + sync fuer Topic `company_dossiers`)
-- docs: README/TODO/scripts-README um Company-Dossier-Agent und geplanten Collection-Split erweitert
-- ops(open-webui): RAG Retrieval fuer investing geschaerft (`relevance_threshold=0.4`, `top_k=15`, `top_k_reranker=5`)
-- ops(open-webui): Striktes Same-Day-Sufficiency-Gate im OWUI-RAG-Template aktiviert (heute/des Tages/latest)
-- chore(scripts): `openwebui_apply_investing_rag_guard.sh` hinzugefuegt (setzt RAG-Guard reproduzierbar + restart `owui`)
-- chore(transcript-miner): YouTube Channel-Liste in `config_investing.yaml` alphabetisch sortiert
-- feat(transcript-miner): LLM-Prompts erhalten immer aktuellen Zeitkontext (`utc_now`, `vienna_now`) inkl. Recency-Regel fuer Altersbewertung von Informationen
-- ops(open-webui): Topic `investing` manuell nachgesynct (`processed=149`, `indexed=149`, `errors=0`) und aktuelle Files verifiziert
-- ops(transcript-miner): letzte 10 Transcript-Summaries gezielt neu erzeugt (Prompt V2 Wrapped-Format, alte Files als `*.pre_v2_backup_*` gesichert)
-- feat(transcript-miner): Summary-Dateien speichern jetzt den echten Prompt-V2 Output (keine nachtraegliche Kanonisierung mehr)
-- fix(transcript-miner): Summary-Validierung/Progress/Aggregation verstehen jetzt sowohl Legacy-Sections als auch Prompt-V2 Wrapped Docs
-- ops(watchdog): Service auf User-Wunsch bis auf Weiteres gestoppt (`docker stop watchdog`)
-- fix(watchdog): Temp-Stop-Env in `watchdog/docker-compose.yml` verdrahtet (`WATCHDOG_TEMP_STOP_*`), damit nicht mehr der implizite Code-Default 60C/2 greift
-- docs(readme): Prompt-V2 Verhalten dokumentiert (aktuell: Summary-Dateien behalten den Prompt-Output)
-- ops(open-webui): HTTP 502 auf `owui.tail027324.ts.net` behoben (Container `owui` war gestoppt; Service neu gestartet, localhost:3000 wieder HTTP 200)
-- docs(todo): neues Backlog-Item fuer MCP-Server zur zuverlaessigen SEC-Filings-Embedding-Pipeline ergaenzt
-- feat(transcript-miner): investing/investing_test Summary-Prompts auf Topic-isolated Prompt V2 (`tests/prompt-engineering/_promptnew.md`) umgestellt
-- feat(transcript-miner): LLM Prompt-Formatter um Metadata-Placeholders erweitert (`topic`, `video_id`, `title`, `url`, `channel_namespace`, `published_at`, `fetched_at`, `transcript`)
-- fix(transcript-miner): Summary-Normalisierung versteht Prompt-V2 Wrapper (`<<<DOC_START>>>...<<<DOC_END>>>`) und mapped `Executive Summary`/`Key Points`/`Opportunities` auf kanonische Summary-Sections
-- ops(transcript-miner): Summaries fuer die 20 zuletzt heruntergeladenen Transcripts mit neuem Prompt regeneriert (20/20 erfolgreich)
-- ops(transcript-miner): Prompt-Nutzung geprueft; `_promptnew.md` ist noch nicht produktiv verdrahtet (aktive Summaries nutzen weiterhin Config-Prompts)
-- ops(docker): Container-Status geprueft; keine `dead`/`exited` Container vorhanden
-- ops(open-webui): OWUI-Erreichbarkeit repariert (Container war gestoppt; Service neu gestartet, localhost:3000 wieder erreichbar)
-- docs(todo): OWUI RAG Tuning-Empfehlungen aus Chat (Hybrid Search/Reranker/Top-K/Chunking) im TODO ergaenzt
-- docs: Prompt-Engineering/RAG Plan fuer 2026-02-04 (TODO) inkl. OWUI RAG Settings Snapshot ergaenzt
-- docs(prompt-engineering): OWUI-Stack-Grenzen & Hebel (Topic-Isolation/Recency-Routing/Reranker) in `_goals.md` ergaenzt
-- docs(prompt-engineering): OWUI/RAG Ist-Setup in `_goals.md` dokumentiert (DB/Vector Store/Embedder/Top-K)
-- docs(prompt-engineering): Recency-Weighting und Long-term Dossier-Ziele in `_goals.md` ergaenzt
-- docs(prompt-engineering): Ziele fuer RAG-Prompt-Tuning als `_goals.md` zur Fixture hinzugefuegt
-- test(prompt-engineering): Fixture fuer 10 neueste Transcript/Summary-Paare erzeugt (`transcript-miner/tests/prompt-engineering/`)
-- docs: Prompt-Fixture-Workflow in `README.md` und `TODO.md` dokumentiert
-- fix(mcp-transcript-miner): Retry fuer OWUI-Indexing bei transienten Process-Fehlern (Upload/Process/Add mit Backoff)
-- docs: Retry-Env-Variablen und Troubleshooting fuer `status=partial` im Transcript-Miner dokumentiert
-- ops: investing Topic nach Fehlerfall manuell nachgesynct (`sync/topic/investing` -> `indexed=142`, `errors=0`)
-- docs: TODO um OpenClaw Telegram Pairing-required Follow-up (naechste Session) erweitert
-- docs: OpenClaw Pfade nach Reconfigure dokumentiert (Config/Workspace/Sessions)
-- ops: OpenClaw Docker-Reste aus Repo entfernt (`openclaw/docker-compose.yml`, `openclaw/.config.env.example` geloescht)
-- ops: finale OpenClaw-Cleanup: alte Docker-Images entfernt; nur host-native Gateway + tailscaled-openclaw bleiben
-- docs: `openclaw/docker-compose.yml` und `openclaw/.config.env.example` als deprecated Fallback markiert
-- docs: OpenClaw Doku auf host-native Betrieb umgestellt (Docker als Legacy-Fallback markiert)
-- ops: stale Container `openclaw-gateway` entfernt (native OpenClaw bleibt aktiv)
-- ops: TM-Summary-Luecke analysiert (2026-02-02/03): tm-Container nutzte stale Docker-DNS Upstream `100.100.100.100`; `tm` neu gestartet (DNS jetzt `192.168.0.1`)
-- docs: TODO um Transcript-Miner Backlog fuer Influencer-Trackrecord inkl. Kurs-Freeze erweitert
-- ops: Codex Remote-SSH Auth DNS Guard hinzugefuegt (Check + Auto-Remediation + Cron Persistenz)
-- docs: Runbook fuer Codex/VSC SSH Auth DNS Guard ergaenzt
-- ops: OpenClaw Gateway nativ auf Host; socat-Bridge fuer tailscaled-openclaw Serve
-- chore: `.codex/` (lokale Codex Metadata) gitignored
-- transcript-miner: Investing Channel `@BrunoKreidler` hinzugefuegt
-- docs: Hostname-Split korrigiert (2. tailscaled Node nicht im host network; Proxy via Docker network zu openclaw-gateway)
-- docs: Anleitung fuer Hostname-Split (2 Tailscale Nodes auf 1 Host) fuer OWUI/OpenClaw ergaenzt
-- docs: Notiz zu OWUI/OpenClaw Access-Topologie (Tailscale vs LAN) ergaenzt
-- ops: OWUI Root-Serve als stabiler Zugriff dokumentiert; /owui als fragil vermerkt
-- ops: OpenClaw Pfad-Konflikt (absolute /api) dokumentiert; eigener Host/Port empfohlen
-- ops: OWUI Container neu gestartet; Tailscale Serve Pfad /openclaw gesetzt
-- openclaw: gateway laeuft lokal auf 127.0.0.1:18789 via repo-compose
-- openclaw: upstream repo geklont und docker-setup.sh ausgefuehrt (gateway laufend)
-- openclaw: neues Service-Scaffold (docker-compose.yml, .config.env.example, README)
-- open-webui: openclaw user email auf wasticlaw-1@example.com gesetzt
-- open-webui: openclaw user display name auf wasticlaw-1 gesetzt
-- open-webui: openclaw user (role=user) angelegt; record unter open-webui/openclaw_user.txt
-- open-webui: Default User Permissions via Admin API aktualisiert (features.api_keys=true)
-- docs: note OpenClaw install sources + Telegram pointers
-- open-webui: RAG Top-K im Embedder von 100 auf 30 reduziert (UI-Setting)
-- skills: owui-prompt-api-loop fuer API-based Prompt-Tests inkl. Debug-Proxy Flow-Report
-- agents: Regel fuer stetige Verbesserung + Skill-Nutzung bei komplexen Workflows
-- debug-proxy: last_flows.local.json gitignored
-- skills: owui-prompt-debug-loop Scripts nutzen Env-Variablen (keine Bash-Substitution im Python-HereDoc)
-- skills: owui-prompt-debug-loop Referenz-Prompts fuer Model/Folder/RAG befuellt (Investing)
-- skills: owui-prompt-debug-loop fuer PDCA Prompt-Tuning (Model/Folder/RAG) via debug-proxy + webui.db
-- open-webui: Apache Tika Service im Compose (Content Extraction) + OWUI_NO_PROXY um `tika` erweitert
-- debug-proxy: Ringbuffer kappt an JSONL-Zeilengrenzen (parsebar) + Default auf 150k Zeichen
-- debug-proxy: Ringbuffer arbeitet byte-basiert (verhindert UTF-8 Decode-Fehler)
-- debug-proxy: gzip-Responses werden fuer Logs entpackt
-- debug-proxy: confdir fixiert auf /data/mitmproxy (CA-Trust fuer OWUI)
-- debug-proxy: JSONL-Log als Ringbuffer (100k total), kein per-request truncation
-- debug-proxy: neuer MITM Debug-Proxy (JSONL Logs) + OWUI Proxy-Config
-- mcp-transcript-miner: optionaler Pre-Check gegen OWUI-Duplikate (Hash/Filename) vor Upload
-- ops: OWUI Knowledge (investing) dedupliziert (Hash/Dateiname), Bestand reduziert
-- mcp-transcript-miner: Duplicate-Content bei Knowledge-Add wird als "skipped" behandelt (kein Hard-Fail)
-- mcp-transcript-miner: Knowledge Auto-Create nur mit Request-Flag + optionaler Allowlist
-- docs: Watchdog Temp-Stop Lessons Learned (Log-Pfad/Trigger) dokumentiert
-- watchdog: Temp-Stop Defaults geschaerft (95C/3) + Doku-Hinweis zum Deaktivieren
-- transcript-miner: per-video Summaries sind jetzt Markdown-only mit festen Sections (Source/Summary/Key Points/Numbers/Chances/Risks/Unknowns)
-- transcript-miner: JSON-Validatoren entfernt; Summary-Validity check basiert auf Source-Block
-- transcript-miner: Aggregation liest neue Markdown-Summaries (Source-Block + Sections)
-- scripts: purge_all_summaries_everywhere.sh zum Loeschen aller Summaries lokal + Open WebUI Knowledge
-- docs: Agent-Tagebuch nach `AGENTDIARY.md` im Repo-Root verschoben
-- docs: Prompt-Engineering Handover Report fuer Schema v3 hinzugefuegt (`enhance_prompt_engineering_v3.md`)
-- config: aktualisierte Open WebUI Knowledge-ID fuer Topic `investing` (Sync-Fehler durch stale Mapping behoben)
-- mcp-transcript-miner: Knowledge-ID Mapping validiert (Fallback auf Name=Topic bei stale IDs)
-- mcp-transcript-miner: Knowledge-Name Resolution ohne ID-Mapping konfiguriert (Mapping-Path geleert)
-- transcript-miner: sofortiger per-Video Knowledge-Sync nach Summary-Write (optional via OPEN_WEBUI_SYNC_ON_SUMMARY)
-- transcript-miner: per-summary Sync auch bei bereits vorhandenen Summaries (valid) und im Streaming-Worker
-- transcript-miner: fix per-summary Sync bei vorhandenen Summaries (Default-Metadaten initialisiert)
-- docs: Hinweis zu OWUI „Updated“ UI-Stamp (nicht zuverlässig bei File-Adds)
-- docs: Prompt-Engineering Handover-Report (enhance_prompt_engineering.md) hinzugefuegt
-- docs: Experten-Notizen fuer Prompt-Engineering (docs/prompt_engineering_expert_notes.md)
-- docs: Investing-Test Workflow (Alpha) dokumentiert (investing_test fuer Prompt-Iterationen)
-- docs: agent diary eingefuehrt (`AGENTDIARY.md`)
-- agents: Tagebuch-Pflicht + Commit-Regeln in `AGENTS.md` verankert
-- mcp-transcript-miner: Auto‑Sync läuft jetzt unabhängig vom Status‑Polling (Watcher‑Thread) und schreibt Sync‑Result/Errors in Run‑Status + Run‑Log
-- mcp-transcript-miner: `sync/topic` heilt fehlende Summaries automatisch via LLM‑Only‑Run vor dem Indexing (optional steuerbar per Request)
-- mcp-transcript-miner: proxy env vars (Webshare/generic) werden an Tool-Container durchgereicht
-- transcript-miner: YouTube Block-Klassifikation korrigiert (Subtitles disabled ≠ IP-Block)
-- transcript-miner: Proxy Quickcheck Tool (tools/proxy_quickcheck.py)
-- transcript-miner: Streaming Summaries (opt-in) parallel zum Transcript-Download
-- transcript-miner: Timing-Logs für Transcript-Downloads und per-video Summaries
-- scripts: purge_topic_data.sh zum vollständigen Löschen eines Test-Topics (inkl. OWUI Knowledge)
-- scripts: purge_topic_data.sh nutzt OWUI `/knowledge/{id}/delete` + Container-Fallback bei fehlendem python3/Permissions
-- configs: analysis.llm.model auf google/gemini-3-flash-preview + reasoning_effort=high (Investing/Test/AI-Knowledge)
-- transcript-miner: investing LLM prompt auf Schema v2 erweitert (stocks_mentioned/other_insights/numbers + Coverage-Regeln)
-- transcript-miner: investing_test LLM prompt auf Schema v2 erweitert (stocks_mentioned/other_insights/numbers + Coverage-Regeln)
-- transcript-miner: Report-Prompt rendert jetzt stocks_mentioned/numbers/other_insights (Investing + Test)
-- transcript-miner: Validator akzeptiert Schema v2 + prüft stocks_mentioned/other_insights/numbers
-- docs: LLM Prompt Spec um Schema v2 (stocks_per_video_extract) ergänzt
-- docs: Use-Case Stocks auf Evidence/Confidence im Investing-Setup aktualisiert
-- templates: report_stocks_{de,en} um Stocks Mentioned + Other Insights erweitert
-- docs/templates/configs: Begriffe Creator/Influencer auf Channel vereinheitlicht (Investing Reports)
-- reports: Quellenformat jetzt überall Channel + Video-Titel + Video-ID (Templates/Prompts/LLM-Report)
-- config: Config-Template ergänzt OpenRouter Attribution (X-Title / HTTP-Referer)
-- ci: md_link_audit als verpflichtender Doc-Link-Check integriert
-- mcp-transcript-miner: Auto-Sync läuft jetzt auch bei Run-Exit != 0 (synct alle vorhandenen Summaries)
-- transcript-miner: Per-Video Summary-Renderer zeigt jetzt stocks_mentioned/numbers/other_insights
-- config: knowledge_ids.json entfernt investing_test Mapping (damit Test-Collection neu erzeugt werden kann)
-- mcp-transcript-miner: OPEN_WEBUI_AUTO_SYNC_AFTER_RUN und OPEN_WEBUI_CREATE_KNOWLEDGE_IF_MISSING werden an den Container durchgereicht
-- transcript-miner: IP-Block-Zähler in Run-Summary + sichtbare Meldung bei YouTube-Block (Run-Status)
-- mcp-transcript-miner: fix _strip_frontmatter indentation regression
-- transcript-miner: Summary-Regeneration bei Topic-Mismatch + Index filtert auf youtube.channels
-- mcp-transcript-miner: auto-create Knowledge Collection option + besser benannte Upload-Dateien
-- docs: knowledge_ids.json.example aktualisiert (ai_knowledge, investing, investing_test)
-- mcp-transcript-miner: fix missing requests import in sync.topic
-- ops: systemd Timer für investing-Run alle 3h (Auto-Sync nach Run)
-- mcp-transcript-miner: optionaler Auto-Sync nach Run-Ende (OPEN_WEBUI_AUTO_SYNC_AFTER_RUN)
-- mcp-transcript-miner: runs.start löst config_id über aliases aus configs.list auf
-- scripts: openwebui_apply_tool_imports lädt .env automatisch für OPEN_WEBUI_API_KEY
-- mcp-transcript-miner: Tool-Docs empfehlen summary statt log_path/log_tail in Antworten
-- mcp-transcript-miner: youtube-transcript-api auf 1.2.3 aktualisiert (proxies Modul vorhanden)
-- mcp-transcript-miner: runs.start/runs.status liefern `summary` (kurzer Klartext)
-- mcp-transcript-miner: configs.list liefert display_name/aliases; Tool-Docs raten zu configs.list vor runs.start
-- ops: Webshare als funktionierende Mitigation gegen YouTube 429 bestätigt
-- docs: Knowledge-Name = Topic als No-Fuss Workflow dokumentiert
-- docs: Runbook für YouTube Transcript 429 (Tests + Mitigation) ergänzt
-- mcp-transcript-miner: Knowledge-ID Mapping optional; Sync löst Knowledge-ID per Name=Topic über OWUI API auf
-- docs: Topic `stocks_crypto` überall auf `investing` umbenannt (Config/Template/Beispiele/Runbooks)
-- backup: Output-Root Default auf `/home/wasti/ai_stack_data/transcript-miner/output` vereinheitlicht (Runbook + systemd + Scripts) + Hinweis zu root-owned Volume-Backups ergänzt
-- docs: YouTube 429 als TODO erfasst (Runbook/Tests fuer stabile Fetch-Strategie)
-- docs: YouTube 429 Einordnung/Workarounds/Alternativen im Block-Report ergaenzt
-- docs: Report zum aktuellen YouTube Transcript Block (HTTP 429)
-- transcript-miner: Downloader/Tools auf youtube-transcript-api v1 angepasst (list() API)
-- transcript-miner: Proxy-Config (Webshare/Generic) reaktiviert + Env-Substitution fuer Proxy-Credentials
-- transcript-miner: Globaler Proxy-Default via config_global.yaml + .config.env; Standard-User-Agent gesetzt
-- transcript-miner: Tool `tools/youtube_block_probe.py` fuer systematische Rate-Limit Tests
-- docs: Watchdog-Schwellwerte auf Intel N150 Kontext ergaenzt
-- docs: Watchdog-Plan erweitert (PSI/Memory/Inodes/Schwellwerte/Trigger-Logik)
-- watchdog: Temp-Schutz (>=60C bei 2 Messungen) stoppt konfigurierbare Container
-- watchdog: `--once` CLI fuer sofortige Messung via stdout
-- watchdog: Container-Name explizit auf `watchdog` gesetzt (abweichend von Standard-Compose-Naming)
-- watchdog: Container fuer Host-Monitoring (CPU/Temperatur/Disk + Docker-Hygiene)
-- docs: Watchdog-Plan fuer CPU/Temperatur/Disk Monitoring (`docs/plan_watchdog_monitoring.md`)
-- transcript-miner: Tool ergänzt zur Reproduktion von Cookie-Load/Transcript-Request Fehlern (`tools/repro_cookie_load.py`)
-- repo: `youtube_cookies.txt` gitignored (lokale Cookie-Datei für YouTube)
-- transcript-miner: Fehler-History als JSONL unter `output/data/diagnostics/errors.jsonl` (append-only, ERROR+ aus der Pipeline)
-- mcp-transcript-miner: Host-Data-Dir in Container gemountet, damit `output.global` Pfade (z. B. Fehler-History) persistent bleiben
-- transcript-miner: Cookie-freie Rate-Limit-Strategie in `config_investing.yaml`/`config_ai_knowledge.yaml` + LLM-Concurrency=1; `config_wsl_optimized.yaml` mit konservativen (WSL/VPN) Delays ohne Cookies
-- transcript-miner: README verweist auf cookie-freies WSL-Profil als Block-Mitigation
-- transcript-miner: docs/config.md verweist auf cookie-freies WSL-Profil
-- transcript-miner: docs/README.md listet cookie-freies WSL-Profil als Beispiel-Config
-- transcript-miner: docs/README.md ergänzt Hinweis zu konservativen Delays im WSL-Profil
-- transcript-miner: docs/plans/ip_block_solution.md auf cookie-freien Default + WSL-Profil aktualisiert
-- ai_stack: `config/knowledge_ids.json` auf aktuelle Open WebUI Knowledge-IDs angepasst
-- docs: Reindex-Runbook für Open WebUI Knowledge ohne Tool-Abhängigkeit präzisiert
-- scripts: `check_tm_run_status.sh` zur Run-Diagnose (Status + Cookie-Check)
-- TranscriptMiner: LLM-Validator erzwingt Macro/Crypto Tag-Taxonomie + Evidence-Rollen + Deep-Dive-Kriterium für `stocks_covered`
-- TranscriptMiner: Logging-Setup robust gegen read-only Repo-Mounts (kein hardes `mkdir <PROJECT_ROOT>/logs`, wenn `logging.file` gesetzt ist)
-- Secrets/Env: repo-local `.env` (secrets-only) + `.config.env`/`<service>/.config.env` (non-secrets), alles gitignored (keine Werte in Git)
-- ai_stack: Smoke-Test Runbook + Script ergänzt (`docs/runbook_smoke_test.md`, `scripts/smoke_test_ai_stack.sh`)
-- Naming/Compose: SSOT Naming v2 umgesetzt (Network bleibt `ai-stack`; Stacks `owui|tm|context6|qdrant`, Volumes `owui-data|tm-data|context6-{data,cache}|qdrant-data|emb-bench-cache`, Images `tm:latest`, `context6:latest`)
-- mcp-transcript-miner: `.config.env.example` bereinigt (Knowledge-Mapping optional via `OPEN_WEBUI_KNOWLEDGE_ID_BY_TOPIC_JSON_PATH`; Host-Path-Overrides ergänzt)
-- context6: `sources.create` robuster gemacht (GitHub akzeptiert jetzt auch `config.repo`/`config.url` und normalisiert auf `config.github.repo`)
-- context6: `sources.create` aktualisiert bestehende Sources in-place (idempotent) und liefert zusätzlich `updated` zurück
-- context6: Open WebUI Knowledge Create sendet immer `description` (fix für HTTP 422 bei Open WebUI 0.7.2)
-- context6: Open WebUI Knowledge UX verbessert: neue Tools `sync.prepare`, `owui.knowledge.list`, `owui.knowledge.create` + `sync.start` unterstützt `knowledge_name`/`create_knowledge_if_missing` und `sync.status` liefert `knowledge_files_count` (best-effort)
-- context6: Open WebUI Upload-Filenames sind jetzt sprechend (aus `canonical_path`) + Kurz-Hash statt nur `doc_id`
-- context6: Open WebUI Knowledge `list` Response-Shape `{items:[...]}` unterstützt (damit `sync.prepare` / `owui.knowledge.list` nicht leer bleibt)
-- Secrets: Redaction helper ergänzt (`scripts/redact_secrets_output.sh`) + Doku/Skill ergänzt „kein ungefiltertes `docker compose ... config` teilen“
-- context6: Qdrant/OpenRouter Embeddings entfernt; Indexing erfolgt via Upload in Open WebUI Knowledge (Open WebUI übernimmt Processing/Embeddings)
-- Projekt-Skills ergänzt: `skills/` (Codex Workflows für Compose-Validation, Secrets-Policy, Tool-Imports, Backup/Restore, etc.)
-- skills: `codex-mcp-self-config` ergänzt (Codex MCP Server in `.codex/config.toml` upserten + Projekt-Trust in `~/.codex/config.toml`)
-- Open WebUI Stack ergänzt: Compose + Doku, Image-Tag gepinnt (0.7.2), localhost-only Port `127.0.0.1:3000`
-- Open WebUI: Tailscale Serve Pfad-Setup für `/owui` inkl. Asset/API-Pfade dokumentiert
-- Open WebUI External Tools: Import-JSON für Context7 MCP ergänzt (`open-webui/tool-imports/tool_import_context7.json`)
-- Open WebUI Indexer in **Transcript Miner** integriert (ein Tool in Open WebUI): `mcp-transcript-miner/` (`POST /index/transcript`, `POST /sync/topic/{topic}`)
-- TranscriptMiner Summaries vereinheitlicht: pro Video `*.summary.md` (kein `*.summary.json` mehr)
-- mcp-owui-connector: Knowledge-Search Tool ergänzt (`owui.knowledge.search`)
-- Cleanup: redundante Stacks entfernt (kein separates `tool-owui-sync/`, kein `n8n/` im Repo)
-- Workflow-Zielbild dokumentiert: Open WebUI Tool „hole die neuesten videos“ → TranscriptMiner → Knowledge (`docs/workflow_openwebui_hole_neueste_videos.md`)
-- PRD v0 ergänzt: TranscriptMiner Sync Tool für Open WebUI (`docs/prd-tool-owui-transcript-miner-sync.md`)
-- Doku-Netzwerk via `docs/README.md` eingeführt
-- VPN access: Empfehlung/Runbook für Tailscale Serve (Tailnet-HTTPS vor localhost-only Services)
-- Tool-Server ergänzt (FastAPI): `mcp-transcript-miner/` (YouTube Transcript HTTP Tool + Runs + Indexing)
-- PRD ergänzt: `mcp-transcript-miner/PRD.md`
-- Policy ergänzt (Docs): Secrets & Environment Variables (SSOT + Least Privilege)
-- Runbook ergänzt (Docs): `.env` (secrets) + `.config.env`/`<service>/.config.env` (config) (inkl. Rechte/Start-Kommandos)
-- Secrets-Hygiene: versehentliche Repo-`.env` entfernt; Compose nutzt nur noch explizite `--env-file` Secrets
-- Backup/Restore Runbook + Scripts ergänzt (`docs/runbook_backup_restore.md`, `scripts/backup_*`)
-- PRD ergänzt: Embedding Benchmark Suite (MRL Truncation + Local CPU vs OpenRouter Qwen3) (`docs/prd_embedding_benchmark_suite_mrl_local_vs_openrouter_qwen3.md`)
-- Tool ergänzt: Embedding Benchmark Suite (Docker-first) unter `emb-bench/`
-- PRD ergänzt: context6 (PoC/Prototype Working Draft) (`docs/prd_context6_poc_working_draft.md`)
-- PoC implementiert: context6 MCP Server unter `mcp-context6/` (MCP `/mcp`, sources + sync + search/get)
-- Transcript Miner Tool: MCP Streamable HTTP Endpoint (`POST /mcp`) + Import JSON (`open-webui/tool-imports/tool_import_transcript_miner_mcp.json`)
-- emb-bench: Terminal Runner Script (`scripts/run_emb_bench.sh`)
-- Qdrant Stack ergänzt: `qdrant/docker-compose.yml` (localhost-only `127.0.0.1:6333`)
-- Qdrant Policy: Indexing-Schema für Collections/IDs/Payload (`docs/policy_qdrant_indexing.md`)
-- Qdrant Compose: fehlerhaften Healthcheck entfernt (Image hat kein `python`/`curl`/`wget`; Host-Check via `curl /readyz`)
-- Agents: „recherchiere“ = Context7-first Regel ergänzt (`AGENTS.md`)
-- Indexing Notes: RooCode Scope-Steuerung via `.rooignore`/`.gitignore` dokumentiert + Template ergänzt (`docs/policy_qdrant_indexing.md`, `.rooignore.example`)
-- Naming: MCP Server Ordner auf `mcp-*` umgestellt (`mcp-transcript-miner/`, `mcp-context6/`) + Tool-Imports/Docs aktualisiert
-- Open WebUI: Tool-Imports zentralisiert (`open-webui/tool-imports/`) + Admin-API Script zum Setzen der Tool-Server ergänzt (`scripts/openwebui_apply_tool_imports.sh`)
-- Open WebUI Tool Imports: `config: {}` ergänzt, damit `/api/v1/configs/tool_servers` nicht mit Response-Validation `500` crasht (Open WebUI 0.7.x)
+All notable user-/operator-relevant changes are documented in this file.
+This project follows a Keep a Changelog style.
+
+## [Unreleased]
+### Added
+- `INDEX.md` as root navigation entrypoint.
+- `docs/adr/` decision-tracking model introduced for documentation strategy.
+
+### Changed
+- Main documentation strategy consolidated toward minimal, non-redundant root docs.
+- `HANDOFF.md` reduced to a strict snapshot format (state/decisions/next steps/risks).
+- `TODO.md` reduced to active tasks only.
+
+### Removed
+- `AGENTDIARY.md` removed in favor of Git + ADR + changelog.
+
+## [2026-02-18]
+### Added
+- Finance Fourier analysis workflow:
+  - `scripts/finance_fourier_analysis.py`
+  - `docs/runbook_finance_fourier.md`
+- Context-engineering framework docs:
+  - `docs/framework_context_engineering_5plus2.md`
+  - `goals/build_app.md`
+- Reset-safe handoff baseline:
+  - `HANDOFF.md`
+
+### Changed
+- Open WebUI image baseline updated to `0.8.3`.
+- Agent process hardened for reset-resilient handoff checks.
