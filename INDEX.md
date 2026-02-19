@@ -21,7 +21,7 @@ Purpose: Navigation-only entrypoint.
 - `docs/runbooks/runbook_secrets_env_files.md` - Secrets/config env handling
 - `docs/runbooks/runbook_backup_restore.md` - Backup/restore
 - `docs/runbooks/runbook_smoke_test.md` - Smoke-test flow
-- `docs/policies/policy_secrets_environment_variables_ai_stack.md` - env/secrets policy
+- `docs/policies/policy_secrets_env.md` - env/secrets policy
 - `docs/plans/` - PRDs and planning docs
 - `docs/archive/` - historical snapshots and deprecated drafts
 

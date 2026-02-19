@@ -16,7 +16,7 @@ description: Enforce ai_stack env policy (repo-local `.env` = secrets-only; `.co
 
 If it fails:
 - Fix permissions (should be `600`) and required keys.
-- Reference: `docs/policies/policy_secrets_environment_variables_ai_stack.md:1`
+- Reference: `docs/policies/policy_secrets_env.md:1`
 
 ## Safe debugging (avoid leaks)
 

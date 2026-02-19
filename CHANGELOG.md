@@ -38,6 +38,7 @@ This project follows a Keep a Changelog style.
 - Root `MEMORY.md` was refactored to a strict 5-block, status-first structure; historical timeline content moved to `docs/memory/daily/`.
 - Episodic memory location standardized to `docs/memory/daily/` (replacing `docs/archive/memory-daily/`) for cleaner active-memory routing.
 - `fourier-cycles` UI charts now use mouse-wheel zoom on the X-axis only; Y-axis auto-scales dynamically to the visible window for tighter readability.
+- Secrets policy filename shortened to `docs/policies/policy_secrets_env.md` and root references updated.
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.

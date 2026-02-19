@@ -260,7 +260,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `watchdog/` — Monitoring-Watchdog (CPU/Temperatur/Disk + Docker-Hygiene)
 
 ## Security (Kurz)
-- Secrets liegen in `.env` (gitignored, secrets-only). Non-Secrets liegen in `.config.env` + `<service>/.config.env` (gitignored). Policy: `docs/policies/policy_secrets_environment_variables_ai_stack.md:1`.
+- Secrets liegen in `.env` (gitignored, secrets-only). Non-Secrets liegen in `.config.env` + `<service>/.config.env` (gitignored). Policy: `docs/policies/policy_secrets_env.md:1`.
 
 ## Nicht-Ziele (Phase 1)
 - Kein Reverse Proxy / kein öffentliches TLS-Setup / keine öffentliche Exponierung ins Internet
