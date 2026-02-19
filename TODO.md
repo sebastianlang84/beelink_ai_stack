@@ -9,19 +9,12 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 
 ## P1 (Next)
 - [ ] **Fourier analysis deepening (FRED + Yahoo)**
-  - Docker service scaffold landed: `fourier-cycles/` (batch run + rolling stability plots + output artifacts).
-  - Smoke run passed on 2026-02-18 UTC (`success=4`, `failure=0`) with default basket (`SPY`, `BTC-USD`, `DGS10`, `CPIAUCSL`).
-  - Visual selection policy implemented: default top 3 cycles with stricter presence/power/distance filters + price overlay charts.
   - Define first target basket (symbols/series).
   - Add significance/robustness checks (beyond raw DFT ranking).
   - Document interpretation guardrails for non-forecast use.
 
 - [ ] **Fourier web app (dockerized frontend/backend)**
-  - Planning baseline created: `fourier-cycles/PRD_webapp.md`.
-  - Stack decisions confirmed (React/Vite + Nginx).
-  - Phase A skeleton implemented (UI and API containers running with healthchecks).
-  - Phase B implemented (Interactive UI with charts and stability data table).
-  - Phase C debug workflow implemented (Windows `.bat` tunnel + Chrome debug mode + Linux `chrome-devtools-mcp` runner).
+  - Phase D (optional): add controlled run trigger.
 
 ## P2 (Later)
 - [ ] **Resource checks automation**
