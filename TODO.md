@@ -18,9 +18,10 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 
 - [ ] **Fourier web app (dockerized frontend/backend)**
   - Planning baseline created: `fourier-cycles/PRD_webapp.md`.
-  - Confirm stack decisions (React/Vite + FastAPI), Tailscale mapping mode, MCP DevTools runtime.
-  - Implement Phase A skeleton (separate UI/API containers + health checks).
-  - Add Windows `.bat` workflow for SSH tunnel + browser debug mode (for MCP DevTools use).
+  - Stack decisions confirmed (React/Vite + FastAPI).
+  - Phase A skeleton implemented (UI and API containers running with healthchecks).
+  - Windows `.bat` workflow created (`fourier-cycles/tools/open_fourier_debug.bat`).
+  - Next: Phase B (Read-only UI for runs/series data).
 
 ## P2 (Later)
 - [ ] **Resource checks automation**

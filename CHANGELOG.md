@@ -14,6 +14,7 @@ This project follows a Keep a Changelog style.
 - New service `fourier-cycles/` with Dockerized Yahoo+FRED cycle extraction, rolling stability checks, and PNG artifact generation.
 - `fourier-cycles` now writes a dedicated `price.png` per series (raw level/price chart) alongside spectral plots.
 - `fourier-cycles/PRD_webapp.md` planning baseline for a dockerized frontend/backend web app, Tailscale access, and Windows SSH-tunnel debug workflow.
+- `fourier-cycles-api` and `fourier-cycles-ui` Docker Compose skeleton implemented (Phase A) along with `open_fourier_debug.bat` connection script.
 
 ### Changed
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.

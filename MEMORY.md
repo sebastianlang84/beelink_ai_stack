@@ -23,6 +23,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - `fourier-cycles` cycle selection now defaults to top 3 stable cycles (presence/power thresholds + minimum period distance), with new charts: `price_cycle_overlay.png` and `cycle_components.png`.
 - Validation run on 2026-02-18 UTC for `^GSPC` succeeded (`success=1`, `failure=0`); outputs include new overlay/component charts.
 - Web app planning started in `fourier-cycles/PRD_webapp.md` (dockerized FE/BE split, Tailscale access strategy, Windows `.bat` SSH tunnel + browser debug workflow for MCP DevTools).
+- Web app Phase A skeleton completed on 2026-02-19: FastAPI backend and Vite/React frontend running in Docker Compose with healthchecks.
 - Root continuity model was migrated on 2026-02-19 from `HANDOFF.md` to `MEMORY.md` (snapshot + long-term memory unified).
 - Local unstaged user change exists in `scripts/backup_all.sh` and is intentionally untouched.
 - Living Docs updated for Fourier service bootstrap: `README.md`, `TODO.md`, `CHANGELOG.md`, `INDEX.md`.
@@ -50,7 +51,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 ## Next Steps
 1. Continue P1 Fourier deepening: define production basket and tune stability thresholds from first successful run outputs.
 2. Add bounded retries/backoff for Yahoo/FRED fetch path.
-3. Decide and implement Fourier web app Phase A (stack confirmation + FE/BE container skeleton).
+3. Continue Fourier web app Phase B (Read-only UI for run lists and charting).
 4. OpenClaw integration remains intentionally deferred for now.
 
 ## Known Risks / Blockers
