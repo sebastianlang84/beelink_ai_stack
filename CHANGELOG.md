@@ -19,6 +19,8 @@ This project follows a Keep a Changelog style.
 - Windows debug helper `fourier-cycles/tools/open_fourier_debug.bat` for Chrome debug mode + SSH local/reverse tunneling to Linux.
 - Linux helper `fourier-cycles/tools/run_chrome_devtools_mcp.sh` to run `chrome-devtools-mcp` against tunneled browser endpoint (`127.0.0.1:9223`).
 - ADR `docs/adr/20260219-fourier-debug-devtools-mcp-tunnel.md` documenting the chosen MCP DevTools runtime and tunnel convention.
+- `docs/archive/memory-daily/2026-02-20.md` as first episodic memory archive entry after slimming root continuity memory.
+- `scripts/check_memory_hygiene.sh` for lightweight structure/size drift checks on `MEMORY.md` (warn-first).
 
 ### Changed
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.
@@ -32,6 +34,8 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles` default host output path moved into workspace (`/home/wasti/ai_stack/fourier-cycles/output`).
 - `fourier-cycles` output selection now defaults to top 3 stable cycles using stricter presence/power thresholds and minimum period-distance filtering.
 - Script cleanup: removed obsolete shell helpers `scripts/secrets_env_doctor.sh` (deprecated) and `scripts/purge_all_summaries_everywhere.sh` (unused).
+- Memory routing/hygiene policy tightened across root docs: `AGENTS.md` now defines mandatory routing targets and precedence; `README.md` and `INDEX.md` include a concise routing map.
+- Root `MEMORY.md` was refactored to a strict 5-block, status-first structure; historical timeline content moved to `docs/archive/memory-daily/`.
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.

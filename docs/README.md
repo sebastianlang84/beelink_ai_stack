@@ -11,6 +11,7 @@ Primary repo navigation starts at `INDEX.md`.
 
 ## Archive
 - `docs/archive/` - dated snapshots, historic reports, and superseded drafts
+- `docs/archive/memory-daily/` - episodic memory timeline entries moved out of root `MEMORY.md`
 
 ## Root Main Docs
 - `INDEX.md` - root navigation

@@ -10,6 +10,12 @@ Purpose: Navigation-only entrypoint.
 - `CHANGELOG.md` - Release/user-facing changes
 - `docs/adr/` - Architecture decision records
 
+## Memory Routing
+- `MEMORY.md` - Status + stable defaults (always-loaded bootstrap)
+- `docs/runbooks/` - Procedural SOP/how-to content
+- `docs/archive/memory-daily/` - Episodic day logs (append-only)
+- `docs/adr/` - Decision rationale (context/tradeoffs/consequences)
+
 ## Documentation
 - `docs/README.md` - Docs catalog (service docs, runbooks, policies)
 - `docs/runbooks/runbook_secrets_env_files.md` - Secrets/config env handling

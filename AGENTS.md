@@ -90,6 +90,23 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
   - konkrete Korrektur in 1-3 Schritten
   - kein blame, keine Ausreden
 
+### 1.3) Memory Routing (verpflichtend)
+- `MEMORY.md` ist immer-geladener Bootstrap und bleibt operativ kompakt (Richtwert: 1 Seite, <= ~200 Zeilen).
+- Beim Task-Abschluss waehlt der Agent genau **ein primaeres Memory-Ziel**:
+  - `MEMORY.md` (semantisch/stabile Defaults + aktueller Status)
+  - `docs/runbooks/*` (prozedural/How-to)
+  - `docs/archive/memory-daily/YYYY-MM-DD.md` (episodisch/zeitgebundener Verlauf)
+  - `docs/adr/*` (echte Entscheidung mit Alternativen/Folgen)
+- Regeln:
+  - Keine episodische Historie in `MEMORY.md` (Status statt Verlauf).
+  - Keine Duplikate in `MEMORY.md` (alte Formulierung ersetzen, nicht addieren).
+  - Keine Secrets in Memory-Dateien.
+- Prioritaet bei Konflikt:
+  1. `AGENTS.md` (Policy)
+  2. `MEMORY.md` (aktueller Stand + Defaults)
+  3. `docs/adr/*` und `docs/runbooks/*` (Details)
+  4. `docs/archive/memory-daily/*` (Verlauf)
+
 ### Pflicht: ADR + Abschluss-Tasks
 - Architektur-/Prozessentscheidungen werden in `docs/adr/` festgehalten (statt Task-Diary).
 - **Pflicht am Ende jeder Aufgabe**:
@@ -155,6 +172,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 ## 2) Repo-Struktur (Stand heute)
 - `INDEX.md` — Reiner Link-Index (Startpunkt fuer Navigation)
 - `MEMORY.md` — Snapshot + Langzeitgedaechtnis fuer den naechsten Context
+- `docs/archive/memory-daily/` — Episodische Tageslogs (append-only Verlauf)
 - `open-webui/` — Open WebUI Service (Docker Compose)
 - `mcp-transcript-miner/` — **Transcript Miner** MCP Server (Streamable HTTP; OpenAPI optional/legacy; Configs/Runs/Outputs + Knowledge Indexing)
 - `transcript-miner/` — TranscriptMiner Pipeline-Engine (Python; Transcripts + Summaries)
