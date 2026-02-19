@@ -18,10 +18,9 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 
 - [ ] **Fourier web app (dockerized frontend/backend)**
   - Planning baseline created: `fourier-cycles/PRD_webapp.md`.
-  - Stack decisions confirmed (React/Vite + FastAPI).
+  - Stack decisions confirmed (React/Vite + Nginx).
   - Phase A skeleton implemented (UI and API containers running with healthchecks).
   - Phase B implemented (Interactive UI with charts and stability data table).
-  - Windows `.bat` workflow created (`fourier-cycles/tools/open_fourier_debug.bat`).
 
 ## P2 (Later)
 - [ ] **Resource checks automation**

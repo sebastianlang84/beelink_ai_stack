@@ -1,246 +1,391 @@
-import { BrowserRouter, Routes, Route, Link, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { LineChart, Table, AlertCircle, Activity, LayoutDashboard } from 'lucide-react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
+import ReactECharts from 'echarts-for-react';
+import Papa from 'papaparse';
 
-interface SeriesData {
-  id: string;
-  source: string;
-  name: string;
+// Base layout structures
+export default function App() {
+  return (
+    <BrowserRouter>
+      <div className="flex h-screen w-screen bg-slate-950 text-slate-200 overflow-hidden font-sans select-none">
+        <Routes>
+          <Route path="/" element={<Dashboard defaultSeries="yahoo-spy" />} />
+          <Route path="/series/:seriesId" element={<Dashboard />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
+  );
 }
 
+// --- Types ---
 interface CycleData {
   period_days: number;
   norm_power: number;
   presence_ratio: number;
   stability_score: number;
+  stable: boolean;
 }
 
 interface SummaryData {
   series: string;
   source: string;
   points: number;
+  timeframe_days: number;
+  stable_cycle_count: number;
   selected_cycles: CycleData[];
 }
 
-function App() {
-  return (
-    <BrowserRouter>
-      <div className="flex h-screen bg-gray-50 font-sans">
-        {/* Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <Activity className="w-6 h-6 text-indigo-600" />
-              Fourier Cycles
-            </h1>
-          </div>
-          <nav className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
-            <Link to="/" className="flex items-center gap-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
-              <LayoutDashboard className="w-5 h-5" />
-              Overview
-            </Link>
-            <div className="pt-4 pb-2">
-              <span className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                Latest Run Series
-              </span>
-            </div>
-            <SeriesNavList />
-          </nav>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 overflow-hidden flex flex-col">
-          <header className="bg-white border-b border-gray-200 px-8 py-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
-            </div>
-          </header>
-          <main className="flex-1 overflow-auto p-8">
-            <Routes>
-              <Route path="/" element={<Overview />} />
-              <Route path="/series/:seriesId" element={<SeriesDetail />} />
-            </Routes>
-          </main>
-        </div>
-      </div>
-    </BrowserRouter>
-  );
+interface PriceDataRow {
+  date: string;
+  value: number;
 }
 
-function SeriesNavList() {
-  const [seriesList, setSeriesList] = useState<SeriesData[]>([]);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetch('/api/runs/latest/series')
-      .then(res => res.json())
-      .then(data => {
-        if (data.series) {
-          setSeriesList(data.series);
-        }
-      })
-      .catch(err => {
-        console.error('Failed to fetch series list', err);
-        setError('Failed to load');
-      });
-  }, []);
-
-  if (error) return <div className="px-3 py-2 text-red-500 text-sm">{error}</div>;
-
-  return (
-    <div className="flex flex-col gap-1">
-      {seriesList.map((s) => (
-        <Link
-          key={s.id}
-          to={`/series/${s.id}`}
-          className="flex items-center gap-3 px-3 py-2 text-gray-600 rounded-lg hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
-        >
-          <LineChart className="w-4 h-4" />
-          <span className="truncate">{s.name} ({s.source})</span>
-        </Link>
-      ))}
-      {seriesList.length === 0 && (
-        <div className="px-3 py-2 text-gray-400 text-sm">No series found</div>
-      )}
-    </div>
-  );
+interface SpectrumDataRow {
+  period_days: number;
+  norm_power: number;
 }
 
-function Overview() {
-  return (
-    <div className="max-w-4xl">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Welcome to Fourier Cycles</h3>
-        <p className="text-gray-600">
-          Select a series from the left sidebar to view the interactive charts and cycle stability metrics.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function SeriesDetail() {
-  const { seriesId } = useParams();
+// --- Main Dashboard Component ---
+function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
+  // Using hardcoded series list as we dropped the API proxying this logic. We could fetch from /data/latest/summary.json globally
+  const [seriesId, setSeriesId] = useState(defaultSeries);
   const [summary, setSummary] = useState<SummaryData | null>(null);
-  const [error, setError] = useState('');
+  const [priceData, setPriceData] = useState<[string, number][]>([]);
+  const [spectrumData, setSpectrumData] = useState<[number, number][]>([]);
+  const [allStableCycles, setAllStableCycles] = useState<CycleData[]>([]);
 
+  // UI State
+  const [selectedCycles, setSelectedCycles] = useState<Set<number>>(new Set());
+  const [isSuperpose, setIsSuperpose] = useState(true);
+
+  // Load static data files
   useEffect(() => {
-    fetch(`/api/runs/latest/series/${seriesId}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Not found');
-        return res.json();
-      })
+    if (!seriesId) return;
+
+    // Reset state on series change
+    setSummary(null);
+    setPriceData([]);
+    setSpectrumData([]);
+    setSelectedCycles(new Set());
+
+    // 1. Fetch Summary
+    fetch(`/assets/data/latest/${seriesId}/summary.json`)
+      .then(res => res.json())
       .then(data => setSummary(data))
-      .catch(err => {
-        console.error(err);
-        setError('Failed to load series details');
-      });
+      .catch(e => console.error("Summary load error:", e));
+
+    // 2. Fetch Price Series CSV
+    Papa.parse<PriceDataRow>(`/assets/data/latest/${seriesId}/series.csv`, {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        // results.data = [{date: "2023-02-21", value: 399.08}, ...]
+        const parsed = results.data.map(r => [r.date, r.value] as [string, number]);
+        setPriceData(parsed);
+      }
+    });
+
+    // 3. Fetch Spectrum CSV
+    Papa.parse<SpectrumDataRow>(`/assets/data/latest/${seriesId}/spectrum.csv`, {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        // periods on X axis, power on Y
+        const parsed = results.data
+          .filter(r => r.period_days <= 365) // Filter out noise for UI clarity
+          .map(r => [r.period_days, r.norm_power] as [number, number])
+          .sort((a, b) => a[0] - b[0]);
+        setSpectrumData(parsed);
+      }
+    });
+
+    // 4. Fetch All Stable Cycles (since summary only has Top K selected cycles)
+    // We want the user to pick from ALL stable ones.
+    Papa.parse<CycleData>(`/assets/data/latest/${seriesId}/cycles.csv`, {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const stableOnly = results.data.filter(c => c.stable === true || String(c.stable).toLowerCase() === 'true');
+        // Sort by period descending
+        stableOnly.sort((a, b) => b.period_days - a.period_days);
+        setAllStableCycles(stableOnly);
+      }
+    });
+
   }, [seriesId]);
 
-  if (error) {
-    return (
-      <div className="bg-red-50 text-red-700 p-4 rounded-lg flex items-center gap-2">
-        <AlertCircle className="w-5 h-5" />
-        {error}
-      </div>
-    );
-  }
+  // Toggle cycle selection
+  const toggleCycle = (period: number) => {
+    const newSet = new Set(selectedCycles);
+    if (newSet.has(period)) newSet.delete(period);
+    else newSet.add(period);
+    setSelectedCycles(newSet);
+  };
 
-  if (!summary) return <div className="text-gray-500">Loading...</div>;
+  // Generate color palette for cycles to keep them distinct
+  const cycleColors = ["#f87171", "#34d399", "#60a5fa", "#fbbf24", "#a78bfa", "#f472b6", "#2dd4bf", "#e879f9"];
+  const getCycleColor = (index: number) => cycleColors[index % cycleColors.length];
 
-  const cycles = summary.selected_cycles || [];
+
+  // --- ECharts Options Generation ---
+
+  const priceChartOption = useMemo(() => {
+    if (!priceData.length) return {};
+
+    const series: any[] = [
+      {
+        name: 'Price',
+        type: 'line',
+        data: priceData,
+        showSymbol: false,
+        lineStyle: { color: '#64748b', width: 2 },
+        itemStyle: { color: '#64748b' }
+      }
+    ];
+
+    // TODO: In Phase C Option A, we would load the 'waves.csv' here and overlay the actual vectors.
+    // For now, since we haven't updated the Python backend to export waves.csv yet, 
+    // we will just draw the layout, and I will simulate a flat line overlay to prove the UI works.
+
+    // Simulate overlay reading 
+    if (selectedCycles.size > 0) {
+      if (isSuperpose) {
+        series.push({
+          name: 'Superposition (Mock)',
+          type: 'line',
+          data: priceData.map(p => [p[0], p[1] * 1.01]), // Mock shift
+          showSymbol: false,
+          lineStyle: { width: 2, color: '#fbbf24', type: 'dashed' },
+          itemStyle: { color: '#fbbf24' },
+          yAxisIndex: 1
+        });
+      } else {
+        let cIdx = 0;
+        allStableCycles.forEach(cycle => {
+          if (selectedCycles.has(cycle.period_days)) {
+            series.push({
+              name: `Cycle ${cycle.period_days.toFixed(1)}d`,
+              type: 'line',
+              data: priceData.map((p, i) => [p[0], priceData[0][1] + Math.sin(i * (Math.PI * 2 / cycle.period_days)) * priceData[0][1] * cycle.norm_power * 10]), // Mock wave visually mapped to price
+              showSymbol: false,
+              lineStyle: { width: 1.5, color: getCycleColor(cIdx), opacity: 0.8 },
+              yAxisIndex: 1
+            });
+            cIdx++;
+          }
+        });
+      }
+    }
+
+    return {
+      tooltip: { trigger: 'axis', backgroundColor: '#1e293b', borderColor: '#334155', textStyle: { color: '#fff' } },
+      grid: { top: 40, right: 40, bottom: 20, left: 60, containLabel: false },
+      xAxis: { type: 'time', splitLine: { show: true, lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
+      yAxis: [
+        { type: 'value', min: 'dataMin', max: 'dataMax', splitLine: { show: true, lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
+        { type: 'value', splitLine: { show: false }, axisLabel: { show: false } } // Secondary axis for overlays so they don't break price scale
+      ],
+      dataZoom: [{ type: 'inside' }],
+      series: series,
+      backgroundColor: 'transparent'
+    };
+  }, [priceData, selectedCycles, isSuperpose, allStableCycles]);
+
+
+  const spectrumChartOption = useMemo(() => {
+    if (!spectrumData.length) return {};
+
+    // Generate scatter points for the peaks highlighting
+    const peakHighlights = allStableCycles
+      .filter(c => selectedCycles.has(c.period_days))
+      .map(c => [c.period_days, c.norm_power]);
+
+    return {
+      tooltip: { trigger: 'axis', backgroundColor: '#1e293b', borderColor: '#334155', textStyle: { color: '#fff' } },
+      grid: { top: 20, right: 40, bottom: 40, left: 60, containLabel: false },
+      xAxis: {
+        type: 'value',
+        name: 'Period (Days)',
+        nameLocation: 'middle',
+        nameGap: 30,
+        splitLine: { show: true, lineStyle: { color: '#1e293b' } },
+        axisLabel: { color: '#94a3b8' }
+      },
+      yAxis: { type: 'value', splitLine: { show: true, lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
+      dataZoom: [{ type: 'inside' }, { type: 'slider', bottom: 0, height: 15, borderColor: 'transparent', handleSize: '100%' }],
+      series: [
+        {
+          name: 'Power',
+          type: 'line',
+          data: spectrumData,
+          showSymbol: false,
+          areaStyle: {
+            color: {
+              type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+              colorStops: [{ offset: 0, color: '#3b82f650' }, { offset: 1, color: '#3b82f605' }]
+            }
+          },
+          lineStyle: { color: '#3b82f6', width: 2 },
+          itemStyle: { color: '#3b82f6' }
+        },
+        {
+          name: 'Selected Peaks',
+          type: 'scatter',
+          data: peakHighlights,
+          symbolSize: 10,
+          itemStyle: { color: '#fbbf24' } // Yellow dots for selected cycles
+        }
+      ],
+      backgroundColor: 'transparent'
+    };
+  }, [spectrumData, selectedCycles, allStableCycles]);
+
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-end">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">{summary.series}</h2>
-          <p className="text-gray-500">{summary.source} &bull; {summary.points} points</p>
+    <div className="flex flex-col w-full h-full p-2 gap-2">
+      {/* Header Minimalist */}
+      <div className="flex justify-between items-center h-12 bg-slate-900 border border-slate-800 rounded px-4 shrink-0 shadow-sm">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold tracking-tight text-white">Fourier Cycles</h1>
+          <span className="text-slate-500 font-mono text-sm">{summary ? `${summary.source.toUpperCase()}:${summary.series}` : 'Loading...'}</span>
+        </div>
+        <div className="flex gap-2">
+          {/* Mock Series Switcher for Demo */}
+          <select
+            className="bg-slate-800 border-none text-slate-200 text-sm rounded outline-none px-2 py-1 cursor-pointer focus:ring-1 focus:ring-slate-600"
+            value={seriesId}
+            onChange={(e) => setSeriesId(e.target.value)}
+          >
+            <option value="yahoo-spy">S&P 500 (SPY)</option>
+            <option value="yahoo-btc-usd">Bitcoin (BTC)</option>
+            <option value="fred-dgs10">10Y Treasury (DGS10)</option>
+          </select>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Left Side: Charts */}
-        <div className="xl:col-span-2 flex flex-col gap-6">
-          <ChartCard title="Price & Cycle Overlay" src={`/data/latest/${seriesId}/price_cycle_overlay.png`} />
-          <ChartCard title="Frequency Spectrum" src={`/data/latest/${seriesId}/spectrum.png`} />
-          <div className="grid grid-cols-2 gap-6">
-            <ChartCard title="Cycle Components" src={`/data/latest/${seriesId}/cycle_components.png`} />
-            <ChartCard title="Stability" src={`/data/latest/${seriesId}/stability.png`} />
+      {/* Main Grid View */}
+      <div className="flex flex-1 overflow-hidden gap-2">
+
+        {/* Left Column: Charts */}
+        <div className="flex flex-col w-[70%] h-full gap-2">
+          {/* Top: Price */}
+          <div className="h-[65%] w-full bg-slate-900 border border-slate-800 rounded flex flex-col relative shadow-sm">
+            <div className="absolute top-2 left-4 z-10 font-medium text-slate-400 text-sm">Price Extract & Overlays</div>
+            <div className="flex-1 w-full h-full p-2 pt-6">
+              {priceData.length > 0 ? (
+                <ReactECharts option={priceChartOption} style={{ height: '100%', width: '100%' }} notMerge={true} />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-600">Loading chart data...</div>
+              )}
+            </div>
           </div>
-          <ChartCard title="Raw Price" src={`/data/latest/${seriesId}/price.png`} />
-          <ChartCard title="Signal Reconstruction" src={`/data/latest/${seriesId}/reconstruction.png`} />
+
+          {/* Bottom: Spectrum */}
+          <div className="h-[35%] w-full bg-slate-900 border border-slate-800 rounded flex flex-col relative shadow-sm">
+            <div className="absolute top-2 left-4 z-10 font-medium text-slate-400 text-sm">Frequency Spectrum</div>
+            <div className="flex-1 w-full h-full p-2 pt-6">
+              {spectrumData.length > 0 ? (
+                <ReactECharts option={spectrumChartOption} style={{ height: '100%', width: '100%' }} notMerge={true} />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-600">Loading spectrum...</div>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Right Side: Data Table */}
-        <div className="xl:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-0">
-            <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-              <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                <Table className="w-5 h-5" />
-                Selected Cycles
-              </h3>
+        {/* Right Column: Table & Controls */}
+        <div className="flex flex-col w-[30%] h-full bg-slate-900 border border-slate-800 rounded shadow-sm overflow-hidden">
+
+          <div className="p-3 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+            <h2 className="font-semibold text-slate-300">Extracted Cycles</h2>
+
+            {/* Global Toggle Controls */}
+            <div className="flex bg-slate-950 rounded p-1 border border-slate-800">
+              <button
+                onClick={() => setIsSuperpose(true)}
+                className={`px-3 py-1 text-xs rounded transition-colors ${isSuperpose ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
+              >
+                Superpose
+              </button>
+              <button
+                onClick={() => setIsSuperpose(false)}
+                className={`px-3 py-1 text-xs rounded transition-colors ${!isSuperpose ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'}`}
+              >
+                Individual
+              </button>
             </div>
-            <div className="p-0">
-              <table className="w-full text-left text-sm text-gray-600">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 font-medium">Period (Days)</th>
-                    <th className="px-4 py-3 font-medium">Power</th>
-                    <th className="px-4 py-3 font-medium">Presence</th>
-                    <th className="px-4 py-3 font-medium">Stability</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {cycles.map((cycle, i) => (
-                    <tr key={i} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 font-semibold text-gray-900">
-                        {cycle.period_days.toFixed(1)}
+          </div>
+
+          {/* Table Scrollable Container */}
+          <div className="flex-1 overflow-y-auto">
+            <table className="w-full text-left text-sm text-slate-400 border-collapse">
+              <thead className="sticky top-0 bg-slate-900 shadow-md z-10 outline outline-1 outline-slate-800">
+                <tr>
+                  <th className="px-3 py-2 font-medium w-8 text-center">+/-</th>
+                  <th className="px-3 py-2 font-medium">Period</th>
+                  <th className="px-3 py-2 font-medium">Power</th>
+                  <th className="px-3 py-2 font-medium">Presence</th>
+                  <th className="px-3 py-2 font-medium">Stability</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                {allStableCycles.map((cycle, i) => {
+                  const isSelected = selectedCycles.has(cycle.period_days);
+                  const drawColor = isSuperpose ? '#fbbf24' : getCycleColor(i);
+                  return (
+                    <tr
+                      key={i}
+                      className={`hover:bg-slate-800/50 transition-colors cursor-pointer ${isSelected ? 'bg-slate-800/30' : ''}`}
+                      onClick={() => toggleCycle(cycle.period_days)}
+                    >
+                      <td className="px-3 py-2 text-center">
+                        <input
+                          type="checkbox"
+                          className="accent-indigo-500 w-4 h-4 cursor-pointer"
+                          checked={isSelected}
+                          readOnly
+                        />
                       </td>
-                      <td className="px-4 py-3 text-indigo-600 font-mono">
+                      <td className="px-3 py-2 font-semibold text-slate-200 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: isSelected ? drawColor : 'transparent' }}></div>
+                        {cycle.period_days.toFixed(1)}d
+                      </td>
+                      <td className="px-3 py-2 font-mono text-indigo-400">
                         {cycle.norm_power.toFixed(3)}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-2">
                         {(cycle.presence_ratio * 100).toFixed(0)}%
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-2">
                         {cycle.stability_score.toFixed(3)}
                       </td>
                     </tr>
-                  ))}
-                  {cycles.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-gray-400">
-                        No stable cycles found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  )
+                })}
+                {allStableCycles.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-slate-600">
+                      No stable cycles found or still loading.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
+
+          <div className="p-3 border-t border-slate-800 text-xs text-slate-600 text-center bg-slate-900/80">
+            Total stable: {allStableCycles.length} | Selected: {selectedCycles.size}
+          </div>
+
         </div>
+
       </div>
     </div>
   );
 }
-
-function ChartCard({ title, src }: { title: string, src: string }) {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="px-6 py-3 border-b border-gray-100 bg-gray-50/50">
-        <h3 className="font-medium text-gray-700">{title}</h3>
-      </div>
-      <div className="p-4 bg-white flex justify-center">
-        <img
-          src={src}
-          alt={title}
-          className="max-w-full h-auto rounded object-contain max-h-[500px]"
-          loading="lazy"
-        />
-      </div>
-    </div>
-  );
-}
-
-export default App;

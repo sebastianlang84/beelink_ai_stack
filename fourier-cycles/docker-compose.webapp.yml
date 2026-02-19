@@ -1,43 +1,24 @@
 version: '3.8'
 
 services:
-  fourier-cycles-api:
-    build:
-      context: ./api
-    image: fourier-cycles-api:latest
-    container_name: fourier-cycles-api
-    restart: unless-stopped
-    networks:
-      - ai-stack-fourier
-    volumes:
-      - ${FOURIER_OUTPUT_DIR_HOST:-./output}:/app/output:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    # No exposed ports to host, only via UI nginx proxy or explicitly if configured
-
   fourier-cycles-ui:
     build:
       context: ./ui
-    image: fourier-cycles-ui:latest
+      dockerfile: Dockerfile
     container_name: fourier-cycles-ui
     restart: unless-stopped
-    networks:
-      - ai-stack-fourier
-    volumes:
-      - ${FOURIER_OUTPUT_DIR_HOST:-./output}:/output:ro
     ports:
       - "${FOURIER_UI_HOST_BIND_ADDRESS:-127.0.0.1}:${FOURIER_UI_HOST_PORT:-3010}:80"
-    depends_on:
-      fourier-cycles-api:
-        condition: service_healthy
+    volumes:
+      - ${FOURIER_OUTPUT_DIR_HOST:-./output}:/data:ro
+    networks:
+      - ai-stack-fourier
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/healthz"]
+      test: [ "CMD", "wget", "-qO-", "http://localhost:80/healthz" ]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 10s
 
 networks:
   ai-stack-fourier:
