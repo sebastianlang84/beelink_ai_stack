@@ -31,6 +31,7 @@ This project follows a Keep a Changelog style.
 - Root docs (`README.md`, `INDEX.md`, `TODO.md`) now include the `fourier-cycles` service entrypoint and operator quickstart.
 - `fourier-cycles` default host output path moved into workspace (`/home/wasti/ai_stack/fourier-cycles/output`).
 - `fourier-cycles` output selection now defaults to top 3 stable cycles using stricter presence/power thresholds and minimum period-distance filtering.
+- Script cleanup: removed obsolete shell helpers `scripts/secrets_env_doctor.sh` (deprecated) and `scripts/purge_all_summaries_everywhere.sh` (unused).
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.

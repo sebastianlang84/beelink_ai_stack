@@ -38,6 +38,8 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - Living Docs updated for webapp-planning task: `TODO.md`, `CHANGELOG.md`; `README.md` updated with PRD link.
 - Living Docs updated for continuity-memory migration task: `README.md`, `CHANGELOG.md`; `TODO.md` reviewed (no change needed).
 - Living Docs updated for Fourier browser-debug workflow task: `README.md`, `fourier-cycles/README.md`, `TODO.md`, `CHANGELOG.md`.
+- Shell cleanup executed on 2026-02-19: removed obsolete scripts `scripts/secrets_env_doctor.sh` (deprecated stub) and `scripts/purge_all_summaries_everywhere.sh` (unused/unreferenced).
+- Living Docs check for shell-cleanup task: `README.md` and `TODO.md` reviewed (no change needed); `CHANGELOG.md` updated.
 
 ## Long-Term Memory
 - User preference finalized on 2026-02-19: use `MEMORY.md` as the single reset-resilient continuity file instead of `HANDOFF.md`.
