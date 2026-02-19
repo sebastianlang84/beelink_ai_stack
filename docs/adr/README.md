@@ -15,3 +15,5 @@ Purpose: Decision records for this repository.
 ## Current ADRs
 - `docs/adr/20260218-main-documentation-strategy.md`
 - `docs/adr/20260218-qdrant-indexing-boundaries.md`
+- `docs/adr/20260219-memory-md-replaces-handoff.md`
+- `docs/adr/20260219-fourier-debug-devtools-mcp-tunnel.md`

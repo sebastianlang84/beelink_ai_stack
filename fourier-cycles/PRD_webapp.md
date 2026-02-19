@@ -173,3 +173,4 @@ Phase D - Optional Run Trigger
 2. API Framework final: FastAPI (vorgeschlagen) bestaetigen.
 3. Tailscale Mapping: Pfad vs eigener Hostname.
 4. MCP DevTools konkrete Runtime/Port-Konvention.
+   - Resolved 2026-02-19: `chrome-devtools-mcp` (pinned `0.17.3`), Windows `9222` -> Linux reverse tunnel `9223` (ADR: `docs/adr/20260219-fourier-debug-devtools-mcp-tunnel.md`).

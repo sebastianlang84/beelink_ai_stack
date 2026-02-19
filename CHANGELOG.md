@@ -14,8 +14,11 @@ This project follows a Keep a Changelog style.
 - New service `fourier-cycles/` with Dockerized Yahoo+FRED cycle extraction, rolling stability checks, and PNG artifact generation.
 - `fourier-cycles` now writes a dedicated `price.png` per series (raw level/price chart) alongside spectral plots.
 - `fourier-cycles/PRD_webapp.md` planning baseline for a dockerized frontend/backend web app, Tailscale access, and Windows SSH-tunnel debug workflow.
-- `fourier-cycles-api` and `fourier-cycles-ui` Docker Compose skeleton implemented (Phase A) along with `open_fourier_debug.bat` connection script.
-- `fourier-cycles-ui` interactive frontend added (Phase B) to display price/cycle charts and a stability metrics table.
+- `fourier-cycles-ui` Docker Compose deployed. Note: Python API was dropped in favor of static Nginx JSON serving.
+- `fourier-cycles-ui` interactive frontend added (Phase C) using ECharts to display zoomable price/cycle charts and a selectable stability metrics table on a single-screen dark mode dashboard.
+- Windows debug helper `fourier-cycles/tools/open_fourier_debug.bat` for Chrome debug mode + SSH local/reverse tunneling to Linux.
+- Linux helper `fourier-cycles/tools/run_chrome_devtools_mcp.sh` to run `chrome-devtools-mcp` against tunneled browser endpoint (`127.0.0.1:9223`).
+- ADR `docs/adr/20260219-fourier-debug-devtools-mcp-tunnel.md` documenting the chosen MCP DevTools runtime and tunnel convention.
 
 ### Changed
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.

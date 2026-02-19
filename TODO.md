@@ -21,6 +21,7 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
   - Stack decisions confirmed (React/Vite + Nginx).
   - Phase A skeleton implemented (UI and API containers running with healthchecks).
   - Phase B implemented (Interactive UI with charts and stability data table).
+  - Phase C debug workflow implemented (Windows `.bat` tunnel + Chrome debug mode + Linux `chrome-devtools-mcp` runner).
 
 ## P2 (Later)
 - [ ] **Resource checks automation**

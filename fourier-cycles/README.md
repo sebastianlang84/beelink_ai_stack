@@ -56,3 +56,34 @@ Empfohlen: Ein einfacher OpenClaw-Command mappt Query -> Dateipfad in `latest`.
 ## Web App Planung
 
 - Plan-Dokument: `fourier-cycles/PRD_webapp.md`
+
+## Windows Debug Tunnel + MCP DevTools
+
+Ziel: Browser auf Windows mit Debug-Port starten und den DevTools-Port per SSH Reverse-Tunnel fuer MCP auf Linux bereitstellen.
+
+### 1) Einmalig auf Linux installieren
+
+```bash
+npm install --prefix "$HOME/.local/share/chrome-devtools-mcp" chrome-devtools-mcp@0.17.3
+```
+
+### 2) Windows-Tunnel + Browser starten
+
+- Datei: `fourier-cycles/tools/open_fourier_debug.bat`
+- Start auf Windows (PowerShell oder CMD):
+  - `fourier-cycles\\tools\\open_fourier_debug.bat`
+- Standardwerte:
+  - Linux SSH: `wasti@192.168.0.188:22`
+  - UI Forward: `127.0.0.1:13010` -> Linux `127.0.0.1:3010`
+  - DevTools Reverse: Linux `127.0.0.1:9223` -> Windows Chrome `127.0.0.1:9222`
+
+### 3) MCP DevTools Server auf Linux starten
+
+```bash
+chmod +x fourier-cycles/tools/run_chrome_devtools_mcp.sh
+DEVTOOLS_REMOTE_PORT=9223 ./fourier-cycles/tools/run_chrome_devtools_mcp.sh
+```
+
+Hinweis:
+- Das Batch-Fenster mit dem SSH-Tunnel muss waehrend der Session offen bleiben.
+- Der DevTools-Port bleibt auf beiden Seiten auf `127.0.0.1` gebunden (kein LAN-Expose).

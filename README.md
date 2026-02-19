@@ -197,6 +197,12 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
    - Top-Cycle-Komponenten: `cycle_components.png`
 - Ops/Details: `fourier-cycles/README.md:1`
 
+## Windows Browser Debug + MCP DevTools (Fourier UI)
+- Windows helper: `fourier-cycles/tools/open_fourier_debug.bat`
+- Linux MCP runner: `fourier-cycles/tools/run_chrome_devtools_mcp.sh`
+- Install (Linux, einmalig): `npm install --prefix "$HOME/.local/share/chrome-devtools-mcp" chrome-devtools-mcp@0.17.3`
+- Zielbild: Windows-Chrome Debug-Port wird per SSH Reverse-Tunnel auf Linux (`127.0.0.1:9223`) bereitgestellt; `chrome-devtools-mcp` verbindet sich lokal dagegen.
+
 ## Codex Remote-SSH Auth Guard (DNS)
 - Hintergrund: VS Code Codex Login kann scheitern, wenn Tailscale DNS Override (`accept-dns=true`) auf einen instabilen Resolver zeigt.
 - Check: `./scripts/check_codex_auth_dns.sh`

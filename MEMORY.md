@@ -24,7 +24,9 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - Validation run on 2026-02-18 UTC for `^GSPC` succeeded (`success=1`, `failure=0`); outputs include new overlay/component charts.
 - Web app planning started in `fourier-cycles/PRD_webapp.md` (dockerized FE/BE split, Tailscale access strategy, Windows `.bat` SSH tunnel + browser debug workflow for MCP DevTools).
 - Web app Phase A skeleton completed on 2026-02-19: FastAPI backend and Vite/React frontend running in Docker Compose with healthchecks.
-- Web app Phase B completed on 2026-02-19: Interactive UI with charts and stability data table implemented using TailwindCSS.
+- Web app Phase B & Phase C completed on 2026-02-19: Python API dropped. Interactive ECharts UI (Single Page Darkmode Dashboard) implemented directly fetching static CSV/JSON via Nginx.
+- Browser-Debug tunnel workflow for Fourier UI was implemented on 2026-02-19: Windows helper `fourier-cycles/tools/open_fourier_debug.bat` plus Linux MCP runner `fourier-cycles/tools/run_chrome_devtools_mcp.sh`.
+- `chrome-devtools-mcp` was installed locally on Linux at `$HOME/.local/share/chrome-devtools-mcp` (pinned `0.17.3`) for MCP-based browser debugging via SSH reverse tunnel endpoint `127.0.0.1:9223`.
 - Root continuity model was migrated on 2026-02-19 from `HANDOFF.md` to `MEMORY.md` (snapshot + long-term memory unified).
 - Local unstaged user change exists in `scripts/backup_all.sh` and is intentionally untouched.
 - Living Docs updated for Fourier service bootstrap: `README.md`, `TODO.md`, `CHANGELOG.md`, `INDEX.md`.
@@ -35,6 +37,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - Living Docs updated for top-cycle visualization task: `README.md`, `TODO.md`, `CHANGELOG.md`.
 - Living Docs updated for webapp-planning task: `TODO.md`, `CHANGELOG.md`; `README.md` updated with PRD link.
 - Living Docs updated for continuity-memory migration task: `README.md`, `CHANGELOG.md`; `TODO.md` reviewed (no change needed).
+- Living Docs updated for Fourier browser-debug workflow task: `README.md`, `fourier-cycles/README.md`, `TODO.md`, `CHANGELOG.md`.
 
 ## Long-Term Memory
 - User preference finalized on 2026-02-19: use `MEMORY.md` as the single reset-resilient continuity file instead of `HANDOFF.md`.
@@ -52,7 +55,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 ## Next Steps
 1. Continue P1 Fourier deepening: define production basket and tune stability thresholds from first successful run outputs.
 2. Add bounded retries/backoff for Yahoo/FRED fetch path.
-3. Continue Fourier web app Phase B (Read-only UI for run lists and charting).
+3. Continue Fourier web app Phase D (optional controlled run trigger).
 4. OpenClaw integration remains intentionally deferred for now.
 
 ## Known Risks / Blockers
