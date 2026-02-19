@@ -37,6 +37,7 @@ This project follows a Keep a Changelog style.
 - Memory routing/hygiene policy tightened across root docs: `AGENTS.md` now defines mandatory routing targets and precedence; `README.md` and `INDEX.md` include a concise routing map.
 - Root `MEMORY.md` was refactored to a strict 5-block, status-first structure; historical timeline content moved to `docs/memory/daily/`.
 - Episodic memory location standardized to `docs/memory/daily/` (replacing `docs/archive/memory-daily/`) for cleaner active-memory routing.
+- `fourier-cycles` UI charts now use mouse-wheel zoom on the X-axis only; Y-axis auto-scales dynamically to the visible window for tighter readability.
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.

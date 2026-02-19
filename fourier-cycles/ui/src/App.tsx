@@ -45,6 +45,12 @@ interface SpectrumDataRow {
   norm_power: number;
 }
 
+function paddedAxisRange(value: { min: number; max: number }, isMax: boolean) {
+  const span = value.max - value.min;
+  const padding = span > 0 ? span * 0.03 : Math.max(Math.abs(value.max || 1) * 0.03, 1e-6);
+  return isMax ? value.max + padding : value.min - padding;
+}
+
 // --- Main Dashboard Component ---
 function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
   // Using hardcoded series list as we dropped the API proxying this logic. We could fetch from /data/latest/summary.json globally
@@ -188,10 +194,23 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
       grid: { top: 40, right: 40, bottom: 20, left: 60, containLabel: false },
       xAxis: { type: 'time', splitLine: { show: true, lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
       yAxis: [
-        { type: 'value', min: 'dataMin', max: 'dataMax', splitLine: { show: true, lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
-        { type: 'value', splitLine: { show: false }, axisLabel: { show: false } } // Secondary axis for overlays so they don't break price scale
+        {
+          type: 'value',
+          scale: true,
+          min: (value: { min: number; max: number }) => paddedAxisRange(value, false),
+          max: (value: { min: number; max: number }) => paddedAxisRange(value, true),
+          splitLine: { show: true, lineStyle: { color: '#1e293b' } },
+          axisLabel: { color: '#94a3b8' }
+        },
+        { type: 'value', scale: true, splitLine: { show: false }, axisLabel: { show: false } } // Secondary axis for overlays so they don't break price scale
       ],
-      dataZoom: [{ type: 'inside' }],
+      dataZoom: [{
+        type: 'inside',
+        xAxisIndex: [0],
+        filterMode: 'filter',
+        zoomOnMouseWheel: true,
+        moveOnMouseWheel: false
+      }],
       series: series,
       backgroundColor: 'transparent'
     };
@@ -217,8 +236,24 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
         splitLine: { show: true, lineStyle: { color: '#1e293b' } },
         axisLabel: { color: '#94a3b8' }
       },
-      yAxis: { type: 'value', splitLine: { show: true, lineStyle: { color: '#1e293b' } }, axisLabel: { color: '#94a3b8' } },
-      dataZoom: [{ type: 'inside' }, { type: 'slider', bottom: 0, height: 15, borderColor: 'transparent', handleSize: '100%' }],
+      yAxis: {
+        type: 'value',
+        scale: true,
+        min: (value: { min: number; max: number }) => paddedAxisRange(value, false),
+        max: (value: { min: number; max: number }) => paddedAxisRange(value, true),
+        splitLine: { show: true, lineStyle: { color: '#1e293b' } },
+        axisLabel: { color: '#94a3b8' }
+      },
+      dataZoom: [
+        {
+          type: 'inside',
+          xAxisIndex: [0],
+          filterMode: 'filter',
+          zoomOnMouseWheel: true,
+          moveOnMouseWheel: false
+        },
+        { type: 'slider', xAxisIndex: [0], bottom: 0, height: 15, borderColor: 'transparent', handleSize: '100%' }
+      ],
       series: [
         {
           name: 'Power',
