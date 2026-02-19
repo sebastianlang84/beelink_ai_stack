@@ -17,12 +17,12 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 ## 0.1) Living Docs (müssen immer aktuell sein)
 - `README.md`, `TODO.md`, `CHANGELOG.md` sind **lebende Dokumente** und müssen **perfekt** zum aktuellen Projektzustand passen.
 - Keine Doku darf dem Projekt hinterherhinken: Wenn Code/Compose/Prozesse geändert werden, müssen diese Dateien im gleichen Zug aktualisiert werden (oder die Änderung wird als „unvollständig“ behandelt).
-- Wenn bei einem Task **keine** Living-Docs-Aenderung noetig ist: in `HANDOFF.md` oder im Commit-Text explizit festhalten (z. B. "README/TODO/CHANGELOG geprueft: keine Aenderungen noetig").
+- Wenn bei einem Task **keine** Living-Docs-Aenderung noetig ist: in `MEMORY.md` oder im Commit-Text explizit festhalten (z. B. "README/TODO/CHANGELOG geprueft: keine Aenderungen noetig").
 
 ## 0.2) Reset-Resilienz (Context-Window uebergreifend, verpflichtend)
 - Chat-Zusagen sind nur in-session gueltig und duerfen nicht als persistente Verbindlichkeit behandelt werden.
-- Verbindliche Absprachen muessen in Repo-Dateien stehen (mindestens `HANDOFF.md`, plus relevante Living Docs).
-- `HANDOFF.md` ist das verpflichtende Uebergabe-Dokument fuer den naechsten Context.
+- Verbindliche Absprachen muessen in Repo-Dateien stehen (mindestens `MEMORY.md`, plus relevante Living Docs).
+- `MEMORY.md` ist das verpflichtende Uebergabe- und Langzeitgedaechtnis-Dokument fuer den naechsten Context.
 
 ## 0.3) Doku-Vertrag (stabil, minimal)
 - `AGENTS.md`
@@ -37,10 +37,10 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
   - Purpose: Navigation.
   - Contains: kurze Links auf Hauptdokumente/Service-Dokus.
   - Does not contain: laengere Erklaertexte.
-- `HANDOFF.md`
-  - Purpose: 1-Seiten Snapshot nach Context-Reset.
-  - Contains: Current State, Open Decisions, Next Steps, Risiken/Blocker.
-  - Does not contain: How-to, Regeln, Historie.
+- `MEMORY.md`
+  - Purpose: 1-Seiten Snapshot + reset-resilientes Langzeitgedaechtnis.
+  - Contains: Current State, Long-Term Memory, Open Decisions, Next Steps, Risiken/Blocker.
+  - Does not contain: How-to, Regeln, unstrukturierte Task-Historie.
 - `TODO.md`
   - Purpose: aktive Arbeit.
   - Contains: offene Aufgaben mit Prioritaet/Status.
@@ -68,7 +68,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
   - Vor dem ersten schreibenden Kommando muss der Agent kurz ausgeben:
     - `Ziel`
     - `Scope (in/out)`
-    - `Gelesene Quellen` (konkrete Dateien, mind. `AGENTS.md` + `HANDOFF.md` + betroffene Service-Docs/Runbooks)
+    - `Gelesene Quellen` (konkrete Dateien, mind. `AGENTS.md` + `MEMORY.md` + betroffene Service-Docs/Runbooks)
 - **Gate B: Read-Only Diagnose**
   - Zuerst nur lesen/pruefen (z. B. `rg`, `cat`, Status, Logs, `docker inspect`, `docker compose config`).
   - In dieser Phase keine mutierenden Aktionen (keine Datei-Schreibzugriffe, keine Service-Restarts, keine Upgrades, keine Deletes).
@@ -93,7 +93,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 ### Pflicht: ADR + Abschluss-Tasks
 - Architektur-/Prozessentscheidungen werden in `docs/adr/` festgehalten (statt Task-Diary).
 - **Pflicht am Ende jeder Aufgabe**:
-  1. `HANDOFF.md` aktualisieren/prüfen. Wenn keine inhaltliche Aenderung noetig ist, explizit dokumentieren: `HANDOFF.md geprueft: keine Aenderung noetig`.
+  1. `MEMORY.md` aktualisieren/prüfen. Wenn keine inhaltliche Aenderung noetig ist, explizit dokumentieren: `MEMORY.md geprueft: keine Aenderung noetig`.
   2. Falls Entscheidung finalisiert wurde: ADR in `docs/adr/` schreiben/aktualisieren.
   3. Living Docs pruefen/aktualisieren (mindestens: `README.md`, `TODO.md`, `CHANGELOG.md`).
   4. Commit erstellen, **sofern der User nicht explizit etwas anderes sagt**.
@@ -102,15 +102,15 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - Wenn Setup/Bedienung geaendert: `README.md` aktualisieren.
 - Wenn userrelevant/release: `CHANGELOG.md` aktualisieren.
 - Wenn Entscheidung final: ADR schreiben.
-- Immer: `HANDOFF.md` Snapshot pruefen.
+- Immer: `MEMORY.md` Snapshot pruefen.
 
 ### Commit-Regeln
 - Keine Secrets committen.
-- Ein Task = ein Commit (inkl. HANDOFF/Living-Docs-Abschluss), ausser der User wuenscht etwas anderes.
+- Ein Task = ein Commit (inkl. MEMORY/Living-Docs-Abschluss), ausser der User wuenscht etwas anderes.
 - Commit-Message-Format: `type(scope): kurze beschreibung`
   - `type` in {`docs`, `fix`, `feat`, `chore`, `ops`, `refactor`, `test`}
   - `scope` kurz, z. B. `agent`, `docs`, `open-webui`, `mcp-tm`
-  - Beispiel: `docs(agent): tighten handoff policy`
+  - Beispiel: `docs(agent): tighten memory policy`
 
 ### Arbeitsstil
 - Bei Unklarheiten zuerst **1–3 gezielte Rückfragen** stellen (Ziel, Umgebung, Constraints).
@@ -154,7 +154,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 
 ## 2) Repo-Struktur (Stand heute)
 - `INDEX.md` — Reiner Link-Index (Startpunkt fuer Navigation)
-- `HANDOFF.md` — Snapshot fuer den naechsten Context
+- `MEMORY.md` — Snapshot + Langzeitgedaechtnis fuer den naechsten Context
 - `open-webui/` — Open WebUI Service (Docker Compose)
 - `mcp-transcript-miner/` — **Transcript Miner** MCP Server (Streamable HTTP; OpenAPI optional/legacy; Configs/Runs/Outputs + Knowledge Indexing)
 - `transcript-miner/` — TranscriptMiner Pipeline-Engine (Python; Transcripts + Summaries)

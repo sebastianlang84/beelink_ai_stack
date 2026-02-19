@@ -1,6 +1,7 @@
 # ADR: Main Documentation Strategy (Minimal, Stable, Non-Redundant)
 Date: 2026-02-18
-Status: Accepted
+Status: Superseded
+Superseded by: `docs/adr/20260219-memory-md-replaces-handoff.md`
 
 ## Context
 - Root main docs had high redundancy and drift risk.

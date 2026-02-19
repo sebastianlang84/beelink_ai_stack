@@ -1,6 +1,6 @@
-# HANDOFF
+# MEMORY
 
-Purpose: One-page snapshot for the next context.
+Purpose: One-page snapshot plus reset-resilient long-term memory for the next context.
 
 ## Current State
 - Open WebUI stack is pinned to `0.8.3` and recent upgrade is complete.
@@ -23,6 +23,7 @@ Purpose: One-page snapshot for the next context.
 - `fourier-cycles` cycle selection now defaults to top 3 stable cycles (presence/power thresholds + minimum period distance), with new charts: `price_cycle_overlay.png` and `cycle_components.png`.
 - Validation run on 2026-02-18 UTC for `^GSPC` succeeded (`success=1`, `failure=0`); outputs include new overlay/component charts.
 - Web app planning started in `fourier-cycles/PRD_webapp.md` (dockerized FE/BE split, Tailscale access strategy, Windows `.bat` SSH tunnel + browser debug workflow for MCP DevTools).
+- Root continuity model was migrated on 2026-02-19 from `HANDOFF.md` to `MEMORY.md` (snapshot + long-term memory unified).
 - Local unstaged user change exists in `scripts/backup_all.sh` and is intentionally untouched.
 - Living Docs updated for Fourier service bootstrap: `README.md`, `TODO.md`, `CHANGELOG.md`, `INDEX.md`.
 - Living Docs check for build-app planning task: `README.md`, `TODO.md`, `CHANGELOG.md` reviewed; no additional changes needed.
@@ -31,11 +32,14 @@ Purpose: One-page snapshot for the next context.
 - Living Docs updated for price-chart clarity task: `CHANGELOG.md`; `README.md` and `TODO.md` reviewed (no change needed).
 - Living Docs updated for top-cycle visualization task: `README.md`, `TODO.md`, `CHANGELOG.md`.
 - Living Docs updated for webapp-planning task: `TODO.md`, `CHANGELOG.md`; `README.md` updated with PRD link.
+- Living Docs updated for continuity-memory migration task: `README.md`, `CHANGELOG.md`; `TODO.md` reviewed (no change needed).
 
-## Atlas Definition
+## Long-Term Memory
+- User preference finalized on 2026-02-19: use `MEMORY.md` as the single reset-resilient continuity file instead of `HANDOFF.md`.
 - `atlas` = the repository's cross-context continuity mandate.
-- Practical meaning: plan, decide, and track state in files (`HANDOFF.md`, `TODO.md`, ADRs), not in chat memory.
-- If a task says "atlas", it refers to long-horizon, reset-safe continuity.
+- Practical meaning of `atlas`: plan, decide, and track state in files (`MEMORY.md`, `TODO.md`, ADRs), not in chat memory.
+- Durable process decisions belong in `docs/adr/`; `MEMORY.md` stays concise and operational.
+- Keep continuity entries factual and current; avoid duplicate long histories that belong in Git/ADR/CHANGELOG.
 
 ## Open Decisions
 - Qdrant detail policy handling:

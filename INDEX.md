@@ -5,7 +5,7 @@ Purpose: Navigation-only entrypoint.
 ## Core Docs
 - `AGENTS.md` - Normative agent/process rules
 - `README.md` - Operator guide (setup/run/ops)
-- `HANDOFF.md` - Current snapshot for next context
+- `MEMORY.md` - Current snapshot + long-term memory for next context
 - `TODO.md` - Active work only
 - `CHANGELOG.md` - Release/user-facing changes
 - `docs/adr/` - Architecture decision records

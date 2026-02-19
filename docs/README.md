@@ -16,7 +16,7 @@ Primary repo navigation starts at `INDEX.md`.
 - `INDEX.md` - root navigation
 - `README.md` - operator guide
 - `AGENTS.md` - normative process rules
-- `HANDOFF.md` - current snapshot for next context
+- `MEMORY.md` - current snapshot + long-term memory for next context
 - `TODO.md` - active work only
 - `CHANGELOG.md` - user/release-visible changes
 

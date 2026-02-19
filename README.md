@@ -4,7 +4,7 @@ Dieses Repository enthält die „source of truth“ für ein **privates** Home-
 
 Purpose: Operator-Guide.  
 Contains: Setup, Betrieb, Runbooks mit Kontext.  
-Does not contain: Laufende Entscheidungen/Historie (siehe `HANDOFF.md`, `CHANGELOG.md`, `docs/adr/`).
+Does not contain: Laufende Entscheidungen/Historie (siehe `MEMORY.md`, `CHANGELOG.md`, `docs/adr/`).
 
 Dokunetz: Einstieg über `INDEX.md:1`.
 
@@ -224,7 +224,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 ## Repo-Struktur
 - `AGENTS.md` — Arbeitsregeln für Coding Agents
 - `INDEX.md` — Reiner Link-Index (Startpunkt für Navigation)
-- `HANDOFF.md` — Reset-sichere Uebergabe (aktueller Stand + Schnellstart nach Context Reset)
+- `MEMORY.md` — Reset-sicheres Snapshot + Langzeitgedaechtnis (aktueller Stand + Continuity-Memory)
 - `docs/` — Doku-Index (Link-Netzwerk)
 - `goals/build_app.md` — Ausfuellbare 5+2 Context-Engineering Vorlage fuer neue Projekte
 - `skills/` — Projekt-spezifische Codex Skills (Workflows/Checks)
