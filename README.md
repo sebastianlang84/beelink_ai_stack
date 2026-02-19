@@ -13,7 +13,7 @@ Dokunetz: Einstieg über `INDEX.md:1`.
 - Routing:
   - Stabil/semantisch -> `MEMORY.md`
   - Prozedural/How-to -> `docs/runbooks/*`
-  - Episodisch/Task-Verlauf -> `docs/archive/memory-daily/*`
+  - Episodisch/Task-Verlauf -> `docs/memory/daily/*`
   - Entscheidungen (Why/Tradeoffs) -> `docs/adr/*`
 - `MEMORY.md` bleibt ein operatives Cockpit (statusorientiert, keine Task-Historie).
 
@@ -240,7 +240,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `AGENTS.md` — Arbeitsregeln für Coding Agents
 - `INDEX.md` — Reiner Link-Index (Startpunkt für Navigation)
 - `MEMORY.md` — Reset-sicheres Snapshot + Langzeitgedaechtnis (aktueller Stand + Continuity-Memory)
-- `docs/archive/memory-daily/` — Episodische Tageslogs (append-only Verlauf)
+- `docs/memory/daily/` — Episodische Tageslogs (append-only Verlauf)
 - `docs/` — Doku-Index (Link-Netzwerk)
 - `goals/build_app.md` — Ausfuellbare 5+2 Context-Engineering Vorlage fuer neue Projekte
 - `skills/` — Projekt-spezifische Codex Skills (Workflows/Checks)

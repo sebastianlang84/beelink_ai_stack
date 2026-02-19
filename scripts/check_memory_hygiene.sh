@@ -33,7 +33,7 @@ lt_start=$(grep -nF "## 2) Long-Term Memory" "$MEM" | head -n1 | cut -d: -f1)
 cs_block=$(sed -n "${cs_start},$((lt_start-1))p" "$MEM")
 
 if echo "$cs_block" | grep -Eq "[0-9]{4}-[0-9]{2}-[0-9]{2}"; then
-  warn "Current State contains date patterns (possible episodic history). Consider moving details to docs/archive/memory-daily/*"
+  warn "Current State contains date patterns (possible episodic history). Consider moving details to docs/memory/daily/*"
 fi
 
 # Warn if Next Steps > 5 items

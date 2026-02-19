@@ -9,7 +9,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - Root continuity model is `MEMORY.md` (snapshot + long-term memory), with rationale documented in `docs/adr/20260219-memory-md-replaces-handoff.md`.
 - Documentation is organized into active sets (`docs/runbooks/`, `docs/policies/`, `docs/plans/`) plus archive (`docs/archive/`).
 - `fourier-cycles/` is operational (batch pipeline + static ECharts UI) with browser-debug tunnel workflow documented and available.
-- Historical timeline entries were moved out of this file to `docs/archive/memory-daily/`.
+- Historical timeline entries were moved out of this file to `docs/memory/daily/`.
 
 ## 2) Long-Term Memory
 - Continuity is file-based, not chat-based: durable state must live in repo docs.
@@ -18,7 +18,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - Memory routing policy:
   - Semantisch/stabil -> `MEMORY.md`
   - Prozedural -> `docs/runbooks/*`
-  - Episodisch -> `docs/archive/memory-daily/*`
+  - Episodisch -> `docs/memory/daily/*`
   - Entscheidungs-Why -> `docs/adr/*`
 - Secrets policy is strict: `.env` contains secrets only; non-secrets belong in `.config.env` and service `.config.env` files.
 

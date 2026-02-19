@@ -95,7 +95,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - Beim Task-Abschluss waehlt der Agent genau **ein primaeres Memory-Ziel**:
   - `MEMORY.md` (semantisch/stabile Defaults + aktueller Status)
   - `docs/runbooks/*` (prozedural/How-to)
-  - `docs/archive/memory-daily/YYYY-MM-DD.md` (episodisch/zeitgebundener Verlauf)
+  - `docs/memory/daily/YYYY-MM-DD.md` (episodisch/zeitgebundener Verlauf)
   - `docs/adr/*` (echte Entscheidung mit Alternativen/Folgen)
 - Regeln:
   - Keine episodische Historie in `MEMORY.md` (Status statt Verlauf).
@@ -105,7 +105,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
   1. `AGENTS.md` (Policy)
   2. `MEMORY.md` (aktueller Stand + Defaults)
   3. `docs/adr/*` und `docs/runbooks/*` (Details)
-  4. `docs/archive/memory-daily/*` (Verlauf)
+  4. `docs/memory/daily/*` (Verlauf)
 
 ### Pflicht: ADR + Abschluss-Tasks
 - Architektur-/Prozessentscheidungen werden in `docs/adr/` festgehalten (statt Task-Diary).
@@ -172,7 +172,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 ## 2) Repo-Struktur (Stand heute)
 - `INDEX.md` — Reiner Link-Index (Startpunkt fuer Navigation)
 - `MEMORY.md` — Snapshot + Langzeitgedaechtnis fuer den naechsten Context
-- `docs/archive/memory-daily/` — Episodische Tageslogs (append-only Verlauf)
+- `docs/memory/daily/` — Episodische Tageslogs (append-only Verlauf)
 - `open-webui/` — Open WebUI Service (Docker Compose)
 - `mcp-transcript-miner/` — **Transcript Miner** MCP Server (Streamable HTTP; OpenAPI optional/legacy; Configs/Runs/Outputs + Knowledge Indexing)
 - `transcript-miner/` — TranscriptMiner Pipeline-Engine (Python; Transcripts + Summaries)
