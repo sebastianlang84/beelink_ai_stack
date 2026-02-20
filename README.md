@@ -204,6 +204,7 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
    - Preis/Level direkt: `price.png`
    - Cycle-Overlay auf Preis: `price_cycle_overlay.png`
    - Top-Cycle-Komponenten: `cycle_components.png`
+   - UI-Rohdaten fuer echte Superposition: `waves.csv`
 - Ops/Details: `fourier-cycles/README.md:1`
 
 ## Windows Browser Debug + MCP DevTools (Fourier UI)

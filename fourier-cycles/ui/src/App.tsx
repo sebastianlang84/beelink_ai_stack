@@ -45,10 +45,20 @@ interface SpectrumDataRow {
   norm_power: number;
 }
 
+interface WaveDataRow {
+  date: string;
+  period_days: number;
+  component_value: number;
+}
+
 function paddedAxisRange(value: { min: number; max: number }, isMax: boolean) {
   const span = value.max - value.min;
   const padding = span > 0 ? span * 0.03 : Math.max(Math.abs(value.max || 1) * 0.03, 1e-6);
   return isMax ? value.max + padding : value.min - padding;
+}
+
+function periodKey(period: number) {
+  return period.toFixed(6);
 }
 
 // --- Main Dashboard Component ---
@@ -59,9 +69,10 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
   const [priceData, setPriceData] = useState<[string, number][]>([]);
   const [spectrumData, setSpectrumData] = useState<[number, number][]>([]);
   const [allStableCycles, setAllStableCycles] = useState<CycleData[]>([]);
+  const [waveDataByPeriod, setWaveDataByPeriod] = useState<Record<string, [string, number][]>>({});
 
   // UI State
-  const [selectedCycles, setSelectedCycles] = useState<Set<number>>(new Set());
+  const [selectedCycles, setSelectedCycles] = useState<Set<string>>(new Set());
   const [isSuperpose, setIsSuperpose] = useState(true);
 
   // Load static data files
@@ -72,6 +83,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
     setSummary(null);
     setPriceData([]);
     setSpectrumData([]);
+    setWaveDataByPeriod({});
     setSelectedCycles(new Set());
 
     // 1. Fetch Summary
@@ -124,13 +136,39 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
       }
     });
 
+    // 5. Fetch per-cycle component waves exported by the backend
+    Papa.parse<WaveDataRow>(`/assets/data/latest/${seriesId}/waves.csv`, {
+      download: true,
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const grouped: Record<string, [string, number][]> = {};
+        results.data.forEach((row) => {
+          if (!row.date || typeof row.period_days !== 'number' || typeof row.component_value !== 'number') return;
+          const key = periodKey(row.period_days);
+          if (!grouped[key]) grouped[key] = [];
+          grouped[key].push([row.date, row.component_value]);
+        });
+        Object.values(grouped).forEach(series =>
+          series.sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
+        );
+        setWaveDataByPeriod(grouped);
+      },
+      error: (error) => {
+        console.error('Waves load error:', error);
+        setWaveDataByPeriod({});
+      }
+    });
+
   }, [seriesId]);
 
   // Toggle cycle selection
   const toggleCycle = (period: number) => {
+    const key = periodKey(period);
     const newSet = new Set(selectedCycles);
-    if (newSet.has(period)) newSet.delete(period);
-    else newSet.add(period);
+    if (newSet.has(key)) newSet.delete(key);
+    else newSet.add(key);
     setSelectedCycles(newSet);
   };
 
@@ -155,36 +193,47 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
       }
     ];
 
-    // TODO: In Phase C Option A, we would load the 'waves.csv' here and overlay the actual vectors.
-    // For now, since we haven't updated the Python backend to export waves.csv yet, 
-    // we will just draw the layout, and I will simulate a flat line overlay to prove the UI works.
+    const selectedWaveSeries = allStableCycles
+      .filter(cycle => selectedCycles.has(periodKey(cycle.period_days)))
+      .map((cycle, index) => ({
+        cycle,
+        color: getCycleColor(index),
+        points: waveDataByPeriod[periodKey(cycle.period_days)] || []
+      }))
+      .filter(item => item.points.length > 0);
 
-    // Simulate overlay reading 
     if (selectedCycles.size > 0) {
       if (isSuperpose) {
-        series.push({
-          name: 'Superposition (Mock)',
-          type: 'line',
-          data: priceData.map(p => [p[0], p[1] * 1.01]), // Mock shift
-          showSymbol: false,
-          lineStyle: { width: 2, color: '#fbbf24', type: 'dashed' },
-          itemStyle: { color: '#fbbf24' },
-          yAxisIndex: 1
+        const byDate = new Map<string, number>();
+        selectedWaveSeries.forEach(item => {
+          item.points.forEach(([date, value]) => {
+            byDate.set(date, (byDate.get(date) || 0) + value);
+          });
         });
+        const superposition = Array.from(byDate.entries())
+          .map(([date, value]) => [date, value] as [string, number])
+          .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
+        if (superposition.length > 0) {
+          series.push({
+            name: 'Superposition',
+            type: 'line',
+            data: superposition,
+            showSymbol: false,
+            lineStyle: { width: 2, color: '#fbbf24', type: 'dashed' },
+            itemStyle: { color: '#fbbf24' },
+            yAxisIndex: 1
+          });
+        }
       } else {
-        let cIdx = 0;
-        allStableCycles.forEach(cycle => {
-          if (selectedCycles.has(cycle.period_days)) {
-            series.push({
-              name: `Cycle ${cycle.period_days.toFixed(1)}d`,
-              type: 'line',
-              data: priceData.map((p, i) => [p[0], priceData[0][1] + Math.sin(i * (Math.PI * 2 / cycle.period_days)) * priceData[0][1] * cycle.norm_power * 10]), // Mock wave visually mapped to price
-              showSymbol: false,
-              lineStyle: { width: 1.5, color: getCycleColor(cIdx), opacity: 0.8 },
-              yAxisIndex: 1
-            });
-            cIdx++;
-          }
+        selectedWaveSeries.forEach(item => {
+          series.push({
+            name: `Cycle ${item.cycle.period_days.toFixed(1)}d`,
+            type: 'line',
+            data: item.points,
+            showSymbol: false,
+            lineStyle: { width: 1.5, color: item.color, opacity: 0.85 },
+            yAxisIndex: 1
+          });
         });
       }
     }
@@ -214,7 +263,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
       series: series,
       backgroundColor: 'transparent'
     };
-  }, [priceData, selectedCycles, isSuperpose, allStableCycles]);
+  }, [priceData, selectedCycles, isSuperpose, allStableCycles, waveDataByPeriod]);
 
 
   const spectrumChartOption = useMemo(() => {
@@ -222,7 +271,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
 
     // Generate scatter points for the peaks highlighting
     const peakHighlights = allStableCycles
-      .filter(c => selectedCycles.has(c.period_days))
+      .filter(c => selectedCycles.has(periodKey(c.period_days)))
       .map(c => [c.period_days, c.norm_power]);
 
     return {
@@ -371,7 +420,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {allStableCycles.map((cycle, i) => {
-                  const isSelected = selectedCycles.has(cycle.period_days);
+                  const isSelected = selectedCycles.has(periodKey(cycle.period_days));
                   const drawColor = isSuperpose ? '#fbbf24' : getCycleColor(i);
                   return (
                     <tr

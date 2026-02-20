@@ -30,6 +30,7 @@ Pro Lauf:
 - `run_<timestamp>/<source>-<series>/stability.png` - Rolling-Power/Presence je Cycle
 - `run_<timestamp>/<source>-<series>/reconstruction.png` - transformiertes Signal (Returns) vs. rekonstruiertes Cycle-Signal
 - `run_<timestamp>/<source>-<series>/cycles.csv` - finale Cycle-Metriken
+- `run_<timestamp>/<source>-<series>/waves.csv` - echte per-Cycle Zeitreihen-Komponenten fuer UI-Superposition
 
 Zusatz:
 - `latest` Symlink auf den zuletzt erfolgreichen Lauf (praktisch fuer OpenClaw/Telegram Versand).

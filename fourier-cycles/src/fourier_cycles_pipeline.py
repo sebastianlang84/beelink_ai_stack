@@ -720,6 +720,33 @@ def write_cycles_csv(path: Path, cycles: list[dict[str, Any]]) -> None:
             writer.writerow({key: cycle[key] for key in columns})
 
 
+def write_waves_csv(
+    path: Path,
+    signal_dates: pd.DatetimeIndex,
+    selected_cycles: list[dict[str, Any]],
+    components: list[tuple[str, np.ndarray]],
+) -> None:
+    columns = ["date", "period_days", "component_value"]
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=columns)
+        writer.writeheader()
+
+        if not selected_cycles or not components:
+            return
+
+        date_values = [ts.date().isoformat() for ts in pd.to_datetime(signal_dates)]
+        for cycle, (_, component) in zip(selected_cycles, components):
+            period_days = float(cycle["period_days"])
+            for date_value, component_value in zip(date_values, component):
+                writer.writerow(
+                    {
+                        "date": date_value,
+                        "period_days": period_days,
+                        "component_value": float(component_value),
+                    }
+                )
+
+
 def process_single_series(
     source: str,
     series_name: str,
@@ -785,6 +812,12 @@ def process_single_series(
     )
     spectrum.to_csv(series_dir / "spectrum.csv", index=False)
     write_cycles_csv(series_dir / "cycles.csv", selected_cycles)
+    write_waves_csv(
+        series_dir / "waves.csv",
+        signal_dates=signal_dates,
+        selected_cycles=selected_cycles,
+        components=components,
+    )
     save_plot_price(
         series_dir / "price.png",
         levels,

@@ -9,6 +9,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - Root continuity model is `MEMORY.md` (snapshot + long-term memory), with rationale documented in `docs/adr/20260219-memory-md-replaces-handoff.md`.
 - Documentation is organized into active sets (`docs/runbooks/`, `docs/policies/`, `docs/plans/`) plus archive (`docs/archive/`).
 - `fourier-cycles/` is operational (batch pipeline + static ECharts UI) with browser-debug tunnel workflow documented and available.
+- `fourier-cycles` UI superposition now uses backend-exported component vectors (`waves.csv`) instead of placeholder mock overlays.
 - Historical timeline entries were moved out of this file to `docs/memory/daily/`.
 
 ## 2) Long-Term Memory
