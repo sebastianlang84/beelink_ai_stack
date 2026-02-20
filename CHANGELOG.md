@@ -25,6 +25,7 @@ This project follows a Keep a Changelog style.
 - `scripts/check_memory_hygiene.sh` for lightweight structure/size drift checks on `MEMORY.md` (warn-first).
 
 ### Changed
+- `fourier-cycles` presence calculation now uses a dynamically scaled statistical noise floor (based on band width relative to the full frequency range) instead of a hardcoded 3% threshold, making cycle selection more physically meaningful.
 - `AGENTS.md` Arbeitsstil now includes an explicit mandatory helpfulness rule: solution-first delivery plus concrete, verifiable workarounds on blockers.
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.
 - Continuity doc migrated from `HANDOFF.md` to `MEMORY.md` (snapshot + long-term memory in one file).
@@ -61,6 +62,7 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles/docker-compose.webapp.yml` healthchecks were hardened: API now uses a Python-based local HTTP probe (`127.0.0.1:8080`) and UI checks use `127.0.0.1:80` to avoid localhost/IPv6 false negatives.
 
 ### Fixed
+- `fourier-cycles` waves export now writes components for all stable cycles (instead of just the top selected few), unblocking the UI from displaying individually toggled non-default cycles.
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.
 - `fourier-cycles` reconstruction chart labeling now clearly indicates transformed signal values (returns), avoiding confusion with raw price charts.
 - `fourier-cycles` superposition visibility: UI now preselects backend-selected cycles and shows an explicit warning when `waves.csv` is missing/unreadable.

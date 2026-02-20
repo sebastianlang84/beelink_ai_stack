@@ -439,14 +439,42 @@ def evaluate_stability(
             # Use a narrow local band to reduce nearest-bin leakage artifacts in short windows.
             band_half_width = max(local_step * 1.5, freq * 0.05)
             band_mask = np.abs(freqs - freq) <= band_half_width
-            if not np.any(band_mask):
+            num_bins = np.sum(band_mask)
+            if num_bins == 0:
                 ratios.append(0.0)
                 continue
+                
             band_power = float(np.sum(power[band_mask]))
-            ratios.append(float(band_power / total))
+            band_power_ratio = float(band_power / total)
+            
+            # Instead of a fixed 3% hurdle, compute the statistical expected power 
+            # (white-noise floor) for the width of our analytical band in this window.
+            # E.g., if we select 3 bins out of 100 total bins, the baseline is 3%.
+            bins_total = len(freqs)
+            baseline = (num_bins / bins_total) if bins_total > 0 else 0.0
+            
+            # The signal-to-noise ratio: band power ratio over baseline expected power.
+            # A cycle is strictly 'present' in this window if the power inside the band 
+            # is x times the uniform noise distribution expectation. High multiplier 
+            # means strict threshold.
+            snr_multiplier_threshold = 2.5 
+            
+            # Alternatively, if cfg.min_window_power_ratio is provided and high, 
+            # it can set an absolute floor, but primarily we depend on baseline SNR.
+            hurdle = max(baseline * snr_multiplier_threshold, cfg.min_window_power_ratio)
+            
+            # We store the metric that determines presence locally. 
+            # (Storing whether it passed the hurdle locally will allow presence calc).
+            # To keep UI metrics comparable, we store the actual proportion of power 
+            # in `ratios` and test against `hurdle` in the next step.
+            ratios.append((band_power_ratio, hurdle))
 
-        presence_ratio = sum(r >= cfg.min_window_power_ratio for r in ratios) / len(ratios)
-        median_window_power_ratio = float(np.median(ratios))
+        # Compute presence: ratio passed / len(ratios)
+        presence_ratio = sum(ratio >= hurdle for ratio, hurdle in ratios) / len(ratios)
+        
+        # the literal window power ratios for charting and median calc
+        raw_ratios = [ratio for ratio, hurdle in ratios]
+        median_window_power_ratio = float(np.median(raw_ratios))
         stability_score = presence_ratio * float(row.norm_power)
         stable = presence_ratio >= cfg.min_presence_ratio
 
@@ -460,7 +488,7 @@ def evaluate_stability(
                 "median_window_power_ratio": median_window_power_ratio,
                 "stability_score": stability_score,
                 "stable": stable,
-                "window_power_ratios": ratios,
+                "window_power_ratios": raw_ratios,
             }
         )
 
@@ -801,11 +829,13 @@ def process_single_series(
         full_coeff=full_coeff,
         selected_cycles=selected_cycles,
     )
+    # We need cycle component waves for ALL stable cycles, not just selected ones.
+    # Otherwise the UI checkboxes for non-selected stable cycles cannot draw anything.
     components = reconstruct_cycle_components(
         signal_len=len(signal),
         full_freqs=full_freqs,
         full_coeff=full_coeff,
-        selected_cycles=selected_cycles,
+        selected_cycles=stable_cycles,
     )
 
     series_dir = run_dir / f"{source}-{_slug(series_name)}"
@@ -820,7 +850,7 @@ def process_single_series(
     write_waves_csv(
         series_dir / "waves.csv",
         signal_dates=signal_dates,
-        selected_cycles=selected_cycles,
+        selected_cycles=stable_cycles,
         components=components,
     )
     save_plot_price(

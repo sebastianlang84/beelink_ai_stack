@@ -9,9 +9,9 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - Root continuity model is `MEMORY.md` (snapshot + long-term memory), with rationale documented in `agents/adr/20260219-memory-md-replaces-handoff.md`.
 - Documentation is split between `agents/` (governance/memory/meta) and `docs/` (service/ops/architecture), plus archive (`docs/archive/`).
 - `fourier-cycles/` is operational (batch pipeline + static ECharts UI) with browser-debug tunnel workflow documented and available.
-- `fourier-cycles` UI superposition uses backend-exported component vectors (`waves.csv`), preselects backend-selected cycles, and warns explicitly if wave data is missing.
+- `fourier-cycles` UI superposition uses backend-exported component vectors (`waves.csv`), preselects backend-selected cycles, and allows toggling any stable cycle because the backend now exports wave vectors for all stable cycles.
 - `fourier-cycles` stability display is normalized to `0..1` (`stability_score_norm`) for clearer interpretation.
-- `fourier-cycles` selection now enforces presence + period-distance thresholds strictly (no rule-breaking backfill); `cycles.csv` contains all stable cycles, while default overlays remain driven by `summary.json` selected cycles.
+- `fourier-cycles` selection now enforces presence + period-distance thresholds strictly; presence uses a dynamic noise-floor baseline instead of a fixed 3% to properly differentiate actual cycles from wideband noise.
 - `fourier-cycles` cycle table (right panel) supports interactive sorting via header clicks for period/power/presence/stability.
 - `fourier-cycles` web app now includes an internal `fourier-cycles-api` trigger path (`POST /api/run`, `GET /api/run/status`) proxied via UI, with busy-guard and per-run logs under `output/_trigger_logs/`.
 - `fourier-cycles/tools/open_fourier_debug.bat` now auto-retries SSH tunnel setup, waits for local Chrome debug-port readiness via DevTools endpoint checks (locale-independent fallback), rotates remote DevTools ports on failure, falls back to UI-only `-L` tunnel when `-R` port forwarding is occupied, uses key-only SSH, fails fast on invalid SSH key-auth, and applies explicit host-key/timeout policy (`accept-new`, configurable) to avoid silent precheck hangs.
