@@ -25,6 +25,7 @@ This project follows a Keep a Changelog style.
 - `scripts/check_memory_hygiene.sh` for lightweight structure/size drift checks on `MEMORY.md` (warn-first).
 
 ### Changed
+- `fourier-cycles` default analysis period band is now `30..300` days (`FOURIER_MIN_PERIOD_DAYS=30`, `FOURIER_MAX_PERIOD_DAYS=300`) to prioritize medium-term cycles over very short 1-10 day components.
 - `fourier-cycles` presence calculation now uses a dynamically scaled statistical noise floor (based on band width relative to the full frequency range) instead of a hardcoded 3% threshold, making cycle selection more physically meaningful.
 - `AGENTS.md` Arbeitsstil now includes an explicit mandatory helpfulness rule: solution-first delivery plus concrete, verifiable workarounds on blockers.
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.

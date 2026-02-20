@@ -82,6 +82,7 @@ Hinweise:
 Ein Cycle gilt als stabil, wenn er in Rolling-Windows haeufig genug auftaucht:
 - Window-Presence >= `FOURIER_MIN_PRESENCE_RATIO`
 - Presence basiert auf Window-Power-Ratio >= `FOURIER_MIN_WINDOW_POWER_RATIO`
+- Analyseband der Perioden: `FOURIER_MIN_PERIOD_DAYS..FOURIER_MAX_PERIOD_DAYS` (Repo-Default: `30..300` Tage)
 
 Damit werden Peaks verworfen, die nur in einem kleinen Bruchteil des Zeitraums auftreten.
 
