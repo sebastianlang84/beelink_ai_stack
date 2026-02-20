@@ -33,7 +33,7 @@ services:
     networks:
       - ai-stack-fourier
     healthcheck:
-      test: [ "CMD", "wget", "-qO-", "http://localhost:8080/healthz" ]
+      test: [ "CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3).status == 200 else 1)" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -48,13 +48,13 @@ services:
     depends_on:
       - fourier-cycles-api
     ports:
-      - "${FOURIER_UI_HOST_BIND_ADDRESS:-127.0.0.1}:${FOURIER_UI_HOST_PORT:-3010}:80"
+      - "${FOURIER_UI_HOST_PORT:-3010}:80"
     volumes:
       - ${FOURIER_OUTPUT_DIR_HOST:-./output}:/data:ro
     networks:
       - ai-stack-fourier
     healthcheck:
-      test: [ "CMD", "wget", "-qO-", "http://localhost:80/healthz" ]
+      test: [ "CMD", "wget", "-qO-", "http://127.0.0.1:80/healthz" ]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -142,6 +142,7 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 
 ### Arbeitsstil
 - Bei Unklarheiten zuerst **1–3 gezielte Rückfragen** stellen (Ziel, Umgebung, Constraints).
+- **Hilfsprinzip (verbindlich):** Erst nutzbare technische Loesung liefern, dann Erklaerung; bei Blockern sofort konkrete Workarounds mit Verifikation geben.
 - **Repo-first**: erst vorhandene Dateien/Docs prüfen, dann Vorschläge machen; nichts „raten“.
 - **„Recherchiere“ heißt Context7-first**: bei Produkt-/Tool-Fragen (Open WebUI, RooCode, Qdrant, MCP/OpenAPI, etc.) zuerst Context7 nutzen; `curl`/Logs nur für lokale Verifikation (läuft Endpoint wirklich so?).
 - **No-Fluff**: direkt mit Ergebnis/Schritten/Code starten, kurze Bulletpoints.

@@ -14,6 +14,9 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - `fourier-cycles` selection now enforces presence + period-distance thresholds strictly (no rule-breaking backfill); `cycles.csv` contains all stable cycles, while default overlays remain driven by `summary.json` selected cycles.
 - `fourier-cycles` cycle table (right panel) supports interactive sorting via header clicks for period/power/presence/stability.
 - `fourier-cycles` web app now includes an internal `fourier-cycles-api` trigger path (`POST /api/run`, `GET /api/run/status`) proxied via UI, with busy-guard and per-run logs under `output/_trigger_logs/`.
+- `fourier-cycles/tools/open_fourier_debug.bat` now auto-retries SSH tunnel setup, waits for local Chrome debug-port readiness via DevTools endpoint checks (locale-independent fallback), rotates remote DevTools ports on failure, falls back to UI-only `-L` tunnel when `-R` port forwarding is occupied, uses key-only SSH, fails fast on invalid SSH key-auth, and applies explicit host-key/timeout policy (`accept-new`, configurable) to avoid silent precheck hangs.
+- `fourier-cycles/tools/open_fourier_debug.bat` now also rotates local UI-forward ports (`127.0.0.1:13010+`) when occupied, so local browser access does not fail on stale/blocked forwards.
+- `fourier-cycles/docker-compose.webapp.yml` healthchecks are aligned with container reality (`python` probe in API image, `127.0.0.1` probe in UI), so healthy/unhealthy reflects actual service availability.
 - Historical timeline entries were moved out of this file to `agents/memory/daily/`.
 
 ## 2) Long-Term Memory

@@ -8,7 +8,10 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 - None.
 
 ## P1 (Next)
-- [ ] **Fourier analysis deepening (FRED + Yahoo)**
+- [ ] **Fingerprint-Backfill Verhalten korrigieren (Unerwünscht)** [added by Claw 🦞]
+  - Problem: Jede kleinste Änderung am Prompt/Modell löst einen massiven, teuren Backfill historischer Summaries aus (Fingerprint-Mismatch).
+  - Ziel: Backfill sollte optional oder "soft" sein (z.B. nur für die letzten N Tage oder via explizitem CLI-Flag).
+- [ ] **Fourier analysis deepening (FRED + Yahoo)** [added by Claw 🦞]
   - Define first target basket (symbols/series).
   - Add significance/robustness checks (beyond raw DFT ranking).
   - Document interpretation guardrails for non-forecast use.

@@ -123,10 +123,29 @@ npm install --prefix "$HOME/.local/share/chrome-devtools-mcp" chrome-devtools-mc
 - Datei: `fourier-cycles/tools/open_fourier_debug.bat`
 - Start auf Windows (PowerShell oder CMD):
   - `fourier-cycles\\tools\\open_fourier_debug.bat`
+- Verhalten:
+  - Script startet Chrome mit Debug-Port lokal und baut den SSH-Tunnel in einer Retry-Schleife auf.
+  - Die lokale Debug-Port-Pruefung erfolgt endpoint-basiert (`/json/version`) statt sprachabhaengiger `netstat`-State-Texte.
+  - Wenn der Tunnel abbricht (z. B. `connect to 127.0.0.1 port 9222 failed`), startet automatisch ein neuer Versuch.
+  - Wenn der Remote-Port belegt ist, rotiert das Script automatisch (`9223`, `9224`, ...).
+  - Wenn der lokale UI-Port belegt ist, rotiert das Script automatisch den lokalen Forward-Port (`13010..`) und gibt die neue URL aus.
+  - Falls nur der Reverse-Port (`-R`) belegt ist, wird automatisch ein UI-only Tunnel (`-L`) gestartet, damit die Web-UI stabil verfuegbar bleibt.
+  - SSH läuft im Key-only Modus (`BatchMode=yes`), damit keine Passwort-Prompts in Retry-Loops erscheinen.
+  - Vor dem Tunnel-Loop prueft das Script einmal SSH-Key-Auth, zeigt den Check sichtbar im Terminal an und bricht bei Fehler sofort ab.
+  - Host-Key-Verhalten ist konfigurierbar (`SSH_STRICT_HOST_KEY_CHECKING`, Default `accept-new`), um stille Hangs beim ersten Connect zu vermeiden.
 - Standardwerte:
   - Linux SSH: `wasti@192.168.0.188:22`
   - UI Forward: `127.0.0.1:13010` -> Linux `127.0.0.1:3010`
   - DevTools Reverse: Linux `127.0.0.1:9223` -> Windows Chrome `127.0.0.1:9222`
+- Optionale Overrides:
+  - `SSH_KEY_PATH` (Default: `%USERPROFILE%\.ssh\id_ed25519_fourier`)
+  - `SSH_STRICT_HOST_KEY_CHECKING` (Default: `accept-new`)
+  - `SSH_CONNECT_TIMEOUT_SEC` (Default: `8`)
+  - `FOURIER_UI_LOCAL_PORT_SPAN` (Default: `10`, also `13010..13020`)
+  - `TUNNEL_RETRY_DELAY_SEC` (Default: `5`)
+  - `LOCAL_DEVTOOLS_WAIT_MAX_SEC` (Default: `20`)
+  - `DEVTOOLS_REMOTE_PORT_SPAN` (Default: `10`, also `9223..9233`)
+  - Der aktuell genutzte Remote-Port wird pro Versuch im Terminal ausgegeben.
 
 ### 3) MCP DevTools Server auf Linux starten
 

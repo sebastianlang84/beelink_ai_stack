@@ -655,11 +655,17 @@ def _call_gemini_cli(
         logger.error("Gemini CLI call failed (exit=%s): %s", proc.returncode, err)
         return None
 
-    raw = (proc.stdout or "").lstrip()
+    raw = (proc.stdout or "").strip()
+    if not raw.startswith("{"):
+        # Find the first '{' to skip preamble text from Gemini CLI
+        idx = raw.find("{")
+        if idx != -1:
+            raw = raw[idx:]
+    
     try:
         payload, _ = json.JSONDecoder().raw_decode(raw)
     except Exception as exc:
-        logger.error("Gemini CLI JSON parse failed: %s", exc)
+        logger.error("Gemini CLI JSON parse failed (raw[:100]=%r): %s", raw[:100], exc)
         return None
 
     response = payload.get("response") if isinstance(payload, dict) else None

@@ -215,6 +215,7 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
 
 ## Windows Browser Debug + MCP DevTools (Fourier UI)
 - Windows helper: `fourier-cycles/tools/open_fourier_debug.bat`
+  - Auto-retry bei Tunnel-Abbruch + Remote-Port-Fallback (`9223..`) + lokaler UI-Port-Fallback (`13010..`) + UI-only Fallback bei `-R`-Portkonflikt + Key-only SSH (kein Passwortprompt im Retry-Loop) + sichtbarer SSH-Auth-Precheck (kein stiller Hang beim ersten Host-Key-Connect) + locale-unabhaengiger DevTools-Readiness-Check; relevante Env-Overrides: `SSH_KEY_PATH`, `SSH_STRICT_HOST_KEY_CHECKING`, `SSH_CONNECT_TIMEOUT_SEC`, `FOURIER_UI_LOCAL_PORT_SPAN`, `TUNNEL_RETRY_DELAY_SEC`, `LOCAL_DEVTOOLS_WAIT_MAX_SEC`, `DEVTOOLS_REMOTE_PORT_SPAN`
 - Linux MCP runner: `fourier-cycles/tools/run_chrome_devtools_mcp.sh`
 - Install (Linux, einmalig): `npm install --prefix "$HOME/.local/share/chrome-devtools-mcp" chrome-devtools-mcp@0.17.3`
 - Zielbild: Windows-Chrome Debug-Port wird per SSH Reverse-Tunnel auf Linux (`127.0.0.1:9223`) bereitgestellt; `chrome-devtools-mcp` verbindet sich lokal dagegen.

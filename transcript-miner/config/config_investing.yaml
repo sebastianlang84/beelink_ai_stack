@@ -79,8 +79,7 @@ analysis:
     model: google/gemini-3-flash-preview
     # Aggregation fail-fast: benötigt aktuell vollständige Summary-Coverage für alle
     # Transkripte im Index. Default ist 20; das kann Channels/Video-IDs auslassen.
-    # Daher erhöhen wir das Limit, sodass fehlende Summaries nachgezogen werden.
-    max_transcripts: 200
+    max_transcripts: 20
     max_input_tokens: 320000
     max_output_tokens: 80000
     per_video_concurrency: 1

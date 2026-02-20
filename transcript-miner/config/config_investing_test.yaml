@@ -58,7 +58,7 @@ analysis:
   llm:
     enabled: true
     mode: per_video
-    model: google/gemini-3-flash-preview
+    model: google/gemini-1.5-flash
     # Aggregation fail-fast: benötigt aktuell vollständige Summary-Coverage für alle
     # Transkripte im Index. Default ist 20; das kann Channels/Video-IDs auslassen.
     # Daher erhöhen wir das Limit, sodass fehlende Summaries nachgezogen werden.
