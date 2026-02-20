@@ -1,4 +1,4 @@
-# ADR: Place episodic memory under docs/memory/daily
+# ADR: Place episodic memory under agents/memory/daily
 Date: 2026-02-20
 Status: Accepted
 
@@ -8,7 +8,7 @@ Status: Accepted
 - The project needs a clear, stable path for active episodic memory that is distinct from service folders and from historical archive-only docs.
 
 ## Decision
-- Standardize episodic memory path to `docs/memory/daily/`.
+- Standardize episodic memory path to `agents/memory/daily/`.
 - Keep `MEMORY.md` in repo root as always-loaded snapshot/long-term memory.
 - Keep `docs/archive/` for historical snapshots and superseded documents only.
 
@@ -23,6 +23,6 @@ Status: Accepted
 
 ## Alternatives considered
 - `memory/daily/` at repo root.
-  - Not chosen because this repo keeps project-level operational docs under `docs/`.
+  - Not chosen because this repo keeps continuity and governance docs under `agents/`.
 - `.memory/` hidden folder.
   - Not chosen due lower discoverability and higher risk of being skipped in routine navigation.

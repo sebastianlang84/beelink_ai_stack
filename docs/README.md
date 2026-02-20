@@ -4,7 +4,7 @@ Purpose: Catalog of documentation files under `docs/`.
 Primary repo navigation starts at `INDEX.md`.
 
 ## Active Sets
-- `docs/adr/` - architecture and process decisions
+- `docs/adr/` - architecture and service decisions
 - `docs/runbooks/` - operational runbooks
 - `docs/policies/` - normative technical policies
 - `docs/plans/` - PRDs, plans, and design drafts
@@ -12,8 +12,8 @@ Primary repo navigation starts at `INDEX.md`.
 ## Archive
 - `docs/archive/` - dated snapshots, historic reports, and superseded drafts
 
-## Memory
-- `docs/memory/daily/` - episodic memory timeline entries (active path)
+## Boundary
+- Agent-governance and episodic memory live under `agents/` (`agents/README.md`).
 
 ## Root Main Docs
 - `INDEX.md` - root navigation

@@ -8,15 +8,19 @@ Purpose: Navigation-only entrypoint.
 - `MEMORY.md` - Current snapshot + long-term memory for next context
 - `TODO.md` - Active work only
 - `CHANGELOG.md` - Release/user-facing changes
+- `agents/README.md` - Agent docs catalog (memory, governance ADRs, meta plans)
 - `docs/adr/` - Architecture decision records
 
 ## Memory Routing
 - `MEMORY.md` - Status + stable defaults (always-loaded bootstrap)
 - `docs/runbooks/` - Procedural SOP/how-to content
-- `docs/memory/daily/` - Episodic day logs (append-only)
-- `docs/adr/` - Decision rationale (context/tradeoffs/consequences)
+- `agents/memory/daily/` - Episodic day logs (append-only)
+- `agents/adr/` - Agent/process decision rationale
+- `docs/adr/` - Architecture/service decision rationale
 
 ## Documentation
+- `agents/README.md` - Agent-governance docs catalog
+- `agents/plans/` - Agent/meta methods and prompt-engineering notes
 - `docs/README.md` - Docs catalog (service docs, runbooks, policies)
 - `docs/runbooks/runbook_secrets_env_files.md` - Secrets/config env handling
 - `docs/runbooks/runbook_backup_restore.md` - Backup/restore

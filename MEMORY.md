@@ -6,21 +6,21 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 
 ## 1) Current State
 - Open WebUI stack is pinned to `0.8.3`; upgrade status is stable.
-- Root continuity model is `MEMORY.md` (snapshot + long-term memory), with rationale documented in `docs/adr/20260219-memory-md-replaces-handoff.md`.
-- Documentation is organized into active sets (`docs/runbooks/`, `docs/policies/`, `docs/plans/`) plus archive (`docs/archive/`).
+- Root continuity model is `MEMORY.md` (snapshot + long-term memory), with rationale documented in `agents/adr/20260219-memory-md-replaces-handoff.md`.
+- Documentation is split between `agents/` (governance/memory/meta) and `docs/` (service/ops/architecture), plus archive (`docs/archive/`).
 - `fourier-cycles/` is operational (batch pipeline + static ECharts UI) with browser-debug tunnel workflow documented and available.
 - `fourier-cycles` UI superposition now uses backend-exported component vectors (`waves.csv`) instead of placeholder mock overlays.
-- Historical timeline entries were moved out of this file to `docs/memory/daily/`.
+- Historical timeline entries were moved out of this file to `agents/memory/daily/`.
 
 ## 2) Long-Term Memory
 - Continuity is file-based, not chat-based: durable state must live in repo docs.
 - `atlas` means cross-context continuity mandate for this repository.
-- Durable process/architecture decisions belong in `docs/adr/`; `MEMORY.md` remains concise and operational.
+- Durable decisions are split: process/gov in `agents/adr/`, architecture in `docs/adr/`; `MEMORY.md` remains concise and operational.
 - Memory routing policy:
   - Semantisch/stabil -> `MEMORY.md`
   - Prozedural -> `docs/runbooks/*`
-  - Episodisch -> `docs/memory/daily/*`
-  - Entscheidungs-Why -> `docs/adr/*`
+  - Episodisch -> `agents/memory/daily/*`
+  - Entscheidungs-Why -> `agents/adr/*`, `docs/adr/*`
 - Secrets policy is strict: `.env` contains secrets only; non-secrets belong in `.config.env` and service `.config.env` files.
 
 ## 3) Open Decisions

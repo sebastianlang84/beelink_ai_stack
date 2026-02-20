@@ -4,7 +4,7 @@ Dieses Repository enthält die „source of truth“ für ein **privates** Home-
 
 Purpose: Operator-Guide.  
 Contains: Setup, Betrieb, Runbooks mit Kontext.  
-Does not contain: Laufende Entscheidungen/Historie (siehe `MEMORY.md`, `CHANGELOG.md`, `docs/adr/`).
+Does not contain: Laufende Entscheidungen/Historie (siehe `MEMORY.md`, `CHANGELOG.md`, `agents/adr/`, `docs/adr/`).
 
 Dokunetz: Einstieg über `INDEX.md:1`.
 
@@ -13,8 +13,9 @@ Dokunetz: Einstieg über `INDEX.md:1`.
 - Routing:
   - Stabil/semantisch -> `MEMORY.md`
   - Prozedural/How-to -> `docs/runbooks/*`
-  - Episodisch/Task-Verlauf -> `docs/memory/daily/*`
-  - Entscheidungen (Why/Tradeoffs) -> `docs/adr/*`
+  - Episodisch/Task-Verlauf -> `agents/memory/daily/*`
+  - Agent-/Doku-Entscheidungen (Why/Tradeoffs) -> `agents/adr/*`
+  - Architektur-/Service-Entscheidungen (Why/Tradeoffs) -> `docs/adr/*`
 - `MEMORY.md` bleibt ein operatives Cockpit (statusorientiert, keine Task-Historie).
 
 ## Zielsystem (Soll-Zustand)
@@ -241,7 +242,9 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 - `AGENTS.md` — Arbeitsregeln für Coding Agents
 - `INDEX.md` — Reiner Link-Index (Startpunkt für Navigation)
 - `MEMORY.md` — Reset-sicheres Snapshot + Langzeitgedaechtnis (aktueller Stand + Continuity-Memory)
-- `docs/memory/daily/` — Episodische Tageslogs (append-only Verlauf)
+- `agents/` — Agent-Governance, Memory und Meta-Methodik
+- `agents/memory/daily/` — Episodische Tageslogs (append-only Verlauf)
+- `agents/plans/` — Agent-/Prompt-Methodik-Notizen
 - `docs/` — Doku-Index (Link-Netzwerk)
 - `goals/build_app.md` — Ausfuellbare 5+2 Context-Engineering Vorlage fuer neue Projekte
 - `skills/` — Projekt-spezifische Codex Skills (Workflows/Checks)

@@ -1,7 +1,7 @@
 # ADR: Main Documentation Strategy (Minimal, Stable, Non-Redundant)
 Date: 2026-02-18
 Status: Superseded
-Superseded by: `docs/adr/20260219-memory-md-replaces-handoff.md`
+Superseded by: `agents/adr/20260219-memory-md-replaces-handoff.md`
 
 ## Context
 - Root main docs had high redundancy and drift risk.
@@ -16,7 +16,7 @@ Superseded by: `docs/adr/20260219-memory-md-replaces-handoff.md`
   - `HANDOFF.md` = one-page current snapshot
   - `TODO.md` = active tasks only
   - `CHANGELOG.md` = short user/release-visible changes
-  - `docs/adr/` = final decision records
+  - `agents/adr/` + `docs/adr/` = final decision records (governance vs architecture)
 - Enforce no text duplication across root main docs: link instead of copy.
 
 ## Consequences

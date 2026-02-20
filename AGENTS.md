@@ -37,6 +37,10 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
   - Purpose: Navigation.
   - Contains: kurze Links auf Hauptdokumente/Service-Dokus.
   - Does not contain: laengere Erklaertexte.
+- `agents/README.md`
+  - Purpose: Navigation fuer Agent-Governance/Memory/Meta-Dokumente.
+  - Contains: kurze Links auf `agents/adr/`, `agents/memory/daily/`, `agents/plans/`.
+  - Does not contain: Service-How-to oder Architektur-Betrieb.
 - `MEMORY.md`
   - Purpose: 1-Seiten Snapshot + reset-resilientes Langzeitgedaechtnis.
   - Contains: Current State, Long-Term Memory, Open Decisions, Next Steps, Risiken/Blocker.
@@ -49,8 +53,12 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
   - Purpose: release-/userrelevante Aenderungen.
   - Contains: Added/Changed/Fixed/Breaking.
   - Does not contain: rein interne, nicht spuerbare Detailaenderungen.
+- `agents/adr/`
+  - Purpose: Agent-/Prozess-/Doku-Governance Entscheidungen.
+  - Contains: Context -> Decision -> Consequences -> Alternatives.
+  - Does not contain: Task-Logs.
 - `docs/adr/`
-  - Purpose: Entscheidungen.
+  - Purpose: Service-/Architekturentscheidungen.
   - Contains: Context -> Decision -> Consequences -> Alternatives.
   - Does not contain: Task-Logs.
 
@@ -95,8 +103,9 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - Beim Task-Abschluss waehlt der Agent genau **ein primaeres Memory-Ziel**:
   - `MEMORY.md` (semantisch/stabile Defaults + aktueller Status)
   - `docs/runbooks/*` (prozedural/How-to)
-  - `docs/memory/daily/YYYY-MM-DD.md` (episodisch/zeitgebundener Verlauf)
-  - `docs/adr/*` (echte Entscheidung mit Alternativen/Folgen)
+  - `agents/memory/daily/YYYY-MM-DD.md` (episodisch/zeitgebundener Verlauf)
+  - `agents/adr/*` (Agent-/Prozessentscheidung mit Alternativen/Folgen)
+  - `docs/adr/*` (Architektur-/Serviceentscheidung mit Alternativen/Folgen)
 - Regeln:
   - Keine episodische Historie in `MEMORY.md` (Status statt Verlauf).
   - Keine Duplikate in `MEMORY.md` (alte Formulierung ersetzen, nicht addieren).
@@ -104,14 +113,16 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 - Prioritaet bei Konflikt:
   1. `AGENTS.md` (Policy)
   2. `MEMORY.md` (aktueller Stand + Defaults)
-  3. `docs/adr/*` und `docs/runbooks/*` (Details)
-  4. `docs/memory/daily/*` (Verlauf)
+  3. `agents/adr/*` und `docs/runbooks/*` (Details)
+  4. `docs/adr/*` und `agents/memory/daily/*` (Verlauf/Architekturdetails)
 
 ### Pflicht: ADR + Abschluss-Tasks
-- Architektur-/Prozessentscheidungen werden in `docs/adr/` festgehalten (statt Task-Diary).
+- Entscheidungen werden getrennt festgehalten:
+  - Agent-/Prozess-/Doku-Governance -> `agents/adr/`
+  - Service-/Architekturentscheidungen -> `docs/adr/`
 - **Pflicht am Ende jeder Aufgabe**:
   1. `MEMORY.md` aktualisieren/prüfen. Wenn keine inhaltliche Aenderung noetig ist, explizit dokumentieren: `MEMORY.md geprueft: keine Aenderung noetig`.
-  2. Falls Entscheidung finalisiert wurde: ADR in `docs/adr/` schreiben/aktualisieren.
+  2. Falls Entscheidung finalisiert wurde: ADR in `agents/adr/` oder `docs/adr/` schreiben/aktualisieren.
   3. Living Docs pruefen/aktualisieren (mindestens: `README.md`, `TODO.md`, `CHANGELOG.md`).
   4. Commit erstellen, **sofern der User nicht explizit etwas anderes sagt**.
 
@@ -172,12 +183,14 @@ Dieses Repository ist die Code-/Config-Basis für einen Home-Server. Primäres Z
 ## 2) Repo-Struktur (Stand heute)
 - `INDEX.md` — Reiner Link-Index (Startpunkt fuer Navigation)
 - `MEMORY.md` — Snapshot + Langzeitgedaechtnis fuer den naechsten Context
-- `docs/memory/daily/` — Episodische Tageslogs (append-only Verlauf)
+- `agents/` — Agent-Governance, ADRs und episodisches Memory
+- `agents/memory/daily/` — Episodische Tageslogs (append-only Verlauf)
 - `open-webui/` — Open WebUI Service (Docker Compose)
 - `mcp-transcript-miner/` — **Transcript Miner** MCP Server (Streamable HTTP; OpenAPI optional/legacy; Configs/Runs/Outputs + Knowledge Indexing)
 - `transcript-miner/` — TranscriptMiner Pipeline-Engine (Python; Transcripts + Summaries)
 - `mcp-owui-connector/` — MCP Connector (Open WebUI / Roo)
 - `qdrant/` — Qdrant Service (optional)
+- `agents/adr/` — Agent/Process Decision Records
 - `docs/adr/` — Architecture Decision Records
 
 ## 3) Service-Zielbild

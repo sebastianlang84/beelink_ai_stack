@@ -12,7 +12,7 @@ Status: Accepted
 - `MEMORY.md` now contains both:
   - current snapshot (`Current State`, `Open Decisions`, `Next Steps`, `Known Risks / Blockers`)
   - durable continuity memory (`Long-Term Memory`)
-- Update all root documentation contracts and process rules (`AGENTS.md`, `README.md`, `INDEX.md`, `docs/README.md`) to reference `MEMORY.md`.
+- Update all root documentation contracts and process rules (`AGENTS.md`, `README.md`, `INDEX.md`, `docs/README.md`, `agents/README.md`) to reference `MEMORY.md`.
 
 ## Consequences
 - Positive:
