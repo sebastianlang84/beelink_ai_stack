@@ -14,8 +14,9 @@ This project follows a Keep a Changelog style.
 - New service `fourier-cycles/` with Dockerized Yahoo+FRED cycle extraction, rolling stability checks, and PNG artifact generation.
 - `fourier-cycles` now writes a dedicated `price.png` per series (raw level/price chart) alongside spectral plots.
 - `fourier-cycles/PRD_webapp.md` planning baseline for a dockerized frontend/backend web app, Tailscale access, and Windows SSH-tunnel debug workflow.
-- `fourier-cycles-ui` Docker Compose deployed. Note: Python API was dropped in favor of static Nginx JSON serving.
+- `fourier-cycles` webapp Compose now deploys `fourier-cycles-ui` plus internal `fourier-cycles-api` trigger service.
 - `fourier-cycles-ui` interactive frontend added (Phase C) using ECharts to display zoomable price/cycle charts and a selectable stability metrics table on a single-screen dark mode dashboard.
+- Controlled Phase D run trigger implemented: `POST /api/run` (confirm-required), `GET /api/run/status`, busy guard for parallel runs, and per-run trigger logs under `fourier-cycles/output/_trigger_logs/`.
 - Windows debug helper `fourier-cycles/tools/open_fourier_debug.bat` for Chrome debug mode + SSH local/reverse tunneling to Linux.
 - Linux helper `fourier-cycles/tools/run_chrome_devtools_mcp.sh` to run `chrome-devtools-mcp` against tunneled browser endpoint (`127.0.0.1:9223`).
 - ADR `docs/adr/20260219-fourier-debug-devtools-mcp-tunnel.md` documenting the chosen MCP DevTools runtime and tunnel convention.
@@ -46,6 +47,8 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles` cycle selection now enforces configured presence and minimum-period-distance constraints strictly (no rule-breaking backfill), so selection can return fewer than `selection_top_k`.
 - `fourier-cycles` `cycles.csv` now exports all stable cycles for UI exploration, while `summary.json` keeps the final selected subset for default overlays.
 - `fourier-cycles-ui` right-hand cycle table now supports click-to-sort on `Period`, `Power`, `Presence`, and `Stability (0-1)` headers (toggle asc/desc).
+- `fourier-cycles-ui` now shows a `Run now` control and run-state badge backed by `/api/run/status` polling.
+- `fourier-cycles/ui/nginx.conf` now proxies `/api/*` to the internal `fourier-cycles-api` service without exposing a new host port.
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.

@@ -13,6 +13,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - `fourier-cycles` stability display is normalized to `0..1` (`stability_score_norm`) for clearer interpretation.
 - `fourier-cycles` selection now enforces presence + period-distance thresholds strictly (no rule-breaking backfill); `cycles.csv` contains all stable cycles, while default overlays remain driven by `summary.json` selected cycles.
 - `fourier-cycles` cycle table (right panel) supports interactive sorting via header clicks for period/power/presence/stability.
+- `fourier-cycles` web app now includes an internal `fourier-cycles-api` trigger path (`POST /api/run`, `GET /api/run/status`) proxied via UI, with busy-guard and per-run logs under `output/_trigger_logs/`.
 - Historical timeline entries were moved out of this file to `agents/memory/daily/`.
 
 ## 2) Long-Term Memory
@@ -35,8 +36,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 ## 4) Next Steps
 1. Continue P1 Fourier deepening: define production basket and tune stability thresholds from first successful run outputs.
 2. Add bounded retries/backoff for Yahoo/FRED fetch path.
-3. Continue Fourier web app Phase D (optional controlled run trigger).
-4. Optionally add `scripts/check_memory_hygiene.sh` into CI/pre-commit once routing stabilizes in daily usage.
+3. Optionally add `scripts/check_memory_hygiene.sh` into CI/pre-commit once routing stabilizes in daily usage.
 
 ## 5) Known Risks / Blockers
 - Long-tail links outside root docs can still reference pre-consolidation paths.

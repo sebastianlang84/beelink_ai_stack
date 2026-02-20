@@ -35,6 +35,42 @@ Pro Lauf:
 Zusatz:
 - `latest` Symlink auf den zuletzt erfolgreichen Lauf (praktisch fuer OpenClaw/Telegram Versand).
 
+## Web App (UI + Controlled Trigger API)
+
+Start (vom Repo-Root):
+
+```bash
+docker compose \
+  --env-file .env \
+  --env-file .config.env \
+  --env-file fourier-cycles/.config.env \
+  -f fourier-cycles/docker-compose.webapp.yml \
+  up -d --build
+```
+
+Zugriff:
+- UI: `http://127.0.0.1:${FOURIER_UI_HOST_PORT:-3010}`
+- API: intern via UI-Proxy unter `/api/*` (kein zusaetzlicher Host-Port)
+
+Manueller Trigger (optional, gleiches Ergebnis wie UI-Button):
+
+```bash
+curl -sS -X POST "http://127.0.0.1:${FOURIER_UI_HOST_PORT:-3010}/api/run" \
+  -H "content-type: application/json" \
+  -d '{"confirm":true}'
+```
+
+Status:
+
+```bash
+curl -sS "http://127.0.0.1:${FOURIER_UI_HOST_PORT:-3010}/api/run/status"
+```
+
+Hinweise:
+- Trigger ist kontrolliert: kein freies Command-Injection-Feld, nur fester Pipeline-Aufruf.
+- Parallel-Run-Guard: bei laufendem Job liefert der Trigger `409`.
+- Trigger-Logs liegen unter `${FOURIER_OUTPUT_DIR_HOST}/_trigger_logs/`.
+
 ## Troubleshooting
 
 - Wenn in der UI bei Superposition keine Kurve erscheint und ein `waves.csv` Hinweis auftaucht:

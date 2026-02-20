@@ -1,6 +1,6 @@
 # PRD - Fourier Cycles Web App (Frontend/Backend, Docker, Tailscale)
 
-Status: draft
+Status: active (Phase D baseline implemented: controlled trigger endpoint)
 Owner: wasti
 Date: 2026-02-18
 Service: fourier-cycles
@@ -158,6 +158,7 @@ Phase C - Tunnel + Debug
 
 Phase D - Optional Run Trigger
 - backend endpoint fuer controlled batch trigger
+  - Status 2026-02-20: umgesetzt als `POST /api/run` + `GET /api/run/status` (intern via UI proxy, ohne neuen Host-Port)
 
 ## 11) Akzeptanzkriterien
 

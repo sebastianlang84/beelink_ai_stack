@@ -15,5 +15,6 @@ Purpose: Decision records for service and architecture topics.
 ## Current ADRs
 - `docs/adr/20260218-qdrant-indexing-boundaries.md`
 - `docs/adr/20260219-fourier-debug-devtools-mcp-tunnel.md`
+- `docs/adr/20260220-fourier-controlled-run-trigger-api.md`
 
 Agent/process ADRs are maintained separately under `agents/adr/`.

@@ -207,6 +207,10 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
    - Top-Cycle-Komponenten: `cycle_components.png`
    - UI-Rohdaten fuer echte Superposition: `waves.csv`
    - Bei UI-Hinweis auf fehlendes `waves.csv`: Run erneut mit `--build` starten.
+6. Optional Web App + Trigger API starten:
+   - `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env -f fourier-cycles/docker-compose.webapp.yml up -d --build`
+   - UI: `http://127.0.0.1:${FOURIER_UI_HOST_PORT:-3010}`
+   - Trigger: `POST /api/run` (Body `{"confirm":true}`), Status: `GET /api/run/status`
 - Ops/Details: `fourier-cycles/README.md:1`
 
 ## Windows Browser Debug + MCP DevTools (Fourier UI)

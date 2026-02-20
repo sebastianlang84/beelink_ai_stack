@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import Papa from 'papaparse';
 
@@ -52,6 +52,17 @@ interface WaveDataRow {
   component_value: number;
 }
 
+interface RunTriggerStatus {
+  run_id: string | null;
+  state: string;
+  started_at: string | null;
+  finished_at: string | null;
+  exit_code: number | null;
+  error: string | null;
+  log_path: string | null;
+  latest_output_path: string | null;
+}
+
 type CycleSortKey = 'period_days' | 'norm_power' | 'presence_ratio' | 'stability';
 type SortDirection = 'asc' | 'desc';
 
@@ -67,7 +78,7 @@ function periodKey(period: number) {
 
 // --- Main Dashboard Component ---
 function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
-  // Using hardcoded series list as we dropped the API proxying this logic. We could fetch from /data/latest/summary.json globally
+  // Keep series options explicit for now; data payloads still come from mounted artifacts.
   const [seriesId, setSeriesId] = useState(defaultSeries);
   const [summary, setSummary] = useState<SummaryData | null>(null);
   const [priceData, setPriceData] = useState<[string, number][]>([]);
@@ -75,6 +86,9 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
   const [allStableCycles, setAllStableCycles] = useState<CycleData[]>([]);
   const [waveDataByPeriod, setWaveDataByPeriod] = useState<Record<string, [string, number][]>>({});
   const [wavesError, setWavesError] = useState<string | null>(null);
+  const [runStatus, setRunStatus] = useState<RunTriggerStatus | null>(null);
+  const [runTriggerBusy, setRunTriggerBusy] = useState(false);
+  const [runStatusError, setRunStatusError] = useState<string | null>(null);
 
   // UI State
   const [selectedCycles, setSelectedCycles] = useState<Set<string>>(new Set());
@@ -85,6 +99,44 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
     () => allStableCycles.reduce((maxValue, cycle) => Math.max(maxValue, cycle.stability_score || 0), 0),
     [allStableCycles]
   );
+
+  const refreshRunStatus = useCallback(async () => {
+    try {
+      const response = await fetch('/api/run/status');
+      if (!response.ok) {
+        throw new Error(`status request failed (${response.status})`);
+      }
+      const payload = (await response.json()) as RunTriggerStatus;
+      setRunStatus(payload);
+      setRunStatusError(null);
+    } catch (_error) {
+      setRunStatusError('Run API unavailable (read-only mode).');
+    }
+  }, []);
+
+  const triggerRun = useCallback(async () => {
+    setRunTriggerBusy(true);
+    setRunStatusError(null);
+    try {
+      const response = await fetch('/api/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirm: true })
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        const detail = typeof payload?.detail === 'string' ? payload.detail : `trigger failed (${response.status})`;
+        setRunStatusError(detail);
+        await refreshRunStatus();
+        return;
+      }
+      setRunStatus(payload as RunTriggerStatus);
+    } catch (_error) {
+      setRunStatusError('Run trigger failed (network/api error).');
+    } finally {
+      setRunTriggerBusy(false);
+    }
+  }, [refreshRunStatus]);
 
   // Load static data files
   useEffect(() => {
@@ -185,6 +237,16 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
     });
 
   }, [seriesId]);
+
+  useEffect(() => {
+    refreshRunStatus();
+    const timerId = window.setInterval(() => {
+      refreshRunStatus();
+    }, 10000);
+    return () => {
+      window.clearInterval(timerId);
+    };
+  }, [refreshRunStatus]);
 
   // Toggle cycle selection
   const toggleCycle = (period: number) => {
@@ -405,6 +467,9 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
     };
   }, [spectrumData, selectedCycles, allStableCycles]);
 
+  const isRunActive = runStatus?.state === 'starting' || runStatus?.state === 'running';
+  const runStateLabel = runStatus?.state ? runStatus.state.toUpperCase() : 'UNKNOWN';
+
 
   return (
     <div className="flex flex-col w-full h-full p-2 gap-2">
@@ -414,8 +479,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
           <h1 className="text-xl font-bold tracking-tight text-white">Fourier Cycles</h1>
           <span className="text-slate-500 font-mono text-sm">{summary ? `${summary.source.toUpperCase()}:${summary.series}` : 'Loading...'}</span>
         </div>
-        <div className="flex gap-2">
-          {/* Mock Series Switcher for Demo */}
+        <div className="flex gap-2 items-center">
           <select
             className="bg-slate-800 border-none text-slate-200 text-sm rounded outline-none px-2 py-1 cursor-pointer focus:ring-1 focus:ring-slate-600"
             value={seriesId}
@@ -425,6 +489,18 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
             <option value="yahoo-btc-usd">Bitcoin (BTC)</option>
             <option value="fred-dgs10">10Y Treasury (DGS10)</option>
           </select>
+          <button
+            onClick={() => void triggerRun()}
+            disabled={runTriggerBusy || isRunActive}
+            className={`px-3 py-1 text-xs rounded border transition-colors ${
+              runTriggerBusy || isRunActive
+                ? 'border-slate-700 text-slate-500 cursor-not-allowed'
+                : 'border-emerald-500 text-emerald-300 hover:bg-emerald-600/20'
+            }`}
+          >
+            {runTriggerBusy ? 'Starting...' : isRunActive ? 'Run active' : 'Run now'}
+          </button>
+          <span className="text-xs text-slate-400 font-mono">{runStateLabel}</span>
         </div>
       </div>
 
@@ -557,7 +633,9 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
 
           <div className="p-3 border-t border-slate-800 text-xs text-slate-600 text-center bg-slate-900/80">
             Total stable: {allStableCycles.length} | Selected: {selectedCycles.size}
+            {runStatus?.run_id ? ` | Last trigger: ${runStatus.run_id}` : ''}
             {wavesError ? ` | ${wavesError}` : ''}
+            {runStatusError ? ` | ${runStatusError}` : ''}
           </div>
 
         </div>
