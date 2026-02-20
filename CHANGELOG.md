@@ -25,6 +25,7 @@ This project follows a Keep a Changelog style.
 - `scripts/check_memory_hygiene.sh` for lightweight structure/size drift checks on `MEMORY.md` (warn-first).
 
 ### Changed
+- `AGENTS.md` Arbeitsstil now includes an explicit mandatory helpfulness rule: solution-first delivery plus concrete, verifiable workarounds on blockers.
 - Main documentation strategy consolidated toward minimal, non-redundant root docs.
 - Continuity doc migrated from `HANDOFF.md` to `MEMORY.md` (snapshot + long-term memory in one file).
 - `TODO.md` reduced to active tasks only.
@@ -49,9 +50,19 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles-ui` right-hand cycle table now supports click-to-sort on `Period`, `Power`, `Presence`, and `Stability (0-1)` headers (toggle asc/desc).
 - `fourier-cycles-ui` now shows a `Run now` control and run-state badge backed by `/api/run/status` polling.
 - `fourier-cycles/ui/nginx.conf` now proxies `/api/*` to the internal `fourier-cycles-api` service without exposing a new host port.
+- `fourier-cycles/tools/open_fourier_debug.bat` now auto-retries SSH tunnel establishment and waits briefly for local Chrome debug-port readiness before each attempt.
+- `fourier-cycles/tools/open_fourier_debug.bat` now rotates remote DevTools ports on repeated SSH failures (default span `9223..9233`) to avoid getting stuck on a single occupied reverse-forward port.
+- `fourier-cycles/tools/open_fourier_debug.bat` now enforces key-only SSH (`BatchMode=yes`, `IdentitiesOnly=yes`, configurable `SSH_KEY_PATH`) to prevent password prompts during tunnel retries.
+- `fourier-cycles/tools/open_fourier_debug.bat` now performs a fast SSH key-auth precheck and fails closed when auth is invalid, instead of retrying with unusable credentials.
+- `fourier-cycles/tools/open_fourier_debug.bat` now uses explicit host-key policy + connect timeout (`SSH_STRICT_HOST_KEY_CHECKING=accept-new`, `SSH_CONNECT_TIMEOUT_SEC`) and shows auth-check progress to avoid silent hangs before the first tunnel attempt.
+- `fourier-cycles/tools/open_fourier_debug.bat` now verifies local Chrome readiness via DevTools endpoint (`/json/version`) with a locale-independent fallback, preventing false negatives on non-English Windows `netstat` output.
+- `fourier-cycles/tools/open_fourier_debug.bat` now falls back to a UI-only SSH tunnel (`-L`) when reverse DevTools forwarding (`-R`) fails due occupied remote ports, reducing UI/API flapping during retries.
+- `fourier-cycles/tools/open_fourier_debug.bat` now auto-rotates local UI forward ports when the default (`127.0.0.1:13010`) is already occupied, preventing immediate `connection refused` on stale/blocked local forwards.
+- `fourier-cycles/docker-compose.webapp.yml` healthchecks were hardened: API now uses a Python-based local HTTP probe (`127.0.0.1:8080`) and UI checks use `127.0.0.1:80` to avoid localhost/IPv6 false negatives.
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.
 - `fourier-cycles` reconstruction chart labeling now clearly indicates transformed signal values (returns), avoiding confusion with raw price charts.
 - `fourier-cycles` superposition visibility: UI now preselects backend-selected cycles and shows an explicit warning when `waves.csv` is missing/unreadable.
 - `fourier-cycles` rolling stability now uses local band-power around candidate frequencies instead of single nearest-bin power, reducing leakage-driven false positives in short windows.
+- `fourier-cycles/tools/open_fourier_debug.bat` now correctly handles the `ErrorLevel` during port-availability checks, preventing silent instant crashes when ports are available.
