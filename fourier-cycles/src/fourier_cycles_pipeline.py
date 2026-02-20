@@ -831,11 +831,19 @@ def process_single_series(
     )
     # We need cycle component waves for ALL stable cycles, not just selected ones.
     # Otherwise the UI checkboxes for non-selected stable cycles cannot draw anything.
-    components = reconstruct_cycle_components(
+    stable_components = reconstruct_cycle_components(
         signal_len=len(signal),
         full_freqs=full_freqs,
         full_coeff=full_coeff,
         selected_cycles=stable_cycles,
+    )
+    
+    # We still need the subset of components for the static PNG plot
+    selected_components = reconstruct_cycle_components(
+        signal_len=len(signal),
+        full_freqs=full_freqs,
+        full_coeff=full_coeff,
+        selected_cycles=selected_cycles,
     )
 
     series_dir = run_dir / f"{source}-{_slug(series_name)}"
@@ -851,7 +859,7 @@ def process_single_series(
         series_dir / "waves.csv",
         signal_dates=signal_dates,
         selected_cycles=stable_cycles,
-        components=components,
+        components=stable_components,
     )
     save_plot_price(
         series_dir / "price.png",
@@ -868,7 +876,7 @@ def process_single_series(
     save_plot_cycle_components(
         series_dir / "cycle_components.png",
         signal_dates,
-        components,
+        selected_components,
         f"{source}:{series_name} top cycle components",
     )
 
