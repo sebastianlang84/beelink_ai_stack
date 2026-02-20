@@ -42,6 +42,7 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles` UI charts now use mouse-wheel zoom on the X-axis only; Y-axis auto-scales dynamically to the visible window for tighter readability.
 - Secrets policy filename shortened to `docs/policies/policy_secrets_env.md` and root references updated.
 - `fourier-cycles` now exports `waves.csv` per series, and the UI uses these real component vectors for individual overlays and superposition (no mock overlay values).
+- `fourier-cycles` cycles now include `stability_score_norm` (0..1 per series) and the UI displays normalized stability instead of raw tiny score values.
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.

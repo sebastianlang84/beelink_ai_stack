@@ -453,6 +453,13 @@ def evaluate_stability(
             }
         )
 
+    max_stability_score = max((cycle["stability_score"] for cycle in candidates), default=0.0)
+    for cycle in candidates:
+        if max_stability_score > 0:
+            cycle["stability_score_norm"] = cycle["stability_score"] / max_stability_score
+        else:
+            cycle["stability_score_norm"] = 0.0
+
     candidates.sort(
         key=lambda item: (item["stable"], item["stability_score"], item["norm_power"]),
         reverse=True,
@@ -711,6 +718,7 @@ def write_cycles_csv(path: Path, cycles: list[dict[str, Any]]) -> None:
         "presence_ratio",
         "median_window_power_ratio",
         "stability_score",
+        "stability_score_norm",
         "stable",
     ]
     with path.open("w", newline="", encoding="utf-8") as handle:

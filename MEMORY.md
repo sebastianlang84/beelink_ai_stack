@@ -10,6 +10,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - Documentation is split between `agents/` (governance/memory/meta) and `docs/` (service/ops/architecture), plus archive (`docs/archive/`).
 - `fourier-cycles/` is operational (batch pipeline + static ECharts UI) with browser-debug tunnel workflow documented and available.
 - `fourier-cycles` UI superposition uses backend-exported component vectors (`waves.csv`), preselects backend-selected cycles, and warns explicitly if wave data is missing.
+- `fourier-cycles` stability display is normalized to `0..1` (`stability_score_norm`) for clearer interpretation.
 - Historical timeline entries were moved out of this file to `agents/memory/daily/`.
 
 ## 2) Long-Term Memory

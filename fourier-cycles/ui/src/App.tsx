@@ -23,6 +23,7 @@ interface CycleData {
   norm_power: number;
   presence_ratio: number;
   stability_score: number;
+  stability_score_norm?: number;
   stable: boolean;
 }
 
@@ -75,6 +76,10 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
   // UI State
   const [selectedCycles, setSelectedCycles] = useState<Set<string>>(new Set());
   const [isSuperpose, setIsSuperpose] = useState(true);
+  const maxLegacyStability = useMemo(
+    () => allStableCycles.reduce((maxValue, cycle) => Math.max(maxValue, cycle.stability_score || 0), 0),
+    [allStableCycles]
+  );
 
   // Load static data files
   useEffect(() => {
@@ -430,13 +435,17 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
                   <th className="px-3 py-2 font-medium">Period</th>
                   <th className="px-3 py-2 font-medium">Power</th>
                   <th className="px-3 py-2 font-medium">Presence</th>
-                  <th className="px-3 py-2 font-medium">Stability</th>
+                  <th className="px-3 py-2 font-medium">Stability (0-1)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
                 {allStableCycles.map((cycle, i) => {
                   const isSelected = selectedCycles.has(periodKey(cycle.period_days));
                   const drawColor = isSuperpose ? '#fbbf24' : getCycleColor(i);
+                  const normalizedStabilityRaw = typeof cycle.stability_score_norm === 'number'
+                    ? cycle.stability_score_norm
+                    : (maxLegacyStability > 0 ? cycle.stability_score / maxLegacyStability : 0);
+                  const normalizedStability = Math.max(0, Math.min(1, normalizedStabilityRaw));
                   return (
                     <tr
                       key={i}
@@ -462,7 +471,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
                         {(cycle.presence_ratio * 100).toFixed(0)}%
                       </td>
                       <td className="px-3 py-2">
-                        {cycle.stability_score.toFixed(3)}
+                        {normalizedStability.toFixed(3)}
                       </td>
                     </tr>
                   )

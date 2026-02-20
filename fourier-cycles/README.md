@@ -29,7 +29,7 @@ Pro Lauf:
 - `run_<timestamp>/<source>-<series>/spectrum.png` - globales Spektrum
 - `run_<timestamp>/<source>-<series>/stability.png` - Rolling-Power/Presence je Cycle
 - `run_<timestamp>/<source>-<series>/reconstruction.png` - transformiertes Signal (Returns) vs. rekonstruiertes Cycle-Signal
-- `run_<timestamp>/<source>-<series>/cycles.csv` - finale Cycle-Metriken
+- `run_<timestamp>/<source>-<series>/cycles.csv` - finale Cycle-Metriken (inkl. `stability_score` roh und `stability_score_norm` 0..1)
 - `run_<timestamp>/<source>-<series>/waves.csv` - echte per-Cycle Zeitreihen-Komponenten fuer UI-Superposition
 
 Zusatz:
@@ -48,6 +48,10 @@ Ein Cycle gilt als stabil, wenn er in Rolling-Windows haeufig genug auftaucht:
 - Presence basiert auf Window-Power-Ratio >= `FOURIER_MIN_WINDOW_POWER_RATIO`
 
 Damit werden Peaks verworfen, die nur in einem kleinen Bruchteil des Zeitraums auftreten.
+
+Hinweis zur Kennzahl:
+- `stability_score` ist ein Rohscore (`presence_ratio * norm_power`) und deshalb oft klein.
+- `stability_score_norm` ist je Serie auf `0..1` skaliert (`1 = stabilster Cycle im aktuellen Kandidatenpool`).
 
 Ausgabe-Selektion fuer Visualisierung/Reporting:
 - Top `FOURIER_SELECTION_TOP_K` Cycles (Default: 3)
