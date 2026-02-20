@@ -70,6 +70,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
   const [spectrumData, setSpectrumData] = useState<[number, number][]>([]);
   const [allStableCycles, setAllStableCycles] = useState<CycleData[]>([]);
   const [waveDataByPeriod, setWaveDataByPeriod] = useState<Record<string, [string, number][]>>({});
+  const [wavesError, setWavesError] = useState<string | null>(null);
 
   // UI State
   const [selectedCycles, setSelectedCycles] = useState<Set<string>>(new Set());
@@ -84,12 +85,20 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
     setPriceData([]);
     setSpectrumData([]);
     setWaveDataByPeriod({});
+    setWavesError(null);
     setSelectedCycles(new Set());
 
     // 1. Fetch Summary
     fetch(`/assets/data/latest/${seriesId}/summary.json`)
       .then(res => res.json())
-      .then(data => setSummary(data))
+      .then(data => {
+        setSummary(data);
+        const defaults = Array.isArray(data?.selected_cycles)
+          ? data.selected_cycles
+            .map((cycle: CycleData) => periodKey(cycle.period_days))
+          : [];
+        setSelectedCycles(new Set(defaults));
+      })
       .catch(e => console.error("Summary load error:", e));
 
     // 2. Fetch Price Series CSV
@@ -154,10 +163,16 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
           series.sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
         );
         setWaveDataByPeriod(grouped);
+        if (Object.keys(grouped).length === 0) {
+          setWavesError('No wave components found in waves.csv (rerun pipeline).');
+        } else {
+          setWavesError(null);
+        }
       },
       error: (error) => {
         console.error('Waves load error:', error);
         setWaveDataByPeriod({});
+        setWavesError('waves.csv missing or unreadable (rerun pipeline).');
       }
     });
 
@@ -465,6 +480,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
 
           <div className="p-3 border-t border-slate-800 text-xs text-slate-600 text-center bg-slate-900/80">
             Total stable: {allStableCycles.length} | Selected: {selectedCycles.size}
+            {wavesError ? ` | ${wavesError}` : ''}
           </div>
 
         </div>

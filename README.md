@@ -200,12 +200,13 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
 2. Shared Config setzen (non-secret): `.config.env.example` -> `.config.env`.
 3. Service-Config setzen (non-secret): `fourier-cycles/.config.env.example` -> `fourier-cycles/.config.env`.
 4. Run (vom Repo-Root):
-   - `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env -f fourier-cycles/docker-compose.yml run --rm fourier-cycles`
+   - `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env -f fourier-cycles/docker-compose.yml run --rm --build fourier-cycles`
 5. Ergebnis: Artefakte unter `${FOURIER_OUTPUT_DIR_HOST}` (Default: `/home/wasti/ai_stack/fourier-cycles/output`); `latest` zeigt auf den letzten Lauf.
    - Preis/Level direkt: `price.png`
    - Cycle-Overlay auf Preis: `price_cycle_overlay.png`
    - Top-Cycle-Komponenten: `cycle_components.png`
    - UI-Rohdaten fuer echte Superposition: `waves.csv`
+   - Bei UI-Hinweis auf fehlendes `waves.csv`: Run erneut mit `--build` starten.
 - Ops/Details: `fourier-cycles/README.md:1`
 
 ## Windows Browser Debug + MCP DevTools (Fourier UI)

@@ -13,7 +13,7 @@ docker compose \
   --env-file .config.env \
   --env-file fourier-cycles/.config.env \
   -f fourier-cycles/docker-compose.yml \
-  run --rm fourier-cycles
+  run --rm --build fourier-cycles
 ```
 
 ## Outputs
@@ -34,6 +34,12 @@ Pro Lauf:
 
 Zusatz:
 - `latest` Symlink auf den zuletzt erfolgreichen Lauf (praktisch fuer OpenClaw/Telegram Versand).
+
+## Troubleshooting
+
+- Wenn in der UI bei Superposition keine Kurve erscheint und ein `waves.csv` Hinweis auftaucht:
+  - Pipeline neu laufen lassen: `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env -f fourier-cycles/docker-compose.yml run --rm --build fourier-cycles`
+  - UI neu laden (arbeitet immer gegen `output/latest`).
 
 ## Stability-Logik
 
