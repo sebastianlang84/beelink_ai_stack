@@ -23,8 +23,15 @@ This project follows a Keep a Changelog style.
 - `agents/memory/daily/2026-02-20.md` as first episodic memory daily entry after slimming root continuity memory.
 - `agents/adr/20260220-agent-docs-split.md` to formalize the `agents/` vs `docs/` documentation boundary.
 - `scripts/check_memory_hygiene.sh` for lightweight structure/size drift checks on `MEMORY.md` (warn-first).
+- `fourier-cycles/METHODOLOGY.md` as detailed, implementation-bound method specification (preprocessing, rolling harmonic fit, SNR/presence, phase coherence, surrogate p-values, ranking, selection).
 
 ### Changed
+- `fourier-cycles` pipeline now computes absolute cycle metrics (`amp_*`, `snr_*`, `fit_score_phase_free`, `phase_locking_r`, `best_lag_days_median`, `lag_iqr`, `margin_median`, `p_value_bandmax`) and keeps relative metrics (`rank_score_norm`, `stability_score_norm`) explicitly separated.
+- `fourier-cycles` candidate discovery now uses local peak detection in period space (with distance guard) instead of plain top-power slicing.
+- `fourier-cycles` rolling robustness now supports multi-scale windows via `FOURIER_ROLLING_WINDOWS_DAYS` + `FOURIER_ROLLING_STEP_DAYS`, plus phase-invariant harmonic regression per window.
+- `fourier-cycles` selection logic now supports strict absolute filters (presence, phase coherence, amplitude, p-value) with fail-open fallback to keep default overlays/PNGs usable when strict gates are too restrictive.
+- `fourier-cycles-ui` cycle table now displays absolute metrics (`Amp`, `SNR`, `Presence`, `Phase-R`, `p-bandmax`) and a clearly labeled relative sort metric (`Rank (rel)`).
+- `fourier-cycles/.config.env.example` now documents advanced analysis controls (signal mode, detrending, SNR bands/thresholds, surrogate settings, ranking weights, strict selection thresholds).
 - `fourier-cycles` default analysis period band is now `30..300` days (`FOURIER_MIN_PERIOD_DAYS=30`, `FOURIER_MAX_PERIOD_DAYS=300`) to prioritize medium-term cycles over very short 1-10 day components.
 - `fourier-cycles` presence calculation now uses a dynamically scaled statistical noise floor (based on band width relative to the full frequency range) instead of a hardcoded 3% threshold, making cycle selection more physically meaningful.
 - `AGENTS.md` Arbeitsstil now includes an explicit mandatory helpfulness rule: solution-first delivery plus concrete, verifiable workarounds on blockers.

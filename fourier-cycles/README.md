@@ -29,7 +29,7 @@ Pro Lauf:
 - `run_<timestamp>/<source>-<series>/spectrum.png` - globales Spektrum
 - `run_<timestamp>/<source>-<series>/stability.png` - Rolling-Power/Presence je Cycle
 - `run_<timestamp>/<source>-<series>/reconstruction.png` - transformiertes Signal (Returns) vs. rekonstruiertes Cycle-Signal
-- `run_<timestamp>/<source>-<series>/cycles.csv` - alle als stabil markierten Cycle-Metriken (inkl. `stability_score` roh und `stability_score_norm` 0..1)
+- `run_<timestamp>/<source>-<series>/cycles.csv` - alle als stabil markierten Cycle-Metriken (absolute Robustheit + Signifikanz + relative Rank-Metrik)
 - `run_<timestamp>/<source>-<series>/waves.csv` - echte per-Cycle Zeitreihen-Komponenten fuer UI-Superposition
 
 Zusatz:
@@ -79,20 +79,30 @@ Hinweise:
 
 ## Stability-Logik
 
-Ein Cycle gilt als stabil, wenn er in Rolling-Windows haeufig genug auftaucht:
-- Window-Presence >= `FOURIER_MIN_PRESENCE_RATIO`
-- Presence basiert auf Window-Power-Ratio >= `FOURIER_MIN_WINDOW_POWER_RATIO`
-- Analyseband der Perioden: `FOURIER_MIN_PERIOD_DAYS..FOURIER_MAX_PERIOD_DAYS` (Repo-Default: `30..300` Tage)
+Methodik-Spezifikation:
+- `fourier-cycles/METHODOLOGY.md`
 
-Damit werden Peaks verworfen, die nur in einem kleinen Bruchteil des Zeitraums auftreten.
+Kurzfassung der jetzigen Logik:
+- Analyseband der Perioden: `FOURIER_MIN_PERIOD_DAYS..FOURIER_MAX_PERIOD_DAYS` (Repo-Default: `30..300` Tage)
+- Rolling-Windows (multi-scale): `FOURIER_ROLLING_WINDOWS_DAYS` mit `FOURIER_ROLLING_STEP_DAYS`
+- Pro Window je Kandidat:
+  - Band-Power-Ratio + SNR um die Zielfrequenz
+  - Harmonic Regression (phase-invariant) fuer Amplitude/Phase/Lag/Fit
+- Presence pro Window: `snr >= FOURIER_SNR_PRESENCE_THRESHOLD` und `band_power_ratio >= FOURIER_MIN_WINDOW_POWER_RATIO`
+- Aggregation je Periode:
+  - absolute Metriken: `amp_*`, `snr_*`, `presence_ratio`, `phase_locking_r`, `p_value_bandmax`
+  - relative Metriken: `rank_score_norm`, `stability_score_norm` (nur innerhalb eines Runs/Serie vergleichbar)
 
 Hinweis zur Kennzahl:
-- `stability_score` ist ein Rohscore (`presence_ratio * norm_power`) und deshalb oft klein.
-- `stability_score_norm` ist je Serie auf `0..1` skaliert (`1 = stabilster Cycle im aktuellen Kandidatenpool`).
+- `stability_score_norm` und `rank_score_norm` sind relative Rangwerte.
+- Absolute Interpretationen kommen aus `presence_ratio`, `snr_*`, `phase_locking_r`, `p_value_bandmax`, `amp_*`.
 
 Ausgabe-Selektion fuer Visualisierung/Reporting:
 - Bis zu `FOURIER_SELECTION_TOP_K` Cycles (Default: 3)
 - Presence >= `FOURIER_SELECTION_MIN_PRESENCE_RATIO` (Default: 0.60)
+- Phase-Coherence >= `FOURIER_SELECTION_MIN_PHASE_LOCKING_R` (Default: 0.40)
+- Signifikanz: `p_value_bandmax <= FOURIER_SELECTION_MAX_P_VALUE_BANDMAX` (Default: 1.00; fuer strengeres Filtering z. B. 0.05)
+- Mindest-Amplitude: `FOURIER_SELECTION_MIN_AMP_SIGMA` (Default: 0.20)
 - Mindest-Power via `FOURIER_SELECTION_MIN_NORM_POWER_PERCENTILE` (Default: 0.75)
 - Mindestabstand der Perioden via `FOURIER_SELECTION_MIN_PERIOD_DISTANCE_RATIO` (Default: 0.20)
 

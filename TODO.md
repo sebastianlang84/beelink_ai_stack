@@ -12,9 +12,9 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
   - Problem: Jede kleinste Änderung am Prompt/Modell löst einen massiven, teuren Backfill historischer Summaries aus (Fingerprint-Mismatch).
   - Ziel: Backfill sollte optional oder "soft" sein (z.B. nur für die letzten N Tage oder via explizitem CLI-Flag).
 - [ ] **Fourier analysis deepening (FRED + Yahoo)** [added by Claw 🦞]
-  - Define first target basket (symbols/series).
-  - Add significance/robustness checks (beyond raw DFT ranking).
-  - Document interpretation guardrails for non-forecast use.
+  - Tune strict absolute filters (`phase_locking_r`, `amp`, `p_value_bandmax`) against first production basket.
+  - Add optional `windows.csv` export (per-window amp/phase/snr/presence) for auditability.
+  - Add optional wavelet view for non-stationary activity windows.
 
 ## P2 (Later)
 - [ ] **Resource checks automation**

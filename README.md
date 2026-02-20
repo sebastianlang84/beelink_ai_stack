@@ -213,6 +213,7 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
    - UI: `http://127.0.0.1:${FOURIER_UI_HOST_PORT:-3010}`
    - Trigger: `POST /api/run` (Body `{"confirm":true}`), Status: `GET /api/run/status`
 - Ops/Details: `fourier-cycles/README.md:1`
+- Methodik (detailliert): `fourier-cycles/METHODOLOGY.md:1`
 
 ## Windows Browser Debug + MCP DevTools (Fourier UI)
 - Windows helper: `fourier-cycles/tools/open_fourier_debug.bat`

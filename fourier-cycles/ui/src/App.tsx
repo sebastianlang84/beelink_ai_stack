@@ -21,6 +21,11 @@ export default function App() {
 interface CycleData {
   period_days: number;
   norm_power: number;
+  amp_median?: number;
+  snr_median?: number;
+  phase_locking_r?: number;
+  p_value_bandmax?: number;
+  rank_score_norm?: number;
   presence_ratio: number;
   stability_score: number;
   stability_score_norm?: number;
@@ -63,7 +68,14 @@ interface RunTriggerStatus {
   latest_output_path: string | null;
 }
 
-type CycleSortKey = 'period_days' | 'norm_power' | 'presence_ratio' | 'stability';
+type CycleSortKey =
+  | 'period_days'
+  | 'amp_median'
+  | 'snr_median'
+  | 'presence_ratio'
+  | 'phase_locking_r'
+  | 'p_value_bandmax'
+  | 'rank';
 type SortDirection = 'asc' | 'desc';
 
 function paddedAxisRange(value: { min: number; max: number }, isMax: boolean) {
@@ -93,7 +105,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
   // UI State
   const [selectedCycles, setSelectedCycles] = useState<Set<string>>(new Set());
   const [isSuperpose, setIsSuperpose] = useState(true);
-  const [sortKey, setSortKey] = useState<CycleSortKey>('period_days');
+  const [sortKey, setSortKey] = useState<CycleSortKey>('rank');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const maxLegacyStability = useMemo(
     () => allStableCycles.reduce((maxValue, cycle) => Math.max(maxValue, cycle.stability_score || 0), 0),
@@ -275,23 +287,42 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
     return Math.max(0, Math.min(1, normalizedStabilityRaw));
   };
 
+  const getRankScore = (cycle: CycleData) => {
+    if (typeof cycle.rank_score_norm === 'number') {
+      return Math.max(0, Math.min(1, cycle.rank_score_norm));
+    }
+    return getNormalizedStability(cycle);
+  };
+
   const sortedStableCycles = useMemo(() => {
     const sorted = [...allStableCycles];
     sorted.sort((a, b) => {
       const left = sortKey === 'period_days'
         ? a.period_days
-        : sortKey === 'norm_power'
-          ? a.norm_power
-          : sortKey === 'presence_ratio'
-            ? a.presence_ratio
-            : getNormalizedStability(a);
+        : sortKey === 'amp_median'
+          ? (a.amp_median ?? 0)
+          : sortKey === 'snr_median'
+            ? (a.snr_median ?? 0)
+            : sortKey === 'presence_ratio'
+              ? a.presence_ratio
+              : sortKey === 'phase_locking_r'
+                ? (a.phase_locking_r ?? 0)
+                : sortKey === 'p_value_bandmax'
+                  ? (a.p_value_bandmax ?? 1)
+                  : getRankScore(a);
       const right = sortKey === 'period_days'
         ? b.period_days
-        : sortKey === 'norm_power'
-          ? b.norm_power
-          : sortKey === 'presence_ratio'
-            ? b.presence_ratio
-            : getNormalizedStability(b);
+        : sortKey === 'amp_median'
+          ? (b.amp_median ?? 0)
+          : sortKey === 'snr_median'
+            ? (b.snr_median ?? 0)
+            : sortKey === 'presence_ratio'
+              ? b.presence_ratio
+              : sortKey === 'phase_locking_r'
+                ? (b.phase_locking_r ?? 0)
+                : sortKey === 'p_value_bandmax'
+                  ? (b.p_value_bandmax ?? 1)
+                  : getRankScore(b);
 
       if (left === right) return b.period_days - a.period_days;
       return sortDirection === 'asc' ? left - right : right - left;
@@ -556,6 +587,9 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
               </button>
             </div>
           </div>
+          <div className="px-3 pb-2 text-xs text-slate-500 border-b border-slate-800/60">
+            Absolute: Amp/SNR/Presence/Phase-R/p-bandmax. Relative sorting only: Rank.
+          </div>
 
           {/* Table Scrollable Container */}
           <div className="flex-1 overflow-y-auto">
@@ -569,8 +603,13 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
                     </button>
                   </th>
                   <th className="px-3 py-2 font-medium">
-                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('norm_power')}>
-                      Power <span>{sortIndicator('norm_power')}</span>
+                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('amp_median')}>
+                      Amp (sigma) <span>{sortIndicator('amp_median')}</span>
+                    </button>
+                  </th>
+                  <th className="px-3 py-2 font-medium">
+                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('snr_median')}>
+                      SNR <span>{sortIndicator('snr_median')}</span>
                     </button>
                   </th>
                   <th className="px-3 py-2 font-medium">
@@ -579,8 +618,18 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
                     </button>
                   </th>
                   <th className="px-3 py-2 font-medium">
-                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('stability')}>
-                      Stability (0-1) <span>{sortIndicator('stability')}</span>
+                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('phase_locking_r')}>
+                      Phase-R <span>{sortIndicator('phase_locking_r')}</span>
+                    </button>
+                  </th>
+                  <th className="px-3 py-2 font-medium">
+                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('p_value_bandmax')}>
+                      p-bandmax <span>{sortIndicator('p_value_bandmax')}</span>
+                    </button>
+                  </th>
+                  <th className="px-3 py-2 font-medium">
+                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('rank')}>
+                      Rank (rel) <span>{sortIndicator('rank')}</span>
                     </button>
                   </th>
                 </tr>
@@ -589,7 +638,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
                 {sortedStableCycles.map((cycle) => {
                   const isSelected = selectedCycles.has(periodKey(cycle.period_days));
                   const drawColor = isSuperpose ? '#fbbf24' : cycleColorByPeriod[periodKey(cycle.period_days)] || '#fbbf24';
-                  const normalizedStability = getNormalizedStability(cycle);
+                  const rankScore = getRankScore(cycle);
                   return (
                     <tr
                       key={periodKey(cycle.period_days)}
@@ -609,20 +658,29 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
                         {cycle.period_days.toFixed(1)}d
                       </td>
                       <td className="px-3 py-2 font-mono text-indigo-400">
-                        {cycle.norm_power.toFixed(3)}
+                        {(cycle.amp_median ?? 0).toFixed(3)}
+                      </td>
+                      <td className="px-3 py-2">
+                        {(cycle.snr_median ?? 0).toFixed(2)}
                       </td>
                       <td className="px-3 py-2">
                         {(cycle.presence_ratio * 100).toFixed(0)}%
                       </td>
                       <td className="px-3 py-2">
-                        {normalizedStability.toFixed(3)}
+                        {(cycle.phase_locking_r ?? 0).toFixed(3)}
+                      </td>
+                      <td className="px-3 py-2">
+                        {(cycle.p_value_bandmax ?? 1).toFixed(3)}
+                      </td>
+                      <td className="px-3 py-2">
+                        {rankScore.toFixed(3)}
                       </td>
                     </tr>
                   )
                 })}
                 {sortedStableCycles.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-slate-600">
+                    <td colSpan={8} className="px-4 py-8 text-center text-slate-600">
                       No stable cycles found or still loading.
                     </td>
                   </tr>
