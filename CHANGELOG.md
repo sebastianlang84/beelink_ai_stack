@@ -45,6 +45,7 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles` cycles now include `stability_score_norm` (0..1 per series) and the UI displays normalized stability instead of raw tiny score values.
 - `fourier-cycles` cycle selection now enforces configured presence and minimum-period-distance constraints strictly (no rule-breaking backfill), so selection can return fewer than `selection_top_k`.
 - `fourier-cycles` `cycles.csv` now exports all stable cycles for UI exploration, while `summary.json` keeps the final selected subset for default overlays.
+- `fourier-cycles-ui` right-hand cycle table now supports click-to-sort on `Period`, `Power`, `Presence`, and `Stability (0-1)` headers (toggle asc/desc).
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.

@@ -12,6 +12,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - `fourier-cycles` UI superposition uses backend-exported component vectors (`waves.csv`), preselects backend-selected cycles, and warns explicitly if wave data is missing.
 - `fourier-cycles` stability display is normalized to `0..1` (`stability_score_norm`) for clearer interpretation.
 - `fourier-cycles` selection now enforces presence + period-distance thresholds strictly (no rule-breaking backfill); `cycles.csv` contains all stable cycles, while default overlays remain driven by `summary.json` selected cycles.
+- `fourier-cycles` cycle table (right panel) supports interactive sorting via header clicks for period/power/presence/stability.
 - Historical timeline entries were moved out of this file to `agents/memory/daily/`.
 
 ## 2) Long-Term Memory

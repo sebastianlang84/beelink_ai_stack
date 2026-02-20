@@ -52,6 +52,9 @@ interface WaveDataRow {
   component_value: number;
 }
 
+type CycleSortKey = 'period_days' | 'norm_power' | 'presence_ratio' | 'stability';
+type SortDirection = 'asc' | 'desc';
+
 function paddedAxisRange(value: { min: number; max: number }, isMax: boolean) {
   const span = value.max - value.min;
   const padding = span > 0 ? span * 0.03 : Math.max(Math.abs(value.max || 1) * 0.03, 1e-6);
@@ -76,6 +79,8 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
   // UI State
   const [selectedCycles, setSelectedCycles] = useState<Set<string>>(new Set());
   const [isSuperpose, setIsSuperpose] = useState(true);
+  const [sortKey, setSortKey] = useState<CycleSortKey>('period_days');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const maxLegacyStability = useMemo(
     () => allStableCycles.reduce((maxValue, cycle) => Math.max(maxValue, cycle.stability_score || 0), 0),
     [allStableCycles]
@@ -144,8 +149,6 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
       skipEmptyLines: true,
       complete: (results) => {
         const stableOnly = results.data.filter(c => c.stable === true || String(c.stable).toLowerCase() === 'true');
-        // Sort by period descending
-        stableOnly.sort((a, b) => b.period_days - a.period_days);
         setAllStableCycles(stableOnly);
       }
     });
@@ -195,6 +198,58 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
   // Generate color palette for cycles to keep them distinct
   const cycleColors = ["#f87171", "#34d399", "#60a5fa", "#fbbf24", "#a78bfa", "#f472b6", "#2dd4bf", "#e879f9"];
   const getCycleColor = (index: number) => cycleColors[index % cycleColors.length];
+  const cycleColorByPeriod = useMemo(() => {
+    const mapping: Record<string, string> = {};
+    allStableCycles.forEach((cycle, index) => {
+      mapping[periodKey(cycle.period_days)] = getCycleColor(index);
+    });
+    return mapping;
+  }, [allStableCycles]);
+
+  const getNormalizedStability = (cycle: CycleData) => {
+    const normalizedStabilityRaw = typeof cycle.stability_score_norm === 'number'
+      ? cycle.stability_score_norm
+      : (maxLegacyStability > 0 ? cycle.stability_score / maxLegacyStability : 0);
+    return Math.max(0, Math.min(1, normalizedStabilityRaw));
+  };
+
+  const sortedStableCycles = useMemo(() => {
+    const sorted = [...allStableCycles];
+    sorted.sort((a, b) => {
+      const left = sortKey === 'period_days'
+        ? a.period_days
+        : sortKey === 'norm_power'
+          ? a.norm_power
+          : sortKey === 'presence_ratio'
+            ? a.presence_ratio
+            : getNormalizedStability(a);
+      const right = sortKey === 'period_days'
+        ? b.period_days
+        : sortKey === 'norm_power'
+          ? b.norm_power
+          : sortKey === 'presence_ratio'
+            ? b.presence_ratio
+            : getNormalizedStability(b);
+
+      if (left === right) return b.period_days - a.period_days;
+      return sortDirection === 'asc' ? left - right : right - left;
+    });
+    return sorted;
+  }, [allStableCycles, sortKey, sortDirection, maxLegacyStability]);
+
+  const handleSort = (nextKey: CycleSortKey) => {
+    if (sortKey === nextKey) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+      return;
+    }
+    setSortKey(nextKey);
+    setSortDirection('desc');
+  };
+
+  const sortIndicator = (key: CycleSortKey) => {
+    if (sortKey !== key) return '↕';
+    return sortDirection === 'asc' ? '↑' : '↓';
+  };
 
 
   // --- ECharts Options Generation ---
@@ -217,7 +272,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
       .filter(cycle => selectedCycles.has(periodKey(cycle.period_days)))
       .map((cycle, index) => ({
         cycle,
-        color: getCycleColor(index),
+        color: cycleColorByPeriod[periodKey(cycle.period_days)] || getCycleColor(index),
         points: waveDataByPeriod[periodKey(cycle.period_days)] || []
       }))
       .filter(item => item.points.length > 0);
@@ -283,7 +338,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
       series: series,
       backgroundColor: 'transparent'
     };
-  }, [priceData, selectedCycles, isSuperpose, allStableCycles, waveDataByPeriod]);
+  }, [priceData, selectedCycles, isSuperpose, allStableCycles, waveDataByPeriod, cycleColorByPeriod]);
 
 
   const spectrumChartOption = useMemo(() => {
@@ -432,23 +487,36 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
               <thead className="sticky top-0 bg-slate-900 shadow-md z-10 outline outline-1 outline-slate-800">
                 <tr>
                   <th className="px-3 py-2 font-medium w-8 text-center">+/-</th>
-                  <th className="px-3 py-2 font-medium">Period</th>
-                  <th className="px-3 py-2 font-medium">Power</th>
-                  <th className="px-3 py-2 font-medium">Presence</th>
-                  <th className="px-3 py-2 font-medium">Stability (0-1)</th>
+                  <th className="px-3 py-2 font-medium">
+                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('period_days')}>
+                      Period <span>{sortIndicator('period_days')}</span>
+                    </button>
+                  </th>
+                  <th className="px-3 py-2 font-medium">
+                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('norm_power')}>
+                      Power <span>{sortIndicator('norm_power')}</span>
+                    </button>
+                  </th>
+                  <th className="px-3 py-2 font-medium">
+                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('presence_ratio')}>
+                      Presence <span>{sortIndicator('presence_ratio')}</span>
+                    </button>
+                  </th>
+                  <th className="px-3 py-2 font-medium">
+                    <button className="inline-flex items-center gap-1 hover:text-white" onClick={() => handleSort('stability')}>
+                      Stability (0-1) <span>{sortIndicator('stability')}</span>
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {allStableCycles.map((cycle, i) => {
+                {sortedStableCycles.map((cycle) => {
                   const isSelected = selectedCycles.has(periodKey(cycle.period_days));
-                  const drawColor = isSuperpose ? '#fbbf24' : getCycleColor(i);
-                  const normalizedStabilityRaw = typeof cycle.stability_score_norm === 'number'
-                    ? cycle.stability_score_norm
-                    : (maxLegacyStability > 0 ? cycle.stability_score / maxLegacyStability : 0);
-                  const normalizedStability = Math.max(0, Math.min(1, normalizedStabilityRaw));
+                  const drawColor = isSuperpose ? '#fbbf24' : cycleColorByPeriod[periodKey(cycle.period_days)] || '#fbbf24';
+                  const normalizedStability = getNormalizedStability(cycle);
                   return (
                     <tr
-                      key={i}
+                      key={periodKey(cycle.period_days)}
                       className={`hover:bg-slate-800/50 transition-colors cursor-pointer ${isSelected ? 'bg-slate-800/30' : ''}`}
                       onClick={() => toggleCycle(cycle.period_days)}
                     >
@@ -476,7 +544,7 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
                     </tr>
                   )
                 })}
-                {allStableCycles.length === 0 && (
+                {sortedStableCycles.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-4 py-8 text-center text-slate-600">
                       No stable cycles found or still loading.
