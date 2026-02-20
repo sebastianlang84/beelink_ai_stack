@@ -66,11 +66,6 @@ set /a TUNNEL_ATTEMPT+=1
 echo [INFO] Tunnel attempt !TUNNEL_ATTEMPT! ...
 echo [INFO] Trying remote DevTools port !CURRENT_DEVTOOLS_REMOTE_PORT! ...
 
-REM Delayed UI launch in background to allow tunnel setup
-if !TUNNEL_ATTEMPT! EQU 1 (
-  start /b cmd /c "timeout /t 3 /nobreak >nul && start http://127.0.0.1:!FOURIER_UI_LOCAL_PORT!"
-)
-
 ssh -NT ^
   -n ^
   -i "%SSH_KEY_PATH%" ^
@@ -138,7 +133,7 @@ start "" "%CHROME_PATH%" ^
   --no-first-run ^
   --no-default-browser-check ^
   --user-data-dir="%DEBUG_PROFILE%" ^
-  "about:blank"
+  "http://127.0.0.1:%FOURIER_UI_LOCAL_PORT%"
 goto :eof
 
 :start_ui_only_tunnel
