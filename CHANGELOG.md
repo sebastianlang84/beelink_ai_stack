@@ -66,3 +66,4 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles` superposition visibility: UI now preselects backend-selected cycles and shows an explicit warning when `waves.csv` is missing/unreadable.
 - `fourier-cycles` rolling stability now uses local band-power around candidate frequencies instead of single nearest-bin power, reducing leakage-driven false positives in short windows.
 - `fourier-cycles/tools/open_fourier_debug.bat` now correctly handles the `ErrorLevel` during port-availability checks, preventing silent instant crashes when ports are available.
+- `fourier-cycles/tools/open_fourier_debug.bat` now bypasses local Windows port-forwarding restrictions by loading the UI directly via LAN IP, keeping only the secure `-R` reverse tunnel for the MCP DevTools connection.
