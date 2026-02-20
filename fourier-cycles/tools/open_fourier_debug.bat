@@ -10,8 +10,6 @@ if not defined SSH_STRICT_HOST_KEY_CHECKING set "SSH_STRICT_HOST_KEY_CHECKING=ac
 if not defined SSH_CONNECT_TIMEOUT_SEC set "SSH_CONNECT_TIMEOUT_SEC=8"
 
 if not defined FOURIER_UI_REMOTE_PORT set "FOURIER_UI_REMOTE_PORT=3010"
-if not defined FOURIER_UI_LOCAL_PORT set "FOURIER_UI_LOCAL_PORT=13010"
-if not defined FOURIER_UI_LOCAL_PORT_SPAN set "FOURIER_UI_LOCAL_PORT_SPAN=10"
 if not defined DEVTOOLS_LOCAL_PORT set "DEVTOOLS_LOCAL_PORT=9222"
 if not defined DEVTOOLS_REMOTE_PORT set "DEVTOOLS_REMOTE_PORT=9223"
 if not defined TUNNEL_RETRY_DELAY_SEC set "TUNNEL_RETRY_DELAY_SEC=5"
@@ -38,16 +36,9 @@ if not exist "%SSH_KEY_PATH%" (
   exit /b 1
 )
 
-call :prepare_local_ui_port
-if errorlevel 1 (
-  echo [ERROR] Failed to prepare local UI port.
-  pause
-  exit /b 1
-)
-
 echo [INFO] Starting SSH tunnel to %SSH_USER%@%SSH_HOST%:%SSH_PORT% ...
 echo [INFO] Keep this terminal open while debugging.
-echo [INFO] Local UI:  http://127.0.0.1:%FOURIER_UI_LOCAL_PORT%
+echo [INFO] Target UI:  http://%SSH_HOST%:%FOURIER_UI_REMOTE_PORT%
 echo [INFO] Remote DevTools endpoint on Linux: http://127.0.0.1:!CURRENT_DEVTOOLS_REMOTE_PORT!
 echo [INFO] SSH key: %SSH_KEY_PATH%
 echo [INFO] SSH host key policy: %SSH_STRICT_HOST_KEY_CHECKING%
@@ -79,7 +70,6 @@ ssh -NT ^
   -o ExitOnForwardFailure=yes ^
   -o ServerAliveInterval=30 ^
   -o ServerAliveCountMax=3 ^
-  -L 127.0.0.1:%FOURIER_UI_LOCAL_PORT%:127.0.0.1:%FOURIER_UI_REMOTE_PORT% ^
   -R 127.0.0.1:!CURRENT_DEVTOOLS_REMOTE_PORT!:127.0.0.1:%DEVTOOLS_LOCAL_PORT% ^
   -p %SSH_PORT% ^
   %SSH_USER%@%SSH_HOST% 2>"!SSH_ERR_FILE!"
@@ -89,9 +79,6 @@ if "!SSH_EXIT_CODE!"=="255" (
   findstr /C:"remote port forwarding failed for listen port" "!SSH_ERR_FILE!" >nul
   if not errorlevel 1 (
     echo [WARN] Remote DevTools port !CURRENT_DEVTOOLS_REMOTE_PORT! is busy.
-    echo [WARN] Starting UI-only tunnel (without reverse DevTools port) ...
-    call :start_ui_only_tunnel
-    set "SSH_EXIT_CODE=!ERRORLEVEL!"
   )
 )
 echo [WARN] SSH tunnel ended (exit !SSH_EXIT_CODE!). Retrying in %TUNNEL_RETRY_DELAY_SEC%s ...
@@ -133,27 +120,8 @@ start "" "%CHROME_PATH%" ^
   --no-first-run ^
   --no-default-browser-check ^
   --user-data-dir="%DEBUG_PROFILE%" ^
-  "http://127.0.0.1:%FOURIER_UI_LOCAL_PORT%"
+  "http://%SSH_HOST%:%FOURIER_UI_REMOTE_PORT%"
 goto :eof
-
-:start_ui_only_tunnel
-ssh -NT ^
-  -n ^
-  -i "%SSH_KEY_PATH%" ^
-  -o BatchMode=yes ^
-  -o IdentitiesOnly=yes ^
-  -o PreferredAuthentications=publickey ^
-  -o StrictHostKeyChecking=%SSH_STRICT_HOST_KEY_CHECKING% ^
-  -o ConnectTimeout=%SSH_CONNECT_TIMEOUT_SEC% ^
-  -o ConnectionAttempts=1 ^
-  -o LogLevel=ERROR ^
-  -o ExitOnForwardFailure=yes ^
-  -o ServerAliveInterval=30 ^
-  -o ServerAliveCountMax=3 ^
-  -L 127.0.0.1:%FOURIER_UI_LOCAL_PORT%:127.0.0.1:%FOURIER_UI_REMOTE_PORT% ^
-  -p %SSH_PORT% ^
-  %SSH_USER%@%SSH_HOST% 2>"!SSH_ERR_FILE!"
-exit /b !ERRORLEVEL!
 
 :ensure_local_devtools
 set /a WAITED_SEC=0
@@ -197,39 +165,3 @@ if !NEXT_REMOTE_PORT! NEQ !CURRENT_DEVTOOLS_REMOTE_PORT! (
   echo [WARN] Next remote DevTools endpoint: http://127.0.0.1:!CURRENT_DEVTOOLS_REMOTE_PORT!
 )
 goto :eof
-
-:prepare_local_ui_port
-set "UI_LOCAL_PORT_START=%FOURIER_UI_LOCAL_PORT%"
-set /a UI_LOCAL_PORT_MAX=%FOURIER_UI_LOCAL_PORT% + %FOURIER_UI_LOCAL_PORT_SPAN%
-set /a UI_LOCAL_PORT_TRIES=0
-:prepare_local_ui_port_loop
-call :is_local_ui_port_busy
-if errorlevel 1 (
-  exit /b 0
-)
-set /a UI_LOCAL_PORT_TRIES+=1
-if !UI_LOCAL_PORT_TRIES! GTR %FOURIER_UI_LOCAL_PORT_SPAN% (
-  echo [ERROR] No free local UI port found in range %UI_LOCAL_PORT_START%..%UI_LOCAL_PORT_MAX%.
-  echo [ERROR] Free one port manually or set FOURIER_UI_LOCAL_PORT/FOURIER_UI_LOCAL_PORT_SPAN.
-  pause
-  exit /b 1
-)
-echo [WARN] Local UI port !FOURIER_UI_LOCAL_PORT! is already in use. Trying next port...
-set /a NEXT_UI_LOCAL_PORT=!FOURIER_UI_LOCAL_PORT! + 1
-if !NEXT_UI_LOCAL_PORT! GTR !UI_LOCAL_PORT_MAX! (
-  set /a NEXT_UI_LOCAL_PORT=%UI_LOCAL_PORT_START%
-)
-set "FOURIER_UI_LOCAL_PORT=!NEXT_UI_LOCAL_PORT!"
-goto :prepare_local_ui_port_loop
-
-:is_local_ui_port_busy
-curl --silent --fail --max-time 1 "http://127.0.0.1:%FOURIER_UI_LOCAL_PORT%/healthz" >nul 2>&1
-if not errorlevel 1 (
-  echo [WARN] Existing tunnel/UI already reachable on http://127.0.0.1:%FOURIER_UI_LOCAL_PORT%.
-  exit /b 0
-)
-netstat -ano -p tcp | findstr /R /C:"127\.0\.0\.1:%FOURIER_UI_LOCAL_PORT% .*0\.0\.0\.0:0" >nul
-if not errorlevel 1 (
-  exit /b 0
-)
-exit /b 1
