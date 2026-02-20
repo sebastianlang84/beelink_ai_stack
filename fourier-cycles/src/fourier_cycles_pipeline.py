@@ -427,12 +427,23 @@ def evaluate_stability(
             if len(freqs) == 0:
                 ratios.append(0.0)
                 continue
-            idx = int(np.argmin(np.abs(freqs - freq)))
             total = float(np.sum(power))
             if total <= 0:
                 ratios.append(0.0)
                 continue
-            ratios.append(float(power[idx] / total))
+            if len(freqs) > 1:
+                local_step = float(np.median(np.diff(freqs)))
+            else:
+                local_step = freq
+            local_step = max(local_step, 1e-12)
+            # Use a narrow local band to reduce nearest-bin leakage artifacts in short windows.
+            band_half_width = max(local_step * 1.5, freq * 0.05)
+            band_mask = np.abs(freqs - freq) <= band_half_width
+            if not np.any(band_mask):
+                ratios.append(0.0)
+                continue
+            band_power = float(np.sum(power[band_mask]))
+            ratios.append(float(band_power / total))
 
         presence_ratio = sum(r >= cfg.min_window_power_ratio for r in ratios) / len(ratios)
         median_window_power_ratio = float(np.median(ratios))
@@ -477,28 +488,22 @@ def select_cycles_for_output(
     if not evaluated_cycles:
         return []
 
-    norm_powers = np.array([cycle["norm_power"] for cycle in evaluated_cycles], dtype=np.float64)
+    eligible = [
+        cycle
+        for cycle in evaluated_cycles
+        if cycle["stable"] and cycle["presence_ratio"] >= cfg.selection_min_presence_ratio
+    ]
+    if not eligible:
+        return []
+
+    norm_powers = np.array([cycle["norm_power"] for cycle in eligible], dtype=np.float64)
     power_threshold = float(
         np.quantile(norm_powers, cfg.selection_min_norm_power_percentile, method="linear")
     )
 
-    filtered = [
-        cycle
-        for cycle in evaluated_cycles
-        if cycle["stable"]
-        and cycle["presence_ratio"] >= cfg.selection_min_presence_ratio
-        and cycle["norm_power"] >= power_threshold
-    ]
+    filtered = [cycle for cycle in eligible if cycle["norm_power"] >= power_threshold]
     if not filtered:
-        filtered = [
-            cycle
-            for cycle in evaluated_cycles
-            if cycle["stable"] and cycle["presence_ratio"] >= cfg.selection_min_presence_ratio
-        ]
-    if not filtered:
-        filtered = [cycle for cycle in evaluated_cycles if cycle["stable"]]
-    if not filtered:
-        filtered = list(evaluated_cycles)
+        filtered = list(eligible)
 
     ranked = sorted(
         filtered,
@@ -514,14 +519,6 @@ def select_cycles_for_output(
             for existing in selected
         )
         if too_close:
-            continue
-        selected.append(cycle)
-        if len(selected) >= cfg.selection_top_k:
-            return selected
-
-    # Backfill if spacing filter removed too many cycles.
-    for cycle in ranked:
-        if cycle in selected:
             continue
         selected.append(cycle)
         if len(selected) >= cfg.selection_top_k:
@@ -819,7 +816,7 @@ def process_single_series(
         series_dir / "signal.csv", index=False
     )
     spectrum.to_csv(series_dir / "spectrum.csv", index=False)
-    write_cycles_csv(series_dir / "cycles.csv", selected_cycles)
+    write_cycles_csv(series_dir / "cycles.csv", stable_cycles)
     write_waves_csv(
         series_dir / "waves.csv",
         signal_dates=signal_dates,

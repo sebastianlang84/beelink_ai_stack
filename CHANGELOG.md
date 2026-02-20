@@ -43,8 +43,11 @@ This project follows a Keep a Changelog style.
 - Secrets policy filename shortened to `docs/policies/policy_secrets_env.md` and root references updated.
 - `fourier-cycles` now exports `waves.csv` per series, and the UI uses these real component vectors for individual overlays and superposition (no mock overlay values).
 - `fourier-cycles` cycles now include `stability_score_norm` (0..1 per series) and the UI displays normalized stability instead of raw tiny score values.
+- `fourier-cycles` cycle selection now enforces configured presence and minimum-period-distance constraints strictly (no rule-breaking backfill), so selection can return fewer than `selection_top_k`.
+- `fourier-cycles` `cycles.csv` now exports all stable cycles for UI exploration, while `summary.json` keeps the final selected subset for default overlays.
 
 ### Fixed
 - `fourier-cycles` run summary serialization now handles date fields correctly; batch run no longer fails at `summary.json` write.
 - `fourier-cycles` reconstruction chart labeling now clearly indicates transformed signal values (returns), avoiding confusion with raw price charts.
 - `fourier-cycles` superposition visibility: UI now preselects backend-selected cycles and shows an explicit warning when `waves.csv` is missing/unreadable.
+- `fourier-cycles` rolling stability now uses local band-power around candidate frequencies instead of single nearest-bin power, reducing leakage-driven false positives in short windows.

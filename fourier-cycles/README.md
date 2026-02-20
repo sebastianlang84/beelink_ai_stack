@@ -29,7 +29,7 @@ Pro Lauf:
 - `run_<timestamp>/<source>-<series>/spectrum.png` - globales Spektrum
 - `run_<timestamp>/<source>-<series>/stability.png` - Rolling-Power/Presence je Cycle
 - `run_<timestamp>/<source>-<series>/reconstruction.png` - transformiertes Signal (Returns) vs. rekonstruiertes Cycle-Signal
-- `run_<timestamp>/<source>-<series>/cycles.csv` - finale Cycle-Metriken (inkl. `stability_score` roh und `stability_score_norm` 0..1)
+- `run_<timestamp>/<source>-<series>/cycles.csv` - alle als stabil markierten Cycle-Metriken (inkl. `stability_score` roh und `stability_score_norm` 0..1)
 - `run_<timestamp>/<source>-<series>/waves.csv` - echte per-Cycle Zeitreihen-Komponenten fuer UI-Superposition
 
 Zusatz:
@@ -54,10 +54,14 @@ Hinweis zur Kennzahl:
 - `stability_score_norm` ist je Serie auf `0..1` skaliert (`1 = stabilster Cycle im aktuellen Kandidatenpool`).
 
 Ausgabe-Selektion fuer Visualisierung/Reporting:
-- Top `FOURIER_SELECTION_TOP_K` Cycles (Default: 3)
+- Bis zu `FOURIER_SELECTION_TOP_K` Cycles (Default: 3)
 - Presence >= `FOURIER_SELECTION_MIN_PRESENCE_RATIO` (Default: 0.60)
 - Mindest-Power via `FOURIER_SELECTION_MIN_NORM_POWER_PERCENTILE` (Default: 0.75)
 - Mindestabstand der Perioden via `FOURIER_SELECTION_MIN_PERIOD_DISTANCE_RATIO` (Default: 0.20)
+
+Hinweise zur Strenge:
+- Kein regelbrechendes Backfill: Wenn Filter/Abstand weniger Kandidaten zulassen, bleiben es weniger als `FOURIER_SELECTION_TOP_K`.
+- Rolling-Window-Stabilitaet nutzt lokale Band-Power um die Zielfrequenz (statt nur eines einzelnen naechsten FFT-Bins), um Leakage-Artefakte zu reduzieren.
 
 ## Telegram-Integration (ohne neue UI)
 
