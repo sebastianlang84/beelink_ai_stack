@@ -4,6 +4,7 @@ Purpose: Navigation-only entrypoint.
 
 ## Core Docs
 - `AGENTS.md` - Normative agent/process rules
+- `agents-init.md` - One-shot Bootstrap fuer neue Projekte (nach erfolgreichem Setup loeschen)
 - `README.md` - Operator guide (setup/run/ops)
 - `MEMORY.md` - Current snapshot + long-term memory for next context
 - `TODO.md` - Active work only

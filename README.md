@@ -251,6 +251,7 @@ Wenn wir private Repos (z. B. TranscriptMiner) verwenden, muss **SSH-Zugriff** a
 
 ## Repo-Struktur
 - `AGENTS.md` — Arbeitsregeln für Coding Agents
+- `agents-init.md` — One-shot Bootstrap fuer neue Repos (legt AGENTS/Memory/Guardrails an; wird nach Ausfuehrung geloescht)
 - `INDEX.md` — Reiner Link-Index (Startpunkt für Navigation)
 - `MEMORY.md` — Reset-sicheres Snapshot + Langzeitgedaechtnis (aktueller Stand + Continuity-Memory)
 - `agents/` — Agent-Governance, Memory und Meta-Methodik

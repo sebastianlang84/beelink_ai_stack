@@ -5,6 +5,7 @@ scope: always-loaded bootstrap; max ~200 lines
 Purpose: One-page snapshot plus reset-resilient long-term memory for the next context.
 
 ## 1) Current State
+- Reusable bootstrap spec `agents-init.md` exists for new repositories to scaffold AGENTS/memory/guardrails with an explicit self-delete contract after setup.
 - Open WebUI stack is pinned to `0.8.3`; upgrade status is stable.
 - Root continuity model is `MEMORY.md` (snapshot + long-term memory), with rationale documented in `agents/adr/20260219-memory-md-replaces-handoff.md`.
 - Documentation is split between `agents/` (governance/memory/meta) and `docs/` (service/ops/architecture), plus archive (`docs/archive/`).

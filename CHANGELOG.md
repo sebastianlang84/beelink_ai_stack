@@ -5,6 +5,7 @@ This project follows a Keep a Changelog style.
 
 ## [Unreleased]
 ### Added
+- `agents-init.md` bootstrap spec to initialize AGENTS/memory/guardrails in fresh repositories, including a mandatory self-delete step after successful setup.
 - `INDEX.md` as root navigation entrypoint.
 - `docs/adr/` decision-tracking model introduced for documentation strategy.
 - `atlas` definition added to continuity memory as cross-context continuity mandate.
