@@ -54,6 +54,8 @@ Optionen (Auswahl):
 
 - nur Mining: `uv run python -m transcript_miner --config … --skip-index --skip-llm --skip-report`
 - Report-Sprache (wenn `report.llm` aktiv ist): `--report-lang de|en|both`
+- Summary-Backfill-Policy (run-spezifischer Override): `--summary-backfill-mode off|soft|full`
+- Soft-Window in Tagen (nur mit `soft`): `--summary-backfill-days <N>`
 
 ### Smoke-Checks (offline)
 

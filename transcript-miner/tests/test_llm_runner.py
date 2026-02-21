@@ -2,10 +2,18 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
-from transcript_ai_analysis.llm_runner import run_llm_analysis
+from common.config import load_config
+from common.run_summary import RunStats
+from transcript_ai_analysis.llm_runner import (
+    TranscriptRef,
+    _allow_regeneration_for_invalid_summary,
+    run_llm_analysis,
+    summarize_transcript_ref,
+)
 
 
 def _write_batch1_artefacts(batch1_dir: Path, refs: list[dict]) -> None:
@@ -175,3 +183,119 @@ analysis:
     # Note: currently no audit file is written if disabled.
     # llm_dir = run_root / "2_summaries"
     # assert (llm_dir / "audit.jsonl").exists()
+
+
+def test_allow_regeneration_for_invalid_summary_mode_off_blocks_soft_backfill(
+    tmp_path: Path,
+) -> None:
+    transcript_path = tmp_path / "t.txt"
+    transcript_path.write_text("hello", encoding="utf-8")
+    ref = TranscriptRef(
+        output_root=str(tmp_path),
+        channel_namespace="alpha",
+        video_id="vid1",
+        transcript_path=str(transcript_path),
+        metadata_path=None,
+    )
+    cfg = SimpleNamespace(
+        analysis=SimpleNamespace(
+            llm=SimpleNamespace(
+                summary_backfill_mode="off",
+                summary_backfill_days=14,
+            )
+        )
+    )
+
+    allow, reason = _allow_regeneration_for_invalid_summary(
+        cfg=cfg,
+        reason="missing_section:Summary",
+        ref=ref,
+        published_at="2020-01-01T00:00:00Z",
+    )
+    assert allow is False
+    assert reason == "mode_off"
+
+
+def test_summarize_transcript_ref_defers_soft_backfill_for_old_invalid_summary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("TM_LLM_BACKEND", "gemini_cli")
+    output_root = tmp_path / "output"
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        f"""
+youtube:
+  channels: ["@alpha"]
+output:
+  global: {output_root.as_posix()}
+  topic: investing
+analysis:
+  llm:
+    enabled: true
+    mode: per_video
+    model: google/gemini-3-flash-preview
+    system_prompt: |
+      s
+    user_prompt_template: |
+      {"{"}transcripts{"}"}
+    summary_backfill_mode: soft
+    summary_backfill_days: 14
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    cfg = load_config(config_path)
+
+    transcript_path = tmp_path / "video.txt"
+    transcript_path.write_text("transcript body", encoding="utf-8")
+    metadata_path = tmp_path / "video_meta.json"
+    metadata_path.write_text(
+        json.dumps(
+            {
+                "video_title": "Old Video",
+                "published_at": "2020-01-01T00:00:00Z",
+                "channel_id": "alpha-channel",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    ref = TranscriptRef(
+        output_root=str(output_root),
+        channel_namespace="alpha",
+        video_id="vid_old",
+        transcript_path=str(transcript_path),
+        metadata_path=str(metadata_path),
+    )
+
+    summary_path = cfg.output.get_summary_path(ref.video_id, channel_handle=ref.channel_namespace)
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    old_summary = "\n".join(
+        [
+            "# old summary",
+            "## Source",
+            "- topic: investing",
+            "- video_id: vid_old",
+            "- url: https://www.youtube.com/watch?v=vid_old",
+            "- title: Old Video",
+            "- channel_namespace: alpha",
+            "- published_at: 2020-01-01T00:00:00Z",
+            "- fetched_at: 2020-01-02T00:00:00Z",
+            "- info_density: medium",
+            "",
+        ]
+    )
+    summary_path.write_text(old_summary, encoding="utf-8")
+
+    def _never_call_gemini(*args, **kwargs):  # type: ignore[no-untyped-def]
+        raise AssertionError("LLM call must be skipped by soft backfill policy")
+
+    monkeypatch.setattr("transcript_ai_analysis.llm_runner._call_gemini_cli", _never_call_gemini)
+
+    stats = RunStats()
+    ok = summarize_transcript_ref(cfg=cfg, ref=ref, run_stats=stats)
+
+    assert ok is True
+    assert stats.summaries_skipped_backfill == 1
+    assert stats.summaries_healed == 0
+    assert summary_path.read_text(encoding="utf-8") == old_summary

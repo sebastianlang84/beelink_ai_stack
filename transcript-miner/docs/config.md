@@ -542,6 +542,8 @@ Weitere Felder zur Größenbegrenzung (Ist-Schema): `max_transcripts`, `max_char
   - `per_video_concurrency`: Max. parallele LLM Calls im `per_video` Modus (Default `1`).
   - `per_video_min_delay_s`: Globales Mindest-Delay zwischen per-video Calls (Sekunden).
   - `per_video_jitter_s`: Maximaler Jitter (Sekunden) für das per-video Rate-Limit.
+  - `summary_backfill_mode`: Verhalten für Re-Generierung **bestehender invalider** Summaries (`off|soft|full`, Default `soft`).
+  - `summary_backfill_days`: Nur bei `summary_backfill_mode=soft` relevant; Altersschwelle in Tagen für Auto-Re-Generierung (Default `14`).
   - `reasoning_effort`: Reasoning‑Stufe für kompatible Provider (`low|medium|high`, Default `high`).
   - `stream_summaries`: Wenn `true`, werden per-video Summaries **parallel** zum Transcript-Download erzeugt (Streaming/Queue).
   - `stream_worker_concurrency`: Anzahl paralleler Streaming-Worker (Default `1`).

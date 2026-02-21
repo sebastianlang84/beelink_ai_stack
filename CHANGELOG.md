@@ -26,6 +26,7 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles/METHODOLOGY.md` as detailed, implementation-bound method specification (preprocessing, rolling harmonic fit, SNR/presence, phase coherence, surrogate p-values, ranking, selection).
 
 ### Changed
+- `transcript-miner` summary regeneration now uses a configurable backfill policy (`off|soft|full`, default `soft` with day window), plus CLI overrides (`--summary-backfill-mode`, `--summary-backfill-days`) to avoid expensive historical auto-backfills after prompt/model changes.
 - `fourier-cycles` pipeline now computes absolute cycle metrics (`amp_*`, `snr_*`, `fit_score_phase_free`, `phase_locking_r`, `best_lag_days_median`, `lag_iqr`, `margin_median`, `p_value_bandmax`) and keeps relative metrics (`rank_score_norm`, `stability_score_norm`) explicitly separated.
 - `fourier-cycles` candidate discovery now uses local peak detection in period space (with distance guard) instead of plain top-power slicing.
 - `fourier-cycles` rolling robustness now supports multi-scale windows via `FOURIER_ROLLING_WINDOWS_DAYS` + `FOURIER_ROLLING_STEP_DAYS`, plus phase-invariant harmonic regression per window.

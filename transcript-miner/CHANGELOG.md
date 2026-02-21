@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Changed
+- **Summary-Backfill Gate:** Bestehende strukturell invalide Summaries werden nicht mehr immer hart regeneriert; neues Policy-Feld `analysis.llm.summary_backfill_mode` (`off|soft|full`, default `soft`) mit `analysis.llm.summary_backfill_days` (default `14`) begrenzt teure Auto-Backfills.
+- **CLI-Override für Backfill:** Neue Run-Flags `--summary-backfill-mode` und `--summary-backfill-days` überschreiben die Backfill-Policy pro Lauf.
 - **Config-Timeouts wirksam verdrahtet:** `youtube.api_timeout_s` steuert YouTube-Data-API Calls, `analysis.llm.timeout_s` steuert Summary-LLM-Calls (OpenRouter + Gemini CLI), und `report.llm.timeout_s` steuert Report-LLM-Calls.
 - **Strikte Config-Validierung:** Unbekannte Keys werden jetzt abgewiesen (`extra=forbid`), um nicht verdrahtete oder falsch geschriebene Felder frueh sichtbar zu machen.
 - **Markdown-only Summaries:** Per-video Summaries werden jetzt als Strict Markdown (fixe Sections + Source-Block) erzeugt; JSON-Extract-Validatoren und task-spezifische Schema-Validatoren wurden entfernt.

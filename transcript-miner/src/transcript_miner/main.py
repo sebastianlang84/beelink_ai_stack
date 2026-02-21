@@ -608,6 +608,24 @@ def parse_arguments() -> argparse.Namespace:
         choices=["de", "en", "both"],
         help="Report language to generate when report.llm is enabled (de|en|both). Default: de.",
     )
+    parser.add_argument(
+        "--summary-backfill-mode",
+        choices=["off", "soft", "full"],
+        default=None,
+        help=(
+            "Override analysis.llm.summary_backfill_mode for this run: "
+            "off|soft|full."
+        ),
+    )
+    parser.add_argument(
+        "--summary-backfill-days",
+        type=int,
+        default=None,
+        help=(
+            "Override analysis.llm.summary_backfill_days for this run "
+            "(used with summary-backfill-mode=soft)."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -935,6 +953,18 @@ def _run_with_parsed_args(args: argparse.Namespace) -> int:
                 # Apply CLI override (highest priority) also into config object.
                 if args.api_key:
                     config.api.youtube_api_key = args.api_key
+                if args.summary_backfill_mode is not None:
+                    config.analysis.llm.summary_backfill_mode = str(
+                        args.summary_backfill_mode
+                    )
+                if args.summary_backfill_days is not None:
+                    if args.summary_backfill_days < 1:
+                        return _print_config_error(
+                            "--summary-backfill-days must be >= 1."
+                        )
+                    config.analysis.llm.summary_backfill_days = int(
+                        args.summary_backfill_days
+                    )
 
                 ok, msg, hint = _validate_config_or_exit(logger, config)
                 if not ok:
@@ -969,6 +999,18 @@ def _run_with_parsed_args(args: argparse.Namespace) -> int:
         try:
             logger.info("Attempting to load configuration from: using default values")
             config = load_config(None)
+            if args.summary_backfill_mode is not None:
+                config.analysis.llm.summary_backfill_mode = str(
+                    args.summary_backfill_mode
+                )
+            if args.summary_backfill_days is not None:
+                if args.summary_backfill_days < 1:
+                    return _print_config_error(
+                        "--summary-backfill-days must be >= 1."
+                    )
+                config.analysis.llm.summary_backfill_days = int(
+                    args.summary_backfill_days
+                )
             ok, msg, hint = _validate_config_or_exit(logger, config)
             if not ok:
                 return _print_config_error(msg, hint=hint)

@@ -665,6 +665,22 @@ class LlmAnalysisConfig(StrictBaseModel):
         ge=1,
         description="Maximale Queue-Größe für Streaming-Summaries (Backpressure).",
     )
+    summary_backfill_mode: Literal["off", "soft", "full"] = Field(
+        "soft",
+        description=(
+            "Regel fuer Re-Generierung bestehender, strukturell invalider Summaries: "
+            "off=nie automatisch, soft=nur innerhalb summary_backfill_days, full=immer."
+        ),
+    )
+    summary_backfill_days: int = Field(
+        14,
+        ge=1,
+        le=3650,
+        description=(
+            "Nur fuer summary_backfill_mode=soft: maximale Altersschwelle in Tagen "
+            "fuer automatische Re-Generierung invalider Summaries."
+        ),
+    )
     temperature: Optional[float] = Field(
         None,
         ge=0.0,

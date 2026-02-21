@@ -24,6 +24,7 @@ class RunStats:
     transcript_errors: int = 0
     summaries_created: int = 0
     summaries_skipped_valid: int = 0
+    summaries_skipped_backfill: int = 0
     summaries_healed: int = 0
     summaries_failed: int = 0
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False, compare=False)
@@ -69,6 +70,7 @@ def write_run_summary_md(
         "## Summaries",
         f"- Created: {stats.summaries_created}",
         f"- Skipped (valid existing): {stats.summaries_skipped_valid}",
+        f"- Skipped (backfill policy): {stats.summaries_skipped_backfill}",
         f"- Healed (regenerated): {stats.summaries_healed}",
         f"- Errors: {stats.summaries_failed}",
         "",

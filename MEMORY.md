@@ -1,5 +1,5 @@
 # MEMORY
-last_updated: 2026-02-20
+last_updated: 2026-02-21
 scope: always-loaded bootstrap; max ~200 lines
 
 Purpose: One-page snapshot plus reset-resilient long-term memory for the next context.
@@ -19,6 +19,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - `fourier-cycles/tools/open_fourier_debug.bat` now auto-retries SSH tunnel setup, waits for local Chrome debug-port readiness via DevTools endpoint checks (locale-independent fallback), rotates remote DevTools ports on failure, falls back to UI-only `-L` tunnel when `-R` port forwarding is occupied, uses key-only SSH, fails fast on invalid SSH key-auth, and applies explicit host-key/timeout policy (`accept-new`, configurable) to avoid silent precheck hangs.
 - `fourier-cycles/tools/open_fourier_debug.bat` now also rotates local UI-forward ports (`127.0.0.1:13010+`) when occupied, so local browser access does not fail on stale/blocked forwards.
 - `fourier-cycles/docker-compose.webapp.yml` healthchecks are aligned with container reality (`python` probe in API image, `127.0.0.1` probe in UI), so healthy/unhealthy reflects actual service availability.
+- `transcript-miner` summary regeneration now has a configurable backfill gate (`analysis.llm.summary_backfill_mode=off|soft|full`, default `soft` with `summary_backfill_days=14`) plus CLI overrides (`--summary-backfill-mode`, `--summary-backfill-days`) to avoid expensive historical auto-backfills after prompt/model tweaks.
 - Historical timeline entries were moved out of this file to `agents/memory/daily/`.
 
 ## 2) Long-Term Memory

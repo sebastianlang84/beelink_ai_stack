@@ -8,9 +8,6 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 - None.
 
 ## P1 (Next)
-- [ ] **Fingerprint-Backfill Verhalten korrigieren (Unerwünscht)** [added by Claw 🦞]
-  - Problem: Jede kleinste Änderung am Prompt/Modell löst einen massiven, teuren Backfill historischer Summaries aus (Fingerprint-Mismatch).
-  - Ziel: Backfill sollte optional oder "soft" sein (z.B. nur für die letzten N Tage oder via explizitem CLI-Flag).
 - [ ] **Fourier analysis deepening (FRED + Yahoo)** [added by Claw 🦞]
   - Tune strict absolute filters (`phase_locking_r`, `amp`, `p_value_bandmax`) against first production basket.
   - Add optional `windows.csv` export (per-window amp/phase/snr/presence) for auditability.

@@ -85,6 +85,10 @@ analysis:
     stream_summaries: false
     stream_worker_concurrency: 1
     stream_queue_size: 100
+    # Auto-Backfill für bestehende, strukturell invalide Summaries:
+    # off = nie, soft = nur junge Videos (summary_backfill_days), full = immer
+    summary_backfill_mode: soft
+    summary_backfill_days: 14
     # Optionale harte Token-Limits (None deaktiviert)
     max_input_tokens: null
     max_output_tokens: null

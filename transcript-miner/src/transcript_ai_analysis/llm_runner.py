@@ -12,7 +12,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 from zoneinfo import ZoneInfo
@@ -264,6 +264,72 @@ def _parse_iso_datetime(value: str) -> datetime | None:
         return datetime.fromisoformat(raw)
     except Exception:
         return None
+
+
+def _summary_backfill_mode(cfg: Any) -> str:
+    llm_cfg = getattr(getattr(cfg, "analysis", None), "llm", None)
+    raw = str(getattr(llm_cfg, "summary_backfill_mode", "soft") or "soft").strip().lower()
+    if raw in {"off", "soft", "full"}:
+        return raw
+    return "soft"
+
+
+def _summary_backfill_days(cfg: Any) -> int:
+    llm_cfg = getattr(getattr(cfg, "analysis", None), "llm", None)
+    raw = getattr(llm_cfg, "summary_backfill_days", 14)
+    try:
+        days = int(raw)
+    except Exception:
+        return 14
+    return max(1, days)
+
+
+def _is_soft_backfill_reason(reason: str) -> bool:
+    if reason.startswith("missing_section:"):
+        return True
+    if reason.startswith("missing_source_key:"):
+        key = reason.split(":", 1)[1].strip().lower()
+        # Missing routing identity must stay hard-invalid.
+        return key not in {"video_id", "channel_namespace"}
+    return False
+
+
+def _reference_datetime_for_ref(*, ref: "TranscriptRef", published_at: str) -> datetime | None:
+    dt = _parse_iso_datetime(published_at or "")
+    if dt is not None:
+        return dt.astimezone(timezone.utc)
+    try:
+        return datetime.fromtimestamp(Path(ref.transcript_path).stat().st_mtime, tz=timezone.utc)
+    except Exception:
+        return None
+
+
+def _allow_regeneration_for_invalid_summary(
+    *,
+    cfg: Any,
+    reason: str,
+    ref: "TranscriptRef",
+    published_at: str,
+) -> tuple[bool, str]:
+    if not _is_soft_backfill_reason(reason):
+        return True, "hard_invalid"
+
+    mode = _summary_backfill_mode(cfg)
+    if mode == "full":
+        return True, "mode_full"
+    if mode == "off":
+        return False, "mode_off"
+
+    days = _summary_backfill_days(cfg)
+    ref_dt = _reference_datetime_for_ref(ref=ref, published_at=published_at)
+    if ref_dt is None:
+        # Without a reliable reference date we regenerate to avoid silent data loss.
+        return True, "soft_unknown_reference_time"
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    if ref_dt >= cutoff:
+        return True, "soft_within_window"
+    return False, f"soft_outside_window:{days}d"
 
 def _parse_source_block(markdown: str) -> dict[str, str]:
     """Parse the required `## Source` bullet list into a dict."""
@@ -827,6 +893,21 @@ def summarize_transcript_ref(
     transcript_text = _load_transcript_text(tpath)
     transcript_text = transcript_text[: llm_cfg.max_chars_per_transcript]
 
+    # Load metadata for prompt + potential backfill policy checks.
+    video_title = "unknown"
+    published_at = "unknown"
+    channel_id = ref.channel_namespace
+    if ref.metadata_path:
+        mpath = Path(ref.metadata_path)
+        if mpath.exists():
+            try:
+                mdata = json.loads(mpath.read_text(encoding="utf-8"))
+                video_title = mdata.get("video_title", video_title)
+                published_at = mdata.get("published_at", published_at)
+                channel_id = mdata.get("channel_id", channel_id)
+            except Exception:
+                pass
+
     summary_path = cfg.output.get_summary_path(
         ref.video_id, channel_handle=ref.channel_namespace
     )
@@ -850,29 +931,40 @@ def summarize_transcript_ref(
             if run_stats is not None:
                 run_stats.inc("summaries_skipped_valid")
             return True
+        allow_regen, policy_reason = _allow_regeneration_for_invalid_summary(
+            cfg=cfg,
+            reason=reason,
+            ref=ref,
+            published_at=str(published_at or ""),
+        )
+        if not allow_regen:
+            logger.info(
+                "Summary invalid but regeneration deferred by backfill policy "
+                "(video_id=%s channel=%s reason=%s policy=%s)",
+                ref.video_id,
+                ref.channel_namespace,
+                reason,
+                policy_reason,
+            )
+            _sync_existing_summary(
+                summary_path=summary_path,
+                topic=topic or ref.channel_namespace,
+                ref=ref,
+                fallback_title=video_title,
+                fallback_published_at=published_at,
+            )
+            if run_stats is not None:
+                run_stats.inc("summaries_skipped_backfill")
+            return True
         _backup_corrupted_summary(summary_path)
         was_healed = True
         logger.warning(
-            "Summary invalid; regenerating (video_id=%s channel=%s reason=%s)",
+            "Summary invalid; regenerating (video_id=%s channel=%s reason=%s policy=%s)",
             ref.video_id,
             ref.channel_namespace,
             reason,
+            policy_reason,
         )
-
-    # Load metadata for prompt
-    video_title = "unknown"
-    published_at = "unknown"
-    channel_id = ref.channel_namespace
-    if ref.metadata_path:
-        mpath = Path(ref.metadata_path)
-        if mpath.exists():
-            try:
-                mdata = json.loads(mpath.read_text(encoding="utf-8"))
-                video_title = mdata.get("video_title", video_title)
-                published_at = mdata.get("published_at", published_at)
-                channel_id = mdata.get("channel_id", channel_id)
-            except Exception:
-                pass
 
     transcripts_blob = (
         f"=== Transcript | channel={ref.channel_namespace} | video_id={ref.video_id} ===\n"
