@@ -20,7 +20,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - `fourier-cycles/tools/open_fourier_debug.bat` now auto-retries SSH tunnel setup, waits for local Chrome debug-port readiness via DevTools endpoint checks (locale-independent fallback), rotates remote DevTools ports on failure, falls back to UI-only `-L` tunnel when `-R` port forwarding is occupied, uses key-only SSH, fails fast on invalid SSH key-auth, and applies explicit host-key/timeout policy (`accept-new`, configurable) to avoid silent precheck hangs.
 - `fourier-cycles/tools/open_fourier_debug.bat` now also rotates local UI-forward ports (`127.0.0.1:13010+`) when occupied, so local browser access does not fail on stale/blocked forwards.
 - `fourier-cycles/docker-compose.webapp.yml` healthchecks are aligned with container reality (`python` probe in API image, `127.0.0.1` probe in UI), so healthy/unhealthy reflects actual service availability.
-- `fourier-cycles` deepening baseline is implemented: strict absolute defaults were basket-calibrated (`selection_min_phase_locking_r=0.08`, `selection_min_amp_sigma=0.06`), optional `windows.csv` export is available for per-window audit (`FOURIER_EXPORT_WINDOWS_CSV=true`), and optional `wavelet.png` view is available for non-stationary activity (`FOURIER_ENABLE_WAVELET_VIEW=true`).
+- `fourier-cycles` production basket baseline is fixed to `SPY,BTC-USD,DGS10,CPIAUCSL`; strict selection defaults are calibrated to `selection_min_presence_ratio=0.50`, `selection_min_phase_locking_r=0.04`, `selection_min_amp_sigma=0.06` (ADR `docs/adr/20260221-fourier-production-basket-calibration.md`), with optional `windows.csv` audit (`FOURIER_EXPORT_WINDOWS_CSV=true`) and optional `wavelet.png` (`FOURIER_ENABLE_WAVELET_VIEW=true`).
 - `fourier-cycles` Tailscale exposure policy is fixed to dedicated hostname/root mapping (no `/fourier` path-prefix baseline), documented in `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`.
 - `transcript-miner` summary regeneration now has a configurable backfill gate (`analysis.llm.summary_backfill_mode=off|soft|full`, default `soft` with `summary_backfill_days=14`) plus CLI overrides (`--summary-backfill-mode`, `--summary-backfill-days`) to avoid expensive historical auto-backfills after prompt/model tweaks.
 - Historical timeline entries were moved out of this file to `agents/memory/daily/`.
@@ -43,9 +43,8 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
   - Default: **Option B**
 
 ## 4) Next Steps
-1. Continue P1 Fourier deepening: define production basket and tune stability thresholds from first successful run outputs.
-2. Add bounded retries/backoff for Yahoo/FRED fetch path.
-3. Optionally add `scripts/check_memory_hygiene.sh` into CI/pre-commit once routing stabilizes in daily usage.
+1. Add bounded retries/backoff for Yahoo/FRED fetch path.
+2. Optionally add `scripts/check_memory_hygiene.sh` into CI/pre-commit once routing stabilizes in daily usage.
 
 ## 5) Known Risks / Blockers
 - Long-tail links outside root docs can still reference pre-consolidation paths.

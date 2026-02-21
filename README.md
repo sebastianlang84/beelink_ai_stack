@@ -204,6 +204,8 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
    - `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env -f fourier-cycles/docker-compose.yml run --rm --build fourier-cycles`
 5. Ergebnis: Artefakte unter `${FOURIER_OUTPUT_DIR_HOST}` (Default: `/home/wasti/ai_stack/fourier-cycles/output`); `latest` zeigt auf den letzten Lauf.
    - Default-Zyklusband: `30..300` Tage (`FOURIER_MIN_PERIOD_DAYS=30`, `FOURIER_MAX_PERIOD_DAYS=300`)
+   - Production-Basket-Baseline: Yahoo `SPY,BTC-USD` + FRED `DGS10,CPIAUCSL`
+   - Selektions-Baseline: `presence>=0.50`, `phase_r>=0.04`, `amp>=0.06` (ADR `docs/adr/20260221-fourier-production-basket-calibration.md`)
    - Preis/Level direkt: `price.png`
    - Cycle-Overlay auf Preis: `price_cycle_overlay.png`
    - Top-Cycle-Komponenten: `cycle_components.png`

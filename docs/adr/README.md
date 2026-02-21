@@ -17,5 +17,6 @@ Purpose: Decision records for service and architecture topics.
 - `docs/adr/20260219-fourier-debug-devtools-mcp-tunnel.md`
 - `docs/adr/20260220-fourier-controlled-run-trigger-api.md`
 - `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`
+- `docs/adr/20260221-fourier-production-basket-calibration.md`
 
 Agent/process ADRs are maintained separately under `agents/adr/`.

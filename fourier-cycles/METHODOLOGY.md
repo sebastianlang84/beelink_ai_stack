@@ -141,7 +141,10 @@ Ein Kandidat ist fuer finale Auswahl (`selected_cycles`) nur eligible, wenn alle
 - `amp_median >= FOURIER_SELECTION_MIN_AMP_SIGMA`
 - `p_value_bandmax <= FOURIER_SELECTION_MAX_P_VALUE_BANDMAX`
   - Default aktuell `1.00` (Signifikanzfilter nicht hart aktiv); fuer strenge Signifikanz typischerweise `0.05`.
-  - Production-Basket Kalibrierung: `FOURIER_SELECTION_MIN_PHASE_LOCKING_R=0.08`, `FOURIER_SELECTION_MIN_AMP_SIGMA=0.06`.
+  - Production-Basket Kalibrierung (Referenzlauf `run_20260220T234612Z`):
+    - `FOURIER_SELECTION_MIN_PRESENCE_RATIO=0.50`
+    - `FOURIER_SELECTION_MIN_PHASE_LOCKING_R=0.04`
+    - `FOURIER_SELECTION_MIN_AMP_SIGMA=0.06`
 
 Optionaler Zusatzfilter:
 - Norm-Power-Quantil ueber `FOURIER_SELECTION_MIN_NORM_POWER_PERCENTILE` (legacy-kompatibel).

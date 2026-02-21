@@ -8,9 +8,7 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 - None.
 
 ## P1 (Next)
-- [ ] **Fourier deepening calibration**
-  - Define the production basket for `fourier-cycles`.
-  - Tune stability thresholds from first successful run outputs.
+- None.
 
 ## P2 (Later)
 - [ ] **Resource checks automation**

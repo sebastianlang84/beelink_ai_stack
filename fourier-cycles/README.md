@@ -37,6 +37,19 @@ Pro Lauf:
 Zusatz:
 - `latest` Symlink auf den zuletzt erfolgreichen Lauf (praktisch fuer OpenClaw/Telegram Versand).
 
+## Production Basket Baseline
+
+Festgelegter Production-Basket fuer Kalibrierung und Smoke-Runs:
+- Yahoo: `SPY`, `BTC-USD`
+- FRED: `DGS10`, `CPIAUCSL`
+
+Kalibrierungsreferenz:
+- `run_20260220T234612Z` (Full-Basket, 4/4 Serien erfolgreich).
+- Selektierte Zyklus-Minima in diesem Lauf:
+  - `presence_ratio=0.53125`
+  - `phase_locking_r=0.041836...`
+  - `amp_median=0.063834...`
+
 ## Web App (UI + Controlled Trigger API)
 
 Start (vom Repo-Root):
@@ -115,8 +128,8 @@ Hinweis zur Kennzahl:
 
 Ausgabe-Selektion fuer Visualisierung/Reporting:
 - Bis zu `FOURIER_SELECTION_TOP_K` Cycles (Default: 3)
-- Presence >= `FOURIER_SELECTION_MIN_PRESENCE_RATIO` (Default: 0.60)
-- Phase-Coherence >= `FOURIER_SELECTION_MIN_PHASE_LOCKING_R` (Default: 0.08; production-basket kalibriert)
+- Presence >= `FOURIER_SELECTION_MIN_PRESENCE_RATIO` (Default: 0.50; production-basket kalibriert)
+- Phase-Coherence >= `FOURIER_SELECTION_MIN_PHASE_LOCKING_R` (Default: 0.04; production-basket kalibriert)
 - Signifikanz: `p_value_bandmax <= FOURIER_SELECTION_MAX_P_VALUE_BANDMAX` (Default: 1.00; fuer strengeres Filtering z. B. 0.05)
 - Mindest-Amplitude: `FOURIER_SELECTION_MIN_AMP_SIGMA` (Default: 0.06; production-basket kalibriert)
 - Mindest-Power via `FOURIER_SELECTION_MIN_NORM_POWER_PERCENTILE` (Default: 0.75)

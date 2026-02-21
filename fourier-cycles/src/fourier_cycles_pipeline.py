@@ -173,7 +173,7 @@ def parse_args() -> AnalysisConfig:
     parser.add_argument(
         "--selection-min-presence-ratio",
         type=float,
-        default=_env_float("FOURIER_SELECTION_MIN_PRESENCE_RATIO", 0.60),
+        default=_env_float("FOURIER_SELECTION_MIN_PRESENCE_RATIO", 0.50),
     )
     parser.add_argument(
         "--selection-min-norm-power-percentile",
@@ -188,7 +188,7 @@ def parse_args() -> AnalysisConfig:
     parser.add_argument(
         "--selection-min-phase-locking-r",
         type=float,
-        default=_env_float("FOURIER_SELECTION_MIN_PHASE_LOCKING_R", 0.08),
+        default=_env_float("FOURIER_SELECTION_MIN_PHASE_LOCKING_R", 0.04),
     )
     parser.add_argument(
         "--selection-max-p-value-bandmax",
