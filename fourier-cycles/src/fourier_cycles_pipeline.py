@@ -22,6 +22,7 @@ import requests
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+import matplotlib.dates as mdates  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -61,6 +62,9 @@ class AnalysisConfig:
     rank_weight_snr: float
     rank_weight_presence: float
     rank_weight_phase: float
+    export_windows_csv: bool
+    enable_wavelet_view: bool
+    wavelet_period_count: int
     min_points: int
     timeout_seconds: int
     end_date: dt.date
@@ -184,7 +188,7 @@ def parse_args() -> AnalysisConfig:
     parser.add_argument(
         "--selection-min-phase-locking-r",
         type=float,
-        default=_env_float("FOURIER_SELECTION_MIN_PHASE_LOCKING_R", 0.40),
+        default=_env_float("FOURIER_SELECTION_MIN_PHASE_LOCKING_R", 0.08),
     )
     parser.add_argument(
         "--selection-max-p-value-bandmax",
@@ -194,7 +198,7 @@ def parse_args() -> AnalysisConfig:
     parser.add_argument(
         "--selection-min-amp-sigma",
         type=float,
-        default=_env_float("FOURIER_SELECTION_MIN_AMP_SIGMA", 0.20),
+        default=_env_float("FOURIER_SELECTION_MIN_AMP_SIGMA", 0.06),
     )
     parser.add_argument(
         "--rolling-windows-days",
@@ -275,6 +279,24 @@ def parse_args() -> AnalysisConfig:
         type=float,
         default=_env_float("FOURIER_RANK_WEIGHT_PHASE", 1.0),
     )
+    parser.add_argument(
+        "--export-windows-csv",
+        type=int,
+        default=1 if _env_bool("FOURIER_EXPORT_WINDOWS_CSV", False) else 0,
+        help="1=write optional windows.csv with per-window cycle metrics, 0=disable",
+    )
+    parser.add_argument(
+        "--enable-wavelet-view",
+        type=int,
+        default=1 if _env_bool("FOURIER_ENABLE_WAVELET_VIEW", False) else 0,
+        help="1=write optional wavelet.png for non-stationary cycle activity, 0=disable",
+    )
+    parser.add_argument(
+        "--wavelet-period-count",
+        type=int,
+        default=_env_int("FOURIER_WAVELET_PERIOD_COUNT", 48),
+        help="Number of logarithmic periods used for optional wavelet view.",
+    )
     parser.add_argument("--min-points", type=int, default=_env_int("FOURIER_MIN_POINTS", 180))
     parser.add_argument("--timeout-seconds", type=int, default=_env_int("FOURIER_TIMEOUT_SECONDS", 30))
     parser.add_argument("--end-date", type=parse_iso_date, default=dt.date.today())
@@ -337,6 +359,9 @@ def parse_args() -> AnalysisConfig:
         rank_weight_snr=max(0.0, args.rank_weight_snr),
         rank_weight_presence=max(0.0, args.rank_weight_presence),
         rank_weight_phase=max(0.0, args.rank_weight_phase),
+        export_windows_csv=bool(args.export_windows_csv),
+        enable_wavelet_view=bool(args.enable_wavelet_view),
+        wavelet_period_count=max(8, int(args.wavelet_period_count)),
         min_points=max(32, args.min_points),
         timeout_seconds=max(5, args.timeout_seconds),
         end_date=args.end_date,
@@ -867,9 +892,9 @@ def evaluate_stability(
     full_freqs: np.ndarray,
     full_power: np.ndarray,
     cfg: AnalysisConfig,
-) -> tuple[list[dict[str, Any]], list[str]]:
+) -> tuple[list[dict[str, Any]], list[str], list[dict[str, Any]]]:
     if candidate_spectrum.empty:
-        return [], []
+        return [], [], []
 
     bounds = _window_bounds_by_days(
         signal_len=len(signal),
@@ -901,6 +926,7 @@ def evaluate_stability(
         window_mid_dates.append(signal_dates[mid_idx].date().isoformat())
 
     candidates: list[dict[str, Any]] = []
+    window_rows: list[dict[str, Any]] = []
     for row in candidate_spectrum.itertuples(index=False):
         freq = float(row.freq_per_day)
         period_days = float(row.period_days)
@@ -913,7 +939,9 @@ def evaluate_stability(
         fit_scores: list[float] = []
         presence_flags: list[int] = []
 
-        for segment, freqs, power in zip(window_segments, window_freqs, window_power):
+        for window_idx, ((start, window_points), segment, freqs, power, window_mid_date) in enumerate(
+            zip(bounds, window_segments, window_freqs, window_power, window_mid_dates)
+        ):
             band_ratio, snr = _compute_band_metrics(freqs=freqs, power=power, freq0=freq, cfg=cfg)
             amplitude, phase, best_lag, fit_score = _harmonic_fit(
                 segment=segment,
@@ -930,6 +958,26 @@ def evaluate_stability(
             fit_scores.append(fit_score)
             present = int((snr >= cfg.snr_presence_threshold) and (band_ratio >= cfg.min_window_power_ratio))
             presence_flags.append(present)
+            end_idx = min(start + window_points - 1, len(signal_dates) - 1)
+            window_rows.append(
+                {
+                    "period_days": period_days,
+                    "freq_per_day": freq,
+                    "window_idx": int(window_idx),
+                    "window_start_idx": int(start),
+                    "window_points": int(window_points),
+                    "window_start_date": signal_dates[start].date().isoformat(),
+                    "window_mid_date": str(window_mid_date),
+                    "window_end_date": signal_dates[end_idx].date().isoformat(),
+                    "band_power_ratio": float(band_ratio),
+                    "snr": float(snr),
+                    "amplitude": float(amplitude),
+                    "phase": float(phase),
+                    "best_lag_days": float(best_lag),
+                    "fit_score_phase_free": float(fit_score),
+                    "present": int(present),
+                }
+            )
 
         presence_ratio = float(np.mean(presence_flags)) if presence_flags else 0.0
         median_window_power_ratio = _quantile(band_ratios, 0.5)
@@ -992,7 +1040,7 @@ def evaluate_stability(
         ),
         reverse=True,
     )
-    return candidates, window_mid_dates
+    return candidates, window_mid_dates, window_rows
 
 
 def _period_distance_ratio(a_days: float, b_days: float) -> float:
@@ -1151,6 +1199,83 @@ def save_plot_stability(
         ax.set_xlabel("Window midpoint")
         ax.legend(loc="best", fontsize=8)
         ax.grid(True, alpha=0.25)
+    ax.set_title(title)
+    fig.tight_layout()
+    fig.savefig(path, dpi=140)
+    plt.close(fig)
+
+
+def _compute_wavelet_scalogram(
+    signal: np.ndarray,
+    step_days: float,
+    min_period_days: float,
+    max_period_days: float,
+    period_count: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    if len(signal) < 16:
+        return np.array([], dtype=np.float64), np.zeros((0, len(signal)), dtype=np.float64)
+
+    min_period = max(min_period_days, step_days * 4.0)
+    max_period = max(max_period_days, min_period * 1.01)
+    periods = np.geomspace(min_period, max_period, num=max(8, int(period_count)), dtype=np.float64)
+
+    w0 = 6.0
+    power = np.zeros((len(periods), len(signal)), dtype=np.float64)
+    safe_step = max(step_days, 1e-6)
+    for idx, period_days in enumerate(periods):
+        scale = max((period_days * w0) / (2.0 * np.pi), 1e-6)
+        half_width = max(8, int(round((6.0 * scale) / safe_step)))
+        t = np.arange(-half_width, half_width + 1, dtype=np.float64) * safe_step
+        tau = t / scale
+        wavelet = (np.pi ** -0.25) * np.exp(1j * w0 * tau) * np.exp(-0.5 * (tau**2))
+        wavelet *= math.sqrt(safe_step / scale)
+
+        full = np.convolve(signal, np.conj(wavelet[::-1]), mode="full")
+        start = max(0, (len(full) - len(signal)) // 2)
+        coeff = full[start : start + len(signal)]
+        if len(coeff) < len(signal):
+            coeff = np.pad(coeff, (0, len(signal) - len(coeff)))
+        elif len(coeff) > len(signal):
+            coeff = coeff[: len(signal)]
+        power[idx, :] = np.abs(coeff) ** 2
+
+    row_scale = np.quantile(power, 0.90, axis=1, method="linear")
+    row_scale = np.maximum(row_scale, 1e-12)[:, np.newaxis]
+    normalized = power / row_scale
+    return periods, normalized
+
+
+def save_plot_wavelet(
+    path: Path,
+    signal_dates: pd.DatetimeIndex,
+    signal: np.ndarray,
+    step_days: float,
+    cfg: AnalysisConfig,
+    title: str,
+) -> None:
+    periods, power = _compute_wavelet_scalogram(
+        signal=signal,
+        step_days=step_days,
+        min_period_days=cfg.min_period_days,
+        max_period_days=cfg.max_period_days,
+        period_count=cfg.wavelet_period_count,
+    )
+    fig, ax = plt.subplots(figsize=(12, 6))
+    if power.size == 0:
+        ax.text(0.5, 0.5, "Wavelet view unavailable (signal too short)", ha="center", va="center")
+        ax.set_axis_off()
+    else:
+        x = mdates.date2num(pd.to_datetime(signal_dates))
+        z = np.log10(np.maximum(power, 1e-12))
+        mesh = ax.pcolormesh(x, periods, z, shading="auto", cmap="viridis")
+        ax.set_yscale("log")
+        ax.set_ylabel("Period (days, log scale)")
+        ax.set_xlabel("Date")
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
+        ax.grid(True, alpha=0.12)
+        cbar = fig.colorbar(mesh, ax=ax, pad=0.01)
+        cbar.set_label("log10 normalized wavelet power")
+        fig.autofmt_xdate()
     ax.set_title(title)
     fig.tight_layout()
     fig.savefig(path, dpi=140)
@@ -1316,6 +1441,31 @@ def write_waves_csv(
                 )
 
 
+def write_windows_csv(path: Path, rows: list[dict[str, Any]]) -> None:
+    columns = [
+        "period_days",
+        "freq_per_day",
+        "window_idx",
+        "window_start_idx",
+        "window_points",
+        "window_start_date",
+        "window_mid_date",
+        "window_end_date",
+        "band_power_ratio",
+        "snr",
+        "amplitude",
+        "phase",
+        "best_lag_days",
+        "fit_score_phase_free",
+        "present",
+    ]
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=columns)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({key: row.get(key) for key in columns})
+
+
 def process_single_series(
     source: str,
     series_name: str,
@@ -1352,7 +1502,7 @@ def process_single_series(
     )
 
     candidate_pool = discover_candidate_spectrum(spectrum, cfg=cfg)
-    evaluated, window_mid_dates = evaluate_stability(
+    evaluated, window_mid_dates, window_rows = evaluate_stability(
         signal=signal,
         signal_dates=signal_dates,
         step_days=step_days,
@@ -1403,6 +1553,8 @@ def process_single_series(
         selected_cycles=stable_cycles,
         components=stable_components,
     )
+    if cfg.export_windows_csv:
+        write_windows_csv(series_dir / "windows.csv", window_rows)
     save_plot_price(
         series_dir / "price.png",
         levels,
@@ -1435,6 +1587,15 @@ def process_single_series(
         threshold=cfg.min_window_power_ratio,
         title=f"{source}:{series_name} rolling stability",
     )
+    if cfg.enable_wavelet_view:
+        save_plot_wavelet(
+            series_dir / "wavelet.png",
+            signal_dates,
+            signal,
+            step_days,
+            cfg=cfg,
+            title=f"{source}:{series_name} wavelet activity view",
+        )
     save_plot_reconstruction(
         series_dir / "reconstruction.png",
         signal_dates,
@@ -1463,6 +1624,8 @@ def process_single_series(
         "selection_max_p_value_bandmax": cfg.selection_max_p_value_bandmax,
         "selection_min_amp_sigma": cfg.selection_min_amp_sigma,
         "snr_presence_threshold": cfg.snr_presence_threshold,
+        "export_windows_csv": cfg.export_windows_csv,
+        "enable_wavelet_view": cfg.enable_wavelet_view,
         "selected_cycles": selected_cycles,
     }
     (series_dir / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")

@@ -141,6 +141,7 @@ Ein Kandidat ist fuer finale Auswahl (`selected_cycles`) nur eligible, wenn alle
 - `amp_median >= FOURIER_SELECTION_MIN_AMP_SIGMA`
 - `p_value_bandmax <= FOURIER_SELECTION_MAX_P_VALUE_BANDMAX`
   - Default aktuell `1.00` (Signifikanzfilter nicht hart aktiv); fuer strenge Signifikanz typischerweise `0.05`.
+  - Production-Basket Kalibrierung: `FOURIER_SELECTION_MIN_PHASE_LOCKING_R=0.08`, `FOURIER_SELECTION_MIN_AMP_SIGMA=0.06`.
 
 Optionaler Zusatzfilter:
 - Norm-Power-Quantil ueber `FOURIER_SELECTION_MIN_NORM_POWER_PERCENTILE` (legacy-kompatibel).
@@ -167,10 +168,14 @@ Top-K:
 - `median_window_power_ratio`
 - `stability_score`, `stability_score_norm`
 - `stable`
+- optional `windows.csv` (wenn `FOURIER_EXPORT_WINDOWS_CSV=true`) enthaelt pro Periode/Fenster:
+  - `window_start_date`, `window_mid_date`, `window_end_date`
+  - `band_power_ratio`, `snr`, `amplitude`, `phase`, `best_lag_days`, `fit_score_phase_free`, `present`
 
 `summary.json` (je Serie) enthaelt:
 - Konfigurationsnahe Selektionsparameter
 - `selected_cycles` (finale Auswahl)
+- optionaler nicht-stationaerer Zusatzplot: `wavelet.png` (wenn `FOURIER_ENABLE_WAVELET_VIEW=true`)
 
 ## 9) Semantik (wichtig)
 - Absolute Aussage: SNR/Presence/Phase-Coherence/p-value/Amplitude.

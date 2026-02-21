@@ -24,12 +24,15 @@ This project follows a Keep a Changelog style.
 - `agents/adr/20260220-agent-docs-split.md` to formalize the `agents/` vs `docs/` documentation boundary.
 - `scripts/check_memory_hygiene.sh` for lightweight structure/size drift checks on `MEMORY.md` (warn-first).
 - `fourier-cycles/METHODOLOGY.md` as detailed, implementation-bound method specification (preprocessing, rolling harmonic fit, SNR/presence, phase coherence, surrogate p-values, ranking, selection).
+- `fourier-cycles` optional audit export `windows.csv` (per-window amp/phase/snr/presence per cycle) via `FOURIER_EXPORT_WINDOWS_CSV=true`.
+- `fourier-cycles` optional non-stationary wavelet activity plot `wavelet.png` via `FOURIER_ENABLE_WAVELET_VIEW=true`.
 
 ### Changed
 - `transcript-miner` summary regeneration now uses a configurable backfill policy (`off|soft|full`, default `soft` with day window), plus CLI overrides (`--summary-backfill-mode`, `--summary-backfill-days`) to avoid expensive historical auto-backfills after prompt/model changes.
 - `fourier-cycles` pipeline now computes absolute cycle metrics (`amp_*`, `snr_*`, `fit_score_phase_free`, `phase_locking_r`, `best_lag_days_median`, `lag_iqr`, `margin_median`, `p_value_bandmax`) and keeps relative metrics (`rank_score_norm`, `stability_score_norm`) explicitly separated.
 - `fourier-cycles` candidate discovery now uses local peak detection in period space (with distance guard) instead of plain top-power slicing.
 - `fourier-cycles` rolling robustness now supports multi-scale windows via `FOURIER_ROLLING_WINDOWS_DAYS` + `FOURIER_ROLLING_STEP_DAYS`, plus phase-invariant harmonic regression per window.
+- `fourier-cycles` strict absolute selection defaults were calibrated against the first production basket: `FOURIER_SELECTION_MIN_PHASE_LOCKING_R` `0.40 -> 0.08` and `FOURIER_SELECTION_MIN_AMP_SIGMA` `0.20 -> 0.06` (p-value threshold remains `1.00` until surrogate significance is more discriminative on the basket).
 - `fourier-cycles` selection logic now supports strict absolute filters (presence, phase coherence, amplitude, p-value) with fail-open fallback to keep default overlays/PNGs usable when strict gates are too restrictive.
 - `fourier-cycles-ui` cycle table now displays absolute metrics (`Amp`, `SNR`, `Presence`, `Phase-R`, `p-bandmax`) and a clearly labeled relative sort metric (`Rank (rel)`).
 - `fourier-cycles/.config.env.example` now documents advanced analysis controls (signal mode, detrending, SNR bands/thresholds, surrogate settings, ranking weights, strict selection thresholds).
