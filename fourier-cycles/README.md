@@ -142,6 +142,37 @@ fourier-cycles/tools/cycle_spectrum_like_table.py \
   --export-csv /tmp/cycle_spectrum_like_spy.csv
 ```
 
+## Synthetic Self-Test (5x Sin/Cos Superposition)
+
+Ziel: Kontrollierter Ground-Truth-Test, ob bekannte Zielperioden aus einer bewusst zusammengesetzten Kurve wiedergefunden werden.
+
+```bash
+docker compose \
+  --env-file .env \
+  --env-file .config.env \
+  --env-file fourier-cycles/.config.env \
+  -f fourier-cycles/docker-compose.yml \
+  run --rm --entrypoint python \
+  -v /home/wasti/ai_stack/fourier-cycles/tools:/app/tools \
+  fourier-cycles /app/tools/synthetic_superposition_check.py \
+    --days 1460 \
+    --periods 37,52,88,124,195 \
+    --amplitudes 1.2,1.0,0.9,0.8,0.7 \
+    --phases 0.2,1.0,2.1,0.7,1.6 \
+    --noise-std 0.25 \
+    --selection-top-k 5 \
+    --tolerance-ratio 0.08 \
+    --output-dir /data/output/synthetic-check/latest
+```
+
+Outputs:
+- Konsolenreport mit Trefferquote (`hits_stable`, `hits_selected`)
+- Artefakte unter `fourier-cycles/output/synthetic-check/latest/`:
+  - `synthetic_series.csv`
+  - `stable_cycles.csv`
+  - `selected_cycles.csv`
+  - `summary.json`
+
 ## Stability-Logik
 
 Methodik-Spezifikation:

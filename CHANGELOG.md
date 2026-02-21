@@ -5,6 +5,7 @@ This project follows a Keep a Changelog style.
 
 ## [Unreleased]
 ### Added
+- `fourier-cycles/tools/synthetic_superposition_check.py` to run a deterministic 5-component sin/cos ground-truth extraction test and report period recovery hits.
 - `fourier-cycles/tools/cycle_spectrum_like_table.py` for quick side-by-side numeric comparison against third-party cycle spectrum UIs (`Len/Amp/Strg/Stab`, selected-cycle marking, optional CSV export).
 - `agents-init.md` bootstrap spec to initialize AGENTS/memory/guardrails in fresh repositories, including a mandatory self-delete step after successful setup.
 - `INDEX.md` as root navigation entrypoint.
