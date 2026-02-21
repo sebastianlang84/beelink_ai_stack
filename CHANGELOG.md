@@ -29,6 +29,7 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles` optional non-stationary wavelet activity plot `wavelet.png` via `FOURIER_ENABLE_WAVELET_VIEW=true`.
 
 ### Changed
+- Fourier web app Tailscale access policy is now fixed to dedicated hostname/root mapping (no `/fourier` path-prefix standard), documented in ADR `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`.
 - `agents-init.md` now includes explicit Claude compatibility: create and verify `CLAUDE.md -> AGENTS.md` symlink when Claude models are in scope.
 - `agents-init.md` now explicitly bootstraps Anthropic-style skill governance (`SKILL.md`), including priority/routing rules, optional `skills/<skill-name>/SKILL.md` structure, and verification checks.
 - `transcript-miner` summary regeneration now uses a configurable backfill policy (`off|soft|full`, default `soft` with day window), plus CLI overrides (`--summary-backfill-mode`, `--summary-backfill-days`) to avoid expensive historical auto-backfills after prompt/model changes.

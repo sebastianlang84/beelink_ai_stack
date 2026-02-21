@@ -21,6 +21,7 @@ Purpose: One-page snapshot plus reset-resilient long-term memory for the next co
 - `fourier-cycles/tools/open_fourier_debug.bat` now also rotates local UI-forward ports (`127.0.0.1:13010+`) when occupied, so local browser access does not fail on stale/blocked forwards.
 - `fourier-cycles/docker-compose.webapp.yml` healthchecks are aligned with container reality (`python` probe in API image, `127.0.0.1` probe in UI), so healthy/unhealthy reflects actual service availability.
 - `fourier-cycles` deepening baseline is implemented: strict absolute defaults were basket-calibrated (`selection_min_phase_locking_r=0.08`, `selection_min_amp_sigma=0.06`), optional `windows.csv` export is available for per-window audit (`FOURIER_EXPORT_WINDOWS_CSV=true`), and optional `wavelet.png` view is available for non-stationary activity (`FOURIER_ENABLE_WAVELET_VIEW=true`).
+- `fourier-cycles` Tailscale exposure policy is fixed to dedicated hostname/root mapping (no `/fourier` path-prefix baseline), documented in `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`.
 - `transcript-miner` summary regeneration now has a configurable backfill gate (`analysis.llm.summary_backfill_mode=off|soft|full`, default `soft` with `summary_backfill_days=14`) plus CLI overrides (`--summary-backfill-mode`, `--summary-backfill-days`) to avoid expensive historical auto-backfills after prompt/model tweaks.
 - Historical timeline entries were moved out of this file to `agents/memory/daily/`.
 

@@ -73,6 +73,20 @@ Hinweise:
 - Parallel-Run-Guard: bei laufendem Job liefert der Trigger `409`.
 - Trigger-Logs liegen unter `${FOURIER_OUTPUT_DIR_HOST}/_trigger_logs/`.
 
+## Tailscale Zugriff (Entscheidung)
+
+Festgelegt: Fourier UI wird als eigener Tailnet HTTPS Endpoint betrieben (Root-Mapping), nicht als Pfad-Praefix wie `/fourier`.
+
+Beispiel:
+
+```bash
+sudo tailscale serve --bg --https=443 "http://127.0.0.1:${FOURIER_UI_HOST_PORT:-3010}"
+sudo tailscale serve status
+```
+
+Referenz:
+- ADR: `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`
+
 ## Troubleshooting
 
 - Wenn in der UI bei Superposition keine Kurve erscheint und ein `waves.csv` Hinweis auftaucht:

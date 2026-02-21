@@ -11,9 +11,6 @@ Does not contain: Completed history (see Git/ADR/CHANGELOG).
 - [ ] **Fourier deepening calibration**
   - Define the production basket for `fourier-cycles`.
   - Tune stability thresholds from first successful run outputs.
-- [ ] **Fourier Tailscale mapping decision**
-  - Decide path-based mapping (`/fourier`) vs dedicated hostname mapping.
-  - If finalized, capture the decision in `docs/adr/`.
 
 ## P2 (Later)
 - [ ] **Resource checks automation**

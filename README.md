@@ -215,6 +215,7 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
    - `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env -f fourier-cycles/docker-compose.webapp.yml up -d --build`
    - UI: `http://127.0.0.1:${FOURIER_UI_HOST_PORT:-3010}`
    - Trigger: `POST /api/run` (Body `{"confirm":true}`), Status: `GET /api/run/status`
+   - Tailscale Access-Policy: eigener Hostname-Endpoint (kein `/fourier` Path-Prefix), siehe ADR `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`.
 - Ops/Details: `fourier-cycles/README.md:1`
 - Methodik (detailliert): `fourier-cycles/METHODOLOGY.md:1`
 

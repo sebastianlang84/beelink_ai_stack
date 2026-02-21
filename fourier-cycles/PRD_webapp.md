@@ -78,8 +78,9 @@ Empfohlene Reihenfolge:
 2. `tailscale serve` Mapping auf diesen Port setzen.
 3. Kein LAN-Bind, kein Public Expose.
 
-Open Decision:
-- Pfadbasiert (`/fourier`) vs. eigenes Hostname-Mapping (`fourier.<tailnet>.ts.net`).
+Resolved 2026-02-21:
+- Eigenes Hostname-Mapping fuer Fourier UI (kein `/fourier` Prefix) ist Standard.
+- Referenz: `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`
 
 ## 6) API Entwurf (Phase 1)
 
@@ -173,5 +174,6 @@ Phase D - Optional Run Trigger
 1. Frontend Framework final: React/Vite (vorgeschlagen) bestaetigen.
 2. API Framework final: FastAPI (vorgeschlagen) bestaetigen.
 3. Tailscale Mapping: Pfad vs eigener Hostname.
+   - Resolved 2026-02-21: eigenes Hostname-Mapping (ADR: `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`).
 4. MCP DevTools konkrete Runtime/Port-Konvention.
    - Resolved 2026-02-19: `chrome-devtools-mcp` (pinned `0.17.3`), Windows `9222` -> Linux reverse tunnel `9223` (ADR: `docs/adr/20260219-fourier-debug-devtools-mcp-tunnel.md`).
