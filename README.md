@@ -221,7 +221,7 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
    - Tailscale Access-Policy: eigener Hostname-Endpoint (kein `/fourier` Path-Prefix), siehe ADR `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`.
 - Ops/Details: `fourier-cycles/README.md:1`
 - Methodik (detailliert): `fourier-cycles/METHODOLOGY.md:1`
-- Synthetic Ground-Truth Check (5x Sin/Cos): `fourier-cycles/tools/synthetic_superposition_check.py` (Container-Run-Befehl siehe `fourier-cycles/README.md:145`)
+- Synthetic Ground-Truth Check (5x Sin/Cos): `fourier-cycles/tools/synthetic_superposition_check.py` (Container-Run + Tuning-Flags siehe `fourier-cycles/README.md:145`)
 
 ## Windows Browser Debug + MCP DevTools (Fourier UI)
 - Windows helper: `fourier-cycles/tools/open_fourier_debug.bat`

@@ -44,6 +44,13 @@ def _parse_float_csv(raw: str, name: str) -> list[float]:
     return [float(value) for value in values]
 
 
+def _parse_int_csv(raw: str, name: str) -> list[int]:
+    values = [item.strip() for item in raw.split(",") if item.strip()]
+    if not values:
+        raise ValueError(f"{name} is empty")
+    return [int(value) for value in values]
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--days", type=int, default=1460, help="Synthetic sample length in days.")
@@ -64,9 +71,28 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--noise-std", type=float, default=0.25, help="Gaussian noise std.")
     parser.add_argument("--seed", type=int, default=42, help="Noise seed.")
+    parser.add_argument("--top-k", type=int, default=8, help="Candidate discovery pool size.")
     parser.add_argument("--min-period-days", type=float, default=20.0)
     parser.add_argument("--max-period-days", type=float, default=260.0)
+    parser.add_argument("--min-presence-ratio", type=float, default=0.30)
+    parser.add_argument("--min-window-power-ratio", type=float, default=0.03)
+    parser.add_argument(
+        "--rolling-windows-days",
+        default="360,720,1260",
+        help="Comma-separated rolling windows in days.",
+    )
+    parser.add_argument("--rolling-step-days", type=int, default=30)
+    parser.add_argument("--snr-presence-threshold", type=float, default=2.0)
+    parser.add_argument("--snr-peak-bandwidth-ratio", type=float, default=0.05)
+    parser.add_argument("--snr-background-bandwidth-ratio", type=float, default=0.25)
+    parser.add_argument("--snr-background-exclusion-ratio", type=float, default=0.08)
     parser.add_argument("--selection-top-k", type=int, default=5)
+    parser.add_argument("--selection-min-presence-ratio", type=float, default=0.30)
+    parser.add_argument("--selection-min-norm-power-percentile", type=float, default=0.0)
+    parser.add_argument("--selection-min-period-distance-ratio", type=float, default=0.10)
+    parser.add_argument("--selection-min-phase-locking-r", type=float, default=0.0)
+    parser.add_argument("--selection-max-p-value-bandmax", type=float, default=1.0)
+    parser.add_argument("--selection-min-amp-sigma", type=float, default=0.0)
     parser.add_argument(
         "--tolerance-ratio",
         type=float,
@@ -112,32 +138,50 @@ def synthesize_signal(components: list[Component], days: int, noise_std: float, 
 
 
 def build_cfg(args: argparse.Namespace) -> SimpleNamespace:
+    rolling_windows_days = sorted(
+        {
+            max(32, int(days))
+            for days in _parse_int_csv(args.rolling_windows_days, "rolling-windows-days")
+        }
+    )
+    if not rolling_windows_days:
+        rolling_windows_days = [360, 720, 1260]
+
     return SimpleNamespace(
-        top_k=max(8, args.selection_top_k),
+        top_k=max(1, int(args.top_k)),
         selection_top_k=max(1, args.selection_top_k),
         min_period_days=float(args.min_period_days),
         max_period_days=float(args.max_period_days),
-        min_presence_ratio=0.30,
-        min_window_power_ratio=0.03,
-        rolling_windows_days=[360, 720, 1260],
-        rolling_step_days=30,
+        min_presence_ratio=max(0.0, min(1.0, float(args.min_presence_ratio))),
+        min_window_power_ratio=max(0.0, float(args.min_window_power_ratio)),
+        rolling_windows_days=rolling_windows_days,
+        rolling_step_days=max(1, int(args.rolling_step_days)),
         harmonic_include_trend=True,
-        snr_presence_threshold=2.0,
-        snr_peak_bandwidth_ratio=0.05,
-        snr_background_bandwidth_ratio=0.25,
-        snr_background_exclusion_ratio=0.08,
+        snr_presence_threshold=max(0.0, float(args.snr_presence_threshold)),
+        snr_peak_bandwidth_ratio=max(0.0001, float(args.snr_peak_bandwidth_ratio)),
+        snr_background_bandwidth_ratio=max(
+            float(args.snr_peak_bandwidth_ratio),
+            float(args.snr_background_bandwidth_ratio),
+        ),
+        snr_background_exclusion_ratio=max(0.0001, float(args.snr_background_exclusion_ratio)),
         surrogate_count=0,
         surrogate_seed=42,
         rank_weight_amp=1.0,
         rank_weight_snr=1.0,
         rank_weight_presence=1.0,
         rank_weight_phase=1.0,
-        selection_min_presence_ratio=0.30,
-        selection_min_norm_power_percentile=0.0,
-        selection_min_period_distance_ratio=0.10,
-        selection_min_phase_locking_r=0.0,
-        selection_max_p_value_bandmax=1.0,
-        selection_min_amp_sigma=0.0,
+        selection_min_presence_ratio=max(0.0, min(1.0, float(args.selection_min_presence_ratio))),
+        selection_min_norm_power_percentile=max(
+            0.0,
+            min(1.0, float(args.selection_min_norm_power_percentile)),
+        ),
+        selection_min_period_distance_ratio=max(
+            0.0,
+            min(1.0, float(args.selection_min_period_distance_ratio)),
+        ),
+        selection_min_phase_locking_r=max(0.0, min(1.0, float(args.selection_min_phase_locking_r))),
+        selection_max_p_value_bandmax=max(0.0, min(1.0, float(args.selection_max_p_value_bandmax))),
+        selection_min_amp_sigma=max(0.0, float(args.selection_min_amp_sigma)),
     )
 
 
@@ -260,6 +304,21 @@ def main() -> int:
         "hit_count_selected": int(hit_count_selected),
         "truth_vs_detected": truth_rows,
         "selected_periods": [float(c["period_days"]) for c in selected_cycles],
+        "analysis_cfg": {
+            "top_k": int(cfg.top_k),
+            "min_presence_ratio": float(cfg.min_presence_ratio),
+            "min_window_power_ratio": float(cfg.min_window_power_ratio),
+            "rolling_windows_days": list(cfg.rolling_windows_days),
+            "rolling_step_days": int(cfg.rolling_step_days),
+            "snr_presence_threshold": float(cfg.snr_presence_threshold),
+            "selection_top_k": int(cfg.selection_top_k),
+            "selection_min_presence_ratio": float(cfg.selection_min_presence_ratio),
+            "selection_min_norm_power_percentile": float(cfg.selection_min_norm_power_percentile),
+            "selection_min_period_distance_ratio": float(cfg.selection_min_period_distance_ratio),
+            "selection_min_phase_locking_r": float(cfg.selection_min_phase_locking_r),
+            "selection_max_p_value_bandmax": float(cfg.selection_max_p_value_bandmax),
+            "selection_min_amp_sigma": float(cfg.selection_min_amp_sigma),
+        },
     }
     write_artifacts(
         out_dir=out_dir,

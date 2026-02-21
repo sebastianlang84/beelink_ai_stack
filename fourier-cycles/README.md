@@ -173,6 +173,42 @@ Outputs:
   - `selected_cycles.csv`
   - `summary.json`
 
+Wichtige Tuning-Flags:
+- Candidate/Windowing: `--top-k`, `--min-presence-ratio`, `--min-window-power-ratio`, `--rolling-windows-days`, `--rolling-step-days`
+- SNR: `--snr-presence-threshold`, `--snr-peak-bandwidth-ratio`, `--snr-background-bandwidth-ratio`, `--snr-background-exclusion-ratio`
+- Selection: `--selection-min-presence-ratio`, `--selection-min-norm-power-percentile`, `--selection-min-period-distance-ratio`, `--selection-min-phase-locking-r`, `--selection-max-p-value-bandmax`, `--selection-min-amp-sigma`
+
+Tuned Beispiel (aktuell robust `5/5` fuer Seeds `7,21,42,77,123`):
+
+```bash
+docker compose \
+  --env-file .env \
+  --env-file .config.env \
+  --env-file fourier-cycles/.config.env \
+  -f fourier-cycles/docker-compose.yml \
+  run --rm --entrypoint python \
+  -v /home/wasti/ai_stack/fourier-cycles/tools:/app/tools \
+  fourier-cycles /app/tools/synthetic_superposition_check.py \
+    --seed 42 \
+    --days 1460 \
+    --periods 37,52,88,124,195 \
+    --amplitudes 1.2,1.0,0.9,0.8,0.7 \
+    --phases 0.2,1.0,2.1,0.7,1.6 \
+    --noise-std 0.25 \
+    --top-k 8 \
+    --min-presence-ratio 0.20 \
+    --min-window-power-ratio 0.01 \
+    --rolling-windows-days 240,480,960 \
+    --rolling-step-days 20 \
+    --snr-presence-threshold 1.5 \
+    --selection-top-k 5 \
+    --selection-min-presence-ratio 0.20 \
+    --selection-min-norm-power-percentile 0.2 \
+    --selection-min-period-distance-ratio 0.10 \
+    --tolerance-ratio 0.08 \
+    --output-dir /data/output/synthetic-check/tuned-seed-42
+```
+
 ## Stability-Logik
 
 Methodik-Spezifikation:
