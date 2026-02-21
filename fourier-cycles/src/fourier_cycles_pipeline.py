@@ -65,6 +65,7 @@ class AnalysisConfig:
     export_windows_csv: bool
     enable_wavelet_view: bool
     wavelet_period_count: int
+    projection_days: int
     min_points: int
     timeout_seconds: int
     end_date: dt.date
@@ -297,6 +298,12 @@ def parse_args() -> AnalysisConfig:
         default=_env_int("FOURIER_WAVELET_PERIOD_COUNT", 48),
         help="Number of logarithmic periods used for optional wavelet view.",
     )
+    parser.add_argument(
+        "--projection-days",
+        type=int,
+        default=_env_int("FOURIER_PROJECTION_DAYS", 120),
+        help="Project cycle components beyond latest observed date (days).",
+    )
     parser.add_argument("--min-points", type=int, default=_env_int("FOURIER_MIN_POINTS", 180))
     parser.add_argument("--timeout-seconds", type=int, default=_env_int("FOURIER_TIMEOUT_SECONDS", 30))
     parser.add_argument("--end-date", type=parse_iso_date, default=dt.date.today())
@@ -362,6 +369,7 @@ def parse_args() -> AnalysisConfig:
         export_windows_csv=bool(args.export_windows_csv),
         enable_wavelet_view=bool(args.enable_wavelet_view),
         wavelet_period_count=max(8, int(args.wavelet_period_count)),
+        projection_days=max(0, int(args.projection_days)),
         min_points=max(32, args.min_points),
         timeout_seconds=max(5, args.timeout_seconds),
         end_date=args.end_date,
@@ -1125,34 +1133,45 @@ def select_cycles_for_output(
 
 
 def reconstruct_signal_from_cycles(
-    signal: np.ndarray,
+    signal_len: int,
+    step_days: float,
     full_freqs: np.ndarray,
     full_coeff: np.ndarray,
     selected_cycles: list[dict[str, Any]],
+    output_len: int | None = None,
 ) -> np.ndarray:
+    n_out = signal_len if output_len is None else max(1, int(output_len))
     if not selected_cycles:
-        return np.zeros_like(signal)
+        return np.zeros(n_out, dtype=np.float64)
 
-    keep = np.zeros_like(full_coeff)
+    n_idx = np.arange(n_out, dtype=np.float64)
+    reconstructed = np.zeros(n_out, dtype=np.float64)
     for cycle in selected_cycles:
         idx = int(np.argmin(np.abs(full_freqs - cycle["freq_per_day"])))
-        keep[idx] = full_coeff[idx]
-    reconstructed = np.fft.irfft(keep, n=len(signal))
-    return reconstructed.real
+        freq_per_day = float(full_freqs[idx])
+        coeff = complex(full_coeff[idx])
+        phase = 2.0 * np.pi * freq_per_day * step_days * n_idx
+        reconstructed += (2.0 / float(signal_len)) * np.real(coeff * np.exp(1j * phase))
+    return reconstructed
 
 
 def reconstruct_cycle_components(
     signal_len: int,
+    step_days: float,
     full_freqs: np.ndarray,
     full_coeff: np.ndarray,
     selected_cycles: list[dict[str, Any]],
+    output_len: int | None = None,
 ) -> list[tuple[str, np.ndarray]]:
+    n_out = signal_len if output_len is None else max(1, int(output_len))
+    n_idx = np.arange(n_out, dtype=np.float64)
     components: list[tuple[str, np.ndarray]] = []
     for cycle in selected_cycles:
-        keep = np.zeros_like(full_coeff)
         idx = int(np.argmin(np.abs(full_freqs - cycle["freq_per_day"])))
-        keep[idx] = full_coeff[idx]
-        component = np.fft.irfft(keep, n=signal_len).real
+        freq_per_day = float(full_freqs[idx])
+        coeff = complex(full_coeff[idx])
+        phase = 2.0 * np.pi * freq_per_day * step_days * n_idx
+        component = (2.0 / float(signal_len)) * np.real(coeff * np.exp(1j * phase))
         label = (
             f"{cycle['period_days']:.1f}d "
             f"(presence={cycle['presence_ratio']:.2f}, power={cycle['norm_power']:.3f})"
@@ -1350,27 +1369,50 @@ def save_plot_cycle_components(
     plt.close(fig)
 
 
+def extend_signal_dates(
+    signal_dates: pd.DatetimeIndex,
+    step_days: float,
+    projection_days: int,
+) -> tuple[pd.DatetimeIndex, int]:
+    if projection_days <= 0 or step_days <= 0:
+        return signal_dates, 0
+    projection_steps = int(math.ceil(float(projection_days) / float(step_days)))
+    if projection_steps <= 0:
+        return signal_dates, 0
+    start_ts = pd.to_datetime(signal_dates[-1])
+    future_dates = [start_ts + pd.to_timedelta(step_days * idx, unit="D") for idx in range(1, projection_steps + 1)]
+    extended = pd.DatetimeIndex(list(pd.to_datetime(signal_dates)) + future_dates)
+    return extended, projection_steps
+
+
 def save_plot_price_cycle_overlay(
     path: Path,
     levels: pd.Series,
     signal_dates: pd.DatetimeIndex,
     reconstructed: np.ndarray,
+    history_points: int,
     title: str,
 ) -> None:
     fig, ax_price = plt.subplots(figsize=(12, 6))
-    x_signal = pd.to_datetime(signal_dates)
-    price_aligned = levels.reindex(signal_dates).ffill().bfill()
+    x_signal_all = pd.to_datetime(signal_dates)
+    history_points = max(1, min(history_points, len(x_signal_all)))
+    x_history = x_signal_all[:history_points]
+    price_aligned = levels.reindex(x_history).ffill().bfill()
     cycle_index = np.cumsum(reconstructed)
     cycle_index = _normalize_for_overlay(cycle_index)
 
-    ax_price.plot(x_signal, price_aligned.to_numpy(dtype=np.float64), color="#145c9e", lw=1.4)
+    ax_price.plot(x_history, price_aligned.to_numpy(dtype=np.float64), color="#145c9e", lw=1.4)
     ax_price.set_xlabel("Date")
     ax_price.set_ylabel("Price / level", color="#145c9e")
     ax_price.tick_params(axis="y", labelcolor="#145c9e")
     ax_price.grid(True, alpha=0.2)
 
     ax_cycle = ax_price.twinx()
-    ax_cycle.plot(x_signal, cycle_index, color="#ef6c00", lw=1.3, alpha=0.9)
+    ax_cycle.plot(x_history, cycle_index[:history_points], color="#ef6c00", lw=1.3, alpha=0.9)
+    if len(x_signal_all) > history_points:
+        projection_x = x_signal_all[history_points - 1 :]
+        projection_y = cycle_index[history_points - 1 :]
+        ax_cycle.plot(projection_x, projection_y, color="#ef6c00", lw=1.3, alpha=0.85, ls="--")
     ax_cycle.axhline(0.0, color="#616161", ls=":", lw=1.0)
     ax_cycle.set_ylabel("Composite cycle index (normalized)", color="#ef6c00")
     ax_cycle.tick_params(axis="y", labelcolor="#ef6c00")
@@ -1419,8 +1461,9 @@ def write_waves_csv(
     signal_dates: pd.DatetimeIndex,
     selected_cycles: list[dict[str, Any]],
     components: list[tuple[str, np.ndarray]],
+    history_points: int,
 ) -> None:
-    columns = ["date", "period_days", "component_value"]
+    columns = ["date", "period_days", "component_value", "is_projection"]
     with path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=columns)
         writer.writeheader()
@@ -1431,12 +1474,13 @@ def write_waves_csv(
         date_values = [ts.date().isoformat() for ts in pd.to_datetime(signal_dates)]
         for cycle, (_, component) in zip(selected_cycles, components):
             period_days = float(cycle["period_days"])
-            for date_value, component_value in zip(date_values, component):
+            for idx, (date_value, component_value) in enumerate(zip(date_values, component)):
                 writer.writerow(
                     {
                         "date": date_value,
                         "period_days": period_days,
                         "component_value": float(component_value),
+                        "is_projection": 1 if idx >= history_points else 0,
                     }
                 )
 
@@ -1515,27 +1559,41 @@ def process_single_series(
     stable_cycles = [cycle for cycle in evaluated if cycle["stable"]]
     selected_cycles = select_cycles_for_output(evaluated, cfg)
 
+    extended_signal_dates, projection_steps = extend_signal_dates(
+        signal_dates=signal_dates,
+        step_days=step_days,
+        projection_days=cfg.projection_days,
+    )
+    output_len = len(extended_signal_dates)
+    history_points = len(signal_dates)
+
     reconstructed = reconstruct_signal_from_cycles(
-        signal=signal,
+        signal_len=len(signal),
+        step_days=step_days,
         full_freqs=full_freqs,
         full_coeff=full_coeff,
         selected_cycles=selected_cycles,
+        output_len=output_len,
     )
     # We need cycle component waves for ALL stable cycles, not just selected ones.
     # Otherwise the UI checkboxes for non-selected stable cycles cannot draw anything.
     stable_components = reconstruct_cycle_components(
         signal_len=len(signal),
+        step_days=step_days,
         full_freqs=full_freqs,
         full_coeff=full_coeff,
         selected_cycles=stable_cycles,
+        output_len=output_len,
     )
     
     # We still need the subset of components for the static PNG plot
     selected_components = reconstruct_cycle_components(
         signal_len=len(signal),
+        step_days=step_days,
         full_freqs=full_freqs,
         full_coeff=full_coeff,
         selected_cycles=selected_cycles,
+        output_len=history_points,
     )
 
     series_dir = run_dir / f"{source}-{_slug(series_name)}"
@@ -1549,9 +1607,10 @@ def process_single_series(
     write_cycles_csv(series_dir / "cycles.csv", stable_cycles)
     write_waves_csv(
         series_dir / "waves.csv",
-        signal_dates=signal_dates,
+        signal_dates=extended_signal_dates,
         selected_cycles=stable_cycles,
         components=stable_components,
+        history_points=history_points,
     )
     if cfg.export_windows_csv:
         write_windows_csv(series_dir / "windows.csv", window_rows)
@@ -1563,9 +1622,10 @@ def process_single_series(
     save_plot_price_cycle_overlay(
         series_dir / "price_cycle_overlay.png",
         levels,
-        signal_dates,
+        extended_signal_dates,
         reconstructed,
-        f"{source}:{series_name} price with composite cycle overlay",
+        history_points=history_points,
+        title=f"{source}:{series_name} price with composite cycle overlay",
     )
     save_plot_cycle_components(
         series_dir / "cycle_components.png",
@@ -1600,7 +1660,7 @@ def process_single_series(
         series_dir / "reconstruction.png",
         signal_dates,
         signal,
-        reconstructed,
+        reconstructed[:history_points],
         f"{source}:{series_name} {transform_name} signal vs stable-cycle reconstruction",
     )
 
@@ -1614,6 +1674,8 @@ def process_single_series(
         "step_days": step_days,
         "points": int(len(levels)),
         "signal_points": int(len(signal)),
+        "projection_days": cfg.projection_days,
+        "projection_points": int(projection_steps),
         "stable_cycle_count": len(stable_cycles),
         "selected_cycle_count": len(selected_cycles),
         "selection_top_k": cfg.selection_top_k,

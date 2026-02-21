@@ -55,6 +55,7 @@ interface WaveDataRow {
   date: string;
   period_days: number;
   component_value: number;
+  is_projection?: number | boolean;
 }
 
 interface RunTriggerStatus {
@@ -350,6 +351,24 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
   const priceChartOption = useMemo(() => {
     if (!priceData.length) return {};
 
+    const lastPriceTs = new Date(priceData[priceData.length - 1][0]).getTime();
+    const splitWavePoints = (points: [string, number][]) => {
+      const historical: [string, number][] = [];
+      const projection: [string, number][] = [];
+      points.forEach((point) => {
+        const ts = new Date(point[0]).getTime();
+        if (ts <= lastPriceTs) {
+          historical.push(point);
+        } else {
+          projection.push(point);
+        }
+      });
+      if (projection.length > 0 && historical.length > 0) {
+        projection.unshift(historical[historical.length - 1]);
+      }
+      return { historical, projection };
+    };
+
     const series: any[] = [
       {
         name: 'Price',
@@ -368,24 +387,46 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
         color: cycleColorByPeriod[periodKey(cycle.period_days)] || getCycleColor(index),
         points: waveDataByPeriod[periodKey(cycle.period_days)] || []
       }))
-      .filter(item => item.points.length > 0);
+      .map((item) => ({
+        ...item,
+        split: splitWavePoints(item.points),
+      }))
+      .filter(item => item.split.historical.length > 0 || item.split.projection.length > 0);
 
     if (selectedCycles.size > 0) {
       if (isSuperpose) {
-        const byDate = new Map<string, number>();
+        const byDateHistorical = new Map<string, number>();
+        const byDateProjection = new Map<string, number>();
         selectedWaveSeries.forEach(item => {
-          item.points.forEach(([date, value]) => {
-            byDate.set(date, (byDate.get(date) || 0) + value);
+          item.split.historical.forEach(([date, value]) => {
+            byDateHistorical.set(date, (byDateHistorical.get(date) || 0) + value);
+          });
+          item.split.projection.forEach(([date, value]) => {
+            byDateProjection.set(date, (byDateProjection.get(date) || 0) + value);
           });
         });
-        const superposition = Array.from(byDate.entries())
+        const superpositionHistorical = Array.from(byDateHistorical.entries())
           .map(([date, value]) => [date, value] as [string, number])
           .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
-        if (superposition.length > 0) {
+        const superpositionProjection = Array.from(byDateProjection.entries())
+          .map(([date, value]) => [date, value] as [string, number])
+          .sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime());
+        if (superpositionHistorical.length > 0) {
           series.push({
             name: 'Superposition',
             type: 'line',
-            data: superposition,
+            data: superpositionHistorical,
+            showSymbol: false,
+            lineStyle: { width: 2, color: '#fbbf24' },
+            itemStyle: { color: '#fbbf24' },
+            yAxisIndex: 1
+          });
+        }
+        if (superpositionProjection.length > 1) {
+          series.push({
+            name: 'Superposition (Projection)',
+            type: 'line',
+            data: superpositionProjection,
             showSymbol: false,
             lineStyle: { width: 2, color: '#fbbf24', type: 'dashed' },
             itemStyle: { color: '#fbbf24' },
@@ -394,14 +435,26 @@ function Dashboard({ defaultSeries = '' }: { defaultSeries?: string }) {
         }
       } else {
         selectedWaveSeries.forEach(item => {
-          series.push({
-            name: `Cycle ${item.cycle.period_days.toFixed(1)}d`,
-            type: 'line',
-            data: item.points,
-            showSymbol: false,
-            lineStyle: { width: 1.5, color: item.color, opacity: 0.85 },
-            yAxisIndex: 1
-          });
+          if (item.split.historical.length > 0) {
+            series.push({
+              name: `Cycle ${item.cycle.period_days.toFixed(1)}d`,
+              type: 'line',
+              data: item.split.historical,
+              showSymbol: false,
+              lineStyle: { width: 1.5, color: item.color, opacity: 0.85 },
+              yAxisIndex: 1
+            });
+          }
+          if (item.split.projection.length > 1) {
+            series.push({
+              name: `Cycle ${item.cycle.period_days.toFixed(1)}d (Projection)`,
+              type: 'line',
+              data: item.split.projection,
+              showSymbol: false,
+              lineStyle: { width: 1.5, color: item.color, opacity: 0.85, type: 'dashed' },
+              yAxisIndex: 1
+            });
+          }
         });
       }
     }

@@ -30,7 +30,7 @@ Pro Lauf:
 - `run_<timestamp>/<source>-<series>/stability.png` - Rolling-Power/Presence je Cycle
 - `run_<timestamp>/<source>-<series>/reconstruction.png` - transformiertes Signal (Returns) vs. rekonstruiertes Cycle-Signal
 - `run_<timestamp>/<source>-<series>/cycles.csv` - alle als stabil markierten Cycle-Metriken (absolute Robustheit + Signifikanz + relative Rank-Metrik)
-- `run_<timestamp>/<source>-<series>/waves.csv` - echte per-Cycle Zeitreihen-Komponenten fuer UI-Superposition
+- `run_<timestamp>/<source>-<series>/waves.csv` - echte per-Cycle Zeitreihen-Komponenten fuer UI-Superposition, optional inkl. Projektionsbereich nach dem letzten Kurs (`is_projection=1`)
 - optional `run_<timestamp>/<source>-<series>/windows.csv` - per-Window Audit (amp/phase/snr/presence je Cycle), aktivierbar via `FOURIER_EXPORT_WINDOWS_CSV=true`
 - optional `run_<timestamp>/<source>-<series>/wavelet.png` - Wavelet-Aktivitaetskarte fuer nicht-stationaere Zeitfenster, aktivierbar via `FOURIER_ENABLE_WAVELET_VIEW=true`
 
@@ -49,6 +49,10 @@ Kalibrierungsreferenz:
   - `presence_ratio=0.53125`
   - `phase_locking_r=0.041836...`
   - `amp_median=0.063834...`
+
+Projection (Cycle-Fortzeichnung):
+- `FOURIER_PROJECTION_DAYS` steuert, wie viele Kalendertage die Cycles ueber den letzten beobachteten Kurs hinaus fortgeschrieben werden (Default: `120`).
+- Im UI werden Projektionen gestrichelt gezeichnet.
 
 ## Web App (UI + Controlled Trigger API)
 
@@ -170,6 +174,7 @@ Ausgabe-Selektion fuer Visualisierung/Reporting:
 Hinweise zur Strenge:
 - Kein regelbrechendes Backfill: Wenn Filter/Abstand weniger Kandidaten zulassen, bleiben es weniger als `FOURIER_SELECTION_TOP_K`.
 - Rolling-Window-Stabilitaet nutzt lokale Band-Power um die Zielfrequenz (statt nur eines einzelnen naechsten FFT-Bins), um Leakage-Artefakte zu reduzieren.
+- Projektion: Wellenkomponenten in `waves.csv` laufen standardmaessig fuer `FOURIER_PROJECTION_DAYS` weiter; der Preischart selbst endet am letzten echten Datenpunkt.
 
 ## Telegram-Integration (ohne neue UI)
 

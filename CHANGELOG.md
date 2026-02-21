@@ -30,6 +30,7 @@ This project follows a Keep a Changelog style.
 - `fourier-cycles` optional non-stationary wavelet activity plot `wavelet.png` via `FOURIER_ENABLE_WAVELET_VIEW=true`.
 
 ### Changed
+- `fourier-cycles` now projects cycle overlays beyond the latest observed price by default (`FOURIER_PROJECTION_DAYS=120`), exports projection rows in `waves.csv` (`is_projection`), and renders projection segments dashed in the UI.
 - Fourier web app Tailscale access policy is now fixed to dedicated hostname/root mapping (no `/fourier` path-prefix standard), documented in ADR `docs/adr/20260221-fourier-tailscale-hostname-mapping.md`.
 - Fourier production basket baseline is now fixed to `SPY,BTC-USD,DGS10,CPIAUCSL`; selection defaults were recalibrated to `FOURIER_SELECTION_MIN_PRESENCE_RATIO=0.50` and `FOURIER_SELECTION_MIN_PHASE_LOCKING_R=0.04` (amp stays `0.06`) via ADR `docs/adr/20260221-fourier-production-basket-calibration.md`.
 - `agents-init.md` now includes explicit Claude compatibility: create and verify `CLAUDE.md -> AGENTS.md` symlink when Claude models are in scope.

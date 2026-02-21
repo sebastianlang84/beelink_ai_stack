@@ -210,6 +210,7 @@ Ziel: Dockerisierter Batch-Job fuer Yahoo+FRED inklusive Rolling-Stability-Check
    - Cycle-Overlay auf Preis: `price_cycle_overlay.png`
    - Top-Cycle-Komponenten: `cycle_components.png`
    - UI-Rohdaten fuer echte Superposition: `waves.csv`
+   - Cycle-Fortzeichnung nach rechts: `FOURIER_PROJECTION_DAYS` (Default `120`) erweitert `waves.csv` ueber den letzten Kurs hinaus.
    - Optionales Fenster-Audit: `windows.csv` (`FOURIER_EXPORT_WINDOWS_CSV=true`)
    - Optionales non-stationary View: `wavelet.png` (`FOURIER_ENABLE_WAVELET_VIEW=true`)
    - Bei UI-Hinweis auf fehlendes `waves.csv`: Run erneut mit `--build` starten.
