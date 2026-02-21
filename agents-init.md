@@ -1,8 +1,8 @@
-# agents-init.md - One-shot Bootstrap fuer AGENTS + Memory + Guardrails
+# agents-init.md - One-shot Bootstrap fuer AGENTS + Memory + Guardrails (+ Skills)
 
 Diese Datei ist fuer **neue Projekte** gedacht und soll die **erste Datei** sein, die einem Coding Agent gegeben wird.
 
-Ziel: In einem frischen Repo eine belastbare Agent-Governance mit Memory-Routing, Living-Docs und Guardrails anlegen.
+Ziel: In einem frischen Repo eine belastbare Agent-Governance mit Memory-Routing, Living-Docs, Skill-Standard und Guardrails anlegen.
 
 Wichtig: Nach erfolgreichem Bootstrap muss der Agent diese Datei loeschen (`agents-init.md`).
 
@@ -28,7 +28,8 @@ Dann read-only pruefen:
 - `pwd`
 - `git status --short`
 - `rg --files`
-- Falls vorhanden lesen: `AGENTS.md`, `MEMORY.md`, `README.md`, `INDEX.md`, `TODO.md`, `CHANGELOG.md`
+- Falls vorhanden lesen: `AGENTS.md`, `SKILL.md`, `MEMORY.md`, `README.md`, `INDEX.md`, `TODO.md`, `CHANGELOG.md`
+- Falls vorhanden lesen: `skills/*/SKILL.md` (nur die fuer den aktuellen Task relevanten)
 
 ### Phase B - Bootstrap schreiben
 
@@ -39,6 +40,7 @@ Pflichtstruktur:
 
 ```text
 AGENTS.md
+SKILL.md
 CLAUDE.md -> AGENTS.md (symlink; wenn Claude-Modelle verwendet werden)
 MEMORY.md
 README.md
@@ -50,12 +52,14 @@ agents/adr/README.md
 agents/memory/daily/.gitkeep
 docs/adr/README.md
 docs/policies/policy_secrets_env.md
+skills/ (optional, mit `skills/<skill-name>/SKILL.md`)
 ```
 
 ### Phase C - Verifikation
 
 Pflichtchecks (read-only):
 - `rg -n "^# AGENTS.md" AGENTS.md`
+- `rg -n "^# SKILL.md" SKILL.md`
 - falls Claude im Scope: `test -L CLAUDE.md && [ "$(readlink CLAUDE.md)" = "AGENTS.md" ]`
 - `rg -n "^# MEMORY" MEMORY.md`
 - `rg -n "^# INDEX" INDEX.md`
@@ -63,6 +67,7 @@ Pflichtchecks (read-only):
 - `rg -n "^# Changelog" CHANGELOG.md`
 - `rg -n "^# agents/README" agents/README.md`
 - `rg -n "^# Policy: Secrets" docs/policies/policy_secrets_env.md`
+- falls vorhanden: `rg -n "^# SKILL.md" skills/*/SKILL.md`
 
 ### Phase D - Living Docs + Commit + Self-Delete
 
@@ -81,6 +86,17 @@ Pflichtchecks (read-only):
   - nicht automatisch ueberschreiben, sondern Stop & Ask.
 - Ziel: identische Regeln fuer Agent-Engines, die `CLAUDE.md` erwarten.
 
+## 2.2) Skill-Standard (Anthropic `SKILL.md`)
+
+- Root-`SKILL.md` anlegen, damit projektweite Skill-Regeln explizit sind.
+- Optional: konkrete Skills unter `skills/<skill-name>/SKILL.md` ablegen.
+- Wenn ein Skill namentlich angefordert wird oder klar passt:
+  - Skill-Datei zuerst oeffnen und befolgen.
+- Kontext klein halten:
+  - Nur relevante Teile aus `SKILL.md` laden (keine Bulk-Reads).
+- Bei Konflikt zwischen `AGENTS.md` und `SKILL.md`:
+  - Stop & Ask vor der Umsetzung.
+
 ## 3) Template: `AGENTS.md`
 
 ```md
@@ -91,7 +107,10 @@ Dieses Dokument ist die hoechste Agent-Policy in diesem Repository.
 ## 0) Prioritaet
 - `AGENTS.md` (dieses File) ist die oberste Regelquelle.
 - Bei Claude-Engines: `CLAUDE.md` soll als Symlink auf `AGENTS.md` zeigen.
-- Falls vorhanden: `SKILL.md` ist gleichrangig. Bei Widerspruch -> Stop & Ask.
+- `SKILL.md` ist gleichrangig zu `AGENTS.md` (Anthropic Standard).
+- Wenn Skill namentlich angefordert wird oder klar passt: Skill zuerst.
+- Projekt-spezifische Skills liegen unter `skills/<skill-name>/SKILL.md`.
+- Bei Widerspruch zwischen `AGENTS.md` und `SKILL.md`: Stop & Ask.
 - `AGENT.md` (falls vorhanden) ist nachrangig.
 
 ## 1) Non-Negotiables
@@ -211,6 +230,7 @@ Startpunkt fuer Navigation: `INDEX.md`.
 
 ## Repo-Struktur
 - `AGENTS.md`
+- `SKILL.md`
 - `CLAUDE.md` (Symlink auf `AGENTS.md`, falls Claude-Modelle genutzt werden)
 - `INDEX.md`
 - `MEMORY.md`
@@ -218,6 +238,31 @@ Startpunkt fuer Navigation: `INDEX.md`.
 - `CHANGELOG.md`
 - `agents/`
 - `docs/`
+- `skills/` (optional, projekt-spezifische Skills)
+```
+
+## 5.1) Template: `SKILL.md`
+
+```md
+# SKILL.md - <PROJECT_NAME> Skills
+
+Purpose: Projektweite Skill-Regeln und Routing.
+
+## Prioritaet
+- `SKILL.md` ist gleichrangig zu `AGENTS.md`.
+- Bei Widerspruch: Stop & Ask.
+
+## Verwendung
+- Wenn ein Skill namentlich angefordert wird oder klar passt:
+  - Skill zuerst oeffnen und befolgen.
+- Projekt-Skills liegen unter `skills/<skill-name>/SKILL.md`.
+- Nur relevante Teile lesen; keine unnoetigen Bulk-Reads.
+
+## Skill-Struktur (optional)
+- `skills/<skill-name>/SKILL.md`
+- `skills/<skill-name>/scripts/`
+- `skills/<skill-name>/assets/`
+- `skills/<skill-name>/references/`
 ```
 
 ## 6) Template: `INDEX.md`
@@ -229,6 +274,7 @@ Purpose: Navigation-only entrypoint.
 
 ## Core Docs
 - `AGENTS.md` - normative agent/process rules
+- `SKILL.md` - skill rules (Anthropic standard)
 - `README.md` - operator guide
 - `MEMORY.md` - current snapshot + long-term memory
 - `TODO.md` - active work only

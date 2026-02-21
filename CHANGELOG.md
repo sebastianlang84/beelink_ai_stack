@@ -30,6 +30,7 @@ This project follows a Keep a Changelog style.
 
 ### Changed
 - `agents-init.md` now includes explicit Claude compatibility: create and verify `CLAUDE.md -> AGENTS.md` symlink when Claude models are in scope.
+- `agents-init.md` now explicitly bootstraps Anthropic-style skill governance (`SKILL.md`), including priority/routing rules, optional `skills/<skill-name>/SKILL.md` structure, and verification checks.
 - `transcript-miner` summary regeneration now uses a configurable backfill policy (`off|soft|full`, default `soft` with day window), plus CLI overrides (`--summary-backfill-mode`, `--summary-backfill-days`) to avoid expensive historical auto-backfills after prompt/model changes.
 - `fourier-cycles` pipeline now computes absolute cycle metrics (`amp_*`, `snr_*`, `fit_score_phase_free`, `phase_locking_r`, `best_lag_days_median`, `lag_iqr`, `margin_median`, `p_value_bandmax`) and keeps relative metrics (`rank_score_norm`, `stability_score_norm`) explicitly separated.
 - `fourier-cycles` candidate discovery now uses local peak detection in period space (with distance guard) instead of plain top-power slicing.
