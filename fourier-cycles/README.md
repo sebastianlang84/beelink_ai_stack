@@ -106,6 +106,38 @@ Referenz:
   - Pipeline neu laufen lassen: `docker compose --env-file .env --env-file .config.env --env-file fourier-cycles/.config.env -f fourier-cycles/docker-compose.yml run --rm --build fourier-cycles`
   - UI neu laden (arbeitet immer gegen `output/latest`).
 
+## Vergleichstest (fremde Cycle-Spectrum UI)
+
+Zum schnellen Zahlenvergleich mit aehnlichen Tools gibt es:
+- `fourier-cycles/tools/cycle_spectrum_like_table.py`
+
+Mapping:
+- `Len` = gerundete `period_days`
+- `Amp` = `amp_median * amp_scale` (Default `100`, oft fuer visuelle Naeherung `200`)
+- `Strg` = `snr_median`
+- `Stab` = `stability_score_norm`
+- Bei aelteren Run-Schemas ohne `amp_median/snr_median/phase_locking_r` nutzt das Tool kompatible Fallbacks (`norm_power` bzw. `median_window_power_ratio`); `PhaseR` kann dann `nan` sein.
+
+Beispiel (SPY, letzte Run-Outputs, Amp skaliert auf 200):
+
+```bash
+fourier-cycles/tools/cycle_spectrum_like_table.py \
+  --run-dir fourier-cycles/output/latest \
+  --series-dir yahoo-spy \
+  --top 12 \
+  --amp-scale 200
+```
+
+Optional CSV-Export (in user-writable Zielpfad):
+
+```bash
+fourier-cycles/tools/cycle_spectrum_like_table.py \
+  --run-dir fourier-cycles/output/latest \
+  --series-dir yahoo-spy \
+  --amp-scale 200 \
+  --export-csv /tmp/cycle_spectrum_like_spy.csv
+```
+
 ## Stability-Logik
 
 Methodik-Spezifikation:
