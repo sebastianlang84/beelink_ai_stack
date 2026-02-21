@@ -39,6 +39,7 @@ Pflichtstruktur:
 
 ```text
 AGENTS.md
+CLAUDE.md -> AGENTS.md (symlink; wenn Claude-Modelle verwendet werden)
 MEMORY.md
 README.md
 INDEX.md
@@ -55,6 +56,7 @@ docs/policies/policy_secrets_env.md
 
 Pflichtchecks (read-only):
 - `rg -n "^# AGENTS.md" AGENTS.md`
+- falls Claude im Scope: `test -L CLAUDE.md && [ "$(readlink CLAUDE.md)" = "AGENTS.md" ]`
 - `rg -n "^# MEMORY" MEMORY.md`
 - `rg -n "^# INDEX" INDEX.md`
 - `rg -n "^# TODO" TODO.md`
@@ -71,6 +73,14 @@ Pflichtchecks (read-only):
 5. Loeschung verifizieren: `test ! -f agents-init.md`.
 6. Wenn noetig zweiten Commit fuer die Loeschung erstellen.
 
+## 2.1) Claude-Kompatibilitaet (wenn Claude-Modelle im Spiel sind)
+
+- Nach Erstellung von `AGENTS.md` einen Symlink anlegen:
+  - `ln -s AGENTS.md CLAUDE.md`
+- Wenn `CLAUDE.md` bereits existiert und nicht auf `AGENTS.md` zeigt:
+  - nicht automatisch ueberschreiben, sondern Stop & Ask.
+- Ziel: identische Regeln fuer Agent-Engines, die `CLAUDE.md` erwarten.
+
 ## 3) Template: `AGENTS.md`
 
 ```md
@@ -80,6 +90,7 @@ Dieses Dokument ist die hoechste Agent-Policy in diesem Repository.
 
 ## 0) Prioritaet
 - `AGENTS.md` (dieses File) ist die oberste Regelquelle.
+- Bei Claude-Engines: `CLAUDE.md` soll als Symlink auf `AGENTS.md` zeigen.
 - Falls vorhanden: `SKILL.md` ist gleichrangig. Bei Widerspruch -> Stop & Ask.
 - `AGENT.md` (falls vorhanden) ist nachrangig.
 
@@ -200,6 +211,7 @@ Startpunkt fuer Navigation: `INDEX.md`.
 
 ## Repo-Struktur
 - `AGENTS.md`
+- `CLAUDE.md` (Symlink auf `AGENTS.md`, falls Claude-Modelle genutzt werden)
 - `INDEX.md`
 - `MEMORY.md`
 - `TODO.md`
